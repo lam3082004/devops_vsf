@@ -91,9 +91,9 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] OIDC: **user-assigned MI** `id-gh-plan` / `id-gh-deploy` + federated credential cho GitHub (pull_request / ref main), không client secret — *proof: CI login Azure được*
 
 ### D8 — Terraform: compute + DB
-- [ ] App Service Plan (Linux, P0v3 hoặc S1 — Decision kèm giá), Web App + slot `staging` — *proof: plan/apply* · apply + verify 17/09 `evidence/d08/`
+- [x] App Service Plan (Linux, P0v3 hoặc S1 — Decision kèm giá), Web App + slot `staging` — *proof: plan/apply* · apply + verify 17/09 `evidence/d08/`
 - [x] User-assigned MI, gắn cho cả 2 slot — *proof: portal Identity* · `evidence/d08/verify.log`
-- [ ] MySQL Flexible B1ms + database; firewall `for_each` theo outbound IPs của App Service — *proof: plan* · 20 IP = 20 rule, apply 2 pha `make up`
+- [x] MySQL Flexible B1ms + database; firewall `for_each` theo outbound IPs của App Service — *proof: plan* · 20 IP = 20 rule, apply 2 pha `make up`
 - [x] Mật khẩu MySQL sinh bằng random_password (hiểu: nó nằm trong state) — *proof: Decision* · `notes/d8.md`
 
 ### D9 — Terraform: ACR, Key Vault, Makefile
@@ -222,7 +222,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
 
 ## Recovery
-- 2026-09-17: **D8** trên nhánh `feat/tf-compute-db`: `make up` xong (pha 1: 3 resource, pha 2: 24), kiểm chứng đạt (200 cả 2 slot, cùng identity, 20 IP = 20 rule, không 0.0.0.0, không IP máy), plan lần 2 No changes. Bước tiếp: PR → CI → merge → `make down`.
+- 2026-09-17: **D8 xong** — PR #5: `make up` 2 pha (3 + 24 resource), kiểm chứng đạt (200 cả 2 slot, cùng identity, 20 IP = 20 rule, không 0.0.0.0/IP máy), plan lần 2 No changes, `make down` 29 destroyed, `rg-vsf-dev` đã xoá, bootstrap còn. Bài tiếp: D9 (ACR, Key Vault, Makefile, CI plan).
 - 2026-09-15: repo mới chỉ có `a.md`, `CLAUDE.md`, plan này. Chưa có Azure resource nào. Chưa commit.
 - Subscription: Azure Free Trial, $200 credit, hết hạn 2026-10-15.
 - 2026-09-16: **D3 xong** — dựng lại toàn bộ bằng CLI (RG, MySQL, plan P0V3, web app, 20 firewall rule bằng vòng lặp, access restriction, slot+swap, scale out), 4 thí nghiệm idempotency. Phát hiện chính: chạy lại `az webapp create` **reset `httpsOnly` true→false** không báo lỗi. Đã xoá `rg-d3-cli` 16:07. Chi tiết `notes/d3-cli.md`.
