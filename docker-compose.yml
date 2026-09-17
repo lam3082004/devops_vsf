@@ -1,0 +1,48 @@
+# Chạy app + MySQL local như một cụm, gần giống Azure nhất có thể.
+# Dùng: docker compose up --build   |   docker compose down (-v để xoá cả dữ liệu)
+
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-devpass}
+      MYSQL_DATABASE: ${DB_NAME:-nodereg}
+    ports:
+      # 3307 ở máy host để không đụng MySQL cài sẵn (nếu có)
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      # App chỉ khởi động sau khi lệnh này trả về OK — "container đang chạy"
+      # không có nghĩa là "MySQL đã nhận kết nối".
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${DB_PASSWORD:-devpass}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  app:
+    build:
+      context: ./app
+      args:
+        # Truyền SHA vào build để /version trả đúng; không có thì là "dev".
+        GIT_SHA: ${GIT_SHA:-dev}
+    environment:
+      PORT: 8080
+      DB_HOST: db          # tên service, Docker tự phân giải DNS
+      DB_PORT: 3306        # cổng BÊN TRONG mạng compose, không phải 3307
+      DB_NAME: ${DB_NAME:-nodereg}
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-devpass}
+      DB_TLS: "false"      # MySQL local không bật TLS; trên Azure phải là true
+      LOAD_MAX_SECONDS: 60
+      RUST_LOG: info
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:

@@ -52,9 +52,9 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] **Xoá sạch resource group cuối ngày** — *proof: RG không còn*
 
 ### D3 — Làm lại bằng Azure CLI (tự đọc docs, không nhờ AI viết lệnh)
-- [ ] Dựng lại đúng D2 bằng CLI, lưu lệnh vào `notes/d3-cli.md` — *proof: file lệnh + URL 200*
-- [ ] Ghi lại chỗ Portal tự làm ngầm mà CLI phải khai báo rõ — *proof: ghi chú* (đây là thứ Terraform phải khai báo)
-- [ ] Xoá sạch cuối ngày
+- [x] Dựng lại đúng D2 bằng CLI, lưu lệnh vào `notes/d3-cli.md` — *proof: file lệnh + URL 200*
+- [x] Ghi lại chỗ Portal tự làm ngầm mà CLI phải khai báo rõ — *proof: ghi chú* (đây là thứ Terraform phải khai báo)
+- [x] Xoá sạch cuối ngày
 
 ### D4 — Viết app
 - [ ] Chọn ngôn ngữ (gợi ý Go: image distroless dễ đạt 0 CVE; Python/Node khó hơn) — *proof: Decision*
@@ -222,6 +222,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ## Recovery
 - 2026-09-15: repo mới chỉ có `a.md`, `CLAUDE.md`, plan này. Chưa có Azure resource nào. Chưa commit.
 - Subscription: Azure Free Trial, $200 credit, hết hạn 2026-10-15.
+- 2026-09-16: **D3 xong** — dựng lại toàn bộ bằng CLI (RG, MySQL, plan P0V3, web app, 20 firewall rule bằng vòng lặp, access restriction, slot+swap, scale out), 4 thí nghiệm idempotency. Phát hiện chính: chạy lại `az webapp create` **reset `httpsOnly` true→false** không báo lỗi. Đã xoá `rg-d3-cli` 16:07. Chi tiết `notes/d3-cli.md`.
 - 2026-09-16: D2 xong — dựng tay Web App P0V3 + MySQL B1ms, chứng minh 403 từ IP lạ, swap có 1 request timeout, đã xoá `rg-d2-manual` (12:05), subscription trống. Chi tiết `notes/d2.md`.
 - 2026-09-15: D1 xong (region Southeast Asia, budget $40, Defender 0 plan, RG playground đã xoá). D2 bắt đầu — tiến độ ở `notes/d1.md`, `notes/d2.md`. Sổ khái niệm: https://claude.ai/artifact/DcVdzVVpzjVecMt128tGFM
 

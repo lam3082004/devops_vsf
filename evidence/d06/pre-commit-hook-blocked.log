@@ -1,0 +1,4 @@
+RuleID:      aws-access-token
+File:        fake-creds.txt
+[90m10:11AM[0m [33mWRN[0m [1mleaks found: 1[0m
+pre-commit: gitleaks phat hien secret trong staged changes — commit bi chan.

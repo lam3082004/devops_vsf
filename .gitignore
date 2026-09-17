@@ -1,0 +1,32 @@
+# Rust
+app/target/
+**/*.rs.bk
+
+# Secrets / cấu hình local
+.env
+.env.*
+*.env
+!.env.example
+!app/.env.example
+notes/d3-env.sh
+
+# Terraform (từ D7)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+# giữ lock file của provider — nó là bản ghim version
+!.terraform.lock.hcl
+
+# Hệ điều hành / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
