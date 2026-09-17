@@ -24,10 +24,20 @@ jobs:
         with:
           # Phải lấy TOÀN BỘ lịch sử: secret nằm ở commit giữa PR vẫn phải bị bắt.
           fetch-depth: 0
-      - name: Quét secret
-        uses: gitleaks/gitleaks-action@v2
+      # Chạy thẳng binary thay vì gitleaks-action: action đó muốn bình luận vào PR
+      # nên đòi quyền pull-requests:write. Cách này giữ token ở mức chỉ đọc.
+      # Version ghim cứng để build tái lập được; nâng cấp là một PR riêng.
+      - name: Cài gitleaks ${{ env.GITLEAKS_VERSION }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSL -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          sudo install /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+      - name: Quét secret trong toàn bộ lịch sử
+        run: gitleaks detect --redact -v --exit-code 1
 
   rust:
     name: rust (fmt, clippy, test)
