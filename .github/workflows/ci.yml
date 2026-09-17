@@ -1,0 +1,74 @@
+name: CI
+
+# Chạy trên PR vào main. KHÔNG deploy gì ở đây — deploy là việc của cd.yml (D16).
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Token chỉ cần đọc nội dung repo.
+permissions:
+  contents: read
+
+# Có commit mới trên cùng PR thì huỷ run cũ, đỡ tốn phút chạy.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Phải lấy TOÀN BỘ lịch sử: secret nằm ở commit giữa PR vẫn phải bị bắt.
+          fetch-depth: 0
+      - name: Quét secret
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  rust:
+    name: rust (fmt, clippy, test)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cài toolchain Rust
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy --no-self-update
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            app/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('app/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+
+  terraform:
+    name: terraform (fmt, validate)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Bỏ qua nếu chưa có thư mục infra/ (sẽ có từ D7)
+        id: check
+        run: test -d infra && echo "exists=true" >> "$GITHUB_OUTPUT" || echo "exists=false" >> "$GITHUB_OUTPUT"
+      - uses: hashicorp/setup-terraform@v3
+        if: steps.check.outputs.exists == 'true'
+        with:
+          terraform_version: 1.15.8
+      - name: terraform fmt
+        if: steps.check.outputs.exists == 'true'
+        run: terraform -chdir=infra fmt -check -recursive
+      - name: terraform validate
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          terraform -chdir=infra init -backend=false
+          terraform -chdir=infra validate

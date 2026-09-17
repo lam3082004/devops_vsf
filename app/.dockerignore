@@ -1,0 +1,11 @@
+# Thư mục build local: rất nặng và vô dụng trong image
+target/
+
+# Không bao giờ đưa giá trị cấu hình thật vào image
+.env
+.env.*
+!.env.example
+
+# Rác
+*.swp
+.DS_Store
