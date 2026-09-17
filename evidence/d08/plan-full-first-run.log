@@ -1,0 +1,301 @@
+Acquiring state lock. This may take a few moments...
+random_string.suffix: Refreshing state... [id=z0ierv]
+azurerm_resource_group.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform planned the following actions, but then encountered a problem:
+
+  # azurerm_linux_web_app.app will be created
+  + resource "azurerm_linux_web_app" "app" {
+      + app_settings                                   = {
+          + "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+          + "WEBSITES_PORT"                       = "80"
+        }
+      + client_affinity_enabled                        = false
+      + client_certificate_enabled                     = false
+      + client_certificate_mode                        = "Required"
+      + custom_domain_verification_id                  = (sensitive value)
+      + default_hostname                               = (known after apply)
+      + enabled                                        = true
+      + ftp_publish_basic_authentication_enabled       = false
+      + hosting_environment_id                         = (known after apply)
+      + https_only                                     = true
+      + id                                             = (known after apply)
+      + key_vault_reference_identity_id                = (known after apply)
+      + kind                                           = (known after apply)
+      + location                                       = "southeastasia"
+      + name                                           = "app-vsf-z0ierv"
+      + outbound_ip_address_list                       = (known after apply)
+      + outbound_ip_addresses                          = (known after apply)
+      + possible_outbound_ip_address_list              = (known after apply)
+      + possible_outbound_ip_addresses                 = (known after apply)
+      + public_network_access_enabled                  = true
+      + resource_group_name                            = "rg-vsf-dev"
+      + service_plan_id                                = (known after apply)
+      + site_credential                                = (sensitive value)
+      + tags                                           = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + virtual_network_backup_restore_enabled         = false
+      + vnet_image_pull_enabled                        = false
+      + webdeploy_publish_basic_authentication_enabled = false
+      + zip_deploy_file                                = (known after apply)
+
+      + identity {
+          + identity_ids = (known after apply)
+          + principal_id = (known after apply)
+          + tenant_id    = (known after apply)
+          + type         = "UserAssigned"
+        }
+
+      + site_config {
+          + always_on                               = true
+          + container_registry_use_managed_identity = false
+          + default_documents                       = (known after apply)
+          + detailed_error_logging_enabled          = (known after apply)
+          + ftps_state                              = "Disabled"
+          + http2_enabled                           = true
+          + ip_restriction_default_action           = "Allow"
+          + linux_fx_version                        = (known after apply)
+          + load_balancing_mode                     = "LeastRequests"
+          + local_mysql_enabled                     = false
+          + managed_pipeline_mode                   = "Integrated"
+          + minimum_tls_version                     = "1.2"
+          + remote_debugging_enabled                = false
+          + remote_debugging_version                = (known after apply)
+          + scm_ip_restriction_default_action       = "Allow"
+          + scm_minimum_tls_version                 = "1.2"
+          + scm_type                                = (known after apply)
+          + scm_use_main_ip_restriction             = false
+          + use_32_bit_worker                       = true
+          + vnet_route_all_enabled                  = false
+          + websockets_enabled                      = false
+          + worker_count                            = (known after apply)
+
+          + application_stack {
+              + docker_image_name   = "appsvc/staticsite:latest"
+              + docker_registry_url = "https://mcr.microsoft.com"
+            }
+        }
+    }
+
+  # azurerm_linux_web_app_slot.staging will be created
+  + resource "azurerm_linux_web_app_slot" "staging" {
+      + app_metadata                                   = (known after apply)
+      + app_service_id                                 = (known after apply)
+      + app_settings                                   = {
+          + "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+          + "WEBSITES_PORT"                       = "80"
+        }
+      + client_affinity_enabled                        = false
+      + client_certificate_enabled                     = false
+      + client_certificate_mode                        = "Required"
+      + custom_domain_verification_id                  = (sensitive value)
+      + default_hostname                               = (known after apply)
+      + enabled                                        = true
+      + ftp_publish_basic_authentication_enabled       = false
+      + hosting_environment_id                         = (known after apply)
+      + https_only                                     = true
+      + id                                             = (known after apply)
+      + key_vault_reference_identity_id                = (known after apply)
+      + kind                                           = (known after apply)
+      + name                                           = "staging"
+      + outbound_ip_address_list                       = (known after apply)
+      + outbound_ip_addresses                          = (known after apply)
+      + possible_outbound_ip_address_list              = (known after apply)
+      + possible_outbound_ip_addresses                 = (known after apply)
+      + public_network_access_enabled                  = true
+      + site_credential                                = (sensitive value)
+      + tags                                           = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + virtual_network_backup_restore_enabled         = false
+      + vnet_image_pull_enabled                        = false
+      + webdeploy_publish_basic_authentication_enabled = false
+      + zip_deploy_file                                = (known after apply)
+
+      + identity {
+          + identity_ids = (known after apply)
+          + principal_id = (known after apply)
+          + tenant_id    = (known after apply)
+          + type         = "UserAssigned"
+        }
+
+      + site_config {
+          + always_on                               = true
+          + container_registry_use_managed_identity = false
+          + default_documents                       = (known after apply)
+          + detailed_error_logging_enabled          = (known after apply)
+          + ftps_state                              = "Disabled"
+          + http2_enabled                           = true
+          + ip_restriction_default_action           = "Allow"
+          + linux_fx_version                        = (known after apply)
+          + load_balancing_mode                     = "LeastRequests"
+          + local_mysql_enabled                     = false
+          + managed_pipeline_mode                   = "Integrated"
+          + minimum_tls_version                     = "1.2"
+          + remote_debugging_enabled                = false
+          + remote_debugging_version                = (known after apply)
+          + scm_ip_restriction_default_action       = "Allow"
+          + scm_minimum_tls_version                 = "1.2"
+          + scm_type                                = (known after apply)
+          + scm_use_main_ip_restriction             = false
+          + use_32_bit_worker                       = true
+          + vnet_route_all_enabled                  = false
+          + websockets_enabled                      = false
+          + worker_count                            = (known after apply)
+
+          + application_stack {
+              + docker_image_name   = "appsvc/staticsite:latest"
+              + docker_registry_url = "https://mcr.microsoft.com"
+            }
+        }
+    }
+
+  # azurerm_mysql_flexible_database.app will be created
+  + resource "azurerm_mysql_flexible_database" "app" {
+      + charset             = "utf8mb4"
+      + collation           = "utf8mb4_unicode_ci"
+      + id                  = (known after apply)
+      + name                = "appdb"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+    }
+
+  # azurerm_mysql_flexible_server.db will be created
+  + resource "azurerm_mysql_flexible_server" "db" {
+      + administrator_login           = "vsfadmin"
+      + administrator_password        = (sensitive value)
+      + administrator_password_wo     = (write-only attribute)
+      + backup_retention_days         = 1
+      + fqdn                          = (known after apply)
+      + geo_redundant_backup_enabled  = false
+      + id                            = (known after apply)
+      + location                      = "southeastasia"
+      + name                          = "mysql-vsf-z0ierv"
+      + public_network_access         = (known after apply)
+      + public_network_access_enabled = (known after apply)
+      + replica_capacity              = (known after apply)
+      + replication_role              = (known after apply)
+      + resource_group_name           = "rg-vsf-dev"
+      + sku_name                      = "B_Standard_B1ms"
+      + tags                          = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + version                       = "8.4"
+      + zone                          = (known after apply)
+
+      + storage {
+          + auto_grow_enabled   = false
+          + io_scaling_enabled  = false
+          + iops                = (known after apply)
+          + log_on_disk_enabled = false
+          + size_gb             = 20
+        }
+    }
+
+  # azurerm_service_plan.app will be created
+  + resource "azurerm_service_plan" "app" {
+      + id                              = (known after apply)
+      + kind                            = (known after apply)
+      + location                        = "southeastasia"
+      + maximum_elastic_worker_count    = (known after apply)
+      + name                            = "asp-vsf-dev"
+      + os_type                         = "Linux"
+      + per_site_scaling_enabled        = false
+      + premium_plan_auto_scale_enabled = false
+      + reserved                        = (known after apply)
+      + resource_group_name             = "rg-vsf-dev"
+      + sku_name                        = "P0v3"
+      + tags                            = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + worker_count                    = 1
+    }
+
+  # azurerm_user_assigned_identity.app will be created
+  + resource "azurerm_user_assigned_identity" "app" {
+      + client_id           = (known after apply)
+      + id                  = (known after apply)
+      + location            = "southeastasia"
+      + name                = "id-vsf-app-z0ierv"
+      + principal_id        = (known after apply)
+      + resource_group_name = "rg-vsf-dev"
+      + tags                = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + tenant_id           = (known after apply)
+    }
+
+  # random_password.mysql_admin will be created
+  + resource "random_password" "mysql_admin" {
+      + bcrypt_hash      = (sensitive value)
+      + id               = (known after apply)
+      + length           = 32
+      + lower            = true
+      + min_lower        = 2
+      + min_numeric      = 2
+      + min_special      = 2
+      + min_upper        = 2
+      + number           = true
+      + numeric          = true
+      + override_special = "-_.~!*"
+      + result           = (sensitive value)
+      + special          = true
+      + upper            = true
+    }
+
+Plan: 7 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + app_identity_client_id         = (known after apply)
+  + app_identity_id                = (known after apply)
+  + app_identity_principal_id      = (known after apply)
+  + app_possible_outbound_ip_count = (known after apply)
+  + app_url                        = (known after apply)
+  + mysql_database_name            = "appdb"
+  + mysql_fqdn                     = (known after apply)
+  + staging_url                    = (known after apply)
+
+Error: Invalid for_each argument
+
+  on db.tf line 72, in resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound":
+  72:   for_each = toset(azurerm_linux_web_app.app.possible_outbound_ip_address_list)
+    ├────────────────
+    │ azurerm_linux_web_app.app.possible_outbound_ip_address_list is a list of string, known only after apply
+
+The "for_each" set includes values derived from resource attributes that
+cannot be determined until apply, and so Terraform cannot determine the full
+set of keys that will identify the instances of this resource.
+
+When working with unknown values in for_each, it's better to use a map value
+where the keys are defined statically in your configuration and where only
+the values contain apply-time results.
+
+Alternatively, you could use the -target planning option to first apply only
+the resources that the for_each value depends on, and then apply a second
+time to fully converge.
+Releasing state lock. This may take a few moments...

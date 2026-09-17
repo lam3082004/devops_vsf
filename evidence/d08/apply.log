@@ -1,0 +1,1563 @@
+terraform -chdir=infra/app init -backend-config=backend.hcl
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/azurerm from the dependency lock file
+- Reusing previous version of hashicorp/random from the dependency lock file
+- Using previously-installed hashicorp/azurerm v4.81.0
+- Using previously-installed hashicorp/random v3.9.1
+
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+>>> pha 1/2: tao Web App (va cac phu thuoc) de biet outbound IPs
+Acquiring state lock. This may take a few moments...
+random_string.suffix: Refreshing state... [id=z0ierv]
+azurerm_resource_group.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # azurerm_linux_web_app.app will be created
+  + resource "azurerm_linux_web_app" "app" {
+      + app_settings                                   = {
+          + "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+          + "WEBSITES_PORT"                       = "80"
+        }
+      + client_affinity_enabled                        = false
+      + client_certificate_enabled                     = false
+      + client_certificate_mode                        = "Required"
+      + custom_domain_verification_id                  = (sensitive value)
+      + default_hostname                               = (known after apply)
+      + enabled                                        = true
+      + ftp_publish_basic_authentication_enabled       = false
+      + hosting_environment_id                         = (known after apply)
+      + https_only                                     = true
+      + id                                             = (known after apply)
+      + key_vault_reference_identity_id                = (known after apply)
+      + kind                                           = (known after apply)
+      + location                                       = "southeastasia"
+      + name                                           = "app-vsf-z0ierv"
+      + outbound_ip_address_list                       = (known after apply)
+      + outbound_ip_addresses                          = (known after apply)
+      + possible_outbound_ip_address_list              = (known after apply)
+      + possible_outbound_ip_addresses                 = (known after apply)
+      + public_network_access_enabled                  = true
+      + resource_group_name                            = "rg-vsf-dev"
+      + service_plan_id                                = (known after apply)
+      + site_credential                                = (sensitive value)
+      + tags                                           = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + virtual_network_backup_restore_enabled         = false
+      + vnet_image_pull_enabled                        = false
+      + webdeploy_publish_basic_authentication_enabled = false
+      + zip_deploy_file                                = (known after apply)
+
+      + identity {
+          + identity_ids = (known after apply)
+          + principal_id = (known after apply)
+          + tenant_id    = (known after apply)
+          + type         = "UserAssigned"
+        }
+
+      + site_config {
+          + always_on                               = true
+          + container_registry_use_managed_identity = false
+          + default_documents                       = (known after apply)
+          + detailed_error_logging_enabled          = (known after apply)
+          + ftps_state                              = "Disabled"
+          + http2_enabled                           = true
+          + ip_restriction_default_action           = "Allow"
+          + linux_fx_version                        = (known after apply)
+          + load_balancing_mode                     = "LeastRequests"
+          + local_mysql_enabled                     = false
+          + managed_pipeline_mode                   = "Integrated"
+          + minimum_tls_version                     = "1.2"
+          + remote_debugging_enabled                = false
+          + remote_debugging_version                = (known after apply)
+          + scm_ip_restriction_default_action       = "Allow"
+          + scm_minimum_tls_version                 = "1.2"
+          + scm_type                                = (known after apply)
+          + scm_use_main_ip_restriction             = false
+          + use_32_bit_worker                       = true
+          + vnet_route_all_enabled                  = false
+          + websockets_enabled                      = false
+          + worker_count                            = (known after apply)
+
+          + application_stack {
+              + docker_image_name   = "appsvc/staticsite:latest"
+              + docker_registry_url = "https://mcr.microsoft.com"
+            }
+        }
+    }
+
+  # azurerm_service_plan.app will be created
+  + resource "azurerm_service_plan" "app" {
+      + id                              = (known after apply)
+      + kind                            = (known after apply)
+      + location                        = "southeastasia"
+      + maximum_elastic_worker_count    = (known after apply)
+      + name                            = "asp-vsf-dev"
+      + os_type                         = "Linux"
+      + per_site_scaling_enabled        = false
+      + premium_plan_auto_scale_enabled = false
+      + reserved                        = (known after apply)
+      + resource_group_name             = "rg-vsf-dev"
+      + sku_name                        = "P0v3"
+      + tags                            = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + worker_count                    = 1
+    }
+
+  # azurerm_user_assigned_identity.app will be created
+  + resource "azurerm_user_assigned_identity" "app" {
+      + client_id           = (known after apply)
+      + id                  = (known after apply)
+      + location            = "southeastasia"
+      + name                = "id-vsf-app-z0ierv"
+      + principal_id        = (known after apply)
+      + resource_group_name = "rg-vsf-dev"
+      + tags                = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + tenant_id           = (known after apply)
+    }
+
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + app_identity_client_id         = (known after apply)
+  + app_identity_id                = (known after apply)
+  + app_identity_principal_id      = (known after apply)
+  + app_possible_outbound_ip_count = (known after apply)
+  + app_url                        = (known after apply)
+╷
+│ Warning: Resource targeting is in effect
+│ 
+│ You are creating a plan with the -target option, which means that the
+│ result of this plan may not represent all of the changes requested by the
+│ current configuration.
+│ 
+│ The -target option is not for routine use, and is provided only for
+│ exceptional situations such as recovering from errors or mistakes, or when
+│ Terraform specifically suggests to use it as part of an error message.
+╵
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: 
+azurerm_user_assigned_identity.app: Creating...
+azurerm_service_plan.app: Creating...
+azurerm_user_assigned_identity.app: Creation complete after 4s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-z0ierv]
+azurerm_service_plan.app: Still creating... [00m10s elapsed]
+azurerm_service_plan.app: Creation complete after 19s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev]
+azurerm_linux_web_app.app: Creating...
+azurerm_linux_web_app.app: Still creating... [00m10s elapsed]
+azurerm_linux_web_app.app: Still creating... [00m20s elapsed]
+azurerm_linux_web_app.app: Still creating... [00m30s elapsed]
+azurerm_linux_web_app.app: Still creating... [00m40s elapsed]
+azurerm_linux_web_app.app: Still creating... [00m50s elapsed]
+azurerm_linux_web_app.app: Still creating... [01m00s elapsed]
+azurerm_linux_web_app.app: Still creating... [01m10s elapsed]
+azurerm_linux_web_app.app: Creation complete after 1m14s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-z0ierv]
+╷
+│ Warning: Applied changes may be incomplete
+│ 
+│ The plan was created with the -target option in effect, so some changes
+│ requested in the configuration may have been ignored and the output values
+│ may not be fully updated. Run the following command to verify that no other
+│ changes are pending:
+│     terraform plan
+│ 
+│ Note that the -target option is not suitable for routine use, and is
+│ provided only for exceptional situations such as recovering from errors or
+│ mistakes, or when Terraform specifically suggests to use it as part of an
+│ error message.
+╵
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+app_identity_client_id = "1ecdb7f6-6969-4ab7-853a-c5f524579e4d"
+app_identity_id = "/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-z0ierv"
+app_identity_principal_id = "2f64b4af-d422-4d06-b0a8-c002247f0b5a"
+app_possible_outbound_ip_count = 20
+app_url = "https://app-vsf-z0ierv.azurewebsites.net"
+location = "southeastasia"
+name_suffix = "z0ierv"
+resource_group_name = "rg-vsf-dev"
+>>> pha 2/2: apply toan bo
+terraform -chdir=infra/app apply
+Acquiring state lock. This may take a few moments...
+random_string.suffix: Refreshing state... [id=z0ierv]
+azurerm_resource_group.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev]
+azurerm_user_assigned_identity.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-z0ierv]
+azurerm_service_plan.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev]
+azurerm_linux_web_app.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-z0ierv]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # azurerm_linux_web_app_slot.staging will be created
+  + resource "azurerm_linux_web_app_slot" "staging" {
+      + app_metadata                                   = (known after apply)
+      + app_service_id                                 = "/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-z0ierv"
+      + app_settings                                   = {
+          + "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+          + "WEBSITES_PORT"                       = "80"
+        }
+      + client_affinity_enabled                        = false
+      + client_certificate_enabled                     = false
+      + client_certificate_mode                        = "Required"
+      + custom_domain_verification_id                  = (sensitive value)
+      + default_hostname                               = (known after apply)
+      + enabled                                        = true
+      + ftp_publish_basic_authentication_enabled       = false
+      + hosting_environment_id                         = (known after apply)
+      + https_only                                     = true
+      + id                                             = (known after apply)
+      + key_vault_reference_identity_id                = (known after apply)
+      + kind                                           = (known after apply)
+      + name                                           = "staging"
+      + outbound_ip_address_list                       = (known after apply)
+      + outbound_ip_addresses                          = (known after apply)
+      + possible_outbound_ip_address_list              = (known after apply)
+      + possible_outbound_ip_addresses                 = (known after apply)
+      + public_network_access_enabled                  = true
+      + site_credential                                = (sensitive value)
+      + tags                                           = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + virtual_network_backup_restore_enabled         = false
+      + vnet_image_pull_enabled                        = false
+      + webdeploy_publish_basic_authentication_enabled = false
+      + zip_deploy_file                                = (known after apply)
+
+      + identity {
+          + identity_ids = [
+              + "/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-z0ierv",
+            ]
+          + principal_id = (known after apply)
+          + tenant_id    = (known after apply)
+          + type         = "UserAssigned"
+        }
+
+      + site_config {
+          + always_on                               = true
+          + container_registry_use_managed_identity = false
+          + default_documents                       = (known after apply)
+          + detailed_error_logging_enabled          = (known after apply)
+          + ftps_state                              = "Disabled"
+          + http2_enabled                           = true
+          + ip_restriction_default_action           = "Allow"
+          + linux_fx_version                        = (known after apply)
+          + load_balancing_mode                     = "LeastRequests"
+          + local_mysql_enabled                     = false
+          + managed_pipeline_mode                   = "Integrated"
+          + minimum_tls_version                     = "1.2"
+          + remote_debugging_enabled                = false
+          + remote_debugging_version                = (known after apply)
+          + scm_ip_restriction_default_action       = "Allow"
+          + scm_minimum_tls_version                 = "1.2"
+          + scm_type                                = (known after apply)
+          + scm_use_main_ip_restriction             = false
+          + use_32_bit_worker                       = true
+          + vnet_route_all_enabled                  = false
+          + websockets_enabled                      = false
+          + worker_count                            = (known after apply)
+
+          + application_stack {
+              + docker_image_name   = "appsvc/staticsite:latest"
+              + docker_registry_url = "https://mcr.microsoft.com"
+            }
+        }
+    }
+
+  # azurerm_mysql_flexible_database.app will be created
+  + resource "azurerm_mysql_flexible_database" "app" {
+      + charset             = "utf8mb4"
+      + collation           = "utf8mb4_unicode_ci"
+      + id                  = (known after apply)
+      + name                = "appdb"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+    }
+
+  # azurerm_mysql_flexible_server.db will be created
+  + resource "azurerm_mysql_flexible_server" "db" {
+      + administrator_login           = "vsfadmin"
+      + administrator_password        = (sensitive value)
+      + administrator_password_wo     = (write-only attribute)
+      + backup_retention_days         = 1
+      + fqdn                          = (known after apply)
+      + geo_redundant_backup_enabled  = false
+      + id                            = (known after apply)
+      + location                      = "southeastasia"
+      + name                          = "mysql-vsf-z0ierv"
+      + public_network_access         = (known after apply)
+      + public_network_access_enabled = (known after apply)
+      + replica_capacity              = (known after apply)
+      + replication_role              = (known after apply)
+      + resource_group_name           = "rg-vsf-dev"
+      + sku_name                      = "B_Standard_B1ms"
+      + tags                          = {
+          + "env"        = "dev"
+          + "layer"      = "app"
+          + "managed_by" = "terraform"
+          + "owner"      = "intern"
+          + "project"    = "vsf"
+        }
+      + version                       = "8.4"
+      + zone                          = (known after apply)
+
+      + storage {
+          + auto_grow_enabled   = false
+          + io_scaling_enabled  = false
+          + iops                = (known after apply)
+          + log_on_disk_enabled = false
+          + size_gb             = 20
+        }
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "13.67.9.1"
+      + id                  = (known after apply)
+      + name                = "app-outbound-13-67-9-1"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "13.67.9.1"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "138.91.37.68"
+      + id                  = (known after apply)
+      + name                = "app-outbound-138-91-37-68"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "138.91.37.68"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "138.91.39.149"
+      + id                  = (known after apply)
+      + name                = "app-outbound-138-91-39-149"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "138.91.39.149"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "138.91.39.50"
+      + id                  = (known after apply)
+      + name                = "app-outbound-138-91-39-50"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "138.91.39.50"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "138.91.41.245"
+      + id                  = (known after apply)
+      + name                = "app-outbound-138-91-41-245"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "138.91.41.245"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.197.107.136"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-197-107-136"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.197.107.136"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.197.107.195"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-197-107-195"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.197.107.195"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.197.107.77"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-197-107-77"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.197.107.77"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.197.107.91"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-197-107-91"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.197.107.91"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.197.108.119"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-197-108-119"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.197.108.119"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.197.108.253"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-197-108-253"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.197.108.253"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.24.129.155"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-24-129-155"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.24.129.155"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.44.209.226"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-44-209-226"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.44.209.226"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.44.210.121"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-44-210-121"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.44.210.121"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.44.210.28"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-44-210-28"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.44.210.28"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.44.213.196"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-44-213-196"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.44.213.196"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.44.214.216"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-44-214-216"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.44.214.216"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "20.44.214.241"
+      + id                  = (known after apply)
+      + name                = "app-outbound-20-44-214-241"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "20.44.214.241"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "23.101.23.207"
+      + id                  = (known after apply)
+      + name                = "app-outbound-23-101-23-207"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "23.101.23.207"
+    }
+
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"] will be created
+  + resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+      + end_ip_address      = "23.101.31.49"
+      + id                  = (known after apply)
+      + name                = "app-outbound-23-101-31-49"
+      + resource_group_name = "rg-vsf-dev"
+      + server_name         = "mysql-vsf-z0ierv"
+      + start_ip_address    = "23.101.31.49"
+    }
+
+  # random_password.mysql_admin will be created
+  + resource "random_password" "mysql_admin" {
+      + bcrypt_hash      = (sensitive value)
+      + id               = (known after apply)
+      + length           = 32
+      + lower            = true
+      + min_lower        = 2
+      + min_numeric      = 2
+      + min_special      = 2
+      + min_upper        = 2
+      + number           = true
+      + numeric          = true
+      + override_special = "-_.~!*"
+      + result           = (sensitive value)
+      + special          = true
+      + upper            = true
+    }
+
+Plan: 24 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + mysql_database_name            = "appdb"
+  + mysql_fqdn                     = (known after apply)
+  + staging_url                    = (known after apply)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: 
+random_password.mysql_admin: Creating...
+random_password.mysql_admin: Creation complete after 0s [id=none]
+azurerm_mysql_flexible_server.db: Creating...
+azurerm_linux_web_app_slot.staging: Creating...
+azurerm_mysql_flexible_server.db: Still creating... [00m10s elapsed]
+azurerm_linux_web_app_slot.staging: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [00m20s elapsed]
+azurerm_linux_web_app_slot.staging: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [00m30s elapsed]
+azurerm_linux_web_app_slot.staging: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [00m40s elapsed]
+azurerm_linux_web_app_slot.staging: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [00m50s elapsed]
+azurerm_linux_web_app_slot.staging: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [01m00s elapsed]
+azurerm_linux_web_app_slot.staging: Still creating... [01m00s elapsed]
+azurerm_linux_web_app_slot.staging: Creation complete after 1m6s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-z0ierv/slots/staging]
+azurerm_mysql_flexible_server.db: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server.db: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server.db: Creation complete after 4m10s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv]
+azurerm_mysql_flexible_database.app: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Creating...
+azurerm_mysql_flexible_database.app: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Creation complete after 1m8s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-214-241]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Creation complete after 1m10s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-77]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Creation complete after 2m10s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-41-245]
+azurerm_mysql_flexible_database.app: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Creation complete after 3m12s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-39-50]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Creation complete after 4m14s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-214-216]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Creation complete after 5m21s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-213-196]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Creation complete after 6m18s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-39-149]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Creation complete after 7m27s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-210-28]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_database.app: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_database.app: Creation complete after 8m21s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/databases/appdb]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Still creating... [09m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Creation complete after 8m17s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-195]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Creation complete after 9m29s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-108-119]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Creating...
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [00m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Still creating... [09m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Creation complete after 9m21s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-37-68]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [01m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [01m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [04m31s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [01m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [04m41s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [01m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [04m51s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [01m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [05m01s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [02m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [05m11s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Creation complete after 9m19s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-23-101-31-49]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [02m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [05m21s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [02m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [05m31s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [02m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [05m41s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [02m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [05m51s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [02m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [06m01s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [03m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [06m11s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Still creating... [09m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Creation complete after 9m23s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-91]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [03m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [06m21s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [03m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [06m31s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [03m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [06m41s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [03m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [06m51s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [03m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [07m01s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [04m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [07m11s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Creation complete after 9m18s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-23-101-23-207]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [04m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [07m21s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [04m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [07m31s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [04m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [07m41s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [04m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [07m51s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [04m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [08m01s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [05m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [08m11s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [05m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Creation complete after 9m16s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-210-121]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [08m21s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [05m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [08m31s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [05m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [08m41s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [05m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [08m51s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [05m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [09m01s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [06m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Still creating... [09m11s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Creation complete after 9m16s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-108-253]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [06m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [06m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [06m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [06m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [06m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [07m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [07m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Creation complete after 9m16s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-209-226]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [07m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [07m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [07m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [07m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [08m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Creation complete after 9m13s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-136]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Still creating... [08m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Creation complete after 8m12s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-24-129-155]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [08m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [08m30s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [08m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [08m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [09m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Still creating... [09m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Creation complete after 9m14s [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-13-67-9-1]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 24 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+app_identity_client_id = "1ecdb7f6-6969-4ab7-853a-c5f524579e4d"
+app_identity_id = "/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-z0ierv"
+app_identity_principal_id = "2f64b4af-d422-4d06-b0a8-c002247f0b5a"
+app_possible_outbound_ip_count = 20
+app_url = "https://app-vsf-z0ierv.azurewebsites.net"
+location = "southeastasia"
+mysql_database_name = "appdb"
+mysql_fqdn = "mysql-vsf-z0ierv.mysql.database.azure.com"
+name_suffix = "z0ierv"
+resource_group_name = "rg-vsf-dev"
+staging_url = "https://app-vsf-z0ierv-staging.azurewebsites.net"

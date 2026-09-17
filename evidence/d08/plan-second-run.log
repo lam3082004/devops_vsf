@@ -1,0 +1,36 @@
+Acquiring state lock. This may take a few moments...
+random_string.suffix: Refreshing state... [id=z0ierv]
+random_password.mysql_admin: Refreshing state... [id=none]
+azurerm_resource_group.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev]
+azurerm_user_assigned_identity.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-z0ierv]
+azurerm_service_plan.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev]
+azurerm_mysql_flexible_server.db: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv]
+azurerm_linux_web_app.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-z0ierv]
+azurerm_mysql_flexible_database.app: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/databases/appdb]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.213.196"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-213-196]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.23.207"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-23-101-23-207]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.24.129.155"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-24-129-155]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.149"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-39-149]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.41.245"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-41-245]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.241"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-214-241]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.119"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-108-119]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.214.216"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-214-216]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.91"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-91]
+azurerm_linux_web_app_slot.staging: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-z0ierv/slots/staging]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.37.68"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-37-68]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.67.9.1"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-13-67-9-1]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.77"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-77]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["23.101.31.49"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-23-101-31-49]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.108.253"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-108-253]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.136"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-136]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["138.91.39.50"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-138-91-39-50]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.121"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-210-121]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.209.226"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-209-226]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.44.210.28"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-44-210-28]
+azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.197.107.195"]: Refreshing state... [id=/subscriptions/<subscription-id>/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-z0ierv/firewallRules/app-outbound-20-197-107-195]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+Releasing state lock. This may take a few moments...
