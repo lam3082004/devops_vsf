@@ -77,11 +77,17 @@ jobs:
       - name: terraform fmt
         if: steps.check.outputs.exists == 'true'
         run: terraform -chdir=infra fmt -check -recursive
+      # validate phải chạy trong TỪNG root module: thư mục infra/ không có file .tf
+      # nên validate ở đó luôn xanh mà không kiểm gì.
       - name: terraform validate
         if: steps.check.outputs.exists == 'true'
         run: |
-          terraform -chdir=infra init -backend=false
-          terraform -chdir=infra validate
+          for dir in infra/*/; do
+            echo "::group::validate $dir"
+            terraform -chdir="$dir" init -backend=false -input=false
+            terraform -chdir="$dir" validate
+            echo "::endgroup::"
+          done
 
   azure-oidc:
     name: azure login (OIDC)

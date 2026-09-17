@@ -1,0 +1,31 @@
+# D8 verify — 2026-09-17 15:31:32 +0700
+## 4.1 HTTP
+https://app-vsf-z0ierv.azurewebsites.net -> 200
+https://app-vsf-z0ierv-staging.azurewebsites.net -> 200
+## 4.2 identity (prod / staging)
+prod:    id-vsf-app-z0ierv
+staging: id-vsf-app-z0ierv
+## 4.3 so possible IP vs so firewall rule
+possible_outbound_ip_count = 20
+firewall_rules             = 20
+possible IP khong co rule  = 0
+rule khong thuoc possible  = 0
+## 4.4 rule 0.0.0.0 (AllowAzureServices) / IP may minh
+rule 0.0.0.0:     0
+rule IP may minh: 0
+## cau hinh site: httpsOnly / alwaysOn http2 minTls ftps image
+prod httpsOnly:    true
+staging httpsOnly: true
+prod:    true true 1.2 Disabled DOCKER|mcr.microsoft.com/appsvc/staticsite:latest
+staging: true true 1.2 Disabled DOCKER|mcr.microsoft.com/appsvc/staticsite:latest
+## MySQL
+autoGrow: Disabled
+backupDays: 1
+geo: Disabled
+ha: Disabled
+publicAccess: Enabled
+sku: Standard_B1ms
+storageGb: 20
+ver: 8.4.9
+zone: '1'
+appdb: utf8mb4 utf8mb4_unicode_ci

@@ -11,3 +11,39 @@ output "name_suffix" {
   description = "Hậu tố dùng cho các tên phải duy nhất toàn cầu."
   value       = local.name_suffix
 }
+
+output "app_url" {
+  value = "https://${azurerm_linux_web_app.app.default_hostname}"
+}
+
+output "staging_url" {
+  value = "https://${azurerm_linux_web_app_slot.staging.default_hostname}"
+}
+
+output "app_possible_outbound_ip_count" {
+  description = "Phải bằng số firewall rule MySQL (M3)."
+  value       = length(azurerm_linux_web_app.app.possible_outbound_ip_address_list)
+}
+
+output "mysql_fqdn" {
+  value = azurerm_mysql_flexible_server.db.fqdn
+}
+
+output "mysql_database_name" {
+  value = azurerm_mysql_flexible_database.app.name
+}
+
+output "app_identity_id" {
+  description = "Resource ID — gắn vào Web App/slot, key_vault_reference_identity_id."
+  value       = azurerm_user_assigned_identity.app.id
+}
+
+output "app_identity_client_id" {
+  description = "Client ID — dùng khi pull ACR bằng managed identity (D11)."
+  value       = azurerm_user_assigned_identity.app.client_id
+}
+
+output "app_identity_principal_id" {
+  description = "Principal ID — dùng cho role assignment (AcrPull, Key Vault Secrets User)."
+  value       = azurerm_user_assigned_identity.app.principal_id
+}
