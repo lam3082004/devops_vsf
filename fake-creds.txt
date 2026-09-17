@@ -1,0 +1,3 @@
+# File thử nghiệm CI — KHÔNG phải khoá thật
+aws_access_key_id = AKIAIMNOJVGFDXXXE4OA
+aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
