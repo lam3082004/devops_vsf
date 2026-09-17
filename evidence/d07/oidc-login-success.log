@@ -1,0 +1,12 @@
+azure login (OIDC)	Kiểm chứng danh tính và quyền	﻿2026-09-17T04:36:00.7620246Z ##[group]Run az account show --query "{subscription:name, tenant:tenantId}" -o table
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:00.7621657Z [36;1maz account show --query "{subscription:name, tenant:tenantId}" -o table[0m
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:00.7622561Z [36;1mecho "--- resource group đọc được (quyền Reader):"[0m
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:00.7623211Z [36;1maz group list --query "[].name" -o tsv[0m
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:00.7684963Z shell: /usr/bin/bash -e {0}
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:00.7685533Z ##[endgroup]
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:01.1332024Z Subscription          Tenant
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:01.1361579Z --------------------  ------------------------------------
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:01.1401494Z Azure subscription 1  58f82789-6695-4f4a-abdb-357668d55cff
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:01.2379134Z --- resource group đọc được (quyền Reader):
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:03.0081967Z DefaultResourceGroup-SEA
+azure login (OIDC)	Kiểm chứng danh tính và quyền	2026-09-17T04:36:03.0091601Z rg-vsf-bootstrap

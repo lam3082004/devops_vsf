@@ -82,3 +82,28 @@ jobs:
         run: |
           terraform -chdir=infra init -backend=false
           terraform -chdir=infra validate
+
+  azure-oidc:
+    name: azure login (OIDC)
+    runs-on: ubuntu-24.04
+    # Chỉ job này cần id-token. Khai ở CẤP JOB, không phải cấp workflow:
+    # permissions cấp workflow áp cho mọi job, mà 3 job kia không cần token OIDC.
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      # Không có client secret nào: GitHub cấp token ngắn hạn có chữ ký, Entra
+      # chấp nhận nếu subject của token khớp federated credential đã khai
+      # (repo:lam3082004/devops_vsf:pull_request cho danh tính plan).
+      - name: Đăng nhập Azure bằng OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_PLAN }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Kiểm chứng danh tính và quyền
+        run: |
+          az account show --query "{subscription:name, tenant:tenantId}" -o table
+          echo "--- resource group đọc được (quyền Reader):"
+          az group list --query "[].name" -o tsv
