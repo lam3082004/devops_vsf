@@ -32,6 +32,13 @@ resource "azurerm_user_assigned_identity" "gh_deploy" {
 locals {
   github_issuer   = "https://token.actions.githubusercontent.com"
   github_audience = ["api://AzureADTokenExchange"]
+
+  # Repo này bật immutable subject (kiểm chứng: gh api repos/<o>/<r>/actions/oidc/customization/sub
+  # → use_immutable_subject: true). GitHub gửi subject kèm ID số, ví dụ:
+  #   repo:lam3082004@67915284/devops_vsf@1371039109:pull_request
+  # Giữ CẢ HAI dạng credential: dạng tên (phòng khi setting đổi) và dạng ID.
+  github_repo_name      = var.github_repo
+  github_repo_immutable = "${split("/", var.github_repo)[0]}@${var.github_owner_id}/${split("/", var.github_repo)[1]}@${var.github_repo_id}"
 }
 
 resource "azurerm_federated_identity_credential" "gh_plan_pr" {
@@ -50,6 +57,26 @@ resource "azurerm_federated_identity_credential" "gh_deploy_main" {
   audience            = local.github_audience
   issuer              = local.github_issuer
   subject             = "repo:${var.github_repo}:ref:refs/heads/main"
+}
+
+# Cùng ý nghĩa nhưng theo dạng immutable (kèm ID số) — đây mới là dạng GitHub
+# đang thực sự gửi lên.
+resource "azurerm_federated_identity_credential" "gh_plan_pr_immutable" {
+  name                = "github-pull-request-immutable"
+  resource_group_name = azurerm_resource_group.bootstrap.name
+  parent_id           = azurerm_user_assigned_identity.gh_plan.id
+  audience            = local.github_audience
+  issuer              = local.github_issuer
+  subject             = "repo:${local.github_repo_immutable}:pull_request"
+}
+
+resource "azurerm_federated_identity_credential" "gh_deploy_main_immutable" {
+  name                = "github-main-immutable"
+  resource_group_name = azurerm_resource_group.bootstrap.name
+  parent_id           = azurerm_user_assigned_identity.gh_deploy.id
+  audience            = local.github_audience
+  issuer              = local.github_issuer
+  subject             = "repo:${local.github_repo_immutable}:ref:refs/heads/main"
 }
 
 # ---------- Quyền tối thiểu ----------
