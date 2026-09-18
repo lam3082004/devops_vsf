@@ -39,28 +39,24 @@ jobs:
       - name: Quét secret trong toàn bộ lịch sử
         run: gitleaks detect --redact -v --exit-code 1
 
-  rust:
-    name: rust (fmt, clippy, test)
+  dotnet:
+    name: dotnet (format, build, test)
     runs-on: ubuntu-24.04
-    defaults:
-      run:
-        working-directory: app
     steps:
       - uses: actions/checkout@v5
-      - name: Cài toolchain Rust
-        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy --no-self-update
-      - name: Cache cargo
+      - name: Cài .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Cache NuGet
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            app/target
-          key: cargo-${{ runner.os }}-${{ hashFiles('app/Cargo.lock') }}
-          restore-keys: cargo-${{ runner.os }}-
-      - run: cargo fmt --check
-      - run: cargo clippy --all-targets -- -D warnings
-      - run: cargo test
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+      - run: dotnet format app/NodeRegistry.csproj --verify-no-changes --severity warn
+      - run: dotnet build app/NodeRegistry.csproj -c Release
+      - run: dotnet test app.Tests/NodeRegistry.Tests.csproj -c Release
 
   terraform:
     name: terraform (fmt, validate)

@@ -1,6 +1,6 @@
-# Rust
-app/target/
-**/*.rs.bk
+# .NET
+bin/
+obj/
 
 # Secrets / cấu hình local
 .env

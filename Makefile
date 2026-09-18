@@ -27,20 +27,20 @@ db-logs:
 ## Chạy app với biến từ app/.env.local
 run:
 	@test -f $(ENV_FILE) || { echo "thieu $(ENV_FILE) — chay: cp app/.env.example $(ENV_FILE)"; exit 1; }
-	@set -a; . ./$(ENV_FILE); set +a; cd app && cargo run
+	@set -a; . ./$(ENV_FILE); set +a; dotnet run --project app/NodeRegistry.csproj
 
 test:
-	cd app && cargo test
+	dotnet test app.Tests/NodeRegistry.Tests.csproj
 
 lint:
-	cd app && cargo clippy -- -D warnings
+	dotnet format app/NodeRegistry.csproj --verify-no-changes --severity warn
 
 fmt:
-	cd app && cargo fmt
+	dotnet format app/NodeRegistry.csproj
 
 ## Cổng kiểm tra trước khi commit: format + lint + test
 check:
-	cd app && cargo fmt --check && cargo clippy -- -D warnings && cargo test
+	dotnet format app/NodeRegistry.csproj --verify-no-changes --severity warn && dotnet test app.Tests/NodeRegistry.Tests.csproj
 
 # ---------- Terraform: môi trường app trên Azure (từ D8) ----------
 # Yêu cầu: `az login`. Subscription lấy từ az nếu chưa đặt ARM_SUBSCRIPTION_ID.
