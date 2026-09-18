@@ -72,15 +72,46 @@ kiểu framework-dependent vẫn cần runtime ASP.NET Core bên trong image nê
    code hiện tại) — đổi kiến trúc nhiều, rủi ro lỗi cao hơn giá trị mang lại
    cho một app nội bộ nhỏ.
 2. **Framework-dependent + `aspnet:10.0-noble-chiseled`** (đã chọn) — image
-   "chiseled" chính thức của Microsoft: không shell, không apt, non-root sẵn
-   (uid 64198). Không tĩnh hoàn toàn như Rust nên **chưa chắc 0 CVE** — phải
-   scan lại bằng Trivy (chưa làm ở bước này) trước khi coi là đạt M9 cho bản
-   .NET. Nếu không đạt 0, quay lại câu hỏi Q4 (`--ignore-unfixed`) với mentor.
+   "chiseled" chính thức của Microsoft: không shell, không apt, non-root sẵn.
+   Không tĩnh hoàn toàn như Rust nên không đạt 0 CVE tuyệt đối — **xác nhận
+   bằng Trivy thật, xem bên dưới**.
 
-**Việc còn thiếu, cần làm tiếp trước khi coi M9 "xong" cho bản .NET:**
-`docker build` thật (image `mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled`
-chưa pull/build được trong phiên này — sandbox không có quyền dùng Docker
-daemon) + `trivy image` + so **container 0-CVE** với kết quả D5 (Rust).
+### Kết quả Trivy thật (2026-09-18, sau khi có quyền Docker)
+
+`docker build` (framework-dependent, `-p:GitSha=$(git rev-parse --short HEAD)`)
+→ image `182 MB` disk / `55.6 MB` content (so với **5.2 MB** của bản Rust
+scratch+musl — đúng như dự đoán, không tĩnh hoàn toàn).
+
+`trivy image --severity CRITICAL,HIGH,MEDIUM,LOW`:
+
+| | Số lượng |
+|---|---|
+| CRITICAL / HIGH | **0 / 0** |
+| MEDIUM | 7 (tất cả ở `libc6`/glibc, base image Ubuntu 24.04 của chiseled) |
+| LOW | 0 |
+| Với `--ignore-unfixed` | 6 (1 CVE chưa có bản vá bị loại) |
+| App layer (.NET, `dotnet-core` scanner) | **0** ở cả 3 file `.deps.json` |
+
+**Kết luận M9 cho bản .NET:** không đạt 0 CVE tuyệt đối như Rust, nhưng
+**0 CRITICAL/HIGH** và chỉ 7 MEDIUM, toàn bộ ở glibc của base image (không
+phải code/dependency .NET) — 6/7 đã có bản vá (`2.39-0ubuntu8.9`, base image
+hiện đóng ở `.8`), sẽ tự hết khi Microsoft cập nhật base `noble-chiseled`.
+Không cần `--ignore-unfixed` để "gian lận" đạt 0 — số liệu trung thực là 7 MEDIUM
+đã có sẵn khi không dùng cờ đó. Trả lời được câu hỏi Q4 theo hướng: **không cần
+`--ignore-unfixed`** cho bản .NET vì không có CRITICAL/HIGH để phải loại trừ.
+
+### Kiểm chứng container thật (không còn chỉ chạy binary trần)
+
+`docker run` + curl từng endpoint qua cổng thật:
+
+| Kiểm tra | Kết quả |
+|---|---|
+| User trong container | uid **1654** (không phải root) — image chiseled không có `id`/shell nên `docker exec id` tự thất bại, xác nhận bằng `docker inspect --format '{{.Config.User}}'` thay vì exec |
+| `/version` | 200, SHA đúng bằng `git rev-parse --short HEAD` lúc build |
+| `/health` (DB chết) | 503 |
+| `POST /items` (DB chết) | 503 `database_unavailable`, container không crash |
+| 404 | JSON `not_found` |
+| `docker stop -t 15` giữa lúc `/load?seconds=3` đang chạy | log `shutdown_started` ngay lúc nhận SIGTERM → **response vẫn đợi đủ ~3s, trả 200** → `shutdown_complete` sau đó, container thoát sạch — đúng hành vi graceful shutdown, xác nhận `ENTRYPOINT ["dotnet","NodeRegistry.dll"]` đúng là PID 1 nhận được tín hiệu |
 
 ## Đã kiểm chứng (không cần Docker, chạy binary Release trực tiếp)
 
@@ -105,15 +136,20 @@ trường trỏ tới MySQL không tồn tại, chạy binary thật, gọi từ
 + 4 http, tương ứng 7 test Rust cũ). `dotnet format --verify-no-changes` sạch cho
 cả 2 project.
 
-## Chưa làm (khác với bản Rust ở D5, cần làm khi có Docker/mentor duyệt)
+## Chưa làm
 
-- `docker build` + `docker compose up` thật (curl `/items` POST/GET qua MySQL
-  container thật) — logic SQL giống hệt bản cũ nên rủi ro thấp, nhưng chưa có
-  bằng chứng chạy thật.
-- `trivy image` cho bản .NET → cập nhật `evidence/M9.md` khi tới D14.
-- **Cập nhật GitHub ruleset `protect-main`**: required status check đổi tên từ
-  `rust (fmt, clippy, test)` sang `dotnet (format, build, test)` — việc này ở
-  Settings → Rulesets, không sửa được bằng file, phải làm tay trên GitHub.
+- `docker compose up` thật với MySQL container (curl `/items` POST/GET qua DB
+  thật, không chỉ DB chết) — logic SQL giống hệt bản cũ nên rủi ro thấp, nhưng
+  chưa có bằng chứng chạy thật với DB sống.
+- Cập nhật `evidence/M9.md` chính thức bằng số Trivy ở trên khi tới D14 (bảng
+  so sánh Rust vs .NET).
+
+## Đã xong (cập nhật 2026-09-18, sau khi có quyền `sudo docker`)
+
+- ~~`docker build` thật~~ — xong, xem bảng Trivy + kiểm chứng container ở trên.
+- ~~Cập nhật GitHub ruleset `protect-main`~~ — xong: required status check đổi
+  từ `rust (fmt, clippy, test)` sang `dotnet (format, build, test)`, thêm
+  `terraform plan (infra/app)` (D9). PR #6, #7 đã merge vào `main`.
 
 ## File đã đổi
 
