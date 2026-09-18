@@ -97,11 +97,12 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Mật khẩu MySQL sinh bằng random_password (hiểu: nó nằm trong state) — *proof: Decision* · `notes/d8.md`
 
 ### D9 — Terraform: ACR, Key Vault, Makefile
-- [ ] ACR Basic, admin disabled; role AcrPull cho MI — *proof: plan*
-- [ ] Key Vault RBAC mode, secret MySQL password; role Key Vault Secrets User cho MI; role cho chính bạn để Terraform ghi secret — *proof: plan*
-- [ ] Giải quyết vòng lặp image (ACR trống lúc apply lần đầu): placeholder image + `ignore_changes` phần image — *proof: Decision*
-- [ ] `Makefile`: `up` (apply), `down` (destroy phần tốn tiền, giữ state storage), `plan` — *proof: chạy được*
-- [ ] CI: thêm `terraform plan` + upload plan làm artifact — *proof: artifact trong PR*
+- [x] ACR Basic, admin disabled; role AcrPull cho MI — *proof: plan* → `infra/app/acr.tf`, `terraform validate` sạch
+- [x] Key Vault RBAC mode, secret MySQL password; role Key Vault Secrets User cho MI; role cho chính bạn để Terraform ghi secret — *proof: plan* → `infra/app/keyvault.tf`, 3 role assignment
+- [x] Giải quyết vòng lặp image (ACR trống lúc apply lần đầu): placeholder image + `ignore_changes` phần image — *proof: Decision* → `notes/d9.md` Decision #1
+- [x] `Makefile`: `up` (apply), `down` (destroy phần tốn tiền, giữ state storage), `plan` — *proof: chạy được* → thêm `outputs`, `check-empty`
+- [x] CI: thêm `terraform plan` + upload plan làm artifact — *proof: artifact trong PR* → job `terraform-plan`, `plan.txt`, chưa mở PR để lấy bằng chứng artifact thật
+- [ ] `make up` thật + verify Portal + `make down` + `make check-empty` — *proof: chưa chạy, bị Azure 429 throttle khi tạo App Service Plan, xem `known-issues.md` #6*
 
 ### D10 — **GATE**
 - [ ] `terraform destroy` → `apply` sạch, **không thao tác tay**, lưu log thô → `evidence/M8.md` — *proof: log 2 lệnh*
@@ -217,11 +218,13 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - 2026-09-15 — OIDC dùng user-assigned managed identity + federated credential (tenant cấm user tạo app registration).
 - 2026-09-17 — D8: firewall MySQL `for_each` trên possible outbound IPs xử lý bằng **apply 2 pha trong `make up`** (pha 1 `-target` Web App chỉ khi state chưa có nó); loại tách 2 root module (thêm state, phức tạp vĩnh viễn) và NAT Gateway (tốn tiền theo giờ). Chi tiết `notes/d8.md`.
 - 2026-09-17 — D8: MySQL **8.4** (không phải 8.0) — trùng Portal D2 và docker-compose local; plan **P0v3** (0.0915 USD/giờ < S1 0.095, có slot + autoscale).
+- 2026-09-18 — D9: role `Key Vault Secrets Officer`/`Secrets User` tách theo 3 principal riêng (least privilege); tra `id-gh-plan` bằng `data` source (tên + RG `rg-vsf-bootstrap`) thay vì `terraform_remote_state`, giữ đúng quyết định D7 tách state; `purge_protection_enabled = false` trên Key Vault để D10 destroy→apply lại cùng tên; job CI `terraform-plan` soi `terraform state list` trước khi plan để tránh lỗi `for_each` khi môi trường đang tắt (giống logic 2 pha của `make up`). Chi tiết `notes/d9.md`.
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
 
 ## Recovery
+- 2026-09-18: D9 code xong (ACR, Key Vault, lifecycle image, outputs, Makefile, CI job terraform-plan) — chưa `make up` thật được, Azure trả 429 throttle khi tạo App Service Plan (4 lần thử, hơn 1 tiếng, cùng lỗi). State sạch (chỉ RG + identity + random_string). Xem `known-issues.md` #6, `notes/d9.md`.
 - 2026-09-17: **D8 xong** — PR #5: `make up` 2 pha (3 + 24 resource), kiểm chứng đạt (200 cả 2 slot, cùng identity, 20 IP = 20 rule, không 0.0.0.0/IP máy), plan lần 2 No changes, `make down` 29 destroyed, `rg-vsf-dev` đã xoá, bootstrap còn. Bài tiếp: D9 (ACR, Key Vault, Makefile, CI plan).
 - 2026-09-15: repo mới chỉ có `a.md`, `CLAUDE.md`, plan này. Chưa có Azure resource nào. Chưa commit.
 - Subscription: Azure Free Trial, $200 credit, hết hạn 2026-10-15.

@@ -11,6 +11,7 @@ Ba mục theo yêu cầu đề bài: **cái gì chưa xong** · **cái gì biế
 | 3 | CD pipeline và bằng chứng zero-downtime (M2, M10) | D13, D14 | D16–D18 |
 | 4 | Monitoring, alert, runbook (M11) | D16 | D21–D22 |
 | 5 | Câu hỏi Q1, Q3, Q4, Q5, Q8 chưa có trả lời từ mentor | mentor | xem plan |
+| 6 | D9 `make up` pha 1 (tạo `azurerm_service_plan.app`) bị Azure trả **429 Too Many Requests**, code `51025`: *"App Service Plan Create operation is throttled for subscription ... Please contact support if issue persists."* — **3 lần thử** (cách nhau ~90s rồi ~40 phút) đều 429 | Azure throttle cấp subscription. `az monitor activity-log` cho thấy **mỗi lần `terraform apply` tự retry nội bộ ~30 lần trong 6 phút** (mỗi ~10-15s) — 3 lần thử = gần 90 request dội vào đúng endpoint đang bị chặn, nghi ngờ chính việc retry ồ ạt này làm cửa sổ throttle bị kéo dài thêm thay vì nguội | **Ngừng thử qua `terraform apply` (retry nội bộ tự làm nặng thêm).** Đợi hẳn 1–2 tiếng không đụng gì tới `Microsoft.Web/serverFarms`, rồi thử `terraform apply -target=azurerm_linux_web_app.app` **một lần**. Nếu vẫn 429 sau khi đợi dài → liên hệ Azure support (thông điệp lỗi gợi ý đúng việc này) hoặc hỏi mentor về Q5 (đổi subscription). State hiện tại (`rg-vsf-dev`) chỉ có resource group + identity + random_string, chưa có gì tốn tiền bị treo dở |
 
 ## Biết là sai / chấp nhận tạm
 
