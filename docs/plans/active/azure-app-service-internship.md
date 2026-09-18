@@ -57,38 +57,38 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Xoá sạch cuối ngày
 
 ### D4 — Viết app
-- [ ] Chọn ngôn ngữ (gợi ý Go: image distroless dễ đạt 0 CVE; Python/Node khó hơn) — *proof: Decision*
-- [ ] Endpoint `/health` (có kiểm tra DB), `/version` (SHA nhúng lúc build), `/load?seconds=n` (có giới hạn n), `/items` GET/POST 1 bảng, `/boom` — *proof: gọi từng endpoint local*
-- [ ] Log JSON 1 dòng/record ra stdout: time, level, method, path, status, duration_ms, message — *proof: output log*
-- [ ] Config đọc từ biến môi trường; **thiếu hoặc còn nguyên chuỗi `@Microsoft.KeyVault(` thì app thoát lỗi rõ ràng** (phục vụ M5) — *proof: chạy thiếu biến → app fail*
-- [ ] Xử lý SIGTERM tắt êm; tạo bảng idempotent lúc khởi động — *proof: chạy 2 lần không lỗi*
-- [ ] Unit test tối thiểu cho handler — *proof: test pass*
+- [x] Chọn ngôn ngữ (gợi ý Go: image distroless dễ đạt 0 CVE; Python/Node khó hơn) — *proof: Decision* → Rust (`app/`), chủ đề node-registry — **đổi sang C#/.NET 2026-09-18, xem Decision cuối file**
+- [x] Endpoint `/health` (có kiểm tra DB), `/version` (SHA nhúng lúc build), `/load?seconds=n` (có giới hạn n), `/items` GET/POST 1 bảng, `/boom` — *proof: gọi từng endpoint local* → `evidence/d04/README.md`, 7 kịch bản đạt
+- [x] Log JSON 1 dòng/record ra stdout: time, level, method, path, status, duration_ms, message — *proof: output log*
+- [x] Config đọc từ biến môi trường; **thiếu hoặc còn nguyên chuỗi `@Microsoft.KeyVault(` thì app thoát lỗi rõ ràng** (phục vụ M5) — *proof: chạy thiếu biến → app fail* → lỗi riêng `UnresolvedKeyVault`
+- [x] Xử lý SIGTERM tắt êm; tạo bảng idempotent lúc khởi động — *proof: chạy 2 lần không lỗi*
+- [x] Unit test tối thiểu cho handler — *proof: test pass* → `cargo test` 9 pass, clippy + fmt sạch (bản Rust; bản .NET: `dotnet test` 12 pass)
 
 ### D5 — Docker local + Cost Analysis
-- [ ] Dockerfile multi-stage, non-root, build-arg SHA — *proof: `/version` trong container trả SHA*
-- [ ] docker compose app + MySQL local — *proof: `/items` đọc ghi được*
-- [ ] Trivy scan local, ghi số CVE ban đầu — *proof: output scan*
-- [ ] Mở Cost Analysis xem chi phí thật D2–D3 (group by resource/meter) — *proof: screenshot, ghi vào `notes/cost-week1.md`*
-- [ ] Tự trả lời được: state là gì, lock là gì, dependency là gì (chuẩn bị GATE) — *proof: ghi chú bằng lời mình*
+- [x] Dockerfile multi-stage, non-root, build-arg SHA — *proof: `/version` trong container trả SHA* → `scratch` + musl, 5.2 MB
+- [x] docker compose app + MySQL local — *proof: `/items` đọc ghi được*
+- [x] Trivy scan local, ghi số CVE ban đầu — *proof: output scan* → 0 CRITICAL/HIGH/MEDIUM/LOW thật sự (không cần `--ignore-unfixed`)
+- [x] Mở Cost Analysis xem chi phí thật D2–D3 (group by resource/meter) — *proof: screenshot, ghi vào `notes/cost-week1.md`* → thực tế ghi ở `evidence/d05/README.md` (Actual $0.51)
+- [x] Tự trả lời được: state là gì, lock là gì, dependency là gì (chuẩn bị GATE) — *proof: ghi chú bằng lời mình*
 
 ---
 
 ## Tuần 2 — D6–D10 · Repo, CI v1, Terraform · AI bật từ D7 · **GATE D10**
 
 ### D6 — Repo + trunk-based + CI v1
-- [ ] (Q2 phải có câu trả lời) Tạo repo GitHub, push `main` ban đầu
-- [ ] Ruleset trên `main`: require PR · require status checks · block force push · chỉ squash merge · auto-delete branch — *proof: screenshot settings*
-- [ ] Cài pre-commit hook gitleaks local — *proof: commit thử secret giả → bị chặn*
-- [ ] Template PR có mục `## AI usage` — *proof: file template*
-- [ ] CI v1 (`ci.yml`, chạy on pull_request): gitleaks + `terraform fmt -check` + `terraform validate` — *proof: 1 PR xanh*
-- [ ] Tạo sẵn khung `ai-failure-log.md`, `known-issues.md`
+- [x] (Q2 phải có câu trả lời) Tạo repo GitHub, push `main` ban đầu — Q2: **private**, GitHub Pro
+- [x] Ruleset trên `main`: require PR · require status checks · block force push · chỉ squash merge · auto-delete branch — *proof: screenshot settings* → `push-to-main-rejected.log`
+- [x] Cài pre-commit hook gitleaks local — *proof: commit thử secret giả → bị chặn* → `pre-commit-hook-blocked.log`
+- [x] Template PR có mục `## AI usage` — *proof: file template* → `.github/pull_request_template.md`
+- [x] CI v1 (`ci.yml`, chạy on pull_request): gitleaks + `terraform fmt -check` + `terraform validate` — *proof: 1 PR xanh*
+- [x] Tạo sẵn khung `ai-failure-log.md`, `known-issues.md`
 
 ### D7 — Terraform nền + remote state
-- [ ] Bootstrap riêng (ngoài vòng destroy): RG + Storage Account + container cho state; khoá public access — *proof: storage tồn tại; ghi Decision vì sao tách*
-- [ ] Backend azurerm, hiểu blob lease = lock — *proof: 2 terminal chạy plan cùng lúc → 1 cái bị lock, lưu log*
-- [ ] Provider features: purge Key Vault khi destroy; random suffix cho tên duy nhất toàn cầu; tags chung (owner, env, project) — *proof: plan*
-- [ ] Register provider `Microsoft.Storage` (đang NotRegistered)
-- [ ] OIDC: **user-assigned MI** `id-gh-plan` / `id-gh-deploy` + federated credential cho GitHub (pull_request / ref main), không client secret — *proof: CI login Azure được*
+- [x] Bootstrap riêng (ngoài vòng destroy): RG + Storage Account + container cho state; khoá public access — *proof: storage tồn tại; ghi Decision vì sao tách* → `rg-vsf-bootstrap`, `stvsftffxqfgb`
+- [x] Backend azurerm, hiểu blob lease = lock — *proof: 2 terminal chạy plan cùng lúc → 1 cái bị lock, lưu log* → `state-lock-error-...png`
+- [x] Provider features: purge Key Vault khi destroy; random suffix cho tên duy nhất toàn cầu; tags chung (owner, env, project) — *proof: plan*
+- [x] Register provider `Microsoft.Storage` (đang NotRegistered)
+- [x] OIDC: **user-assigned MI** `id-gh-plan` / `id-gh-deploy` + federated credential cho GitHub (pull_request / ref main), không client secret — *proof: CI login Azure được* → `oidc-login-success.log`, PR #4
 
 ### D8 — Terraform: compute + DB
 - [x] App Service Plan (Linux, P0v3 hoặc S1 — Decision kèm giá), Web App + slot `staging` — *proof: plan/apply* · apply + verify 17/09 `evidence/d08/`
@@ -217,6 +217,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - 2026-09-15 — OIDC dùng user-assigned managed identity + federated credential (tenant cấm user tạo app registration).
 - 2026-09-17 — D8: firewall MySQL `for_each` trên possible outbound IPs xử lý bằng **apply 2 pha trong `make up`** (pha 1 `-target` Web App chỉ khi state chưa có nó); loại tách 2 root module (thêm state, phức tạp vĩnh viễn) và NAT Gateway (tốn tiền theo giờ). Chi tiết `notes/d8.md`.
 - 2026-09-17 — D8: MySQL **8.4** (không phải 8.0) — trùng Portal D2 và docker-compose local; plan **P0v3** (0.0915 USD/giờ < S1 0.095, có slot + autoscale).
+- 2026-09-18 — Đổi app từ Rust sang **C#/.NET 10** (ASP.NET Core MVC, kiến trúc Controller → Service → Repository, DI qua constructor) + MySqlConnector, giữ nguyên logic/endpoint/log; nhánh `feat/dotnet-rewrite`. Image runtime **không đạt lại 0 CVE tuyệt đối** như bản Rust (musl+scratch) — chọn `aspnet:10.0-noble-chiseled` framework-dependent thay vì Native AOT (đổi kiến trúc JSON quá nhiều so với lợi ích), cần đo lại bằng Trivy. Chi tiết: `notes/lang-migration-dotnet.md`.
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.

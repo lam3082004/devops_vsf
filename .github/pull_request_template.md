@@ -13,6 +13,6 @@
 ## Checklist
 
 - [ ] Không có secret trong diff (hook gitleaks đã chạy)
-- [ ] `make check` xanh ở local (fmt + clippy + test)
+- [ ] `make check` xanh ở local (format + test)
 - [ ] Đã cập nhật `notes/` hoặc `evidence/` nếu bài học có bằng chứng mới
 - [ ] Resource Azure tạo ra trong lúc làm đã được xoá (`az group list` sạch)
