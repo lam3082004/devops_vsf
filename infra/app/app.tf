@@ -57,6 +57,15 @@ resource "azurerm_linux_web_app" "app" {
       docker_image_name   = var.placeholder_image
     }
   }
+
+  lifecycle {
+    # Từ D11, CD (D16) đổi tag image thẳng trên Azure sau mỗi lần build —
+    # KHÔNG qua Terraform. Thiếu ignore_changes này, apply kế tiếp sẽ thấy
+    # image trên Azure khác var.placeholder_image trong code và ĐẢO NGƯỢC về
+    # placeholder, sập bản đang chạy. Từ nay: Terraform sở hữu mọi thứ của
+    # Web App trừ tag image; CD sở hữu tag image (Decision, notes/d9.md).
+    ignore_changes = [site_config[0].application_stack[0].docker_image_name]
+  }
 }
 
 resource "azurerm_linux_web_app_slot" "staging" {
@@ -89,5 +98,11 @@ resource "azurerm_linux_web_app_slot" "staging" {
       docker_registry_url = "https://mcr.microsoft.com"
       docker_image_name   = var.placeholder_image
     }
+  }
+
+  lifecycle {
+    # Cùng lý do với production ở trên — slot staging là nơi CD đổi tag TRƯỚC
+    # khi swap (D16/D17), Terraform không được đảo nó về placeholder.
+    ignore_changes = [site_config[0].application_stack[0].docker_image_name]
   }
 }
