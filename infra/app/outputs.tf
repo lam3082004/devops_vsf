@@ -47,3 +47,21 @@ output "app_identity_principal_id" {
   description = "Principal ID — dùng cho role assignment (AcrPull, Key Vault Secrets User)."
   value       = azurerm_user_assigned_identity.app.principal_id
 }
+
+output "acr_login_server" {
+  description = "Registry để docker build/push (D11), vd acrvsfxxxxxx.azurecr.io."
+  value       = azurerm_container_registry.acr.login_server
+}
+
+output "acr_name" {
+  value = azurerm_container_registry.acr.name
+}
+
+output "key_vault_uri" {
+  description = "Dùng trong @Microsoft.KeyVault(SecretUri=...) của app settings (D12)."
+  value       = azurerm_key_vault.kv.vault_uri
+}
+
+output "key_vault_name" {
+  value = azurerm_key_vault.kv.name
+}

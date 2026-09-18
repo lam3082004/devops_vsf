@@ -85,6 +85,80 @@ jobs:
             echo "::endgroup::"
           done
 
+  terraform-plan:
+    name: terraform plan (infra/app)
+    runs-on: ubuntu-24.04
+    # Chỉ chạy khi fmt/validate đã xanh — khỏi tốn API call Azure cho code
+    # còn sai cú pháp.
+    needs: terraform
+    permissions:
+      id-token: write
+      contents: read
+    # Nhóm RIÊNG với concurrency ở đầu file (group: ci-${{ github.ref }}):
+    # 2 PR chạy song song vẫn có thể cùng chạm state của infra/app (plan cũng
+    # lấy lease trên state, xem D7) — nhóm theo tên cố định để job sau chờ
+    # job trước thay vì tranh lock và fail.
+    concurrency:
+      group: terraform-plan-infra-app
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+      - name: terraform init
+        run: terraform -chdir=infra/app init -backend-config=backend.hcl
+        # Provider azurerm + backend azurerm đều tự nhận OIDC qua các biến
+        # ARM_* này (không cần bước azure/login riêng cho Terraform).
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PLAN }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ARM_USE_OIDC: true
+      - name: terraform plan
+        id: plan
+        # rg-vsf-dev thường TRỐNG (kỷ luật make down cuối buổi, D8) — lúc đó
+        # firewall MySQL (for_each trên possible outbound IP của Web App,
+        # db.tf) không plan được vì Web App còn chưa tồn tại để biết IP
+        # (Invalid for_each argument, xem notes/d8.md). Soi state trước, giống
+        # hệt cách Makefile `up` xử lý pha 1/2 — plan pha 1 (chỉ Web App) khi
+        # môi trường đang tắt, thay vì để cả job đỏ oan mỗi sáng.
+        run: |
+          if terraform -chdir=infra/app state list 2>/dev/null | grep -qx 'azurerm_linux_web_app.app'; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+            terraform -chdir=infra/app plan -no-color -input=false -out=tfplan
+          else
+            echo "scope=partial" >> "$GITHUB_OUTPUT"
+            echo "::notice::rg-vsf-dev dang trong (moi truong da make down) — chi plan duoc pha 1 (Web App). Muon xem plan day du, chay 'make up' roi mo lai PR nay (hoac re-run job)."
+            terraform -chdir=infra/app plan -no-color -input=false -target=azurerm_linux_web_app.app -out=tfplan
+          fi
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PLAN }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ARM_USE_OIDC: true
+      - name: Chuyển plan sang bản text đọc được trong PR
+        # Chỉ file TEXT được upload — file nhị phân tfplan chứa giá trị secret
+        # (mysql-admin-password) ở dạng đọc được, không được rời khỏi runner.
+        run: terraform -chdir=infra/app show -no-color tfplan > infra/app/plan.txt
+      - name: Tóm tắt vào job summary
+        run: |
+          {
+            echo "### Terraform plan — infra/app"
+            if [ "${{ steps.plan.outputs.scope }}" = "partial" ]; then
+              echo "> ⚠️ Môi trường đang tắt (rg-vsf-dev trống) — đây chỉ là plan pha 1 (Web App), CHƯA đầy đủ. Chạy \`make up\` rồi re-run job để xem plan toàn bộ."
+            fi
+            echo '```'
+            grep -E '^(Plan:|No changes)' infra/app/plan.txt || echo "(không thấy dòng tóm tắt, xem plan.txt đầy đủ trong artifact)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload plan.txt làm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-app
+          path: infra/app/plan.txt
+          retention-days: 14
+
   azure-oidc:
     name: azure login (OIDC)
     runs-on: ubuntu-24.04

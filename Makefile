@@ -1,4 +1,4 @@
-.PHONY: db-up db-down db-logs run test lint fmt check tf-init plan up down
+.PHONY: db-up db-down db-logs run test lint fmt check tf-init plan up down outputs check-empty
 
 ENV_FILE := app/.env.local
 DB_CONTAINER := d4-mysql
@@ -73,3 +73,14 @@ up: tf-init
 ## Xoá môi trường app (giữ nguyên rg-vsf-bootstrap chứa state)
 down: tf-init
 	$(TF) destroy
+
+## In URL, tên ACR, Key Vault... (đọc từ state, không gọi Azure)
+outputs: tf-init
+	$(TF) output
+
+## Kỷ luật "không để qua đêm": sau `down`, rg-vsf-dev phải trống hoặc không còn.
+## Không dùng $(TF) vì mục đích là kiểm tra NGOÀI state — lỡ state sai/thiếu
+## resource thì lệnh này vẫn phát hiện được rác còn sót trên Azure thật.
+check-empty:
+	@echo ">>> resource con lai trong rg-vsf-dev (phai rong hoac RG khong ton tai):"
+	@az resource list -g rg-vsf-dev -o table 2>/dev/null || echo "rg-vsf-dev khong ton tai — OK"
