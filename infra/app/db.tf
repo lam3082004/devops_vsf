@@ -16,10 +16,15 @@ resource "random_password" "mysql_admin" {
 }
 
 resource "azurerm_mysql_flexible_server" "db" {
-  name                = "mysql-${var.project}-${local.name_suffix}"
+  # Hậu tố "-sea" cố ý khác tên đã thử tạo hụt ở centralindia: ARM giữ lại
+  # ràng buộc location cho tên đó dù tạo thất bại (409 InvalidResourceLocation
+  # dù resource không còn tồn tại) — đổi tên là cách né nhanh nhất, tên vẫn
+  # nói rõ region thật của MySQL.
+  name                = "mysql-${var.project}-${local.name_suffix}-sea"
   resource_group_name = azurerm_resource_group.app.name
-  location            = azurerm_resource_group.app.location
-  tags                = local.tags
+  # Khác var.location của Web App/ACR/Key Vault — xem Decision ở var.db_location.
+  location = var.db_location
+  tags     = local.tags
 
   sku_name = "B_Standard_B1ms"
   # 8.4 thay vì 8.0: trùng bản Portal mặc định ở D2 (8.4.9-azure) và bản chạy

@@ -11,7 +11,6 @@ Ba mục theo yêu cầu đề bài: **cái gì chưa xong** · **cái gì biế
 | 3 | CD pipeline và bằng chứng zero-downtime (M2, M10) | D13, D14 | D16–D18 |
 | 4 | Monitoring, alert, runbook (M11) | D16 | D21–D22 |
 | 5 | Câu hỏi Q1, Q3, Q4, Q5, Q8 chưa có trả lời từ mentor | mentor | xem plan |
-| 6 | D9 `make up` pha 1 (tạo `azurerm_service_plan.app`) bị Azure trả **429 Too Many Requests**, code `51025`: *"App Service Plan Create operation is throttled for subscription ... Please contact support if issue persists."* — **7 lần thử** trong hơn **26 tiếng** (qua 1 đêm), tất cả cùng lỗi không đổi một chữ | Azure throttle cấp subscription, không tự hết theo thời gian như dự đoán ban đầu. Không đặc thù Terraform (1 lần gặp lỗi mạng cục bộ khác hẳn — DNS/connection reset — xác nhận throttle là thật ở phía Azure, không phải do client lặp lại máy móc) | **Bằng chứng dứt khoát: không phải throttle theo giờ, có thể không tự hết.** Bắt buộc escalate: (a) mở ticket Azure support thật, hoặc (b) báo mentor xin subscription khác (Q5) **ngay hôm nay**, không đợi D22. Dừng hẳn việc tự thử `make up` — thử thêm không cho thông tin mới. State (`rg-vsf-dev`) vẫn sạch, chưa có gì tốn tiền bị treo dở |
 
 ## Biết là sai / chấp nhận tạm
 
@@ -22,6 +21,7 @@ Ba mục theo yêu cầu đề bài: **cái gì chưa xong** · **cái gì biế
 | 3 | Hook `pre-commit` nằm trong `.git/hooks/` nên **không theo repo** | giới hạn của git | Người clone mới phải tự cài; README ở D24 phải ghi rõ; CI là lớp chặn thật |
 | 4 | Ảnh chụp của **D1 đã mất** (bộ nhớ đệm phiên chat bị xoá) | không khôi phục được | Nội dung đã chuyển thành chữ trong `notes/d1.md`; từ D2 ảnh lưu thẳng vào repo |
 | 5 | `evidence/` nặng ~5.6 MB toàn ảnh PNG | chưa ảnh hưởng | Nếu vượt ~50 MB nên cân nhắc nén hoặc Git LFS |
+| 6 | Hạ tầng nằm **2 vùng khác nhau**: App Service/ACR/Key Vault ở Central India, MySQL ở Southeast Asia (`var.location` ≠ `var.db_location`) | Subscription bị Azure throttle riêng cho tạo App Service Plan ở Southeast Asia (7 lần thử, 26 tiếng, không tự hết — `notes/d9.md`), và không có quyền tạo MySQL Flexible ở Central India (`ProvisionNotSupportedForRegion`). Không xin được subscription khác | Thêm latency mỗi query DB (2 vùng khác châu lục con — chấp nhận được cho môi trường học/dev, không có SLA thật). Nếu môi trường thật, phải chọn 1 vùng hỗ trợ đủ cả 2 dịch vụ cho đúng subscription trước khi build |
 
 ## Làm lại thì làm khác chỗ nào
 
@@ -32,3 +32,4 @@ Ba mục theo yêu cầu đề bài: **cái gì chưa xong** · **cái gì biế
 | 3 | D2 làm mọi thứ trên Portal rồi D3 lặp lại bằng CLI | Giữ nguyên thứ tự này: đúng là **phải làm tay trước** mới thấy Portal giấu gì (`httpsOnly`, hậu tố hostname, `scmUseMain`) |
 | 4 | Biến shell (`$RG`, `$MYSQL_PW`) mất 3 lần trong buổi D3 | Ghi vào file `.env` và `source`, hoặc bỏ hẳn shell script và dùng Terraform sớm hơn |
 | 5 | Ước tính chi phí bằng tay trước, đối chiếu sau | Giữ: sai số dưới 15%, đủ tin cho cost report |
+| 6 | Gặp lỗi 429 "throttled" khi tạo App Service Plan ở D9 → thử lại nhiều lần qua nhiều giờ trước khi nghĩ tới đổi vùng | Ngay khi gặp lỗi hạ tầng dạng "throttle"/"quota" khó hiểu và lặp lại y hệt, thử **1 lệnh `az` đơn lẻ ở vùng khác** (không qua Terraform/retry) để tách bạch "lỗi do subscription nói chung" hay "lỗi đặc thù 1 vùng" — chỉ mất vài giây, tiết kiệm hơn hẳn so với chờ hàng giờ đoán mò |
