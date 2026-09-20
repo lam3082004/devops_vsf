@@ -36,6 +36,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-devpass}
       DB_TLS: "false"      # MySQL local không bật TLS; trên Azure phải là true
       LOAD_MAX_SECONDS: 60
+      ASPNETCORE_ENVIRONMENT: Development # bật Swagger UI (/swagger) — chỉ dev
     ports:
       - "8080:8080"
     depends_on:

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="MySqlConnector" Version="2.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
 
   <!--
@@ -30,10 +31,7 @@
     <ItemGroup>
       <Compile Include="$(GitShaSourceFile)" />
     </ItemGroup>
-    <WriteLinesToFile
-      File="$(GitShaSourceFile)"
-      Lines="namespace NodeRegistry%3B internal static class BuildInfo { public const string GitSha = &quot;$(GitSha)&quot;%3B }"
-      Overwrite="true" />
+    <WriteLinesToFile File="$(GitShaSourceFile)" Lines="namespace NodeRegistry%3B internal static class BuildInfo { public const string GitSha = &quot;$(GitSha)&quot;%3B }" Overwrite="true" />
   </Target>
 
 </Project>

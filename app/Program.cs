@@ -74,6 +74,8 @@ builder.Services.AddScoped<ILoadService, LoadService>();
 builder.Services
     .AddControllers(options => options.Filters.Add<DatabaseExceptionFilter>())
     .AddJsonOptions(options => ConfigureJson(options.JsonSerializerOptions));
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 // MapFallback (404) đi qua minimal API, có bộ JsonOptions riêng với AddJsonOptions
 // ở trên — cấu hình cả hai để response giống hệt nhau dù tới từ controller hay không.
 builder.Services.ConfigureHttpJsonOptions(options => ConfigureJson(options.SerializerOptions));
@@ -93,6 +95,16 @@ catch (Exception ex)
 }
 
 var app = builder.Build();
+
+// Chỉ bật ở Development (ASPNETCORE_ENVIRONMENT=Development, đặt trong
+// app/.env.example và docker-compose.yml). Terraform (D8/D9) không set biến
+// này cho Web App → mặc định .NET là Production → Swagger tự tắt trên Azure
+// thật, không cần nhớ gỡ thủ công.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
