@@ -11,44 +11,74 @@ mentor** — tôi chuẩn bị checklist + câu trả lời mẫu theo đúng re
       (PR #12, chưa merge) — **không liên quan Terraform**, không chặn GATE,
       nhưng nên quyết định merge/bỏ trước khi bắt đầu cho gọn.
 - [ ] Làm từ bản clone/checkout `main` sạch: `git status` phải trống (không
-      có gì uncommitted) trước khi chạy `make down` đầu tiên.
+      có gì uncommitted) trước khi bắt đầu GATE.
 - [ ] Không có resource tạo tay nào trong `rg-vsf-dev` (D9 không dùng Portal
       tay lần nào — chỉ 1 lần thử tạo/xoá App Service Plan tay để chẩn đoán
       429, đã xoá sạch ngay).
 
 ## 2. Lệnh chạy + log thô
 
-**Quan trọng:** dùng `tee` để vừa xem output vừa ghi log, KHÔNG copy tay:
+**Quan trọng:** dùng `tee` để vừa xem output vừa ghi log, KHÔNG copy tay.
+
+**Thứ tự thực tế (điều chỉnh 2026-09-20):** state đang **rỗng sẵn** (đã
+`make down` cuối D9) nên chạy `destroy` trước là vô nghĩa — không có gì để
+xoá, log không chứng minh được gì. Thứ tự đúng bây giờ: **apply từ rỗng →
+verify → destroy**. Vẫn chứng minh đủ cả hai chiều. (Nếu sau này môi trường
+đang bật khi làm GATE thì làm đúng thứ tự guide gốc: destroy → apply.)
+
+**`make up` / `make down` HỎI `yes` TƯƠNG TÁC** (Makefile không có
+`-auto-approve`, cố ý, để bạn còn cơ hội đọc plan):
+- `make up` hỏi **2 lần** (pha 1 rồi pha 2) → gõ `yes` + Enter mỗi lần.
+- `make down` hỏi **1 lần**.
+- Khi chạy qua `| tee`, nếu KHÔNG thấy dòng "Enter a value:" hiện ra thì vẫn cứ
+  gõ `yes` + Enter (prompt đôi khi bị đệm ở pipe). Đừng tưởng treo.
+- "Không thao tác tay giữa hai lệnh" nghĩa là **không sửa Portal/CLI tay**;
+  gõ `yes` xác nhận là bình thường.
 
 ```bash
+cd ~/"Màn hình nền"/devops_vsf         # từ bản main sạch, git status trống
 mkdir -p evidence/raw
 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
-# 1. Destroy — log kèm timestamp
-make down 2>&1 | ts '[%Y-%m-%d %H:%M:%S]' | tee evidence/raw/m8-destroy-$(date +%F).log
-# (nếu chưa có lệnh `ts`: sudo apt install moreutils — hoặc bỏ qua `ts`,
-#  terraform tự in đủ "Xm Ys elapsed" trong log rồi)
+# 0. Xác nhận điểm xuất phát: RG không tồn tại, state rỗng
+az group show -n rg-vsf-dev 2>&1 | head -1     # phải báo ResourceGroupNotFound
+terraform -chdir=infra/app init -backend-config=backend.hcl
+terraform -chdir=infra/app state list          # phải không in gì
 
-# 2. Verify Portal: rg-vsf-dev không tồn tại, Key Vault không còn trong
-#    "Deleted vaults" (đã purge — chụp màn hình 2 chỗ này)
-az group show -n rg-vsf-dev   # phải báo ResourceGroupNotFound
-az keyvault list-deleted -o table   # không có kv-vsf-* nào (đã purge_on_destroy)
-
-# 3. Apply lại từ đầu — log kèm timestamp
+# 1. Apply từ rỗng (~10-15 phút) — gõ yes 2 lần
 make up 2>&1 | tee evidence/raw/m8-apply-$(date +%F).log
 
-# 4. Bảng kiểm tra sau apply — CHẠY TỪNG LỆNH, ĐIỀN KẾT QUẢ THẬT vào evidence/M8.md
-terraform -chdir=infra/app output app_url
-curl -s -o /dev/null -w "%{http_code}\n" $(terraform -chdir=infra/app output -raw app_url)
-az acr show -n <acr_name_output> --query adminUserEnabled -o tsv        # phải false
-az keyvault show -n <kv_name_output> --query properties.enableRbacAuthorization -o tsv  # phải true
-az mysql flexible-server firewall-rule list -g rg-vsf-dev -n <mysql_name> -o tsv | wc -l  # = app_possible_outbound_ip_count
-az resource list -g rg-vsf-dev --query "[?contains(type,'sites/slots')].identity" -o table  # slot staging có identity
-terraform -chdir=infra/app plan -no-color   # PHẢI ra "No changes"
+# 2. Bảng kiểm tra sau apply — CHẠY TỪNG LỆNH, ĐIỀN KẾT QUẢ THẬT vào evidence/M8.md
+#    (tên resource có hậu tố NGẪU NHIÊN mỗi lần apply — lấy từ output, đừng copy tên cũ)
+make outputs
+curl -s -o /dev/null -w "production: %{http_code}\n" $(terraform -chdir=infra/app output -raw app_url)
+curl -s -o /dev/null -w "staging:    %{http_code}\n" $(terraform -chdir=infra/app output -raw staging_url)
+az acr show -n $(terraform -chdir=infra/app output -raw acr_name) --query adminUserEnabled -o tsv   # phải false
+az keyvault show -n $(terraform -chdir=infra/app output -raw key_vault_name) --query properties.enableRbacAuthorization -o tsv   # phải true
+az keyvault secret list --vault-name $(terraform -chdir=infra/app output -raw key_vault_name) --query "[].name" -o tsv   # có mysql-admin-password
+az mysql flexible-server firewall-rule list -g rg-vsf-dev -n $(terraform -chdir=infra/app output -raw mysql_fqdn | cut -d. -f1) -o tsv | wc -l   # = app_possible_outbound_ip_count
+terraform -chdir=infra/app output app_possible_outbound_ip_count
+APP=app-vsf-$(terraform -chdir=infra/app output -raw name_suffix)
+az webapp identity show -g rg-vsf-dev -n $APP --slot staging --query type -o tsv   # slot staging có identity (UserAssigned)
+terraform -chdir=infra/app plan -no-color      # PHẢI ra "No changes"
 
-# 5. Destroy lần nữa — không để qua đêm
-make down 2>&1 | tee evidence/raw/m8-destroy-final-$(date +%F).log
+# 3. Destroy (~30-40 phút — custom role definition xoá rất chậm, đã đo 25 phút
+#    ở D9, KHÔNG phải treo) — gõ yes 1 lần
+make down 2>&1 | tee evidence/raw/m8-destroy-$(date +%F).log
+
+# 4. Xác nhận sạch (chụp màn hình 2 chỗ này cho evidence)
+az group show -n rg-vsf-dev 2>&1 | head -1     # ResourceGroupNotFound
+az keyvault list-deleted -o table              # không có kv-vsf-* (đã purge_on_destroy)
+make check-empty
 ```
+
+**Trong lúc GATE chạy: KHÔNG push/mở PR mới.** CI job `terraform-plan` cũng
+lấy lock state — PR mở giữa chừng sẽ đỏ vì đụng lock (đã gặp ở D9, không phải
+lỗi code; re-run job sau khi xong là được).
+
+**Thời gian + hạn token:** tổng ~50-60 phút. Token `az` refresh tự động nên
+thường không sao; nếu `terraform` báo lỗi auth giữa chừng → `az login` lại rồi
+chạy tiếp (KHÔNG destroy/apply lại từ đầu nếu chưa cần).
 
 **Lưu ý riêng cho repo này (khác guide gốc D9 viết lúc chưa biết throttle):**
 - `make up` giờ deploy **2 vùng**: App/ACR/KV ở `centralindia`, MySQL ở
