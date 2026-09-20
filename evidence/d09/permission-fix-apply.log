@@ -1,0 +1,20 @@
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.[0m
+[0m[1m[32m
+Outputs:
+
+[0macr_login_server = "acrvsf87z87q.azurecr.io"
+acr_name = "acrvsf87z87q"
+app_identity_client_id = "5d0e1bdf-776b-4f31-82b7-2013dcdf9bc0"
+app_identity_id = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-87z87q"
+app_identity_principal_id = "f11188f5-f03c-4ba7-a63f-540ef9d0d76a"
+app_possible_outbound_ip_count = 18
+app_url = "https://app-vsf-87z87q.azurewebsites.net"
+key_vault_name = "kv-vsf-87z87q"
+key_vault_uri = "https://kv-vsf-87z87q.vault.azure.net/"
+location = "centralindia"
+mysql_database_name = "appdb"
+mysql_fqdn = "mysql-vsf-87z87q-sea.mysql.database.azure.com"
+name_suffix = "87z87q"
+resource_group_name = "rg-vsf-dev"
+staging_url = "https://app-vsf-87z87q-staging.azurewebsites.net"
+EXIT=0

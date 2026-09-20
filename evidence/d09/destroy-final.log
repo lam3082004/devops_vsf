@@ -1,0 +1,30 @@
+[0m[1mrandom_password.mysql_admin: Destroying... [id=none][0m[0m
+[0m[1mrandom_password.mysql_admin: Destruction complete after 0s[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 24m01s elapsed][0m[0m
+[0m[1mazurerm_user_assigned_identity.app: Destruction complete after 6s[0m
+[0m[1mrandom_string.suffix: Destroying... [id=87z87q][0m[0m
+[0m[1mrandom_string.suffix: Destruction complete after 0s[0m
+[0m[1mazurerm_service_plan.app: Destruction complete after 9s[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 24m11s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 24m21s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 24m31s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 24m41s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 24m51s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 25m01s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 25m11s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 25m21s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...232a90f1a7bb/resourceGroups/rg-vsf-dev, 25m31s elapsed][0m[0m
+[0m[1mazurerm_role_definition.gh_plan_web_config_reader: Destruction complete after 25m40s[0m
+[0m[1mazurerm_resource_group.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m10s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m20s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m30s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m40s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m50s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 01m00s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 01m10s elapsed][0m[0m
+[0m[1mazurerm_resource_group.app: Destruction complete after 1m20s[0m
+Releasing state lock. This may take a few moments...
+[0m[1m[32m
+Destroy complete! Resources: 36 destroyed.[0m
+EXIT=0

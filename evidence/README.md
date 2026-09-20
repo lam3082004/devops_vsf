@@ -16,8 +16,12 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | [d01](d01/) | Azure 101 · RBAC · chi phí | (ảnh bị mất do cache phiên chat bị xoá — dữ liệu đã ghi thành chữ trong `notes/d1.md`) |
 | [d02](d02/) | Deploy tay bằng Portal | 28 ảnh: slot bị chặn ở Basic, 403 từ LTE, swap, outbound IP |
 | [d03](d03/) | Làm lại bằng Azure CLI | 3 ảnh + output lệnh trong `notes/d3-cli.md` |
-| [d04](d04/) | Viết app (Rust) | log 7 kịch bản, kết quả test |
+| [d04](d04/) | Viết app (Rust — sau đổi C#/.NET, xem `notes/lang-migration-dotnet.md`) | log 7 kịch bản, kết quả test |
 | [d05](d05/) | Docker · Trivy · chi phí | bảng so sánh image, output Trivy, ảnh Cost Analysis |
+| [d06](d06/) | Repo, ruleset, gitleaks, CI v1 | log push-to-main bị chặn, secret giả bị bắt, merge bị khoá |
+| [d07](d07/) | Terraform bootstrap, remote state, OIDC | log state lock, OIDC login/reject |
+| [d08](d08/) | Terraform compute + DB (App Service, MySQL) | log apply 2 pha, plan No changes, destroy |
+| [d09](d09/) | Terraform ACR + Key Vault + CI plan | log 429 throttle 7 lần, chẩn đoán đa vùng, apply thành công, destroy |
 
 ## Must-have (điền dần)
 
