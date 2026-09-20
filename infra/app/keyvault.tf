@@ -31,10 +31,12 @@ resource "azurerm_key_vault" "kv" {
 }
 
 # Terraform (chạy bằng tài khoản bạn) cần ghi được secret vào vault.
+# principal_id PIN CỨNG (var.secrets_writer_object_id), KHÔNG dùng
+# data.azurerm_client_config.current.object_id — xem giải thích ở variables.tf.
 resource "azurerm_role_assignment" "kv_secrets_officer_operator" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.secrets_writer_object_id
 }
 
 # App đọc secret lúc chạy (Key Vault reference trong app settings, D12).

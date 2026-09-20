@@ -102,7 +102,8 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Giải quyết vòng lặp image (ACR trống lúc apply lần đầu): placeholder image + `ignore_changes` phần image — *proof: Decision* → `notes/d9.md` Decision #1
 - [x] `Makefile`: `up` (apply), `down` (destroy phần tốn tiền, giữ state storage), `plan` — *proof: chạy được* → thêm `outputs`, `check-empty`
 - [x] CI: thêm `terraform plan` + upload plan làm artifact — *proof: artifact trong PR* → job `terraform-plan`, `plan.txt`, chưa mở PR để lấy bằng chứng artifact thật
-- [ ] `make up` thật + verify Portal + `make down` + `make check-empty` — *proof: chưa chạy, bị Azure 429 throttle khi tạo App Service Plan, xem `known-issues.md` #6*
+- [x] `make up` thật + verify (az cli) — *proof: `Apply complete! Resources: 20 added`, `plan` lần 2 No changes, production+staging 200, firewall=18=outbound IP, ACR admin disabled, KV RBAC + secret đọc được. Sau 7 lần 429 (26 tiếng) phải đổi region (Central India cho app, giữ Southeast Asia cho MySQL) mới qua được — chi tiết `notes/d9.md`*
+- [ ] `make down` + `make check-empty` cuối buổi — *proof: chưa chạy, đang để môi trường sống để verify/demo tiếp*
 
 ### D10 — **GATE**
 - [ ] `terraform destroy` → `apply` sạch, **không thao tác tay**, lưu log thô → `evidence/M8.md` — *proof: log 2 lệnh*
@@ -219,12 +220,14 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - 2026-09-17 — D8: firewall MySQL `for_each` trên possible outbound IPs xử lý bằng **apply 2 pha trong `make up`** (pha 1 `-target` Web App chỉ khi state chưa có nó); loại tách 2 root module (thêm state, phức tạp vĩnh viễn) và NAT Gateway (tốn tiền theo giờ). Chi tiết `notes/d8.md`.
 - 2026-09-17 — D8: MySQL **8.4** (không phải 8.0) — trùng Portal D2 và docker-compose local; plan **P0v3** (0.0915 USD/giờ < S1 0.095, có slot + autoscale).
 - 2026-09-18 — D9: role `Key Vault Secrets Officer`/`Secrets User` tách theo 3 principal riêng (least privilege); tra `id-gh-plan` bằng `data` source (tên + RG `rg-vsf-bootstrap`) thay vì `terraform_remote_state`, giữ đúng quyết định D7 tách state; `purge_protection_enabled = false` trên Key Vault để D10 destroy→apply lại cùng tên; job CI `terraform-plan` soi `terraform state list` trước khi plan để tránh lỗi `for_each` khi môi trường đang tắt (giống logic 2 pha của `make up`). Chi tiết `notes/d9.md`.
+- 2026-09-20 — **Đổi region**: `var.location` (App Service Plan, Web App, ACR, Key Vault, identity) từ Southeast Asia sang **Central India** — subscription bị Azure throttle riêng cho tạo App Service Plan ở Southeast Asia (7 lần thử/26 tiếng, xác nhận bằng `az cli` gọi thẳng, loại trừ nguyên nhân do Terraform). MySQL vẫn giữ **Southeast Asia** qua `var.db_location` riêng — subscription không có quyền tạo MySQL Flexible ở Central India (`ProvisionNotSupportedForRegion`). Đè lên quyết định region gốc ở `notes/d1.md`. Đánh đổi: 2 vùng khác nhau → thêm latency, chấp nhận được cho môi trường học. Chi tiết đầy đủ: `notes/d9.md`.
 - 2026-09-18 — Đổi app từ Rust sang **C#/.NET 10** (ASP.NET Core MVC, kiến trúc Controller → Service → Repository, DI qua constructor) + MySqlConnector, giữ nguyên logic/endpoint/log; nhánh `feat/dotnet-rewrite`. Image runtime **không đạt lại 0 CVE tuyệt đối** như bản Rust (musl+scratch) — chọn `aspnet:10.0-noble-chiseled` framework-dependent thay vì Native AOT (đổi kiến trúc JSON quá nhiều so với lợi ích), cần đo lại bằng Trivy. Chi tiết: `notes/lang-migration-dotnet.md`.
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
 
 ## Recovery
+- 2026-09-20: **D9 xong hoàn toàn** — sau 7 lần 429 (26 tiếng), chẩn đoán ra throttle riêng Southeast Asia, đổi region (App/ACR/KV → Central India, MySQL giữ Southeast Asia). `make up` thành công: 20 resource (+ 5 pha 1), `plan` lần 2 No changes, verify đủ (200 cả 2 slot, firewall=outbound IP, ACR/KV đúng cấu hình). Bài tiếp: D10 GATE (destroy → apply sạch). Chi tiết `notes/d9.md`.
 - 2026-09-18: D9 code xong (ACR, Key Vault, lifecycle image, outputs, Makefile, CI job terraform-plan) — chưa `make up` thật được, Azure trả 429 throttle khi tạo App Service Plan (4 lần thử, hơn 1 tiếng, cùng lỗi). State sạch (chỉ RG + identity + random_string). Xem `known-issues.md` #6, `notes/d9.md`.
 - 2026-09-17: **D8 xong** — PR #5: `make up` 2 pha (3 + 24 resource), kiểm chứng đạt (200 cả 2 slot, cùng identity, 20 IP = 20 rule, không 0.0.0.0/IP máy), plan lần 2 No changes, `make down` 29 destroyed, `rg-vsf-dev` đã xoá, bootstrap còn. Bài tiếp: D9 (ACR, Key Vault, Makefile, CI plan).
 - 2026-09-15: repo mới chỉ có `a.md`, `CLAUDE.md`, plan này. Chưa có Azure resource nào. Chưa commit.
