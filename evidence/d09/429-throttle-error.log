@@ -1,0 +1,35 @@
+[33m│[0m [0m
+[33m│[0m [0mNote that the -target option is not suitable for routine use, and is
+[33m│[0m [0mprovided only for exceptional situations such as recovering from errors or
+[33m│[0m [0mmistakes, or when Terraform specifically suggests to use it as part of an
+[33m│[0m [0merror message.
+[33m╵[0m[0m
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mcreating App Service Plan (Subscription: "9880aa34-1fb4-4402-b692-232a90f1a7bb"
+[31m│[0m [0mResource Group Name: "rg-vsf-dev"
+[31m│[0m [0mServer Farm Name: "asp-vsf-dev"): performing CreateOrUpdate: unexpected status 429 (429 Too Many Requests) with response: {"Code":"429","Message":"App Service Plan Create operation is throttled for subscription 9880aa34-1fb4-4402-b692-232a90f1a7bb. Please contact support if issue persists.","Target":null,"Details":[{"Message":"App Service Plan Create operation is throttled for subscription 9880aa34-1fb4-4402-b692-232a90f1a7bb. Please contact support if issue persists."},{"Code":"429"},{"ErrorEntity":{"ExtendedCode":"51025","MessageTemplate":"App Service Plan {0} operation is throttled for subscription {1}. Please contact support if issue persists.","Parameters":["Create","9880aa34-1fb4-4402-b692-232a90f1a7bb"],"Code":"429","Message":"App Service Plan Create operation is throttled for subscription 9880aa34-1fb4-4402-b692-232a90f1a7bb. Please contact support if issue persists."}}],"Innererror":null}[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m  with azurerm_service_plan.app,
+[31m│[0m [0m  on app.tf line 5, in resource "azurerm_service_plan" "app":
+[31m│[0m [0m   5: resource "azurerm_service_plan" "app" [4m{[0m[0m
+[31m│[0m [0m
+[31m│[0m [0mcreating App Service Plan (Subscription:
+[31m│[0m [0m"9880aa34-1fb4-4402-b692-232a90f1a7bb"
+[31m│[0m [0mResource Group Name: "rg-vsf-dev"
+[31m│[0m [0mServer Farm Name: "asp-vsf-dev"): performing CreateOrUpdate: unexpected
+[31m│[0m [0mstatus 429 (429 Too Many Requests) with response:
+[31m│[0m [0m{"Code":"429","Message":"App Service Plan Create operation is throttled for
+[31m│[0m [0msubscription 9880aa34-1fb4-4402-b692-232a90f1a7bb. Please contact support
+[31m│[0m [0mif issue persists.","Target":null,"Details":[{"Message":"App Service Plan
+[31m│[0m [0mCreate operation is throttled for subscription
+[31m│[0m [0m9880aa34-1fb4-4402-b692-232a90f1a7bb. Please contact support if issue
+[31m│[0m [0mpersists."},{"Code":"429"},{"ErrorEntity":{"ExtendedCode":"51025","MessageTemplate":"App
+[31m│[0m [0mService Plan {0} operation is throttled for subscription {1}. Please
+[31m│[0m [0mcontact support if issue
+[31m│[0m [0mpersists.","Parameters":["Create","9880aa34-1fb4-4402-b692-232a90f1a7bb"],"Code":"429","Message":"App
+[31m│[0m [0mService Plan Create operation is throttled for subscription
+[31m│[0m [0m9880aa34-1fb4-4402-b692-232a90f1a7bb. Please contact support if issue
+[31m│[0m [0mpersists."}}],"Innererror":null}
+[31m╵[0m[0m
+Releasing state lock. This may take a few moments...
+EXIT=1
