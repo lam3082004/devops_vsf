@@ -6,10 +6,11 @@
 
 ## Authority
 
-- Yêu cầu, lịch, deliverables: `a.md` (mục 2, 4, 6, 7, 8).
+- Yêu cầu, lịch, deliverables: `topic.md` (mục 2, 4, 6, 7, 8; thay `a.md` cũ, đã xoá) + mục 9 bổ sung Sprint 1–3.
+- **Brief bổ sung 2026-09-21** (Sprint 1–3, đã ghi vào `topic.md` mục 9; **cập nhật cho topic.md, không thay thế**): thêm yêu cầu **distributed tracing**, **truy vết alert → log/request**, tài liệu deploy/vận hành/**rollback**, **báo cáo kết quả kiểm thử**. Xem mục "Bổ sung theo brief" bên dưới.
 - Luật làm việc của project: `CLAUDE.md`.
 - **Chưa định nghĩa (phải hỏi mentor, chặn bước liên quan):**
-  - Q1. M11 "không enable App Insights" vs `/boom` "Alert + App Insights" vs lịch D20 → được bật App Insights cho exception không? (chặn D20)
+  - Q1. M11 "không enable App Insights" vs `/boom` "Alert + App Insights" vs lịch D20 vs brief mới đòi distributed tracing → được bật App Insights (workspace-based) làm backend trace không? Nếu không: OTel → Jaeger/Tempo (tốn hạ tầng) hoặc chỉ log `trace_id`. **Mặc định làm theo hướng (a) workspace-based App Insights, đánh dấu tạm** đến khi mentor trả lời. (chặn D20)
   - Q2. Repo public hay private? GitHub Free không có branch protection cho private. (chặn D6)
   - Q3. "5xx rate" là count hay tỷ lệ %? (chặn D22)
   - Q4. Trivy "không còn CVE" có cho `--ignore-unfixed` không? (chặn D14)
@@ -165,7 +166,10 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] Test tải ngắn bằng `/load` (vài phút) → thấy 1→2→1 instance — *proof: screenshot metric instance count + run history*
 - [ ] Right sizing: xem CPU/memory thực tế, quyết định tier — *proof: Decision*
 
-### D20 — Cost report + App Insights (theo Q1)
+### D20 — Cost report + App Insights (theo Q1) + tracing
+- [ ] App: thêm OpenTelemetry (ASP.NET Core + MySqlConnector), sampling 100% (lưu lượng thấp) — *proof: PR có `## AI usage`; `/items` sinh trace có span DB*
+- [ ] Log JSON thêm `trace_id`/`span_id` (lấy từ `Activity.Current`) — *proof: 1 dòng log khớp trace-id trong response header `traceparent`*
+- [ ] Không đưa connection string App Insights plaintext: lưu Key Vault, tham chiếu `@Microsoft.KeyVault(...)` — *proof: app settings*
 - [ ] `cost-report.md` 1 trang: tier + lý do · autoscale rule · 3 biện pháp đã áp dụng · chi phí thật từ Cost Analysis (screenshot) → `evidence/M7.md`
 - [ ] App Insights nếu Q1 cho phép: exception từ `/boom` hiện trong Failures — *proof: screenshot*
 
@@ -179,11 +183,14 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] Nghiên cứu giải pháp logging: Log Analytics+Workbook vs Managed Grafana vs tự dựng Loki/Grafana (chi phí, vận hành, query) — *proof: mục trong `architecture.md` hoặc `docs/logging.md`*
 - [ ] Workbook/dashboard: response time · request rate · failure rate; CPU/memory/HTTP queue; MySQL CPU/connections/storage; panel xem log — *proof: screenshot* → `evidence/M11.md`
 - [ ] Giới hạn retention workspace để tiết kiệm
+- [ ] Trace về cùng Log Analytics (App Insights workspace-based): xem được `requests`/`dependencies`/`traces` cạnh log — *proof: KQL join theo `operation_Id` = `trace_id`*
+- [ ] Dashboard có đủ 5 mảng: metric · log · trace (end-to-end transaction) · alert đang bắn · health — *proof: screenshot*
 
 ### D22 — Alert + runbook + trigger thật
 - [ ] **Chốt Q5 trước hôm nay** (credit hết hạn D23)
 - [ ] Action group email; 3 alert: 5xx (theo Q3) · CPU cao · MySQL active connections — *proof: plan*
 - [ ] Trigger thật ≥ 1 alert (`/boom` hoặc `/load`) → email đến — *proof: screenshot email + alert history* → `evidence/M11.md`
+- [ ] **Truy vết alert → request:** từ email alert → mở query KQL → lấy `trace_id` → xem end-to-end transaction và log cùng trace — *proof: quay/ảnh từng bước từ 1 alert thật* → `evidence/M11.md`
 - [ ] `runbook.md` cho alert nghiêm trọng nhất: triệu chứng · xác nhận (query nào) · xử lý · rollback (swap ngược) · escalate
 
 ### D23 — Agent giới hạn quyền + cross-review 2
@@ -192,15 +199,32 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 
 ### D24 — Incident drill + hoàn thiện
 - [ ] Drill: gây sự cố (deploy bản lỗi / cắt quyền KV) → làm theo runbook → rollback — *proof: timeline ghi lại*
+- [ ] **Rollback & recovery test:** (1) swap ngược sau bản lỗi, đo thời gian (RTO) · (2) xoá quyền KV rồi khôi phục · (3) `destroy` → `apply` phục hồi từ state · (4) restore MySQL point-in-time thử 1 lần — *proof: log + thời gian từng kịch bản* → `docs/rollback.md`
+- [ ] `docs/deploy.md` (dựng từ đầu), `docs/operations.md` (vận hành hằng ngày, alert, dashboard), `docs/troubleshooting.md` (lỗi đã gặp: 429, RBAC lan truyền, KV reference, whitelist runner) — *proof: người thứ ba làm theo được*
+- [ ] `test-report.md`: bảng kịch bản kiểm thử (health, zero-downtime, whitelist, autoscale, alert, rollback) · kết quả · link evidence — *proof: file*
 - [ ] `destroy` → `apply` lần cuối từ repo sạch theo đúng `README.md` — *proof: log* → `evidence/M8.md`
 - [ ] Hoàn thiện `architecture.md` (mermaid, tách luồng traffic và luồng auth), `README.md`, `known-issues.md`, `ai-failure-log.md` đủ 6–8 case
 - [ ] Soát `evidence/M1.md`…`M11.md` đủ 11 file, mỗi file có log/screenshot thật
 
 ### D25 — Demo 45 phút (live, không slide)
-- [ ] Kịch bản demo theo thứ tự: repo → CI chặn secret → merge → CD + poll zero-downtime → whitelist 200/403 → `/items` → xoá quyền KV → `/load` autoscale → `/boom` alert → dashboard/KQL → cost
+- [ ] Kịch bản demo theo thứ tự: repo → CI chặn secret → merge → CD + poll zero-downtime → whitelist 200/403 → `/items` → xoá quyền KV → `/load` autoscale → `/boom` alert → **alert → trace_id → log/request** → dashboard/KQL → rollback (swap ngược) → cost
 - [ ] `make up` trước demo ≥ 30 phút; `make down` sau demo
 
 ---
+
+## Bổ sung theo brief (2026-09-21)
+
+| Tiêu chí brief | Nằm ở | Trạng thái |
+|---|---|---|
+| Deploy ổn định trên Azure | D10–D11, D16–D18 | đang làm |
+| Build/deploy tự động | D14, D16–D17 | chưa |
+| Thu thập tập trung log · metric · **trace** | D21 (+ D20 tracing) | trace **mới thêm** |
+| Dashboard chỉ số vận hành | D21 | chưa |
+| Alert lỗi quan trọng | D22 | chưa |
+| **Truy vết alert → log/request** | D22 | **mới thêm** |
+| Secret & tài nguyên an toàn | D9, D12–D13 | một phần |
+| Tài liệu deploy · vận hành · **rollback** · troubleshooting | D24 | **mới thêm** |
+| Báo cáo demo & **kết quả kiểm thử** | D24–D25 | **mới thêm** (`test-report.md`) |
 
 ## Stretch (chỉ làm khi M1–M11 xong)
 - [ ] S1 Trivy fail khi CVE critical (gần như có sẵn từ D14)

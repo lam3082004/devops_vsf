@@ -1,16 +1,16 @@
 # devops_vsf
 
 Repo thực tập: deploy app lên Azure App Service, CI/CD trunk-based, hạ tầng bằng Terraform, monitoring tập trung.
-Đề bài gốc và mọi yêu cầu: [`a.md`](a.md).
+Đề bài gốc và mọi yêu cầu: [`topic.md`](topic.md).
 
 > README này hiện chỉ chú thích **repo có những gì**. Tới D25 nó phải trở thành hướng dẫn
-> để người thứ ba dựng lại hệ thống từ đầu (prereq · các bước · biến cần set · teardown) — deliverable #2 trong `a.md`.
+> để người thứ ba dựng lại hệ thống từ đầu (prereq · các bước · biến cần set · teardown) — deliverable #2 trong `topic.md`.
 
 ## Thư mục hiện có
 
 | Đường dẫn | Là gì |
 |---|---|
-| `a.md` | Đề bài gốc. Authority cho mọi yêu cầu M1–M11, S1–S3, deliverables, lịch 25 ngày. Không sửa. |
+| `topic.md` | Đề bài (thay `a.md` cũ). Authority cho mọi yêu cầu M1–M11, S1–S3, deliverables, lịch 25 ngày, kèm mục bổ sung Sprint 1–3. |
 | `CLAUDE.md` | Luật làm việc của repo (AI-OFF tuần 1, không push `main`, tốn tiền phải hỏi, autoscale ≤ 2 instance…). |
 | `docs/plans/active/` | Plan đang chạy — checklist tổng, quyết định, câu hỏi mở cho mentor. Đọc trước khi làm, cập nhật cùng lượt với thay đổi. |
 | `docs/guides/` | Hướng dẫn **từng bài** D1→D25 (mục lục ở [`docs/guides/README.md`](docs/guides/README.md)): mô tả bước, cấu hình cần đạt, cách kiểm chứng, bẫy. Cố ý **không chứa code** Terraform/`az`/Dockerfile/YAML. |
