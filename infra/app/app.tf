@@ -21,6 +21,15 @@ locals {
     # Không mount /home dùng chung vào container: app không ghi file, tắt đi
     # để container khởi động nhanh và không phụ thuộc storage của stamp.
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
+
+    # Kết nối MySQL (D12 mục 1). App fail-fast nếu thiếu một trong các biến này.
+    DB_HOST = azurerm_mysql_flexible_server.db.fqdn
+    DB_NAME = var.db_name
+    DB_USER = azurerm_mysql_flexible_server.db.administrator_login
+    DB_TLS  = "true"
+    # Key Vault reference, URI KHÔNG kèm version để nhận bản mới khi xoay vòng.
+    # Không có secret plaintext nào trong app settings (M4).
+    DB_PASSWORD = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mysql_admin_password.versionless_id})"
   }
 }
 
@@ -43,14 +52,28 @@ resource "azurerm_linux_web_app" "app" {
 
   app_settings = local.app_settings
 
+  # Danh tính dùng để resolve @Microsoft.KeyVault(...). Bỏ trống thì nền tảng
+  # dùng system-assigned (không tồn tại) → reference không resolve (D12).
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
+
+  # Role Secrets User phải có trước khi app resolve reference, nếu không
+  # reference đỏ cho tới khi restart.
+  depends_on = [azurerm_role_assignment.kv_secrets_user_app]
+
   site_config {
     always_on           = true # không cold start; slot/swap warm-up cần app luôn chạy
     http2_enabled       = true
     minimum_tls_version = "1.2"
     ftps_state          = "Disabled"
 
-    # Image mẫu công khai: ACR chưa có ở D8. D9 thêm ignore_changes phần image,
-    # D11 đổi sang image thật pull bằng managed identity.
+    # Pull image từ ACR bằng user-assigned identity, chỉ định client ID (bỏ trống
+    # thì dùng system-assigned → pull lỗi). Không dùng admin/password của ACR (M1).
+    container_registry_use_managed_identity       = true
+    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.app.client_id
+
+    # Image mẫu công khai (cùng cổng 8080 với app thật): ACR trống lúc dựng môi
+    # trường. Registry URL + image sau đó do tay/CD đặt sang ACR (D11, D16);
+    # ignore_changes bên dưới giữ Terraform khỏi đảo ngược.
     # health_check_path = "/health" bật ở D17 — image mẫu không có /health.
     application_stack {
       docker_registry_url = "https://mcr.microsoft.com"
@@ -63,8 +86,11 @@ resource "azurerm_linux_web_app" "app" {
     # KHÔNG qua Terraform. Thiếu ignore_changes này, apply kế tiếp sẽ thấy
     # image trên Azure khác var.placeholder_image trong code và ĐẢO NGƯỢC về
     # placeholder, sập bản đang chạy. Từ nay: Terraform sở hữu mọi thứ của
-    # Web App trừ tag image; CD sở hữu tag image (Decision, notes/d9.md).
-    ignore_changes = [site_config[0].application_stack[0].docker_image_name]
+    # Web App trừ registry URL + tag image; CD sở hữu registry URL + tag image (Decision, notes/d9.md, notes/d11-prep.md).
+    ignore_changes = [
+      site_config[0].application_stack[0].docker_image_name,
+      site_config[0].application_stack[0].docker_registry_url,
+    ]
   }
 }
 
@@ -86,11 +112,24 @@ resource "azurerm_linux_web_app_slot" "staging" {
 
   app_settings = local.app_settings
 
+  # Danh tính dùng để resolve @Microsoft.KeyVault(...). Bỏ trống thì nền tảng
+  # dùng system-assigned (không tồn tại) → reference không resolve (D12).
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
+
+  # Role Secrets User phải có trước khi app resolve reference, nếu không
+  # reference đỏ cho tới khi restart.
+  depends_on = [azurerm_role_assignment.kv_secrets_user_app]
+
   site_config {
     always_on           = true
     http2_enabled       = true
     minimum_tls_version = "1.2"
     ftps_state          = "Disabled"
+
+    # Pull image từ ACR bằng user-assigned identity, chỉ định client ID (bỏ trống
+    # thì dùng system-assigned → pull lỗi). Không dùng admin/password của ACR (M1).
+    container_registry_use_managed_identity       = true
+    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.app.client_id
 
     # Khai image cho slot một cách tường minh: D2 thấy clone slot KHÔNG copy
     # image → slot rỗng trả 503, swap lên là production chết.
@@ -103,6 +142,9 @@ resource "azurerm_linux_web_app_slot" "staging" {
   lifecycle {
     # Cùng lý do với production ở trên — slot staging là nơi CD đổi tag TRƯỚC
     # khi swap (D16/D17), Terraform không được đảo nó về placeholder.
-    ignore_changes = [site_config[0].application_stack[0].docker_image_name]
+    ignore_changes = [
+      site_config[0].application_stack[0].docker_image_name,
+      site_config[0].application_stack[0].docker_registry_url,
+    ]
   }
 }
