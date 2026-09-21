@@ -1,6 +1,6 @@
 # devops_vsf — Azure App Service internship
 
-Đề bài gốc: `a.md` (authority cho mọi yêu cầu M1–M11, S1–S3, deliverables, lịch).
+Đề bài gốc: `topic.md` (authority cho mọi yêu cầu M1–M11, S1–S3, deliverables, lịch).
 Plan đang chạy: `docs/plans/active/azure-app-service-internship.md` — đọc trước khi làm, cập nhật cùng lượt với thay đổi.
 Hướng dẫn từng bài: `docs/guides/` (mục lục `docs/guides/README.md`). Nhật ký từng bài: `notes/dXX.md`.
 

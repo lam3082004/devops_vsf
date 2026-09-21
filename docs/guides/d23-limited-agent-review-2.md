@@ -2,7 +2,7 @@
 
 **Cần:** D22 · **Chi phí:** ít · **Deliverable:** bài agent (theo đề mentor), `review-<tên>.md` lần 2
 
-> Đề bài `a.md` chỉ ghi "bài agent giới hạn quyền" — **chưa có đặc tả**. Hỏi mentor nội dung cụ thể trước. Phần dưới là khung chuẩn bị để làm bất kỳ biến thể nào.
+> Đề bài `topic.md` chỉ ghi "bài agent giới hạn quyền" — **chưa có đặc tả**. Hỏi mentor nội dung cụ thể trước. Phần dưới là khung chuẩn bị để làm bất kỳ biến thể nào.
 
 ## Phần A — Agent giới hạn quyền
 

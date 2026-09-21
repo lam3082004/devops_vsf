@@ -1,0 +1,28 @@
+13:22:51 terraform -chdir=infra/app init -backend-config=backend.hcl
+13:22:51 [0m[1mInitializing the backend...[0m
+13:23:13 
+13:23:14 [0m[1mInitializing provider plugins...[0m
+13:23:14 - Reusing previous version of hashicorp/random from the dependency lock file
+13:23:14 - Reusing previous version of hashicorp/azurerm from the dependency lock file
+13:23:14 - Using previously-installed hashicorp/random v3.9.1
+13:23:14 - Using previously-installed hashicorp/azurerm v4.81.0
+13:23:14 
+13:23:14 
+13:23:14 [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+13:23:14 [0m[32m
+13:23:14 You may now begin working with Terraform. Try running "terraform plan" to see
+13:23:14 any changes that are required for your infrastructure. All Terraform commands
+13:23:14 should now work.
+13:23:14 
+13:23:14 If you ever set or change modules or backend configuration for Terraform,
+13:23:14 rerun this command to reinitialize your working directory. If you forget, other
+13:23:14 commands will detect it and remind you to do so if necessary.[0m
+13:23:14 terraform -chdir=infra/app destroy
+13:23:28 Acquiring state lock. This may take a few moments...
+13:28:12 Releasing state lock. This may take a few moments...
+13:28:14 [31m╷[0m[0m
+13:28:14 [31m│[0m [0m[1m[31mError: [0m[0m[1mexecuting request: Get "https://stvsftffxqfgb.blob.core.windows.net/tfstate/app.tfstate": unexpected EOF[0m
+13:28:14 [31m│[0m [0m
+13:28:14 [31m│[0m [0m[0m
+13:28:14 [31m╵[0m[0m
+13:28:14 make: *** [Makefile:75: down] Error 1

@@ -2,7 +2,7 @@
 
 Mỗi file là **một bài**, không phải một ngày. Tiến độ tuỳ bạn; thứ tự bài thì **phải giữ** vì bài sau dùng kết quả bài trước.
 
-Nguồn yêu cầu: `a.md`. Checklist tổng: `docs/plans/active/azure-app-service-internship.md`. Nhật ký từng bài: `notes/dXX.md`. Sổ khái niệm: https://claude.ai/artifact/DcVdzVVpzjVecMt128tGFM
+Nguồn yêu cầu: `topic.md`. Checklist tổng: `docs/plans/active/azure-app-service-internship.md`. Nhật ký từng bài: `notes/dXX.md`. Sổ khái niệm: https://claude.ai/artifact/DcVdzVVpzjVecMt128tGFM
 
 ## Luật dùng AI khi làm nhanh hơn lịch
 

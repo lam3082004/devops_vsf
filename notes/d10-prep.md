@@ -6,13 +6,16 @@ mentor** — tôi chuẩn bị checklist + câu trả lời mẫu theo đúng re
 
 ## 1. Tiền kiểm (trước khi bắt đầu GATE)
 
-- [ ] Mọi PR đã merge vào `main`: kiểm `git log --oneline -5` trên `main`,
+- [x] Mọi PR đã merge vào `main`: kiểm `git log --oneline -5` trên `main`,
       không còn nhánh `feat/*` nào của D9 còn treo. Hiện còn `feat/swagger-dev-only`
       (PR #12, chưa merge) — **không liên quan Terraform**, không chặn GATE,
       nhưng nên quyết định merge/bỏ trước khi bắt đầu cho gọn.
 - [ ] Làm từ bản clone/checkout `main` sạch: `git status` phải trống (không
       có gì uncommitted) trước khi bắt đầu GATE.
-- [ ] Không có resource tạo tay nào trong `rg-vsf-dev` (D9 không dùng Portal
+      **Chưa đạt (2026-09-21):** chạy trên checkout hiện có, không clone mới. Code `infra/`, `Makefile`,
+      `app/`, `.github/` không thay đổi so với `main` (`git diff` rỗng), nhưng cây làm việc có
+      thay đổi docs chưa commit. Nếu mentor đòi đúng chữ "clone mới" thì phải chạy lại.
+- [x] Không có resource tạo tay nào trong `rg-vsf-dev` (D9 không dùng Portal
       tay lần nào — chỉ 1 lần thử tạo/xoá App Service Plan tay để chẩn đoán
       429, đã xoá sạch ngay).
 
@@ -193,8 +196,8 @@ file state. Vì vậy storage chứa state phải khoá quyền chặt: đã t�
 key (`shared_access_key_enabled = false`), chỉ Entra ID + RBAC được đọc/ghi.
 
 ## Xong khi
-- [ ] 2 log thô (`evidence/raw/m8-destroy-*.log`, `m8-apply-*.log`)
-- [ ] Bảng kiểm tra đầy đủ, số thật (không copy từ lần chạy tham khảo)
-- [ ] `evidence/M8.md` viết xong
+- [x] 2 log thô (`evidence/raw/m8-destroy-*.log`, `m8-apply-*.log`)
+- [x] Bảng kiểm tra đầy đủ, số thật (không copy từ lần chạy tham khảo)
+- [x] `evidence/M8.md` viết xong
 - [ ] Trả lời trôi 7 câu hỏi — tự nói được, không đọc
-- [ ] Resource đã `down` sau khi xong (không để qua đêm)
+- [x] Resource đã `down` sau khi xong (không để qua đêm)

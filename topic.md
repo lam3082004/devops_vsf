@@ -134,3 +134,27 @@ Nộp cuối D25, tất cả trong **một repo duy nhất**.
 - Autoscale max 2 instance. Test tải ngắn.
 - Kẹt quá 45 phút thì hỏi. Kẹt quá 1 ngày mà không hỏi là lỗi bị trừ điểm.
 - Sandbox không chứa dữ liệu thật → dán gì vào AI cũng được. Ngược lại, **không gì từ môi trường công ty đi qua tay intern**.
+
+---
+
+## 9. Bổ sung (brief 2026-09-21) — Triển khai lên Azure và monitoring tập trung
+
+Bùi Tùng Lâm · 26ai.lambt@vinuni.edu.vn. Cập nhật cho các mục trên, không thay thế.
+
+**Sản phẩm bàn giao:** repo source · IaC · CI/CD · app chạy trên Azure · monitoring tập trung (dashboard, log, metric, **distributed tracing**, alert) · tài liệu kiến trúc/triển khai/vận hành/xử lý sự cố · báo cáo demo và kết quả kiểm thử.
+
+**Tiêu chí hoàn thành**
+- Deploy thành công, hoạt động ổn định trên Azure
+- Build/deploy tự động
+- Thu thập tập trung log, metric, trace
+- Dashboard các chỉ số vận hành
+- Alert cho lỗi quan trọng
+- **Truy vết được từ alert → log/request**
+- Secret và tài nguyên cấu hình an toàn
+- Tài liệu deploy, vận hành, rollback
+- Demo đầy đủ
+
+**Sprint**
+- Sprint 1: phân tích yêu cầu triển khai · khảo sát ứng dụng · thiết kế kiến trúc Azure · container hoá · khởi tạo repo và môi trường dev
+- Sprint 2: IaC · deploy lên Azure DEV · pipeline build/deploy · quản lý config và secret · health check
+- Sprint 3: hoàn thiện deploy tự động · kiểm thử rollback & recovery · tối ưu resource và chi phí · hoàn thiện tài liệu · runbook · demo

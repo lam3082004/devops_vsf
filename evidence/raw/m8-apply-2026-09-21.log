@@ -1,0 +1,1670 @@
+13:52:11 terraform -chdir=infra/app init -backend-config=backend.hcl
+13:52:11 [0m[1mInitializing the backend...[0m
+13:52:13 
+13:52:14 [0m[1mInitializing provider plugins...[0m
+13:52:14 - Reusing previous version of hashicorp/azurerm from the dependency lock file
+13:52:14 - Reusing previous version of hashicorp/random from the dependency lock file
+13:52:14 - Using previously-installed hashicorp/azurerm v4.81.0
+13:52:14 - Using previously-installed hashicorp/random v3.9.1
+13:52:14 
+13:52:14 
+13:52:14 [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+13:52:14 [0m[32m
+13:52:14 You may now begin working with Terraform. Try running "terraform plan" to see
+13:52:14 any changes that are required for your infrastructure. All Terraform commands
+13:52:14 should now work.
+13:52:14 
+13:52:14 If you ever set or change modules or backend configuration for Terraform,
+13:52:14 rerun this command to reinitialize your working directory. If you forget, other
+13:52:14 commands will detect it and remind you to do so if necessary.[0m
+13:52:17 >>> pha 1/2: tao Web App (va cac phu thuoc) de biet outbound IPs
+13:52:18 Acquiring state lock. This may take a few moments...
+13:52:33 
+13:52:33 Terraform used the selected providers to generate the following execution
+13:52:33 plan. Resource actions are indicated with the following symbols:
+13:52:33   [32m+[0m create[0m
+13:52:33 
+13:52:33 Terraform will perform the following actions:
+13:52:33 
+13:52:33 [1m  # azurerm_linux_web_app.app[0m will be created
+13:52:33 [0m  [32m+[0m[0m resource "azurerm_linux_web_app" "app" {
+13:52:33       [32m+[0m[0m app_settings                                   = {
+13:52:33           [32m+[0m[0m "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+13:52:33           [32m+[0m[0m "WEBSITES_PORT"                       = "80"
+13:52:33         }
+13:52:33       [32m+[0m[0m client_affinity_enabled                        = false
+13:52:33       [32m+[0m[0m client_certificate_enabled                     = false
+13:52:33       [32m+[0m[0m client_certificate_mode                        = "Required"
+13:52:33       [32m+[0m[0m custom_domain_verification_id                  = (sensitive value)
+13:52:33       [32m+[0m[0m default_hostname                               = (known after apply)
+13:52:33       [32m+[0m[0m enabled                                        = true
+13:52:33       [32m+[0m[0m ftp_publish_basic_authentication_enabled       = false
+13:52:33       [32m+[0m[0m hosting_environment_id                         = (known after apply)
+13:52:33       [32m+[0m[0m https_only                                     = true
+13:52:33       [32m+[0m[0m id                                             = (known after apply)
+13:52:33       [32m+[0m[0m key_vault_reference_identity_id                = (known after apply)
+13:52:33       [32m+[0m[0m kind                                           = (known after apply)
+13:52:33       [32m+[0m[0m location                                       = "centralindia"
+13:52:33       [32m+[0m[0m name                                           = (known after apply)
+13:52:33       [32m+[0m[0m outbound_ip_address_list                       = (known after apply)
+13:52:33       [32m+[0m[0m outbound_ip_addresses                          = (known after apply)
+13:52:33       [32m+[0m[0m possible_outbound_ip_address_list              = (known after apply)
+13:52:33       [32m+[0m[0m possible_outbound_ip_addresses                 = (known after apply)
+13:52:33       [32m+[0m[0m public_network_access_enabled                  = true
+13:52:33       [32m+[0m[0m resource_group_name                            = "rg-vsf-dev"
+13:52:33       [32m+[0m[0m service_plan_id                                = (known after apply)
+13:52:33       [32m+[0m[0m site_credential                                = (sensitive value)
+13:52:33       [32m+[0m[0m tags                                           = {
+13:52:33           [32m+[0m[0m "env"        = "dev"
+13:52:33           [32m+[0m[0m "layer"      = "app"
+13:52:33           [32m+[0m[0m "managed_by" = "terraform"
+13:52:33           [32m+[0m[0m "owner"      = "intern"
+13:52:33           [32m+[0m[0m "project"    = "vsf"
+13:52:33         }
+13:52:33       [32m+[0m[0m virtual_network_backup_restore_enabled         = false
+13:52:33       [32m+[0m[0m vnet_image_pull_enabled                        = false
+13:52:33       [32m+[0m[0m webdeploy_publish_basic_authentication_enabled = false
+13:52:33       [32m+[0m[0m zip_deploy_file                                = (known after apply)
+13:52:33 
+13:52:33       [32m+[0m[0m identity {
+13:52:33           [32m+[0m[0m identity_ids = (known after apply)
+13:52:33           [32m+[0m[0m principal_id = (known after apply)
+13:52:33           [32m+[0m[0m tenant_id    = (known after apply)
+13:52:33           [32m+[0m[0m type         = "UserAssigned"
+13:52:33         }
+13:52:33 
+13:52:33       [32m+[0m[0m site_config {
+13:52:33           [32m+[0m[0m always_on                               = true
+13:52:33           [32m+[0m[0m container_registry_use_managed_identity = false
+13:52:33           [32m+[0m[0m default_documents                       = (known after apply)
+13:52:33           [32m+[0m[0m detailed_error_logging_enabled          = (known after apply)
+13:52:33           [32m+[0m[0m ftps_state                              = "Disabled"
+13:52:33           [32m+[0m[0m http2_enabled                           = true
+13:52:33           [32m+[0m[0m ip_restriction_default_action           = "Allow"
+13:52:33           [32m+[0m[0m linux_fx_version                        = (known after apply)
+13:52:33           [32m+[0m[0m load_balancing_mode                     = "LeastRequests"
+13:52:33           [32m+[0m[0m local_mysql_enabled                     = false
+13:52:33           [32m+[0m[0m managed_pipeline_mode                   = "Integrated"
+13:52:33           [32m+[0m[0m minimum_tls_version                     = "1.2"
+13:52:33           [32m+[0m[0m remote_debugging_enabled                = false
+13:52:33           [32m+[0m[0m remote_debugging_version                = (known after apply)
+13:52:33           [32m+[0m[0m scm_ip_restriction_default_action       = "Allow"
+13:52:33           [32m+[0m[0m scm_minimum_tls_version                 = "1.2"
+13:52:33           [32m+[0m[0m scm_type                                = (known after apply)
+13:52:33           [32m+[0m[0m scm_use_main_ip_restriction             = false
+13:52:33           [32m+[0m[0m use_32_bit_worker                       = true
+13:52:33           [32m+[0m[0m vnet_route_all_enabled                  = false
+13:52:33           [32m+[0m[0m websockets_enabled                      = false
+13:52:33           [32m+[0m[0m worker_count                            = (known after apply)
+13:52:33 
+13:52:33           [32m+[0m[0m application_stack {
+13:52:33               [32m+[0m[0m docker_image_name   = "appsvc/staticsite:latest"
+13:52:33               [32m+[0m[0m docker_registry_url = "https://mcr.microsoft.com"
+13:52:33             }
+13:52:33         }
+13:52:33     }
+13:52:33 
+13:52:33 [1m  # azurerm_resource_group.app[0m will be created
+13:52:33 [0m  [32m+[0m[0m resource "azurerm_resource_group" "app" {
+13:52:33       [32m+[0m[0m id       = (known after apply)
+13:52:33       [32m+[0m[0m location = "centralindia"
+13:52:33       [32m+[0m[0m name     = "rg-vsf-dev"
+13:52:33       [32m+[0m[0m tags     = {
+13:52:33           [32m+[0m[0m "env"        = "dev"
+13:52:33           [32m+[0m[0m "layer"      = "app"
+13:52:33           [32m+[0m[0m "managed_by" = "terraform"
+13:52:33           [32m+[0m[0m "owner"      = "intern"
+13:52:33           [32m+[0m[0m "project"    = "vsf"
+13:52:33         }
+13:52:33     }
+13:52:33 
+13:52:33 [1m  # azurerm_service_plan.app[0m will be created
+13:52:33 [0m  [32m+[0m[0m resource "azurerm_service_plan" "app" {
+13:52:33       [32m+[0m[0m id                              = (known after apply)
+13:52:33       [32m+[0m[0m kind                            = (known after apply)
+13:52:33       [32m+[0m[0m location                        = "centralindia"
+13:52:33       [32m+[0m[0m maximum_elastic_worker_count    = (known after apply)
+13:52:33       [32m+[0m[0m name                            = "asp-vsf-dev"
+13:52:33       [32m+[0m[0m os_type                         = "Linux"
+13:52:33       [32m+[0m[0m per_site_scaling_enabled        = false
+13:52:33       [32m+[0m[0m premium_plan_auto_scale_enabled = false
+13:52:33       [32m+[0m[0m reserved                        = (known after apply)
+13:52:33       [32m+[0m[0m resource_group_name             = "rg-vsf-dev"
+13:52:33       [32m+[0m[0m sku_name                        = "P0v3"
+13:52:33       [32m+[0m[0m tags                            = {
+13:52:33           [32m+[0m[0m "env"        = "dev"
+13:52:33           [32m+[0m[0m "layer"      = "app"
+13:52:33           [32m+[0m[0m "managed_by" = "terraform"
+13:52:33           [32m+[0m[0m "owner"      = "intern"
+13:52:33           [32m+[0m[0m "project"    = "vsf"
+13:52:33         }
+13:52:33       [32m+[0m[0m worker_count                    = 1
+13:52:33     }
+13:52:33 
+13:52:33 [1m  # azurerm_user_assigned_identity.app[0m will be created
+13:52:33 [0m  [32m+[0m[0m resource "azurerm_user_assigned_identity" "app" {
+13:52:33       [32m+[0m[0m client_id           = (known after apply)
+13:52:33       [32m+[0m[0m id                  = (known after apply)
+13:52:33       [32m+[0m[0m location            = "centralindia"
+13:52:33       [32m+[0m[0m name                = (known after apply)
+13:52:33       [32m+[0m[0m principal_id        = (known after apply)
+13:52:33       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:52:33       [32m+[0m[0m tags                = {
+13:52:33           [32m+[0m[0m "env"        = "dev"
+13:52:33           [32m+[0m[0m "layer"      = "app"
+13:52:33           [32m+[0m[0m "managed_by" = "terraform"
+13:52:33           [32m+[0m[0m "owner"      = "intern"
+13:52:33           [32m+[0m[0m "project"    = "vsf"
+13:52:33         }
+13:52:33       [32m+[0m[0m tenant_id           = (known after apply)
+13:52:33     }
+13:52:33 
+13:52:33 [1m  # random_string.suffix[0m will be created
+13:52:33 [0m  [32m+[0m[0m resource "random_string" "suffix" {
+13:52:33       [32m+[0m[0m id          = (known after apply)
+13:52:33       [32m+[0m[0m length      = 6
+13:52:33       [32m+[0m[0m lower       = true
+13:52:33       [32m+[0m[0m min_lower   = 0
+13:52:33       [32m+[0m[0m min_numeric = 0
+13:52:33       [32m+[0m[0m min_special = 0
+13:52:33       [32m+[0m[0m min_upper   = 0
+13:52:33       [32m+[0m[0m number      = true
+13:52:33       [32m+[0m[0m numeric     = true
+13:52:33       [32m+[0m[0m result      = (known after apply)
+13:52:33       [32m+[0m[0m special     = false
+13:52:33       [32m+[0m[0m upper       = false
+13:52:33     }
+13:52:33 
+13:52:33 [1mPlan:[0m [0m5 to add, 0 to change, 0 to destroy.
+13:52:33 
+13:52:33 Changes to Outputs:
+13:52:33   [33m~[0m[0m app_identity_client_id         = "0df1b445-0b51-47dd-abd6-28fff1af756c" -> (known after apply)
+13:52:33   [33m~[0m[0m app_identity_id                = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-amugg2" -> (known after apply)
+13:52:33   [33m~[0m[0m app_identity_principal_id      = "3b48418a-d42d-4a3a-8867-1e068246120d" -> (known after apply)
+13:52:33   [32m+[0m[0m app_possible_outbound_ip_count = (known after apply)
+13:52:33   [32m+[0m[0m app_url                        = (known after apply)
+13:52:33   [33m~[0m[0m name_suffix                    = "amugg2" -> (known after apply)
+13:52:33 [33m╷[0m[0m
+13:52:33 [33m│[0m [0m[1m[33mWarning: [0m[0m[1mResource targeting is in effect[0m
+13:52:33 [33m│[0m [0m
+13:52:33 [33m│[0m [0m[0mYou are creating a plan with the -target option, which means that the
+13:52:33 [33m│[0m [0mresult of this plan may not represent all of the changes requested by the
+13:52:33 [33m│[0m [0mcurrent configuration.
+13:52:33 [33m│[0m [0m
+13:52:33 [33m│[0m [0mThe -target option is not for routine use, and is provided only for
+13:52:33 [33m│[0m [0mexceptional situations such as recovering from errors or mistakes, or when
+13:52:33 [33m│[0m [0mTerraform specifically suggests to use it as part of an error message.
+13:52:33 [33m╵[0m[0m
+13:52:33 [0m[1m
+13:52:33 Do you want to perform these actions?[0m
+13:52:33   Terraform will perform the actions described above.
+13:52:33   Only 'yes' will be accepted to approve.
+13:52:33 
+13:52:33   [1mEnter a value:[0m [0m
+13:52:33 [0m[1mrandom_string.suffix: Creating...[0m[0m
+13:52:33 [0m[1mrandom_string.suffix: Creation complete after 0s [id=muv1nf][0m
+13:52:43 [0m[1mazurerm_resource_group.app: Creating...[0m[0m
+13:52:53 [0m[1mazurerm_resource_group.app: Still creating... [00m10s elapsed][0m[0m
+13:53:03 [0m[1mazurerm_resource_group.app: Still creating... [00m20s elapsed][0m[0m
+13:53:11 [0m[1mazurerm_resource_group.app: Creation complete after 27s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m
+13:53:12 [0m[1mazurerm_user_assigned_identity.app: Creating...[0m[0m
+13:53:12 [0m[1mazurerm_service_plan.app: Creating...[0m[0m
+13:53:20 [0m[1mazurerm_user_assigned_identity.app: Creation complete after 8s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-muv1nf][0m
+13:53:22 [0m[1mazurerm_service_plan.app: Still creating... [00m10s elapsed][0m[0m
+13:53:32 [0m[1mazurerm_service_plan.app: Still creating... [00m20s elapsed][0m[0m
+13:53:42 [0m[1mazurerm_service_plan.app: Still creating... [00m30s elapsed][0m[0m
+13:53:52 [0m[1mazurerm_service_plan.app: Creation complete after 39s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev][0m
+13:53:53 [0m[1mazurerm_linux_web_app.app: Creating...[0m[0m
+13:54:03 [0m[1mazurerm_linux_web_app.app: Still creating... [00m10s elapsed][0m[0m
+13:54:13 [0m[1mazurerm_linux_web_app.app: Still creating... [00m20s elapsed][0m[0m
+13:54:23 [0m[1mazurerm_linux_web_app.app: Still creating... [00m30s elapsed][0m[0m
+13:54:33 [0m[1mazurerm_linux_web_app.app: Still creating... [00m40s elapsed][0m[0m
+13:54:43 [0m[1mazurerm_linux_web_app.app: Still creating... [00m50s elapsed][0m[0m
+13:54:53 [0m[1mazurerm_linux_web_app.app: Still creating... [01m00s elapsed][0m[0m
+13:54:59 [0m[1mazurerm_linux_web_app.app: Creation complete after 1m7s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-muv1nf][0m
+13:55:01 [33m╷[0m[0m
+13:55:01 [33m│[0m [0m[1m[33mWarning: [0m[0m[1mApplied changes may be incomplete[0m
+13:55:01 [33m│[0m [0m
+13:55:01 [33m│[0m [0m[0mThe plan was created with the -target option in effect, so some changes
+13:55:01 [33m│[0m [0mrequested in the configuration may have been ignored and the output values
+13:55:01 [33m│[0m [0mmay not be fully updated. Run the following command to verify that no other
+13:55:01 [33m│[0m [0mchanges are pending:
+13:55:01 [33m│[0m [0m    terraform plan
+13:55:01 [33m│[0m [0m
+13:55:01 [33m│[0m [0mNote that the -target option is not suitable for routine use, and is
+13:55:01 [33m│[0m [0mprovided only for exceptional situations such as recovering from errors or
+13:55:01 [33m│[0m [0mmistakes, or when Terraform specifically suggests to use it as part of an
+13:55:01 [33m│[0m [0merror message.
+13:55:01 [33m╵[0m[0m
+13:55:01 Releasing state lock. This may take a few moments...
+13:55:02 [0m[1m[32m
+13:55:02 Apply complete! Resources: 5 added, 0 changed, 0 destroyed.[0m
+13:55:02 [0m[1m[32m
+13:55:02 Outputs:
+13:55:02 
+13:55:02 [0mapp_identity_client_id = "f52e4f2c-008f-4229-9df8-c65c788859e1"
+13:55:02 app_identity_id = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-muv1nf"
+13:55:02 app_identity_principal_id = "d10dd2ea-5091-48cc-b37a-c11d0074c310"
+13:55:02 app_possible_outbound_ip_count = 18
+13:55:02 app_url = "https://app-vsf-muv1nf.azurewebsites.net"
+13:55:02 location = "centralindia"
+13:55:02 name_suffix = "muv1nf"
+13:55:02 resource_group_name = "rg-vsf-dev"
+13:55:02 >>> pha 2/2: apply toan bo
+13:55:02 terraform -chdir=infra/app apply
+13:55:04 Acquiring state lock. This may take a few moments...
+13:55:08 [0m[1mrandom_string.suffix: Refreshing state... [id=muv1nf][0m
+13:55:21 [0m[1mdata.azurerm_user_assigned_identity.gh_plan: Reading...[0m[0m
+13:55:21 [0m[1mdata.azurerm_client_config.current: Reading...[0m[0m
+13:55:21 [0m[1mazurerm_resource_group.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m
+13:55:21 [0m[1mdata.azurerm_client_config.current: Read complete after 0s [id=Y2xpZW50Q29uZmlncy9jbGllbnRJZD0wNGIwNzc5NS04ZGRiLTQ2MWEtYmJlZS0wMmY5ZTFiZjdiNDY7b2JqZWN0SWQ9NDIzMzBjZGEtNTM3OC00ZjdlLWJmNGItNjA4YWIyZTYzMmVjO3N1YnNjcmlwdGlvbklkPTk4ODBhYTM0LTFmYjQtNDQwMi1iNjkyLTIzMmE5MGYxYTdiYjt0ZW5hbnRJZD01OGY4Mjc4OS02Njk1LTRmNGEtYWJkYi0zNTc2NjhkNTVjZmY=][0m
+13:55:21 [0m[1mdata.azurerm_user_assigned_identity.gh_plan: Read complete after 1s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-bootstrap/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-gh-plan][0m
+13:55:22 [0m[1mazurerm_service_plan.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev][0m
+13:55:22 [0m[1mazurerm_user_assigned_identity.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-muv1nf][0m
+13:55:23 [0m[1mazurerm_linux_web_app.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-muv1nf][0m
+13:55:48 
+13:55:48 Terraform used the selected providers to generate the following execution
+13:55:48 plan. Resource actions are indicated with the following symbols:
+13:55:48   [32m+[0m create[0m
+13:55:48 
+13:55:48 Terraform will perform the following actions:
+13:55:48 
+13:55:48 [1m  # azurerm_container_registry.acr[0m will be created
+13:55:48 [0m  [32m+[0m[0m resource "azurerm_container_registry" "acr" {
+13:55:48       [32m+[0m[0m admin_enabled                                = false
+13:55:48       [32m+[0m[0m admin_password                               = (sensitive value)
+13:55:48       [32m+[0m[0m admin_username                               = (known after apply)
+13:55:48       [32m+[0m[0m azuread_authentication_as_arm_policy_enabled = true
+13:55:48       [32m+[0m[0m data_endpoint_host_names                     = (known after apply)
+13:55:48       [32m+[0m[0m encryption                                   = (known after apply)
+13:55:48       [32m+[0m[0m export_policy_enabled                        = true
+13:55:48       [32m+[0m[0m id                                           = (known after apply)
+13:55:48       [32m+[0m[0m location                                     = "centralindia"
+13:55:48       [32m+[0m[0m login_server                                 = (known after apply)
+13:55:48       [32m+[0m[0m name                                         = "acrvsfmuv1nf"
+13:55:48       [32m+[0m[0m network_rule_bypass_for_tasks_enabled        = false
+13:55:48       [32m+[0m[0m network_rule_bypass_option                   = "AzureServices"
+13:55:48       [32m+[0m[0m network_rule_set                             = (known after apply)
+13:55:48       [32m+[0m[0m public_network_access_enabled                = true
+13:55:48       [32m+[0m[0m resource_group_name                          = "rg-vsf-dev"
+13:55:48       [32m+[0m[0m role_assignment_mode                         = "LegacyRegistryPermissions"
+13:55:48       [32m+[0m[0m sku                                          = "Basic"
+13:55:48       [32m+[0m[0m tags                                         = {
+13:55:48           [32m+[0m[0m "env"        = "dev"
+13:55:48           [32m+[0m[0m "layer"      = "app"
+13:55:48           [32m+[0m[0m "managed_by" = "terraform"
+13:55:48           [32m+[0m[0m "owner"      = "intern"
+13:55:48           [32m+[0m[0m "project"    = "vsf"
+13:55:48         }
+13:55:48       [32m+[0m[0m trust_policy_enabled                         = false
+13:55:48       [32m+[0m[0m zone_redundancy_enabled                      = false
+13:55:48     }
+13:55:48 
+13:55:48 [1m  # azurerm_key_vault.kv[0m will be created
+13:55:48 [0m  [32m+[0m[0m resource "azurerm_key_vault" "kv" {
+13:55:48       [32m+[0m[0m access_policy                 = (known after apply)
+13:55:48       [32m+[0m[0m enable_rbac_authorization     = (known after apply)
+13:55:48       [32m+[0m[0m id                            = (known after apply)
+13:55:48       [32m+[0m[0m location                      = "centralindia"
+13:55:48       [32m+[0m[0m name                          = "kv-vsf-muv1nf"
+13:55:48       [32m+[0m[0m public_network_access_enabled = true
+13:55:48       [32m+[0m[0m purge_protection_enabled      = false
+13:55:48       [32m+[0m[0m rbac_authorization_enabled    = true
+13:55:48       [32m+[0m[0m resource_group_name           = "rg-vsf-dev"
+13:55:48       [32m+[0m[0m sku_name                      = "standard"
+13:55:48       [32m+[0m[0m soft_delete_retention_days    = 7
+13:55:48       [32m+[0m[0m tags                          = {
+13:55:48           [32m+[0m[0m "env"        = "dev"
+13:55:48           [32m+[0m[0m "layer"      = "app"
+13:55:48           [32m+[0m[0m "managed_by" = "terraform"
+13:55:48           [32m+[0m[0m "owner"      = "intern"
+13:55:48           [32m+[0m[0m "project"    = "vsf"
+13:55:48         }
+13:55:48       [32m+[0m[0m tenant_id                     = "58f82789-6695-4f4a-abdb-357668d55cff"
+13:55:48       [32m+[0m[0m vault_uri                     = (known after apply)
+13:55:48 
+13:55:48       [32m+[0m[0m contact (known after apply)
+13:55:48 
+13:55:48       [32m+[0m[0m network_acls (known after apply)
+13:55:48     }
+13:55:48 
+13:55:48 [1m  # azurerm_key_vault_secret.mysql_admin_password[0m will be created
+13:55:48 [0m  [32m+[0m[0m resource "azurerm_key_vault_secret" "mysql_admin_password" {
+13:55:48       [32m+[0m[0m id                      = (known after apply)
+13:55:48       [32m+[0m[0m key_vault_id            = (known after apply)
+13:55:48       [32m+[0m[0m name                    = "mysql-admin-password"
+13:55:48       [32m+[0m[0m resource_id             = (known after apply)
+13:55:48       [32m+[0m[0m resource_versionless_id = (known after apply)
+13:55:48       [32m+[0m[0m value                   = (sensitive value)
+13:55:48       [32m+[0m[0m value_wo                = (write-only attribute)
+13:55:48       [32m+[0m[0m version                 = (known after apply)
+13:55:48       [32m+[0m[0m versionless_id          = (known after apply)
+13:55:48     }
+13:55:48 
+13:55:48 [1m  # azurerm_linux_web_app_slot.staging[0m will be created
+13:55:48 [0m  [32m+[0m[0m resource "azurerm_linux_web_app_slot" "staging" {
+13:55:48       [32m+[0m[0m app_metadata                                   = (known after apply)
+13:55:48       [32m+[0m[0m app_service_id                                 = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-muv1nf"
+13:55:48       [32m+[0m[0m app_settings                                   = {
+13:55:48           [32m+[0m[0m "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+13:55:48           [32m+[0m[0m "WEBSITES_PORT"                       = "80"
+13:55:48         }
+13:55:48       [32m+[0m[0m client_affinity_enabled                        = false
+13:55:48       [32m+[0m[0m client_certificate_enabled                     = false
+13:55:48       [32m+[0m[0m client_certificate_mode                        = "Required"
+13:55:48       [32m+[0m[0m custom_domain_verification_id                  = (sensitive value)
+13:55:48       [32m+[0m[0m default_hostname                               = (known after apply)
+13:55:48       [32m+[0m[0m enabled                                        = true
+13:55:48       [32m+[0m[0m ftp_publish_basic_authentication_enabled       = false
+13:55:48       [32m+[0m[0m hosting_environment_id                         = (known after apply)
+13:55:48       [32m+[0m[0m https_only                                     = true
+13:55:48       [32m+[0m[0m id                                             = (known after apply)
+13:55:48       [32m+[0m[0m key_vault_reference_identity_id                = (known after apply)
+13:55:48       [32m+[0m[0m kind                                           = (known after apply)
+13:55:48       [32m+[0m[0m name                                           = "staging"
+13:55:48       [32m+[0m[0m outbound_ip_address_list                       = (known after apply)
+13:55:48       [32m+[0m[0m outbound_ip_addresses                          = (known after apply)
+13:55:48       [32m+[0m[0m possible_outbound_ip_address_list              = (known after apply)
+13:55:48       [32m+[0m[0m possible_outbound_ip_addresses                 = (known after apply)
+13:55:48       [32m+[0m[0m public_network_access_enabled                  = true
+13:55:48       [32m+[0m[0m site_credential                                = (sensitive value)
+13:55:48       [32m+[0m[0m tags                                           = {
+13:55:48           [32m+[0m[0m "env"        = "dev"
+13:55:48           [32m+[0m[0m "layer"      = "app"
+13:55:48           [32m+[0m[0m "managed_by" = "terraform"
+13:55:48           [32m+[0m[0m "owner"      = "intern"
+13:55:48           [32m+[0m[0m "project"    = "vsf"
+13:55:48         }
+13:55:48       [32m+[0m[0m virtual_network_backup_restore_enabled         = false
+13:55:48       [32m+[0m[0m vnet_image_pull_enabled                        = false
+13:55:48       [32m+[0m[0m webdeploy_publish_basic_authentication_enabled = false
+13:55:48       [32m+[0m[0m zip_deploy_file                                = (known after apply)
+13:55:48 
+13:55:48       [32m+[0m[0m identity {
+13:55:48           [32m+[0m[0m identity_ids = [
+13:55:48               [32m+[0m[0m "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-muv1nf",
+13:55:48             ]
+13:55:48           [32m+[0m[0m principal_id = (known after apply)
+13:55:48           [32m+[0m[0m tenant_id    = (known after apply)
+13:55:48           [32m+[0m[0m type         = "UserAssigned"
+13:55:48         }
+13:55:48 
+13:55:48       [32m+[0m[0m site_config {
+13:55:48           [32m+[0m[0m always_on                               = true
+13:55:48           [32m+[0m[0m container_registry_use_managed_identity = false
+13:55:48           [32m+[0m[0m default_documents                       = (known after apply)
+13:55:48           [32m+[0m[0m detailed_error_logging_enabled          = (known after apply)
+13:55:48           [32m+[0m[0m ftps_state                              = "Disabled"
+13:55:48           [32m+[0m[0m http2_enabled                           = true
+13:55:48           [32m+[0m[0m ip_restriction_default_action           = "Allow"
+13:55:48           [32m+[0m[0m linux_fx_version                        = (known after apply)
+13:55:48           [32m+[0m[0m load_balancing_mode                     = "LeastRequests"
+13:55:48           [32m+[0m[0m local_mysql_enabled                     = false
+13:55:48           [32m+[0m[0m managed_pipeline_mode                   = "Integrated"
+13:55:48           [32m+[0m[0m minimum_tls_version                     = "1.2"
+13:55:48           [32m+[0m[0m remote_debugging_enabled                = false
+13:55:48           [32m+[0m[0m remote_debugging_version                = (known after apply)
+13:55:48           [32m+[0m[0m scm_ip_restriction_default_action       = "Allow"
+13:55:48           [32m+[0m[0m scm_minimum_tls_version                 = "1.2"
+13:55:48           [32m+[0m[0m scm_type                                = (known after apply)
+13:55:48           [32m+[0m[0m scm_use_main_ip_restriction             = false
+13:55:48           [32m+[0m[0m use_32_bit_worker                       = true
+13:55:48           [32m+[0m[0m vnet_route_all_enabled                  = false
+13:55:48           [32m+[0m[0m websockets_enabled                      = false
+13:55:48           [32m+[0m[0m worker_count                            = (known after apply)
+13:55:48 
+13:55:48           [32m+[0m[0m application_stack {
+13:55:48               [32m+[0m[0m docker_image_name   = "appsvc/staticsite:latest"
+13:55:48               [32m+[0m[0m docker_registry_url = "https://mcr.microsoft.com"
+13:55:48             }
+13:55:48         }
+13:55:48     }
+13:55:48 
+13:55:48 [1m  # azurerm_mysql_flexible_database.app[0m will be created
+13:55:48 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_database" "app" {
+13:55:48       [32m+[0m[0m charset             = "utf8mb4"
+13:55:48       [32m+[0m[0m collation           = "utf8mb4_unicode_ci"
+13:55:48       [32m+[0m[0m id                  = (known after apply)
+13:55:48       [32m+[0m[0m name                = "appdb"
+13:55:48       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:48       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:48     }
+13:55:48 
+13:55:48 [1m  # azurerm_mysql_flexible_server.db[0m will be created
+13:55:48 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server" "db" {
+13:55:48       [32m+[0m[0m administrator_login           = "vsfadmin"
+13:55:48       [32m+[0m[0m administrator_password        = (sensitive value)
+13:55:48       [32m+[0m[0m administrator_password_wo     = (write-only attribute)
+13:55:48       [32m+[0m[0m backup_retention_days         = 1
+13:55:48       [32m+[0m[0m fqdn                          = (known after apply)
+13:55:48       [32m+[0m[0m geo_redundant_backup_enabled  = false
+13:55:48       [32m+[0m[0m id                            = (known after apply)
+13:55:48       [32m+[0m[0m location                      = "southeastasia"
+13:55:48       [32m+[0m[0m name                          = "mysql-vsf-muv1nf-sea"
+13:55:48       [32m+[0m[0m public_network_access         = (known after apply)
+13:55:48       [32m+[0m[0m public_network_access_enabled = (known after apply)
+13:55:48       [32m+[0m[0m replica_capacity              = (known after apply)
+13:55:48       [32m+[0m[0m replication_role              = (known after apply)
+13:55:48       [32m+[0m[0m resource_group_name           = "rg-vsf-dev"
+13:55:48       [32m+[0m[0m sku_name                      = "B_Standard_B1ms"
+13:55:48       [32m+[0m[0m tags                          = {
+13:55:48           [32m+[0m[0m "env"        = "dev"
+13:55:49           [32m+[0m[0m "layer"      = "app"
+13:55:49           [32m+[0m[0m "managed_by" = "terraform"
+13:55:49           [32m+[0m[0m "owner"      = "intern"
+13:55:49           [32m+[0m[0m "project"    = "vsf"
+13:55:49         }
+13:55:49       [32m+[0m[0m version                       = "8.4"
+13:55:49       [32m+[0m[0m zone                          = (known after apply)
+13:55:49 
+13:55:49       [32m+[0m[0m storage {
+13:55:49           [32m+[0m[0m auto_grow_enabled   = false
+13:55:49           [32m+[0m[0m io_scaling_enabled  = false
+13:55:49           [32m+[0m[0m iops                = (known after apply)
+13:55:49           [32m+[0m[0m log_on_disk_enabled = false
+13:55:49           [32m+[0m[0m size_gb             = 20
+13:55:49         }
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "13.71.21.87"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-13-71-21-87"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "13.71.21.87"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "13.71.30.16"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-13-71-30-16"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "13.71.30.16"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.204.224.7"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-204-224-7"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.204.224.7"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.207.80.224"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-207-80-224"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.207.80.224"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.234.39"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-234-39"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.234.39"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.128"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-128"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.128"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.133"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-133"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.133"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.146"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-146"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.146"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.158"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-158"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.158"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.200"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-200"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.200"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.224"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-224"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.224"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.251"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-251"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.251"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.238.36"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-238-36"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.238.36"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "20.219.239.22"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-20-219-239-22"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "20.219.239.22"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "52.172.197.124"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-52-172-197-124"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "52.172.197.124"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "52.172.198.32"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-52-172-198-32"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "52.172.198.32"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "52.172.204.47"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-52-172-204-47"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "52.172.204.47"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"][0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound" {
+13:55:49       [32m+[0m[0m end_ip_address      = "52.172.208.112"
+13:55:49       [32m+[0m[0m id                  = (known after apply)
+13:55:49       [32m+[0m[0m name                = "app-outbound-52-172-208-112"
+13:55:49       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:55:49       [32m+[0m[0m server_name         = "mysql-vsf-muv1nf-sea"
+13:55:49       [32m+[0m[0m start_ip_address    = "52.172.208.112"
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_role_assignment.acr_pull[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_role_assignment" "acr_pull" {
+13:55:49       [32m+[0m[0m condition_version                = (known after apply)
+13:55:49       [32m+[0m[0m id                               = (known after apply)
+13:55:49       [32m+[0m[0m name                             = (known after apply)
+13:55:49       [32m+[0m[0m principal_id                     = "d10dd2ea-5091-48cc-b37a-c11d0074c310"
+13:55:49       [32m+[0m[0m principal_type                   = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_id               = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_name             = "AcrPull"
+13:55:49       [32m+[0m[0m scope                            = (known after apply)
+13:55:49       [32m+[0m[0m skip_service_principal_aad_check = (known after apply)
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_role_assignment.gh_plan_web_config_reader[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_role_assignment" "gh_plan_web_config_reader" {
+13:55:49       [32m+[0m[0m condition_version                = (known after apply)
+13:55:49       [32m+[0m[0m id                               = (known after apply)
+13:55:49       [32m+[0m[0m name                             = (known after apply)
+13:55:49       [32m+[0m[0m principal_id                     = "1aa439c1-5ce9-4ea9-a300-a2c4da712159"
+13:55:49       [32m+[0m[0m principal_type                   = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_id               = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_name             = (known after apply)
+13:55:49       [32m+[0m[0m scope                            = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev"
+13:55:49       [32m+[0m[0m skip_service_principal_aad_check = (known after apply)
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_role_assignment.kv_secrets_officer_operator[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_role_assignment" "kv_secrets_officer_operator" {
+13:55:49       [32m+[0m[0m condition_version                = (known after apply)
+13:55:49       [32m+[0m[0m id                               = (known after apply)
+13:55:49       [32m+[0m[0m name                             = (known after apply)
+13:55:49       [32m+[0m[0m principal_id                     = "42330cda-5378-4f7e-bf4b-608ab2e632ec"
+13:55:49       [32m+[0m[0m principal_type                   = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_id               = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_name             = "Key Vault Secrets Officer"
+13:55:49       [32m+[0m[0m scope                            = (known after apply)
+13:55:49       [32m+[0m[0m skip_service_principal_aad_check = (known after apply)
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_role_assignment.kv_secrets_user_app[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_role_assignment" "kv_secrets_user_app" {
+13:55:49       [32m+[0m[0m condition_version                = (known after apply)
+13:55:49       [32m+[0m[0m id                               = (known after apply)
+13:55:49       [32m+[0m[0m name                             = (known after apply)
+13:55:49       [32m+[0m[0m principal_id                     = "d10dd2ea-5091-48cc-b37a-c11d0074c310"
+13:55:49       [32m+[0m[0m principal_type                   = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_id               = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_name             = "Key Vault Secrets User"
+13:55:49       [32m+[0m[0m scope                            = (known after apply)
+13:55:49       [32m+[0m[0m skip_service_principal_aad_check = (known after apply)
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_role_assignment.kv_secrets_user_gh_plan[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_role_assignment" "kv_secrets_user_gh_plan" {
+13:55:49       [32m+[0m[0m condition_version                = (known after apply)
+13:55:49       [32m+[0m[0m id                               = (known after apply)
+13:55:49       [32m+[0m[0m name                             = (known after apply)
+13:55:49       [32m+[0m[0m principal_id                     = "1aa439c1-5ce9-4ea9-a300-a2c4da712159"
+13:55:49       [32m+[0m[0m principal_type                   = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_id               = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_name             = "Key Vault Secrets User"
+13:55:49       [32m+[0m[0m scope                            = (known after apply)
+13:55:49       [32m+[0m[0m skip_service_principal_aad_check = (known after apply)
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # azurerm_role_definition.gh_plan_web_config_reader[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "azurerm_role_definition" "gh_plan_web_config_reader" {
+13:55:49       [32m+[0m[0m assignable_scopes           = [
+13:55:49           [32m+[0m[0m "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev",
+13:55:49         ]
+13:55:49       [32m+[0m[0m id                          = (known after apply)
+13:55:49       [32m+[0m[0m name                        = "vsf-gh-plan-web-config-reader"
+13:55:49       [32m+[0m[0m role_definition_id          = (known after apply)
+13:55:49       [32m+[0m[0m role_definition_resource_id = (known after apply)
+13:55:49       [32m+[0m[0m scope                       = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev"
+13:55:49 
+13:55:49       [32m+[0m[0m permissions {
+13:55:49           [32m+[0m[0m actions     = [
+13:55:49               [32m+[0m[0m "Microsoft.Web/sites/config/list/action",
+13:55:49               [32m+[0m[0m "Microsoft.Web/sites/slots/config/list/action",
+13:55:49             ]
+13:55:49           [32m+[0m[0m not_actions = []
+13:55:49         }
+13:55:49     }
+13:55:49 
+13:55:49 [1m  # random_password.mysql_admin[0m will be created
+13:55:49 [0m  [32m+[0m[0m resource "random_password" "mysql_admin" {
+13:55:49       [32m+[0m[0m bcrypt_hash      = (sensitive value)
+13:55:49       [32m+[0m[0m id               = (known after apply)
+13:55:49       [32m+[0m[0m length           = 32
+13:55:49       [32m+[0m[0m lower            = true
+13:55:49       [32m+[0m[0m min_lower        = 2
+13:55:49       [32m+[0m[0m min_numeric      = 2
+13:55:49       [32m+[0m[0m min_special      = 2
+13:55:49       [32m+[0m[0m min_upper        = 2
+13:55:49       [32m+[0m[0m number           = true
+13:55:49       [32m+[0m[0m numeric          = true
+13:55:49       [32m+[0m[0m override_special = "-_.~!*"
+13:55:49       [32m+[0m[0m result           = (sensitive value)
+13:55:49       [32m+[0m[0m special          = true
+13:55:49       [32m+[0m[0m upper            = true
+13:55:49     }
+13:55:49 
+13:55:49 [1mPlan:[0m [0m31 to add, 0 to change, 0 to destroy.
+13:55:49 
+13:55:49 Changes to Outputs:
+13:55:49   [32m+[0m[0m acr_login_server               = (known after apply)
+13:55:49   [32m+[0m[0m acr_name                       = "acrvsfmuv1nf"
+13:55:49   [32m+[0m[0m key_vault_name                 = "kv-vsf-muv1nf"
+13:55:49   [32m+[0m[0m key_vault_uri                  = (known after apply)
+13:55:49   [32m+[0m[0m mysql_database_name            = "appdb"
+13:55:49   [32m+[0m[0m mysql_fqdn                     = (known after apply)
+13:55:49   [32m+[0m[0m staging_url                    = (known after apply)
+13:55:49 [0m[1m
+13:55:49 Do you want to perform these actions?[0m
+13:55:49   Terraform will perform the actions described above.
+13:55:49   Only 'yes' will be accepted to approve.
+13:55:49 
+13:55:49   [1mEnter a value:[0m [0m
+13:55:49 [0m[1mrandom_password.mysql_admin: Creating...[0m[0m
+13:55:49 [0m[1mrandom_password.mysql_admin: Creation complete after 0s [id=none][0m
+13:55:57 [0m[1mazurerm_role_definition.gh_plan_web_config_reader: Creating...[0m[0m
+13:55:57 [0m[1mazurerm_key_vault.kv: Creating...[0m[0m
+13:55:57 [0m[1mazurerm_mysql_flexible_server.db: Creating...[0m[0m
+13:55:57 [0m[1mazurerm_container_registry.acr: Creating...[0m[0m
+13:55:57 [0m[1mazurerm_linux_web_app_slot.staging: Creating...[0m[0m
+13:56:03 [0m[1mazurerm_role_definition.gh_plan_web_config_reader: Creation complete after 7s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/providers/Microsoft.Authorization/roleDefinitions/9da78b30-b72b-5ec2-3260-3c21deaab7a7|/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m
+13:56:03 [0m[1mazurerm_role_assignment.gh_plan_web_config_reader: Creating...[0m[0m
+13:56:07 [0m[1mazurerm_key_vault.kv: Still creating... [00m10s elapsed][0m[0m
+13:56:07 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [00m10s elapsed][0m[0m
+13:56:07 [0m[1mazurerm_container_registry.acr: Still creating... [00m10s elapsed][0m[0m
+13:56:07 [0m[1mazurerm_linux_web_app_slot.staging: Still creating... [00m10s elapsed][0m[0m
+13:56:13 [0m[1mazurerm_role_assignment.gh_plan_web_config_reader: Still creating... [00m10s elapsed][0m[0m
+13:56:16 [0m[1mazurerm_container_registry.acr: Creation complete after 20s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ContainerRegistry/registries/acrvsfmuv1nf][0m
+13:56:17 [0m[1mazurerm_key_vault.kv: Still creating... [00m20s elapsed][0m[0m
+13:56:17 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [00m20s elapsed][0m[0m
+13:56:17 [0m[1mazurerm_linux_web_app_slot.staging: Still creating... [00m20s elapsed][0m[0m
+13:56:17 [0m[1mazurerm_role_assignment.acr_pull: Creating...[0m[0m
+13:56:23 [0m[1mazurerm_role_assignment.gh_plan_web_config_reader: Still creating... [00m20s elapsed][0m[0m
+13:56:27 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [00m30s elapsed][0m[0m
+13:56:27 [0m[1mazurerm_key_vault.kv: Still creating... [00m30s elapsed][0m[0m
+13:56:27 [0m[1mazurerm_linux_web_app_slot.staging: Still creating... [00m30s elapsed][0m[0m
+13:56:27 [0m[1mazurerm_role_assignment.acr_pull: Still creating... [00m10s elapsed][0m[0m
+13:56:32 [0m[1mazurerm_role_assignment.gh_plan_web_config_reader: Creation complete after 28s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Authorization/roleAssignments/cc4e8cfe-fdcd-be7d-5199-75e6aa98e989][0m
+13:56:37 [0m[1mazurerm_key_vault.kv: Still creating... [00m40s elapsed][0m[0m
+13:56:37 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [00m40s elapsed][0m[0m
+13:56:37 [0m[1mazurerm_linux_web_app_slot.staging: Still creating... [00m40s elapsed][0m[0m
+13:56:37 [0m[1mazurerm_role_assignment.acr_pull: Still creating... [00m20s elapsed][0m[0m
+13:56:45 [0m[1mazurerm_role_assignment.acr_pull: Creation complete after 28s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ContainerRegistry/registries/acrvsfmuv1nf/providers/Microsoft.Authorization/roleAssignments/14a053b3-89c4-9697-7ef5-b6f202df61cf][0m
+13:56:47 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [00m50s elapsed][0m[0m
+13:56:47 [0m[1mazurerm_key_vault.kv: Still creating... [00m50s elapsed][0m[0m
+13:56:47 [0m[1mazurerm_linux_web_app_slot.staging: Still creating... [00m50s elapsed][0m[0m
+13:56:57 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [01m00s elapsed][0m[0m
+13:56:57 [0m[1mazurerm_key_vault.kv: Still creating... [01m00s elapsed][0m[0m
+13:56:57 [0m[1mazurerm_linux_web_app_slot.staging: Still creating... [01m00s elapsed][0m[0m
+13:57:03 [0m[1mazurerm_linux_web_app_slot.staging: Creation complete after 1m6s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-muv1nf/slots/staging][0m
+13:57:07 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [01m10s elapsed][0m[0m
+13:57:07 [0m[1mazurerm_key_vault.kv: Still creating... [01m10s elapsed][0m[0m
+13:57:17 [0m[1mazurerm_key_vault.kv: Still creating... [01m20s elapsed][0m[0m
+13:57:17 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [01m20s elapsed][0m[0m
+13:57:27 [0m[1mazurerm_key_vault.kv: Still creating... [01m30s elapsed][0m[0m
+13:57:27 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [01m30s elapsed][0m[0m
+13:57:37 [0m[1mazurerm_key_vault.kv: Still creating... [01m40s elapsed][0m[0m
+13:57:37 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [01m40s elapsed][0m[0m
+13:57:47 [0m[1mazurerm_key_vault.kv: Still creating... [01m50s elapsed][0m[0m
+13:57:47 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [01m50s elapsed][0m[0m
+13:57:57 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [02m00s elapsed][0m[0m
+13:57:57 [0m[1mazurerm_key_vault.kv: Still creating... [02m00s elapsed][0m[0m
+13:58:07 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [02m10s elapsed][0m[0m
+13:58:07 [0m[1mazurerm_key_vault.kv: Still creating... [02m10s elapsed][0m[0m
+13:58:17 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [02m20s elapsed][0m[0m
+13:58:17 [0m[1mazurerm_key_vault.kv: Still creating... [02m20s elapsed][0m[0m
+13:58:27 [0m[1mazurerm_key_vault.kv: Still creating... [02m30s elapsed][0m[0m
+13:58:27 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [02m30s elapsed][0m[0m
+13:58:34 [0m[1mazurerm_key_vault.kv: Creation complete after 2m38s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-muv1nf][0m
+13:58:36 [0m[1mazurerm_role_assignment.kv_secrets_user_app: Creating...[0m[0m
+13:58:36 [0m[1mazurerm_role_assignment.kv_secrets_officer_operator: Creating...[0m[0m
+13:58:36 [0m[1mazurerm_role_assignment.kv_secrets_user_gh_plan: Creating...[0m[0m
+13:58:37 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [02m40s elapsed][0m[0m
+13:58:46 [0m[1mazurerm_role_assignment.kv_secrets_officer_operator: Still creating... [00m10s elapsed][0m[0m
+13:58:46 [0m[1mazurerm_role_assignment.kv_secrets_user_gh_plan: Still creating... [00m10s elapsed][0m[0m
+13:58:46 [0m[1mazurerm_role_assignment.kv_secrets_user_app: Still creating... [00m10s elapsed][0m[0m
+13:58:47 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [02m50s elapsed][0m[0m
+13:58:56 [0m[1mazurerm_role_assignment.kv_secrets_user_app: Still creating... [00m20s elapsed][0m[0m
+13:58:56 [0m[1mazurerm_role_assignment.kv_secrets_user_gh_plan: Still creating... [00m20s elapsed][0m[0m
+13:58:56 [0m[1mazurerm_role_assignment.kv_secrets_officer_operator: Still creating... [00m20s elapsed][0m[0m
+13:58:57 [0m[1mazurerm_mysql_flexible_server.db: Still creating... [03m00s elapsed][0m[0m
+13:59:03 [0m[1mazurerm_role_assignment.kv_secrets_user_gh_plan: Creation complete after 27s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-muv1nf/providers/Microsoft.Authorization/roleAssignments/d12737fb-f562-b04b-26f0-3646eb8a37e6][0m
+13:59:04 [0m[1mazurerm_role_assignment.kv_secrets_user_app: Creation complete after 29s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-muv1nf/providers/Microsoft.Authorization/roleAssignments/bbcc3996-f962-db45-31ba-3f3ca746b194][0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server.db: Creation complete after 3m8s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea][0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_mysql_flexible_database.app: Creating...[0m[0m
+13:59:05 [0m[1mazurerm_role_assignment.kv_secrets_officer_operator: Creation complete after 29s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-muv1nf/providers/Microsoft.Authorization/roleAssignments/4d107346-2321-2b46-ed01-4dedb3de91ce][0m
+13:59:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Creating...[0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [00m10s elapsed][0m[0m
+13:59:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [00m10s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [00m20s elapsed][0m[0m
+13:59:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [00m20s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Still creating... [00m30s elapsed][0m[0m
+13:59:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [00m30s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [00m40s elapsed][0m[0m
+13:59:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [00m40s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [00m50s elapsed][0m[0m
+13:59:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [00m50s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [01m00s elapsed][0m[0m
+14:00:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [01m00s elapsed][0m[0m
+14:00:07 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.208.112"]: Creation complete after 1m3s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-52-172-208-112][0m
+14:00:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Creating...[0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [01m10s elapsed][0m[0m
+14:00:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [01m10s elapsed][0m[0m
+14:00:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [00m10s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [01m20s elapsed][0m[0m
+14:00:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [01m20s elapsed][0m[0m
+14:00:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [00m20s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [01m30s elapsed][0m[0m
+14:00:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [01m30s elapsed][0m[0m
+14:00:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [00m30s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [01m40s elapsed][0m[0m
+14:00:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [01m40s elapsed][0m[0m
+14:00:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [00m40s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [01m50s elapsed][0m[0m
+14:00:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [01m50s elapsed][0m[0m
+14:00:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [00m50s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [02m00s elapsed][0m[0m
+14:01:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Still creating... [02m00s elapsed][0m[0m
+14:01:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [01m00s elapsed][0m[0m
+14:01:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.197.124"]: Creation complete after 2m8s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-52-172-197-124][0m
+14:01:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Creating...[0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [02m10s elapsed][0m[0m
+14:01:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [02m10s elapsed][0m[0m
+14:01:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [01m10s elapsed][0m[0m
+14:01:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [00m10s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [02m20s elapsed][0m[0m
+14:01:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [02m20s elapsed][0m[0m
+14:01:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [01m20s elapsed][0m[0m
+14:01:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [00m20s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [02m30s elapsed][0m[0m
+14:01:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [02m30s elapsed][0m[0m
+14:01:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [01m30s elapsed][0m[0m
+14:01:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [00m30s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [02m40s elapsed][0m[0m
+14:01:45 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [02m40s elapsed][0m[0m
+14:01:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [01m40s elapsed][0m[0m
+14:01:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [00m40s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [02m50s elapsed][0m[0m
+14:01:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [02m50s elapsed][0m[0m
+14:01:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [01m50s elapsed][0m[0m
+14:02:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [00m50s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [03m00s elapsed][0m[0m
+14:02:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [03m00s elapsed][0m[0m
+14:02:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [02m00s elapsed][0m[0m
+14:02:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.234.39"]: Creation complete after 3m6s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-234-39][0m
+14:02:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.251"]: Creation complete after 3m7s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-251][0m
+14:02:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Creating...[0m[0m
+14:02:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Creating...[0m[0m
+14:02:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [01m00s elapsed][0m[0m
+14:02:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [03m10s elapsed][0m[0m
+14:02:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [03m10s elapsed][0m[0m
+14:02:15 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [03m10s elapsed][0m[0m
+14:02:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [03m10s elapsed][0m[0m
+14:02:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [03m10s elapsed][0m[0m
+14:02:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [03m10s elapsed][0m[0m
+14:02:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [02m10s elapsed][0m[0m
+14:02:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [00m10s elapsed][0m[0m
+14:02:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [00m10s elapsed][0m[0m
+14:02:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [01m10s elapsed][0m[0m
+14:02:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [03m20s elapsed][0m[0m
+14:02:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [03m20s elapsed][0m[0m
+14:02:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [03m20s elapsed][0m[0m
+14:02:25 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [03m20s elapsed][0m[0m
+14:02:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [03m20s elapsed][0m[0m
+14:02:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [03m20s elapsed][0m[0m
+14:02:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [02m20s elapsed][0m[0m
+14:02:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [00m20s elapsed][0m[0m
+14:02:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [00m20s elapsed][0m[0m
+14:02:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [01m20s elapsed][0m[0m
+14:02:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [03m30s elapsed][0m[0m
+14:02:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [03m30s elapsed][0m[0m
+14:02:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [03m30s elapsed][0m[0m
+14:02:35 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [03m30s elapsed][0m[0m
+14:02:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [03m30s elapsed][0m[0m
+14:02:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [03m30s elapsed][0m[0m
+14:02:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [02m30s elapsed][0m[0m
+14:02:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [00m30s elapsed][0m[0m
+14:02:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [00m30s elapsed][0m[0m
+14:02:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [01m30s elapsed][0m[0m
+14:02:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [03m40s elapsed][0m[0m
+14:02:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [03m40s elapsed][0m[0m
+14:02:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [03m40s elapsed][0m[0m
+14:02:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [03m40s elapsed][0m[0m
+14:02:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [03m40s elapsed][0m[0m
+14:02:45 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [03m40s elapsed][0m[0m
+14:02:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [02m40s elapsed][0m[0m
+14:02:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [00m40s elapsed][0m[0m
+14:02:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [00m40s elapsed][0m[0m
+14:02:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [01m40s elapsed][0m[0m
+14:02:55 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [03m50s elapsed][0m[0m
+14:02:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [03m50s elapsed][0m[0m
+14:02:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [03m50s elapsed][0m[0m
+14:02:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [03m50s elapsed][0m[0m
+14:02:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [03m50s elapsed][0m[0m
+14:02:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [03m50s elapsed][0m[0m
+14:02:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [02m50s elapsed][0m[0m
+14:03:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [00m50s elapsed][0m[0m
+14:03:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [00m50s elapsed][0m[0m
+14:03:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [01m50s elapsed][0m[0m
+14:03:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [04m00s elapsed][0m[0m
+14:03:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [04m00s elapsed][0m[0m
+14:03:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [04m00s elapsed][0m[0m
+14:03:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [04m00s elapsed][0m[0m
+14:03:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [04m00s elapsed][0m[0m
+14:03:05 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [04m00s elapsed][0m[0m
+14:03:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [03m00s elapsed][0m[0m
+14:03:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [01m00s elapsed][0m[0m
+14:03:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [01m00s elapsed][0m[0m
+14:03:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [02m00s elapsed][0m[0m
+14:03:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Still creating... [04m10s elapsed][0m[0m
+14:03:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [04m10s elapsed][0m[0m
+14:03:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [04m10s elapsed][0m[0m
+14:03:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [04m10s elapsed][0m[0m
+14:03:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [04m10s elapsed][0m[0m
+14:03:15 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [04m10s elapsed][0m[0m
+14:03:17 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.224"]: Creation complete after 4m13s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-224][0m
+14:03:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [03m10s elapsed][0m[0m
+14:03:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Creating...[0m[0m
+14:03:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [01m10s elapsed][0m[0m
+14:03:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [01m10s elapsed][0m[0m
+14:03:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [02m10s elapsed][0m[0m
+14:03:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [04m20s elapsed][0m[0m
+14:03:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [04m20s elapsed][0m[0m
+14:03:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [04m20s elapsed][0m[0m
+14:03:25 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [04m20s elapsed][0m[0m
+14:03:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [04m20s elapsed][0m[0m
+14:03:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [03m20s elapsed][0m[0m
+14:03:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [00m10s elapsed][0m[0m
+14:03:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [01m20s elapsed][0m[0m
+14:03:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [01m20s elapsed][0m[0m
+14:03:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [02m20s elapsed][0m[0m
+14:03:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [04m30s elapsed][0m[0m
+14:03:35 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [04m30s elapsed][0m[0m
+14:03:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [04m30s elapsed][0m[0m
+14:03:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [04m30s elapsed][0m[0m
+14:03:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [04m30s elapsed][0m[0m
+14:03:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [03m30s elapsed][0m[0m
+14:03:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [00m20s elapsed][0m[0m
+14:03:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [01m30s elapsed][0m[0m
+14:03:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [01m30s elapsed][0m[0m
+14:03:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [02m30s elapsed][0m[0m
+14:03:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [04m40s elapsed][0m[0m
+14:03:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [04m40s elapsed][0m[0m
+14:03:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [04m40s elapsed][0m[0m
+14:03:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [04m40s elapsed][0m[0m
+14:03:45 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [04m40s elapsed][0m[0m
+14:03:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [03m40s elapsed][0m[0m
+14:03:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [00m30s elapsed][0m[0m
+14:03:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [01m40s elapsed][0m[0m
+14:03:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [01m40s elapsed][0m[0m
+14:03:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [02m40s elapsed][0m[0m
+14:03:55 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [04m50s elapsed][0m[0m
+14:03:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [04m50s elapsed][0m[0m
+14:03:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [04m50s elapsed][0m[0m
+14:03:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [04m50s elapsed][0m[0m
+14:03:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [04m50s elapsed][0m[0m
+14:03:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [00m40s elapsed][0m[0m
+14:03:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [03m50s elapsed][0m[0m
+14:04:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [01m50s elapsed][0m[0m
+14:04:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [01m50s elapsed][0m[0m
+14:04:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [02m50s elapsed][0m[0m
+14:04:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [05m00s elapsed][0m[0m
+14:04:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [05m00s elapsed][0m[0m
+14:04:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [05m00s elapsed][0m[0m
+14:04:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [05m00s elapsed][0m[0m
+14:04:05 [0m[1mazurerm_mysql_flexible_database.app: Still creating... [05m00s elapsed][0m[0m
+14:04:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [04m00s elapsed][0m[0m
+14:04:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [00m50s elapsed][0m[0m
+14:04:09 [0m[1mazurerm_mysql_flexible_database.app: Creation complete after 5m4s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/databases/appdb][0m
+14:04:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Creating...[0m[0m
+14:04:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [02m00s elapsed][0m[0m
+14:04:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [02m00s elapsed][0m[0m
+14:04:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [03m00s elapsed][0m[0m
+14:04:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [05m10s elapsed][0m[0m
+14:04:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [05m10s elapsed][0m[0m
+14:04:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [05m10s elapsed][0m[0m
+14:04:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [05m10s elapsed][0m[0m
+14:04:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [01m00s elapsed][0m[0m
+14:04:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [04m10s elapsed][0m[0m
+14:04:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [00m10s elapsed][0m[0m
+14:04:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [02m10s elapsed][0m[0m
+14:04:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [02m10s elapsed][0m[0m
+14:04:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [03m10s elapsed][0m[0m
+14:04:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [05m20s elapsed][0m[0m
+14:04:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [05m20s elapsed][0m[0m
+14:04:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [05m20s elapsed][0m[0m
+14:04:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [05m20s elapsed][0m[0m
+14:04:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [01m10s elapsed][0m[0m
+14:04:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [04m20s elapsed][0m[0m
+14:04:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [00m20s elapsed][0m[0m
+14:04:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [02m20s elapsed][0m[0m
+14:04:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [02m20s elapsed][0m[0m
+14:04:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [03m20s elapsed][0m[0m
+14:04:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [05m30s elapsed][0m[0m
+14:04:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [05m30s elapsed][0m[0m
+14:04:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [05m30s elapsed][0m[0m
+14:04:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [05m30s elapsed][0m[0m
+14:04:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [01m20s elapsed][0m[0m
+14:04:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [04m30s elapsed][0m[0m
+14:04:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [00m30s elapsed][0m[0m
+14:04:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [02m30s elapsed][0m[0m
+14:04:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [02m30s elapsed][0m[0m
+14:04:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [03m30s elapsed][0m[0m
+14:04:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [05m40s elapsed][0m[0m
+14:04:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [05m40s elapsed][0m[0m
+14:04:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [05m40s elapsed][0m[0m
+14:04:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [05m40s elapsed][0m[0m
+14:04:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [04m40s elapsed][0m[0m
+14:04:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [01m30s elapsed][0m[0m
+14:04:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [00m40s elapsed][0m[0m
+14:04:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [02m40s elapsed][0m[0m
+14:04:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [02m40s elapsed][0m[0m
+14:04:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [03m40s elapsed][0m[0m
+14:04:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [05m50s elapsed][0m[0m
+14:04:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [05m50s elapsed][0m[0m
+14:04:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [05m50s elapsed][0m[0m
+14:04:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [05m50s elapsed][0m[0m
+14:04:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [04m50s elapsed][0m[0m
+14:04:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [01m40s elapsed][0m[0m
+14:05:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [00m50s elapsed][0m[0m
+14:05:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [02m50s elapsed][0m[0m
+14:05:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [02m50s elapsed][0m[0m
+14:05:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [03m50s elapsed][0m[0m
+14:05:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [06m00s elapsed][0m[0m
+14:05:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [06m00s elapsed][0m[0m
+14:05:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [06m00s elapsed][0m[0m
+14:05:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [06m00s elapsed][0m[0m
+14:05:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [05m00s elapsed][0m[0m
+14:05:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [01m50s elapsed][0m[0m
+14:05:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [01m00s elapsed][0m[0m
+14:05:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [03m00s elapsed][0m[0m
+14:05:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [03m00s elapsed][0m[0m
+14:05:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [04m00s elapsed][0m[0m
+14:05:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [06m10s elapsed][0m[0m
+14:05:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Still creating... [06m10s elapsed][0m[0m
+14:05:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [06m10s elapsed][0m[0m
+14:05:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [06m10s elapsed][0m[0m
+14:05:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [02m00s elapsed][0m[0m
+14:05:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [05m10s elapsed][0m[0m
+14:05:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [01m10s elapsed][0m[0m
+14:05:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [03m10s elapsed][0m[0m
+14:05:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [03m10s elapsed][0m[0m
+14:05:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.128"]: Creation complete after 6m17s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-128][0m
+14:05:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Creating...[0m[0m
+14:05:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [04m10s elapsed][0m[0m
+14:05:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [06m20s elapsed][0m[0m
+14:05:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [06m20s elapsed][0m[0m
+14:05:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [06m20s elapsed][0m[0m
+14:05:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [05m20s elapsed][0m[0m
+14:05:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [02m10s elapsed][0m[0m
+14:05:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [01m20s elapsed][0m[0m
+14:05:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [03m20s elapsed][0m[0m
+14:05:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [03m20s elapsed][0m[0m
+14:05:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [00m10s elapsed][0m[0m
+14:05:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [04m20s elapsed][0m[0m
+14:05:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [06m30s elapsed][0m[0m
+14:05:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [06m30s elapsed][0m[0m
+14:05:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [06m30s elapsed][0m[0m
+14:05:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [02m20s elapsed][0m[0m
+14:05:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [05m30s elapsed][0m[0m
+14:05:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [01m30s elapsed][0m[0m
+14:05:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [03m30s elapsed][0m[0m
+14:05:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [03m30s elapsed][0m[0m
+14:05:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [00m20s elapsed][0m[0m
+14:05:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [04m30s elapsed][0m[0m
+14:05:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [06m40s elapsed][0m[0m
+14:05:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [06m40s elapsed][0m[0m
+14:05:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [06m40s elapsed][0m[0m
+14:05:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [05m40s elapsed][0m[0m
+14:05:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [02m30s elapsed][0m[0m
+14:05:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [01m40s elapsed][0m[0m
+14:05:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [03m40s elapsed][0m[0m
+14:05:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [03m40s elapsed][0m[0m
+14:05:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [00m30s elapsed][0m[0m
+14:05:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [04m40s elapsed][0m[0m
+14:05:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [06m50s elapsed][0m[0m
+14:05:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [06m50s elapsed][0m[0m
+14:05:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [06m50s elapsed][0m[0m
+14:05:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [02m40s elapsed][0m[0m
+14:05:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [05m50s elapsed][0m[0m
+14:06:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [01m50s elapsed][0m[0m
+14:06:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [03m50s elapsed][0m[0m
+14:06:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [03m50s elapsed][0m[0m
+14:06:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [00m40s elapsed][0m[0m
+14:06:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [04m51s elapsed][0m[0m
+14:06:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [07m00s elapsed][0m[0m
+14:06:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [07m00s elapsed][0m[0m
+14:06:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [07m00s elapsed][0m[0m
+14:06:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [06m00s elapsed][0m[0m
+14:06:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [02m50s elapsed][0m[0m
+14:06:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [02m00s elapsed][0m[0m
+14:06:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [04m00s elapsed][0m[0m
+14:06:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [04m00s elapsed][0m[0m
+14:06:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [00m50s elapsed][0m[0m
+14:06:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [05m01s elapsed][0m[0m
+14:06:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [07m10s elapsed][0m[0m
+14:06:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [07m10s elapsed][0m[0m
+14:06:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Still creating... [07m10s elapsed][0m[0m
+14:06:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [03m00s elapsed][0m[0m
+14:06:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [06m10s elapsed][0m[0m
+14:06:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [02m10s elapsed][0m[0m
+14:06:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [04m10s elapsed][0m[0m
+14:06:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [04m10s elapsed][0m[0m
+14:06:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.36"]: Creation complete after 7m18s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-36][0m
+14:06:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [01m00s elapsed][0m[0m
+14:06:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Creating...[0m[0m
+14:06:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [05m11s elapsed][0m[0m
+14:06:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [07m20s elapsed][0m[0m
+14:06:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [07m20s elapsed][0m[0m
+14:06:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [03m10s elapsed][0m[0m
+14:06:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [06m20s elapsed][0m[0m
+14:06:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [02m20s elapsed][0m[0m
+14:06:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [04m20s elapsed][0m[0m
+14:06:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [04m20s elapsed][0m[0m
+14:06:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [01m10s elapsed][0m[0m
+14:06:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [00m10s elapsed][0m[0m
+14:06:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [05m21s elapsed][0m[0m
+14:06:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [07m30s elapsed][0m[0m
+14:06:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [07m30s elapsed][0m[0m
+14:06:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [06m30s elapsed][0m[0m
+14:06:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [03m20s elapsed][0m[0m
+14:06:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [02m30s elapsed][0m[0m
+14:06:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [04m30s elapsed][0m[0m
+14:06:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [04m30s elapsed][0m[0m
+14:06:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [01m20s elapsed][0m[0m
+14:06:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [00m20s elapsed][0m[0m
+14:06:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [05m31s elapsed][0m[0m
+14:06:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [07m40s elapsed][0m[0m
+14:06:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [07m40s elapsed][0m[0m
+14:06:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [03m30s elapsed][0m[0m
+14:06:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [06m40s elapsed][0m[0m
+14:06:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [02m40s elapsed][0m[0m
+14:06:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [04m40s elapsed][0m[0m
+14:06:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [04m40s elapsed][0m[0m
+14:06:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [01m30s elapsed][0m[0m
+14:06:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [00m30s elapsed][0m[0m
+14:06:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [05m41s elapsed][0m[0m
+14:06:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [07m50s elapsed][0m[0m
+14:06:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [07m50s elapsed][0m[0m
+14:06:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [06m50s elapsed][0m[0m
+14:06:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [03m40s elapsed][0m[0m
+14:07:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [02m50s elapsed][0m[0m
+14:07:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [04m50s elapsed][0m[0m
+14:07:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [04m50s elapsed][0m[0m
+14:07:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [01m40s elapsed][0m[0m
+14:07:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [00m40s elapsed][0m[0m
+14:07:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [05m51s elapsed][0m[0m
+14:07:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [08m00s elapsed][0m[0m
+14:07:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [08m00s elapsed][0m[0m
+14:07:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [07m00s elapsed][0m[0m
+14:07:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [03m50s elapsed][0m[0m
+14:07:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [03m00s elapsed][0m[0m
+14:07:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [05m00s elapsed][0m[0m
+14:07:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [05m00s elapsed][0m[0m
+14:07:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [01m50s elapsed][0m[0m
+14:07:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [00m50s elapsed][0m[0m
+14:07:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [06m01s elapsed][0m[0m
+14:07:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Still creating... [08m10s elapsed][0m[0m
+14:07:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [08m10s elapsed][0m[0m
+14:07:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [04m00s elapsed][0m[0m
+14:07:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [07m10s elapsed][0m[0m
+14:07:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [03m10s elapsed][0m[0m
+14:07:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.200"]: Creation complete after 8m17s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-200][0m
+14:07:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [05m10s elapsed][0m[0m
+14:07:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [05m10s elapsed][0m[0m
+14:07:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Creating...[0m[0m
+14:07:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [02m00s elapsed][0m[0m
+14:07:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [01m00s elapsed][0m[0m
+14:07:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [06m11s elapsed][0m[0m
+14:07:25 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [08m20s elapsed][0m[0m
+14:07:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [07m20s elapsed][0m[0m
+14:07:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [04m10s elapsed][0m[0m
+14:07:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [03m20s elapsed][0m[0m
+14:07:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [05m20s elapsed][0m[0m
+14:07:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [05m20s elapsed][0m[0m
+14:07:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [00m10s elapsed][0m[0m
+14:07:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [02m10s elapsed][0m[0m
+14:07:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [01m10s elapsed][0m[0m
+14:07:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [06m21s elapsed][0m[0m
+14:07:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [08m30s elapsed][0m[0m
+14:07:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [04m20s elapsed][0m[0m
+14:07:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [07m30s elapsed][0m[0m
+14:07:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [03m30s elapsed][0m[0m
+14:07:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [05m30s elapsed][0m[0m
+14:07:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [05m30s elapsed][0m[0m
+14:07:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [00m20s elapsed][0m[0m
+14:07:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [02m20s elapsed][0m[0m
+14:07:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [01m20s elapsed][0m[0m
+14:07:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [06m31s elapsed][0m[0m
+14:07:45 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [08m40s elapsed][0m[0m
+14:07:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [07m40s elapsed][0m[0m
+14:07:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [04m30s elapsed][0m[0m
+14:07:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [03m40s elapsed][0m[0m
+14:07:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [05m40s elapsed][0m[0m
+14:07:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [05m40s elapsed][0m[0m
+14:07:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [00m30s elapsed][0m[0m
+14:07:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [02m30s elapsed][0m[0m
+14:07:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [01m30s elapsed][0m[0m
+14:07:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [06m41s elapsed][0m[0m
+14:07:55 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [08m50s elapsed][0m[0m
+14:07:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [04m40s elapsed][0m[0m
+14:07:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [07m50s elapsed][0m[0m
+14:08:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [03m50s elapsed][0m[0m
+14:08:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [05m50s elapsed][0m[0m
+14:08:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [05m50s elapsed][0m[0m
+14:08:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [00m40s elapsed][0m[0m
+14:08:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [02m40s elapsed][0m[0m
+14:08:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [01m40s elapsed][0m[0m
+14:08:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [06m51s elapsed][0m[0m
+14:08:05 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [09m00s elapsed][0m[0m
+14:08:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [08m00s elapsed][0m[0m
+14:08:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [04m50s elapsed][0m[0m
+14:08:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [04m00s elapsed][0m[0m
+14:08:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [06m00s elapsed][0m[0m
+14:08:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [06m00s elapsed][0m[0m
+14:08:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [00m50s elapsed][0m[0m
+14:08:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [02m50s elapsed][0m[0m
+14:08:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [01m50s elapsed][0m[0m
+14:08:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [07m01s elapsed][0m[0m
+14:08:15 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Still creating... [09m10s elapsed][0m[0m
+14:08:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [05m00s elapsed][0m[0m
+14:08:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Still creating... [08m10s elapsed][0m[0m
+14:08:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [04m10s elapsed][0m[0m
+14:08:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.224.7"]: Creation complete after 8m13s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-204-224-7][0m
+14:08:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [06m10s elapsed][0m[0m
+14:08:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [06m10s elapsed][0m[0m
+14:08:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [01m00s elapsed][0m[0m
+14:08:22 [0m[1mazurerm_key_vault_secret.mysql_admin_password: Creating...[0m[0m
+14:08:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [03m00s elapsed][0m[0m
+14:08:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [02m00s elapsed][0m[0m
+14:08:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.158"]: Creation complete after 9m19s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-158][0m
+14:08:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [07m11s elapsed][0m[0m
+14:08:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [05m10s elapsed][0m[0m
+14:08:29 [0m[1mazurerm_key_vault_secret.mysql_admin_password: Creation complete after 6s [id=https://kv-vsf-muv1nf.vault.azure.net/secrets/mysql-admin-password/bb549de195ff46b19abce715cae29af7][0m
+14:08:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [04m20s elapsed][0m[0m
+14:08:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [06m20s elapsed][0m[0m
+14:08:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [06m20s elapsed][0m[0m
+14:08:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [01m10s elapsed][0m[0m
+14:08:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [03m10s elapsed][0m[0m
+14:08:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [02m10s elapsed][0m[0m
+14:08:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [07m21s elapsed][0m[0m
+14:08:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [05m20s elapsed][0m[0m
+14:08:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [04m30s elapsed][0m[0m
+14:08:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [06m30s elapsed][0m[0m
+14:08:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [06m30s elapsed][0m[0m
+14:08:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [01m20s elapsed][0m[0m
+14:08:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [03m20s elapsed][0m[0m
+14:08:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [02m20s elapsed][0m[0m
+14:08:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [07m31s elapsed][0m[0m
+14:08:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [05m30s elapsed][0m[0m
+14:08:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [04m40s elapsed][0m[0m
+14:08:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [06m40s elapsed][0m[0m
+14:08:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [06m40s elapsed][0m[0m
+14:08:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [01m30s elapsed][0m[0m
+14:08:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [03m30s elapsed][0m[0m
+14:08:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [02m30s elapsed][0m[0m
+14:08:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [07m41s elapsed][0m[0m
+14:08:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [05m40s elapsed][0m[0m
+14:09:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [04m50s elapsed][0m[0m
+14:09:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [06m50s elapsed][0m[0m
+14:09:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [06m50s elapsed][0m[0m
+14:09:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [01m40s elapsed][0m[0m
+14:09:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [03m40s elapsed][0m[0m
+14:09:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [02m40s elapsed][0m[0m
+14:09:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [07m51s elapsed][0m[0m
+14:09:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [05m50s elapsed][0m[0m
+14:09:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [05m00s elapsed][0m[0m
+14:09:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [07m00s elapsed][0m[0m
+14:09:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [07m00s elapsed][0m[0m
+14:09:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [01m50s elapsed][0m[0m
+14:09:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [03m50s elapsed][0m[0m
+14:09:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [02m50s elapsed][0m[0m
+14:09:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [08m01s elapsed][0m[0m
+14:09:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [06m00s elapsed][0m[0m
+14:09:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [05m10s elapsed][0m[0m
+14:09:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [07m10s elapsed][0m[0m
+14:09:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [07m10s elapsed][0m[0m
+14:09:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [02m00s elapsed][0m[0m
+14:09:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [04m00s elapsed][0m[0m
+14:09:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [03m00s elapsed][0m[0m
+14:09:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Still creating... [08m11s elapsed][0m[0m
+14:09:27 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.204.47"]: Creation complete after 8m14s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-52-172-204-47][0m
+14:09:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [06m10s elapsed][0m[0m
+14:09:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [05m20s elapsed][0m[0m
+14:09:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [07m20s elapsed][0m[0m
+14:09:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [07m20s elapsed][0m[0m
+14:09:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [02m10s elapsed][0m[0m
+14:09:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [04m10s elapsed][0m[0m
+14:09:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [03m10s elapsed][0m[0m
+14:09:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [06m20s elapsed][0m[0m
+14:09:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [05m30s elapsed][0m[0m
+14:09:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [07m30s elapsed][0m[0m
+14:09:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [07m30s elapsed][0m[0m
+14:09:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [02m20s elapsed][0m[0m
+14:09:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [04m20s elapsed][0m[0m
+14:09:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [03m20s elapsed][0m[0m
+14:09:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [06m30s elapsed][0m[0m
+14:09:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [05m40s elapsed][0m[0m
+14:09:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [07m40s elapsed][0m[0m
+14:09:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [07m40s elapsed][0m[0m
+14:09:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [02m30s elapsed][0m[0m
+14:09:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [04m30s elapsed][0m[0m
+14:09:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [03m30s elapsed][0m[0m
+14:09:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [06m40s elapsed][0m[0m
+14:10:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [05m50s elapsed][0m[0m
+14:10:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [07m50s elapsed][0m[0m
+14:10:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [07m50s elapsed][0m[0m
+14:10:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [02m40s elapsed][0m[0m
+14:10:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [04m40s elapsed][0m[0m
+14:10:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [03m40s elapsed][0m[0m
+14:10:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [06m50s elapsed][0m[0m
+14:10:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [06m00s elapsed][0m[0m
+14:10:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [08m00s elapsed][0m[0m
+14:10:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [08m00s elapsed][0m[0m
+14:10:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [02m50s elapsed][0m[0m
+14:10:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [04m50s elapsed][0m[0m
+14:10:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [03m50s elapsed][0m[0m
+14:10:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [07m00s elapsed][0m[0m
+14:10:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [06m10s elapsed][0m[0m
+14:10:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Still creating... [08m10s elapsed][0m[0m
+14:10:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [08m10s elapsed][0m[0m
+14:10:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [03m00s elapsed][0m[0m
+14:10:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [05m00s elapsed][0m[0m
+14:10:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [04m00s elapsed][0m[0m
+14:10:26 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["52.172.198.32"]: Creation complete after 8m14s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-52-172-198-32][0m
+14:10:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [07m10s elapsed][0m[0m
+14:10:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [06m20s elapsed][0m[0m
+14:10:31 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [08m20s elapsed][0m[0m
+14:10:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [03m10s elapsed][0m[0m
+14:10:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [05m10s elapsed][0m[0m
+14:10:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [04m10s elapsed][0m[0m
+14:10:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [07m20s elapsed][0m[0m
+14:10:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [06m30s elapsed][0m[0m
+14:10:41 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [08m30s elapsed][0m[0m
+14:10:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [03m20s elapsed][0m[0m
+14:10:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [05m20s elapsed][0m[0m
+14:10:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [04m20s elapsed][0m[0m
+14:10:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [07m30s elapsed][0m[0m
+14:10:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [06m40s elapsed][0m[0m
+14:10:51 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [08m40s elapsed][0m[0m
+14:10:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [03m30s elapsed][0m[0m
+14:10:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [05m30s elapsed][0m[0m
+14:10:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [04m30s elapsed][0m[0m
+14:10:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [07m40s elapsed][0m[0m
+14:11:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [06m50s elapsed][0m[0m
+14:11:01 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [08m50s elapsed][0m[0m
+14:11:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [03m40s elapsed][0m[0m
+14:11:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [05m40s elapsed][0m[0m
+14:11:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [04m40s elapsed][0m[0m
+14:11:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [07m50s elapsed][0m[0m
+14:11:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [07m00s elapsed][0m[0m
+14:11:11 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [09m00s elapsed][0m[0m
+14:11:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [03m50s elapsed][0m[0m
+14:11:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [05m50s elapsed][0m[0m
+14:11:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [04m50s elapsed][0m[0m
+14:11:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [08m00s elapsed][0m[0m
+14:11:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [07m10s elapsed][0m[0m
+14:11:21 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Still creating... [09m10s elapsed][0m[0m
+14:11:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [04m00s elapsed][0m[0m
+14:11:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [06m00s elapsed][0m[0m
+14:11:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [05m00s elapsed][0m[0m
+14:11:27 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.133"]: Creation complete after 9m16s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-133][0m
+14:11:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [08m10s elapsed][0m[0m
+14:11:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [07m20s elapsed][0m[0m
+14:11:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [04m10s elapsed][0m[0m
+14:11:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [06m10s elapsed][0m[0m
+14:11:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [05m10s elapsed][0m[0m
+14:11:38 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [08m20s elapsed][0m[0m
+14:11:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [07m30s elapsed][0m[0m
+14:11:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [04m20s elapsed][0m[0m
+14:11:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [06m20s elapsed][0m[0m
+14:11:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [05m20s elapsed][0m[0m
+14:11:48 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [08m30s elapsed][0m[0m
+14:11:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [07m40s elapsed][0m[0m
+14:11:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [04m30s elapsed][0m[0m
+14:11:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [06m30s elapsed][0m[0m
+14:11:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [05m30s elapsed][0m[0m
+14:11:58 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [08m40s elapsed][0m[0m
+14:12:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [07m50s elapsed][0m[0m
+14:12:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [04m40s elapsed][0m[0m
+14:12:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [06m40s elapsed][0m[0m
+14:12:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [05m40s elapsed][0m[0m
+14:12:08 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [08m50s elapsed][0m[0m
+14:12:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [08m00s elapsed][0m[0m
+14:12:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [04m50s elapsed][0m[0m
+14:12:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [06m50s elapsed][0m[0m
+14:12:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [05m50s elapsed][0m[0m
+14:12:18 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [09m00s elapsed][0m[0m
+14:12:20 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [08m10s elapsed][0m[0m
+14:12:22 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [05m00s elapsed][0m[0m
+14:12:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [07m00s elapsed][0m[0m
+14:12:23 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [06m00s elapsed][0m[0m
+14:12:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Still creating... [09m10s elapsed][0m[0m
+14:12:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.239.22"]: Creation complete after 9m11s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-239-22][0m
+14:12:30 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [08m20s elapsed][0m[0m
+14:12:32 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [05m10s elapsed][0m[0m
+14:12:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [07m10s elapsed][0m[0m
+14:12:33 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [06m10s elapsed][0m[0m
+14:12:40 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [08m30s elapsed][0m[0m
+14:12:42 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [05m20s elapsed][0m[0m
+14:12:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [07m20s elapsed][0m[0m
+14:12:43 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [06m20s elapsed][0m[0m
+14:12:50 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [08m40s elapsed][0m[0m
+14:12:52 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [05m30s elapsed][0m[0m
+14:12:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [07m30s elapsed][0m[0m
+14:12:53 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [06m30s elapsed][0m[0m
+14:13:00 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [08m50s elapsed][0m[0m
+14:13:02 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [05m40s elapsed][0m[0m
+14:13:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [07m40s elapsed][0m[0m
+14:13:03 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [06m40s elapsed][0m[0m
+14:13:10 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [09m00s elapsed][0m[0m
+14:13:12 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [05m50s elapsed][0m[0m
+14:13:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [07m50s elapsed][0m[0m
+14:13:13 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [06m50s elapsed][0m[0m
+14:13:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [08m01s elapsed][0m[0m
+14:13:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [06m02s elapsed][0m[0m
+14:13:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Still creating... [09m13s elapsed][0m[0m
+14:13:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [07m00s elapsed][0m[0m
+14:13:28 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.207.80.224"]: Creation complete after 9m17s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-207-80-224][0m
+14:13:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [08m11s elapsed][0m[0m
+14:13:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [07m10s elapsed][0m[0m
+14:13:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [06m12s elapsed][0m[0m
+14:13:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [07m20s elapsed][0m[0m
+14:13:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [06m22s elapsed][0m[0m
+14:13:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [08m21s elapsed][0m[0m
+14:13:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [07m30s elapsed][0m[0m
+14:13:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [06m32s elapsed][0m[0m
+14:13:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [08m31s elapsed][0m[0m
+14:14:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [08m41s elapsed][0m[0m
+14:14:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [07m40s elapsed][0m[0m
+14:14:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [06m42s elapsed][0m[0m
+14:14:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [07m50s elapsed][0m[0m
+14:14:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [08m51s elapsed][0m[0m
+14:14:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [06m52s elapsed][0m[0m
+14:14:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [08m00s elapsed][0m[0m
+14:14:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [07m02s elapsed][0m[0m
+14:14:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [09m01s elapsed][0m[0m
+14:14:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [08m10s elapsed][0m[0m
+14:14:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [07m12s elapsed][0m[0m
+14:14:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Still creating... [09m11s elapsed][0m[0m
+14:14:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.238.146"]: Creation complete after 9m12s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-20-219-238-146][0m
+14:14:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [08m20s elapsed][0m[0m
+14:14:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [07m22s elapsed][0m[0m
+14:14:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [08m30s elapsed][0m[0m
+14:14:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [07m32s elapsed][0m[0m
+14:15:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [07m42s elapsed][0m[0m
+14:15:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [08m40s elapsed][0m[0m
+14:15:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [08m50s elapsed][0m[0m
+14:15:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [07m52s elapsed][0m[0m
+14:15:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [09m00s elapsed][0m[0m
+14:15:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [08m02s elapsed][0m[0m
+14:15:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Still creating... [09m10s elapsed][0m[0m
+14:15:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [08m12s elapsed][0m[0m
+14:15:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.21.87"]: Creation complete after 9m11s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-13-71-21-87][0m
+14:15:44 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [08m22s elapsed][0m[0m
+14:15:54 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [08m32s elapsed][0m[0m
+14:16:04 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [08m43s elapsed][0m[0m
+14:16:14 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [08m53s elapsed][0m[0m
+14:16:24 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [09m03s elapsed][0m[0m
+14:16:34 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Still creating... [09m13s elapsed][0m[0m
+14:16:35 [0m[1mazurerm_mysql_flexible_server_firewall_rule.app_outbound["13.71.30.16"]: Creation complete after 9m14s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-muv1nf-sea/firewallRules/app-outbound-13-71-30-16][0m
+14:16:36 Releasing state lock. This may take a few moments...
+14:16:38 [0m[1m[32m
+14:16:38 Apply complete! Resources: 31 added, 0 changed, 0 destroyed.[0m
+14:16:38 [0m[1m[32m
+14:16:38 Outputs:
+14:16:38 
+14:16:38 [0macr_login_server = "acrvsfmuv1nf.azurecr.io"
+14:16:38 acr_name = "acrvsfmuv1nf"
+14:16:38 app_identity_client_id = "f52e4f2c-008f-4229-9df8-c65c788859e1"
+14:16:38 app_identity_id = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-muv1nf"
+14:16:38 app_identity_principal_id = "d10dd2ea-5091-48cc-b37a-c11d0074c310"
+14:16:38 app_possible_outbound_ip_count = 18
+14:16:38 app_url = "https://app-vsf-muv1nf.azurewebsites.net"
+14:16:38 key_vault_name = "kv-vsf-muv1nf"
+14:16:38 key_vault_uri = "https://kv-vsf-muv1nf.vault.azure.net/"
+14:16:38 location = "centralindia"
+14:16:38 mysql_database_name = "appdb"
+14:16:38 mysql_fqdn = "mysql-vsf-muv1nf-sea.mysql.database.azure.com"
+14:16:38 name_suffix = "muv1nf"
+14:16:38 resource_group_name = "rg-vsf-dev"
+14:16:38 staging_url = "https://app-vsf-muv1nf-staging.azurewebsites.net"

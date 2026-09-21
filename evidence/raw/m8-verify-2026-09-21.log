@@ -1,0 +1,36 @@
+14:16:38 == outputs
+14:16:40 acr_login_server = "acrvsfmuv1nf.azurecr.io"
+14:16:40 acr_name = "acrvsfmuv1nf"
+14:16:40 app_identity_client_id = "f52e4f2c-008f-4229-9df8-c65c788859e1"
+14:16:40 app_identity_id = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-muv1nf"
+14:16:40 app_identity_principal_id = "d10dd2ea-5091-48cc-b37a-c11d0074c310"
+14:16:40 app_possible_outbound_ip_count = 18
+14:16:40 app_url = "https://app-vsf-muv1nf.azurewebsites.net"
+14:16:40 key_vault_name = "kv-vsf-muv1nf"
+14:16:40 key_vault_uri = "https://kv-vsf-muv1nf.vault.azure.net/"
+14:16:40 location = "centralindia"
+14:16:40 mysql_database_name = "appdb"
+14:16:40 mysql_fqdn = "mysql-vsf-muv1nf-sea.mysql.database.azure.com"
+14:16:40 name_suffix = "muv1nf"
+14:16:40 resource_group_name = "rg-vsf-dev"
+14:16:40 staging_url = "https://app-vsf-muv1nf-staging.azurewebsites.net"
+14:16:40 == prod
+14:16:43 200
+14:16:43 == staging
+14:16:46 200
+14:16:46 == acr admin (false)
+14:16:51 false
+14:16:54 == kv rbac (true)
+14:16:56 true
+14:16:56 == kv secrets
+14:16:58 mysql-admin-password
+14:16:58 == fw rules
+14:17:04 18
+14:17:04 == outbound ip count
+14:17:06 18
+14:17:08 == staging identity
+14:17:09 UserAssigned
+14:17:10 == plan
+14:18:21 No changes. Your infrastructure matches the configuration.
+14:18:21 == sha
+14:18:21 6464657

@@ -1,0 +1,253 @@
+13:04:22 terraform -chdir=infra/app init -backend-config=backend.hcl
+13:04:22 [0m[1mInitializing the backend...[0m
+13:04:24 
+13:04:28 [0m[1mInitializing provider plugins...[0m
+13:04:28 - Reusing previous version of hashicorp/random from the dependency lock file
+13:04:28 - Reusing previous version of hashicorp/azurerm from the dependency lock file
+13:04:28 - Using previously-installed hashicorp/random v3.9.1
+13:04:29 - Using previously-installed hashicorp/azurerm v4.81.0
+13:04:29 
+13:04:29 
+13:04:29 [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+13:04:29 [0m[32m
+13:04:29 You may now begin working with Terraform. Try running "terraform plan" to see
+13:04:29 any changes that are required for your infrastructure. All Terraform commands
+13:04:29 should now work.
+13:04:29 
+13:04:29 If you ever set or change modules or backend configuration for Terraform,
+13:04:29 rerun this command to reinitialize your working directory. If you forget, other
+13:04:29 commands will detect it and remind you to do so if necessary.[0m
+13:04:30 >>> pha 1/2: tao Web App (va cac phu thuoc) de biet outbound IPs
+13:04:32 Acquiring state lock. This may take a few moments...
+13:04:43 
+13:04:43 Terraform used the selected providers to generate the following execution
+13:04:43 plan. Resource actions are indicated with the following symbols:
+13:04:43   [32m+[0m create[0m
+13:04:43 
+13:04:43 Terraform will perform the following actions:
+13:04:43 
+13:04:43 [1m  # azurerm_linux_web_app.app[0m will be created
+13:04:43 [0m  [32m+[0m[0m resource "azurerm_linux_web_app" "app" {
+13:04:43       [32m+[0m[0m app_settings                                   = {
+13:04:43           [32m+[0m[0m "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+13:04:43           [32m+[0m[0m "WEBSITES_PORT"                       = "80"
+13:04:43         }
+13:04:43       [32m+[0m[0m client_affinity_enabled                        = false
+13:04:43       [32m+[0m[0m client_certificate_enabled                     = false
+13:04:43       [32m+[0m[0m client_certificate_mode                        = "Required"
+13:04:43       [32m+[0m[0m custom_domain_verification_id                  = (sensitive value)
+13:04:43       [32m+[0m[0m default_hostname                               = (known after apply)
+13:04:43       [32m+[0m[0m enabled                                        = true
+13:04:43       [32m+[0m[0m ftp_publish_basic_authentication_enabled       = false
+13:04:43       [32m+[0m[0m hosting_environment_id                         = (known after apply)
+13:04:43       [32m+[0m[0m https_only                                     = true
+13:04:43       [32m+[0m[0m id                                             = (known after apply)
+13:04:43       [32m+[0m[0m key_vault_reference_identity_id                = (known after apply)
+13:04:43       [32m+[0m[0m kind                                           = (known after apply)
+13:04:43       [32m+[0m[0m location                                       = "centralindia"
+13:04:43       [32m+[0m[0m name                                           = (known after apply)
+13:04:43       [32m+[0m[0m outbound_ip_address_list                       = (known after apply)
+13:04:43       [32m+[0m[0m outbound_ip_addresses                          = (known after apply)
+13:04:43       [32m+[0m[0m possible_outbound_ip_address_list              = (known after apply)
+13:04:43       [32m+[0m[0m possible_outbound_ip_addresses                 = (known after apply)
+13:04:43       [32m+[0m[0m public_network_access_enabled                  = true
+13:04:43       [32m+[0m[0m resource_group_name                            = "rg-vsf-dev"
+13:04:43       [32m+[0m[0m service_plan_id                                = (known after apply)
+13:04:43       [32m+[0m[0m site_credential                                = (sensitive value)
+13:04:43       [32m+[0m[0m tags                                           = {
+13:04:43           [32m+[0m[0m "env"        = "dev"
+13:04:43           [32m+[0m[0m "layer"      = "app"
+13:04:43           [32m+[0m[0m "managed_by" = "terraform"
+13:04:43           [32m+[0m[0m "owner"      = "intern"
+13:04:43           [32m+[0m[0m "project"    = "vsf"
+13:04:43         }
+13:04:43       [32m+[0m[0m virtual_network_backup_restore_enabled         = false
+13:04:43       [32m+[0m[0m vnet_image_pull_enabled                        = false
+13:04:43       [32m+[0m[0m webdeploy_publish_basic_authentication_enabled = false
+13:04:43       [32m+[0m[0m zip_deploy_file                                = (known after apply)
+13:04:43 
+13:04:43       [32m+[0m[0m identity {
+13:04:43           [32m+[0m[0m identity_ids = (known after apply)
+13:04:43           [32m+[0m[0m principal_id = (known after apply)
+13:04:43           [32m+[0m[0m tenant_id    = (known after apply)
+13:04:43           [32m+[0m[0m type         = "UserAssigned"
+13:04:43         }
+13:04:43 
+13:04:43       [32m+[0m[0m site_config {
+13:04:43           [32m+[0m[0m always_on                               = true
+13:04:43           [32m+[0m[0m container_registry_use_managed_identity = false
+13:04:43           [32m+[0m[0m default_documents                       = (known after apply)
+13:04:43           [32m+[0m[0m detailed_error_logging_enabled          = (known after apply)
+13:04:43           [32m+[0m[0m ftps_state                              = "Disabled"
+13:04:43           [32m+[0m[0m http2_enabled                           = true
+13:04:43           [32m+[0m[0m ip_restriction_default_action           = "Allow"
+13:04:43           [32m+[0m[0m linux_fx_version                        = (known after apply)
+13:04:43           [32m+[0m[0m load_balancing_mode                     = "LeastRequests"
+13:04:43           [32m+[0m[0m local_mysql_enabled                     = false
+13:04:43           [32m+[0m[0m managed_pipeline_mode                   = "Integrated"
+13:04:43           [32m+[0m[0m minimum_tls_version                     = "1.2"
+13:04:43           [32m+[0m[0m remote_debugging_enabled                = false
+13:04:43           [32m+[0m[0m remote_debugging_version                = (known after apply)
+13:04:43           [32m+[0m[0m scm_ip_restriction_default_action       = "Allow"
+13:04:43           [32m+[0m[0m scm_minimum_tls_version                 = "1.2"
+13:04:43           [32m+[0m[0m scm_type                                = (known after apply)
+13:04:43           [32m+[0m[0m scm_use_main_ip_restriction             = false
+13:04:43           [32m+[0m[0m use_32_bit_worker                       = true
+13:04:43           [32m+[0m[0m vnet_route_all_enabled                  = false
+13:04:43           [32m+[0m[0m websockets_enabled                      = false
+13:04:43           [32m+[0m[0m worker_count                            = (known after apply)
+13:04:43 
+13:04:43           [32m+[0m[0m application_stack {
+13:04:43               [32m+[0m[0m docker_image_name   = "appsvc/staticsite:latest"
+13:04:43               [32m+[0m[0m docker_registry_url = "https://mcr.microsoft.com"
+13:04:43             }
+13:04:43         }
+13:04:43     }
+13:04:43 
+13:04:43 [1m  # azurerm_resource_group.app[0m will be created
+13:04:43 [0m  [32m+[0m[0m resource "azurerm_resource_group" "app" {
+13:04:43       [32m+[0m[0m id       = (known after apply)
+13:04:43       [32m+[0m[0m location = "centralindia"
+13:04:43       [32m+[0m[0m name     = "rg-vsf-dev"
+13:04:43       [32m+[0m[0m tags     = {
+13:04:43           [32m+[0m[0m "env"        = "dev"
+13:04:43           [32m+[0m[0m "layer"      = "app"
+13:04:43           [32m+[0m[0m "managed_by" = "terraform"
+13:04:43           [32m+[0m[0m "owner"      = "intern"
+13:04:43           [32m+[0m[0m "project"    = "vsf"
+13:04:43         }
+13:04:43     }
+13:04:43 
+13:04:43 [1m  # azurerm_service_plan.app[0m will be created
+13:04:43 [0m  [32m+[0m[0m resource "azurerm_service_plan" "app" {
+13:04:43       [32m+[0m[0m id                              = (known after apply)
+13:04:43       [32m+[0m[0m kind                            = (known after apply)
+13:04:43       [32m+[0m[0m location                        = "centralindia"
+13:04:43       [32m+[0m[0m maximum_elastic_worker_count    = (known after apply)
+13:04:43       [32m+[0m[0m name                            = "asp-vsf-dev"
+13:04:43       [32m+[0m[0m os_type                         = "Linux"
+13:04:43       [32m+[0m[0m per_site_scaling_enabled        = false
+13:04:43       [32m+[0m[0m premium_plan_auto_scale_enabled = false
+13:04:43       [32m+[0m[0m reserved                        = (known after apply)
+13:04:43       [32m+[0m[0m resource_group_name             = "rg-vsf-dev"
+13:04:43       [32m+[0m[0m sku_name                        = "P0v3"
+13:04:43       [32m+[0m[0m tags                            = {
+13:04:43           [32m+[0m[0m "env"        = "dev"
+13:04:43           [32m+[0m[0m "layer"      = "app"
+13:04:43           [32m+[0m[0m "managed_by" = "terraform"
+13:04:43           [32m+[0m[0m "owner"      = "intern"
+13:04:43           [32m+[0m[0m "project"    = "vsf"
+13:04:43         }
+13:04:43       [32m+[0m[0m worker_count                    = 1
+13:04:43     }
+13:04:43 
+13:04:43 [1m  # azurerm_user_assigned_identity.app[0m will be created
+13:04:43 [0m  [32m+[0m[0m resource "azurerm_user_assigned_identity" "app" {
+13:04:43       [32m+[0m[0m client_id           = (known after apply)
+13:04:43       [32m+[0m[0m id                  = (known after apply)
+13:04:43       [32m+[0m[0m location            = "centralindia"
+13:04:43       [32m+[0m[0m name                = (known after apply)
+13:04:43       [32m+[0m[0m principal_id        = (known after apply)
+13:04:43       [32m+[0m[0m resource_group_name = "rg-vsf-dev"
+13:04:43       [32m+[0m[0m tags                = {
+13:04:43           [32m+[0m[0m "env"        = "dev"
+13:04:43           [32m+[0m[0m "layer"      = "app"
+13:04:43           [32m+[0m[0m "managed_by" = "terraform"
+13:04:43           [32m+[0m[0m "owner"      = "intern"
+13:04:43           [32m+[0m[0m "project"    = "vsf"
+13:04:43         }
+13:04:43       [32m+[0m[0m tenant_id           = (known after apply)
+13:04:43     }
+13:04:43 
+13:04:43 [1m  # random_string.suffix[0m will be created
+13:04:43 [0m  [32m+[0m[0m resource "random_string" "suffix" {
+13:04:43       [32m+[0m[0m id          = (known after apply)
+13:04:43       [32m+[0m[0m length      = 6
+13:04:43       [32m+[0m[0m lower       = true
+13:04:43       [32m+[0m[0m min_lower   = 0
+13:04:43       [32m+[0m[0m min_numeric = 0
+13:04:43       [32m+[0m[0m min_special = 0
+13:04:43       [32m+[0m[0m min_upper   = 0
+13:04:43       [32m+[0m[0m number      = true
+13:04:43       [32m+[0m[0m numeric     = true
+13:04:43       [32m+[0m[0m result      = (known after apply)
+13:04:43       [32m+[0m[0m special     = false
+13:04:43       [32m+[0m[0m upper       = false
+13:04:43     }
+13:04:43 
+13:04:43 [1mPlan:[0m [0m5 to add, 0 to change, 0 to destroy.
+13:04:43 
+13:04:43 Changes to Outputs:
+13:04:43   [32m+[0m[0m app_identity_client_id         = (known after apply)
+13:04:43   [32m+[0m[0m app_identity_id                = (known after apply)
+13:04:43   [32m+[0m[0m app_identity_principal_id      = (known after apply)
+13:04:43   [32m+[0m[0m app_possible_outbound_ip_count = (known after apply)
+13:04:43   [32m+[0m[0m app_url                        = (known after apply)
+13:04:43   [32m+[0m[0m location                       = "centralindia"
+13:04:43   [32m+[0m[0m name_suffix                    = (known after apply)
+13:04:43   [32m+[0m[0m resource_group_name            = "rg-vsf-dev"
+13:04:43 [33m╷[0m[0m
+13:04:43 [33m│[0m [0m[1m[33mWarning: [0m[0m[1mResource targeting is in effect[0m
+13:04:43 [33m│[0m [0m
+13:04:43 [33m│[0m [0m[0mYou are creating a plan with the -target option, which means that the
+13:04:43 [33m│[0m [0mresult of this plan may not represent all of the changes requested by the
+13:04:43 [33m│[0m [0mcurrent configuration.
+13:04:43 [33m│[0m [0m
+13:04:43 [33m│[0m [0mThe -target option is not for routine use, and is provided only for
+13:04:43 [33m│[0m [0mexceptional situations such as recovering from errors or mistakes, or when
+13:04:43 [33m│[0m [0mTerraform specifically suggests to use it as part of an error message.
+13:04:43 [33m╵[0m[0m
+13:04:43 [0m[1m
+13:04:43 Do you want to perform these actions?[0m
+13:04:43   Terraform will perform the actions described above.
+13:04:43   Only 'yes' will be accepted to approve.
+13:04:43 
+13:04:43   [1mEnter a value:[0m [0m
+13:04:43 [0m[1mrandom_string.suffix: Creating...[0m[0m
+13:04:43 [0m[1mrandom_string.suffix: Creation complete after 0s [id=amugg2][0m
+13:05:34 [0m[1mazurerm_resource_group.app: Creating...[0m[0m
+13:05:44 [0m[1mazurerm_resource_group.app: Still creating... [00m10s elapsed][0m[0m
+13:05:54 [0m[1mazurerm_resource_group.app: Still creating... [00m20s elapsed][0m[0m
+13:06:02 [0m[1mazurerm_resource_group.app: Creation complete after 28s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m
+13:06:03 [0m[1mazurerm_user_assigned_identity.app: Creating...[0m[0m
+13:06:03 [0m[1mazurerm_service_plan.app: Creating...[0m[0m
+13:06:09 [0m[1mazurerm_user_assigned_identity.app: Creation complete after 7s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-amugg2][0m
+13:06:13 [0m[1mazurerm_service_plan.app: Still creating... [00m10s elapsed][0m[0m
+13:06:22 [0m[1mazurerm_service_plan.app: Creation complete after 20s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev][0m
+13:06:22 [0m[1mazurerm_linux_web_app.app: Creating...[0m[0m
+13:06:32 [0m[1mazurerm_linux_web_app.app: Still creating... [00m10s elapsed][0m[0m
+13:06:42 [0m[1mazurerm_linux_web_app.app: Still creating... [00m20s elapsed][0m[0m
+13:06:52 [0m[1mazurerm_linux_web_app.app: Still creating... [00m30s elapsed][0m[0m
+13:07:02 [0m[1mazurerm_linux_web_app.app: Still creating... [00m40s elapsed][0m[0m
+13:07:11 [33m╷[0m[0m
+13:07:11 [33m│[0m [0m[1m[33mWarning: [0m[0m[1mApplied changes may be incomplete[0m
+13:07:11 [33m│[0m [0m
+13:07:11 [33m│[0m [0m[0mThe plan was created with the -target option in effect, so some changes
+13:07:11 [33m│[0m [0mrequested in the configuration may have been ignored and the output values
+13:07:11 [33m│[0m [0mmay not be fully updated. Run the following command to verify that no other
+13:07:11 [33m│[0m [0mchanges are pending:
+13:07:11 [33m│[0m [0m    terraform plan
+13:07:11 [33m│[0m [0m
+13:07:11 [33m│[0m [0mNote that the -target option is not suitable for routine use, and is
+13:07:11 [33m│[0m [0mprovided only for exceptional situations such as recovering from errors or
+13:07:11 [33m│[0m [0mmistakes, or when Terraform specifically suggests to use it as part of an
+13:07:11 [33m│[0m [0merror message.
+13:07:11 [33m╵[0m[0m
+13:07:11 [31m╷[0m[0m
+13:07:11 [31m│[0m [0m[1m[31mError: [0m[0m[1mreading App Settings for Linux App Service (Subscription: "9880aa34-1fb4-4402-b692-232a90f1a7bb"
+13:07:11 [31m│[0m [0mResource Group Name: "rg-vsf-dev"
+13:07:11 [31m│[0m [0mSite Name: "app-vsf-amugg2"): Post "https://management.azure.com/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-amugg2/config/appSettings/list?api-version=2023-12-01": HTTP response was nil; connection may have been reset[0m
+13:07:11 [31m│[0m [0m
+13:07:11 [31m│[0m [0m[0m  with azurerm_linux_web_app.app,
+13:07:11 [31m│[0m [0m  on app.tf line 27, in resource "azurerm_linux_web_app" "app":
+13:07:11 [31m│[0m [0m  27: resource "azurerm_linux_web_app" "app" [4m{[0m[0m
+13:07:11 [31m│[0m [0m
+13:07:11 [31m│[0m [0mreading App Settings for Linux App Service (Subscription:
+13:07:11 [31m│[0m [0m"9880aa34-1fb4-4402-b692-232a90f1a7bb"
+13:07:11 [31m│[0m [0mResource Group Name: "rg-vsf-dev"
+13:07:11 [31m│[0m [0mSite Name: "app-vsf-amugg2"): Post
+13:07:11 [31m│[0m [0m"https://management.azure.com/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-amugg2/config/appSettings/list?api-version=2023-12-01":
+13:07:11 [31m│[0m [0mHTTP response was nil; connection may have been reset
+13:07:11 [31m╵[0m[0m
+13:07:11 Releasing state lock. This may take a few moments...
+13:07:12 make: *** [Makefile:64: up] Error 1

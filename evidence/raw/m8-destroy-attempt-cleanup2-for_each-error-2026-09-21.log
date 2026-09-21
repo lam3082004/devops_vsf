@@ -1,0 +1,52 @@
+13:37:33 terraform -chdir=infra/app init -backend-config=backend.hcl
+13:37:33 [0m[1mInitializing the backend...[0m
+13:37:34 
+13:37:35 [0m[1mInitializing provider plugins...[0m
+13:37:35 - Reusing previous version of hashicorp/azurerm from the dependency lock file
+13:37:35 - Reusing previous version of hashicorp/random from the dependency lock file
+13:37:35 - Using previously-installed hashicorp/random v3.9.1
+13:37:36 - Using previously-installed hashicorp/azurerm v4.81.0
+13:37:36 
+13:37:36 
+13:37:36 [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+13:37:36 [0m[32m
+13:37:36 You may now begin working with Terraform. Try running "terraform plan" to see
+13:37:36 any changes that are required for your infrastructure. All Terraform commands
+13:37:36 should now work.
+13:37:36 
+13:37:36 If you ever set or change modules or backend configuration for Terraform,
+13:37:36 rerun this command to reinitialize your working directory. If you forget, other
+13:37:36 commands will detect it and remind you to do so if necessary.[0m
+13:37:36 terraform -chdir=infra/app destroy
+13:37:37 Acquiring state lock. This may take a few moments...
+13:37:40 [0m[1mrandom_string.suffix: Refreshing state... [id=amugg2][0m
+13:37:54 [0m[1mdata.azurerm_client_config.current: Reading...[0m[0m
+13:37:54 [0m[1mdata.azurerm_user_assigned_identity.gh_plan: Reading...[0m[0m
+13:37:54 [0m[1mazurerm_resource_group.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m
+13:37:54 [0m[1mdata.azurerm_client_config.current: Read complete after 0s [id=Y2xpZW50Q29uZmlncy9jbGllbnRJZD0wNGIwNzc5NS04ZGRiLTQ2MWEtYmJlZS0wMmY5ZTFiZjdiNDY7b2JqZWN0SWQ9NDIzMzBjZGEtNTM3OC00ZjdlLWJmNGItNjA4YWIyZTYzMmVjO3N1YnNjcmlwdGlvbklkPTk4ODBhYTM0LTFmYjQtNDQwMi1iNjkyLTIzMmE5MGYxYTdiYjt0ZW5hbnRJZD01OGY4Mjc4OS02Njk1LTRmNGEtYWJkYi0zNTc2NjhkNTVjZmY=][0m
+13:37:55 [0m[1mdata.azurerm_user_assigned_identity.gh_plan: Read complete after 0s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-bootstrap/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-gh-plan][0m
+13:37:55 [0m[1mazurerm_user_assigned_identity.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-amugg2][0m
+13:37:55 [0m[1mazurerm_service_plan.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev][0m
+13:37:56 [0m[1mazurerm_linux_web_app.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-amugg2][0m
+13:38:23 [31m╷[0m[0m
+13:38:23 [31m│[0m [0m[1m[31mError: [0m[0m[1mInvalid for_each argument[0m
+13:38:23 [31m│[0m [0m
+13:38:23 [31m│[0m [0m[0m  on db.tf line 77, in resource "azurerm_mysql_flexible_server_firewall_rule" "app_outbound":
+13:38:23 [31m│[0m [0m  77:   for_each = [4mtoset(azurerm_linux_web_app.app.possible_outbound_ip_address_list)[0m[0m
+13:38:23 [31m│[0m [0m    [90m├────────────────[0m
+13:38:23 [31m│[0m [0m[0m    [90m│[0m [1mazurerm_linux_web_app.app.possible_outbound_ip_address_list[0m is a list of string, known only after apply
+13:38:23 [31m│[0m [0m[0m
+13:38:23 [31m│[0m [0mThe "for_each" set includes values derived from resource attributes that
+13:38:23 [31m│[0m [0mcannot be determined until apply, and so Terraform cannot determine the
+13:38:23 [31m│[0m [0mfull set of keys that will identify the instances of this resource.
+13:38:23 [31m│[0m [0m
+13:38:23 [31m│[0m [0mWhen working with unknown values in for_each, it's better to use a map
+13:38:23 [31m│[0m [0mvalue where the keys are defined statically in your configuration and where
+13:38:23 [31m│[0m [0monly the values contain apply-time results.
+13:38:23 [31m│[0m [0m
+13:38:23 [31m│[0m [0mAlternatively, you could use the -target planning option to first apply
+13:38:23 [31m│[0m [0monly the resources that the for_each value depends on, and then apply a
+13:38:23 [31m│[0m [0msecond time to fully converge.
+13:38:23 [31m╵[0m[0m
+13:38:23 Releasing state lock. This may take a few moments...
+13:38:26 make: *** [Makefile:75: down] Error 1
