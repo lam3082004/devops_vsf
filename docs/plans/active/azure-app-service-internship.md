@@ -109,7 +109,8 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ### D10 — **GATE**
 - [x] `terraform destroy` → `apply` sạch, **không thao tác tay**, lưu log thô → `evidence/M8.md` — *proof: log 2 lệnh* — **xong phần chạy (2026-09-21):** `make up` từ rỗng 24 phút 27 giây → bảng kiểm tra 6/6 đạt (200/200, ACR admin `false`, KV RBAC + secret, firewall 18=18, slot staging `UserAssigned`, `plan` No changes) → `make down` 19 phút 21 giây, 36 resource → `rg-vsf-dev` không tồn tại, không có Key Vault đã xoá, state 0. Chạy liền một script, không lỗi, sau 6 lần lỗi trước đó cùng ngày (đường mạng/`yes`/state dở dang). Log: `evidence/raw/m8-apply-2026-09-21.log`, `m8-destroy-2026-09-21.log`. Ảnh Portal sau `make down` đã lưu (đã che email) ở `evidence/d10/screenshots/`. Còn: 7 câu trả lời mentor (việc của bạn) + GATE do mentor quyết. Chi tiết `notes/d10.md`, `evidence/M8.md`.
 - [x] Xử lý hết lỗi thời gian lan truyền RBAC / soft-delete nếu gặp, ghi vào `known-issues.md` — *RBAC/soft-delete không gặp; lỗi mạng đã ghi `known-issues.md` mục "Biết là sai" #7*
-- [ ] Trả lời mentor bằng lời: state · lock · dependency (implicit vs `depends_on`) · vì sao bootstrap tách riêng
+- [x] Ghi 2 lỗi của Claude vào `ai-failure-log.md` (#9 cách nhập `yes`, #10 `make down` khi state dở dang) — cần bạn xác nhận #10 đúng ý
+- [ ] Trả lời mentor bằng lời: state · lock · dependency (implicit vs `depends_on`) · vì sao bootstrap tách riêng · **nói thêm:** không clone mới, thứ tự apply→destroy (`notes/d10-prep.md` mục 5b)
 - [ ] Nếu không qua: dừng, thu hẹp scope theo mentor. **Không kéo dài.**
 
 ---
@@ -117,6 +118,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ## Tuần 3 — D11–D15 · Container, identity, network, CI mở rộng
 
 ### D11 — Container deploy qua MI
+> Kế hoạch chi tiết 7 bước + Decision A/B/C: `notes/d11-prep.md`. Làm D12 mục 1–2 (app settings DB + Key Vault reference) **trong cùng PR Terraform** trước khi đổi image.
 - [ ] Web App cấu hình pull ACR bằng managed identity (user-assigned client id) — *proof: app chạy image từ ACR, ACR admin = disabled* → `evidence/M1.md`
 - [ ] Push image tay lần đầu (tag = git SHA, không `latest`) — *proof: `/version` = SHA*
 
@@ -251,6 +253,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
 
 ## Recovery
+- 2026-09-21: **D10 chốt phần Claude làm được; D11 đã có kế hoạch chi tiết.** Đã ghi `ai-failure-log.md` #9–#10 (tổng 10 case, chọn 8 khi nộp), thêm mục 5b "nói thêm với mentor" vào `notes/d10-prep.md` (không clone mới, apply→destroy, 6 lần lỗi). `~/.bashrc` đã có `DOTNET_ROOT`/`PATH`; nhóm `docker` đã có `tts` nhưng phiên cũ chưa nạp (mở terminal mới). Còn của bạn: 7 câu trả lời mentor + GATE do mentor quyết. **D11:** `notes/d11-prep.md` (3 Decision A/B/C chờ bạn chốt, 7 bước, bước 1 không tốn tiền). Môi trường đang tắt.
 - 2026-09-21 14:55: **D10: đủ bằng chứng M8, chờ 7 câu trả lời mentor.** Cặp log sạch + verify + step4 trong `evidence/raw/`, `evidence/M8.md` đã điền, ảnh Portal ở `evidence/d10/screenshots/`. `rg-vsf-dev` không tồn tại, state rỗng, không tốn tiền (kiểm lại 14:50). **Trước D11:** (1) user `tts` chưa thuộc nhóm `docker` → `docker build/push` bị `permission denied` (cần `sudo usermod -aG docker $USER` rồi đăng nhập lại; Claude không có mật khẩu sudo); (2) `/usr/bin/dotnet` chỉ là host, SDK ở `~/.dotnet` nên cần `DOTNET_ROOT=$HOME/.dotnet` và `~/.dotnet` đứng đầu `PATH` (với PATH đó `make check` = 12/12 test pass); (3) commit docs D10 qua PR; (4) làm D12 mục 1–2 trước khi đổi image ở D11. Chi tiết `notes/d10.md`.
 - 2026-09-20: **D9 xong hoàn toàn** — sau 7 lần 429 (26 tiếng), chẩn đoán ra throttle riêng Southeast Asia, đổi region (App/ACR/KV → Central India, MySQL giữ Southeast Asia). `make up` thành công: 20 resource (+ 5 pha 1), `plan` lần 2 No changes, verify đủ (200 cả 2 slot, firewall=outbound IP, ACR/KV đúng cấu hình). Bài tiếp: D10 GATE (destroy → apply sạch). Chi tiết `notes/d9.md`.
 - 2026-09-18: D9 code xong (ACR, Key Vault, lifecycle image, outputs, Makefile, CI job terraform-plan) — chưa `make up` thật được, Azure trả 429 throttle khi tạo App Service Plan (4 lần thử, hơn 1 tiếng, cùng lỗi). State sạch (chỉ RG + identity + random_string). Xem `known-issues.md` #6, `notes/d9.md`.
