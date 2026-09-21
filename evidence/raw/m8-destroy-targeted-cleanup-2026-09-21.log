@@ -1,0 +1,200 @@
+13:40:00 Acquiring state lock. This may take a few moments...
+13:40:04 random_string.suffix: Refreshing state... [id=amugg2]
+13:40:16 azurerm_resource_group.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev]
+13:40:27 
+13:40:27 Terraform used the selected providers to generate the following execution
+13:40:27 plan. Resource actions are indicated with the following symbols:
+13:40:27   - destroy
+13:40:27 
+13:40:27 Terraform will perform the following actions:
+13:40:27 
+13:40:27   # azurerm_linux_web_app.app will be destroyed
+13:40:27   - resource "azurerm_linux_web_app" "app" {
+13:40:27       - app_settings                                   = {
+13:40:27           - "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+13:40:27           - "WEBSITES_PORT"                       = "80"
+13:40:27         } -> null
+13:40:27       - client_affinity_enabled                        = false -> null
+13:40:27       - client_certificate_enabled                     = false -> null
+13:40:27       - client_certificate_mode                        = "Required" -> null
+13:40:27       - enabled                                        = true -> null
+13:40:27       - ftp_publish_basic_authentication_enabled       = false -> null
+13:40:27       - https_only                                     = true -> null
+13:40:27       - id                                             = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-amugg2" -> null
+13:40:27       - location                                       = "centralindia" -> null
+13:40:27       - name                                           = "app-vsf-amugg2" -> null
+13:40:27       - public_network_access_enabled                  = true -> null
+13:40:27       - resource_group_name                            = "rg-vsf-dev" -> null
+13:40:27       - service_plan_id                                = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev" -> null
+13:40:27       - tags                                           = {
+13:40:27           - "env"        = "dev"
+13:40:27           - "layer"      = "app"
+13:40:27           - "managed_by" = "terraform"
+13:40:27           - "owner"      = "intern"
+13:40:27           - "project"    = "vsf"
+13:40:27         } -> null
+13:40:27       - virtual_network_backup_restore_enabled         = false -> null
+13:40:27       - vnet_image_pull_enabled                        = false -> null
+13:40:27       - webdeploy_publish_basic_authentication_enabled = false -> null
+13:40:27 
+13:40:27       - identity {
+13:40:27           - identity_ids = [
+13:40:27               - "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-amugg2",
+13:40:27             ] -> null
+13:40:27           - type         = "UserAssigned" -> null
+13:40:27             # (2 unchanged attributes hidden)
+13:40:27         }
+13:40:27 
+13:40:27       - site_config {
+13:40:27           - always_on                                     = true -> null
+13:40:27           - container_registry_use_managed_identity       = false -> null
+13:40:27           - default_documents                             = [] -> null
+13:40:27           - detailed_error_logging_enabled                = false -> null
+13:40:27           - ftps_state                                    = "Disabled" -> null
+13:40:27           - health_check_eviction_time_in_min             = 0 -> null
+13:40:27           - http2_enabled                                 = true -> null
+13:40:27           - ip_restriction_default_action                 = "Allow" -> null
+13:40:27           - load_balancing_mode                           = "LeastRequests" -> null
+13:40:27           - local_mysql_enabled                           = false -> null
+13:40:27           - managed_pipeline_mode                         = "Integrated" -> null
+13:40:27           - minimum_tls_version                           = "1.2" -> null
+13:40:27           - remote_debugging_enabled                      = false -> null
+13:40:27           - scm_ip_restriction_default_action             = "Allow" -> null
+13:40:27           - scm_minimum_tls_version                       = "1.2" -> null
+13:40:27           - scm_use_main_ip_restriction                   = false -> null
+13:40:27           - use_32_bit_worker                             = true -> null
+13:40:27           - vnet_route_all_enabled                        = false -> null
+13:40:27           - websockets_enabled                            = false -> null
+13:40:27           - worker_count                                  = 0 -> null
+13:40:27             # (9 unchanged attributes hidden)
+13:40:27 
+13:40:27           - application_stack {
+13:40:27               - docker_image_name        = "appsvc/staticsite:latest" -> null
+13:40:27               - docker_registry_url      = "https://mcr.microsoft.com" -> null
+13:40:27                 # (11 unchanged attributes hidden)
+13:40:27             }
+13:40:27         }
+13:40:27     }
+13:40:27 
+13:40:27   # azurerm_resource_group.app will be destroyed
+13:40:27   - resource "azurerm_resource_group" "app" {
+13:40:27       - id         = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev" -> null
+13:40:27       - location   = "centralindia" -> null
+13:40:27       - name       = "rg-vsf-dev" -> null
+13:40:27       - tags       = {
+13:40:27           - "env"        = "dev"
+13:40:27           - "layer"      = "app"
+13:40:27           - "managed_by" = "terraform"
+13:40:27           - "owner"      = "intern"
+13:40:27           - "project"    = "vsf"
+13:40:27         } -> null
+13:40:27         # (1 unchanged attribute hidden)
+13:40:27     }
+13:40:27 
+13:40:27   # azurerm_service_plan.app will be destroyed
+13:40:27   - resource "azurerm_service_plan" "app" {
+13:40:27       - id                              = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev" -> null
+13:40:27       - kind                            = "linux" -> null
+13:40:27       - location                        = "centralindia" -> null
+13:40:27       - maximum_elastic_worker_count    = 1 -> null
+13:40:27       - name                            = "asp-vsf-dev" -> null
+13:40:27       - os_type                         = "Linux" -> null
+13:40:27       - per_site_scaling_enabled        = false -> null
+13:40:27       - premium_plan_auto_scale_enabled = false -> null
+13:40:27       - reserved                        = true -> null
+13:40:27       - resource_group_name             = "rg-vsf-dev" -> null
+13:40:27       - sku_name                        = "P0v3" -> null
+13:40:27       - tags                            = {
+13:40:27           - "env"        = "dev"
+13:40:27           - "layer"      = "app"
+13:40:27           - "managed_by" = "terraform"
+13:40:27           - "owner"      = "intern"
+13:40:27           - "project"    = "vsf"
+13:40:27         } -> null
+13:40:27       - worker_count                    = 1 -> null
+13:40:27       - zone_balancing_enabled          = false -> null
+13:40:27         # (1 unchanged attribute hidden)
+13:40:27     }
+13:40:28 
+13:40:28   # azurerm_user_assigned_identity.app will be destroyed
+13:40:28   - resource "azurerm_user_assigned_identity" "app" {
+13:40:28       - client_id           = "0df1b445-0b51-47dd-abd6-28fff1af756c" -> null
+13:40:28       - id                  = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-amugg2" -> null
+13:40:28       - location            = "centralindia" -> null
+13:40:28       - name                = "id-vsf-app-amugg2" -> null
+13:40:28       - principal_id        = "3b48418a-d42d-4a3a-8867-1e068246120d" -> null
+13:40:28       - resource_group_name = "rg-vsf-dev" -> null
+13:40:28       - tags                = {
+13:40:28           - "env"        = "dev"
+13:40:28           - "layer"      = "app"
+13:40:28           - "managed_by" = "terraform"
+13:40:28           - "owner"      = "intern"
+13:40:28           - "project"    = "vsf"
+13:40:28         } -> null
+13:40:28       - tenant_id           = "58f82789-6695-4f4a-abdb-357668d55cff" -> null
+13:40:28         # (1 unchanged attribute hidden)
+13:40:28     }
+13:40:28 
+13:40:28   # random_string.suffix will be destroyed
+13:40:28   - resource "random_string" "suffix" {
+13:40:28       - id          = "amugg2" -> null
+13:40:28       - length      = 6 -> null
+13:40:28       - lower       = true -> null
+13:40:28       - min_lower   = 0 -> null
+13:40:28       - min_numeric = 0 -> null
+13:40:28       - min_special = 0 -> null
+13:40:28       - min_upper   = 0 -> null
+13:40:28       - number      = true -> null
+13:40:28       - numeric     = true -> null
+13:40:28       - result      = "amugg2" -> null
+13:40:28       - special     = false -> null
+13:40:28       - upper       = false -> null
+13:40:28     }
+13:40:28 
+13:40:28 Plan: 0 to add, 0 to change, 5 to destroy.
+13:40:28 
+13:40:28 Warning: Resource targeting is in effect
+13:40:28 
+13:40:28 You are creating a plan with the -target option, which means that the result
+13:40:28 of this plan may not represent all of the changes requested by the current
+13:40:28 configuration.
+13:40:28 
+13:40:28 The -target option is not for routine use, and is provided only for
+13:40:28 exceptional situations such as recovering from errors or mistakes, or when
+13:40:28 Terraform specifically suggests to use it as part of an error message.
+13:40:28 
+13:40:28 Do you really want to destroy all resources?
+13:40:28   Terraform will destroy all your managed infrastructure, as shown above.
+13:40:28   There is no undo. Only 'yes' will be accepted to confirm.
+13:40:28 
+13:40:28   Enter a value: 
+13:40:50 azurerm_linux_web_app.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-amugg2]
+13:41:00 azurerm_linux_web_app.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...ers/Microsoft.Web/sites/app-vsf-amugg2, 00m10s elapsed]
+13:41:03 azurerm_linux_web_app.app: Destruction complete after 13s
+13:41:03 azurerm_user_assigned_identity.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-amugg2]
+13:41:03 azurerm_service_plan.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev]
+13:41:09 azurerm_user_assigned_identity.app: Destruction complete after 7s
+13:41:09 random_string.suffix: Destroying... [id=amugg2]
+13:41:09 random_string.suffix: Destruction complete after 0s
+13:41:13 azurerm_service_plan.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-.../Microsoft.Web/serverFarms/asp-vsf-dev, 00m10s elapsed]
+13:41:14 azurerm_service_plan.app: Destruction complete after 11s
+13:41:14 azurerm_resource_group.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev]
+13:41:24 azurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m10s elapsed]
+13:41:34 azurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m20s elapsed]
+13:41:39 azurerm_resource_group.app: Destruction complete after 26s
+13:41:40 
+13:41:40 Warning: Applied changes may be incomplete
+13:41:40 
+13:41:40 The plan was created with the -target option in effect, so some changes
+13:41:40 requested in the configuration may have been ignored and the output values
+13:41:40 may not be fully updated. Run the following command to verify that no other
+13:41:40 changes are pending:
+13:41:40     terraform plan
+13:41:40 
+13:41:40 Note that the -target option is not suitable for routine use, and is provided
+13:41:40 only for exceptional situations such as recovering from errors or mistakes,
+13:41:40 or when Terraform specifically suggests to use it as part of an error
+13:41:40 message.
+13:41:41 Releasing state lock. This may take a few moments...
+13:41:43 
+13:41:43 Destroy complete! Resources: 5 destroyed.

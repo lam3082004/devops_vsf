@@ -1,0 +1,289 @@
+13:02:13 terraform -chdir=infra/app init -backend-config=backend.hcl
+13:02:13 [0m[1mInitializing the backend...[0m
+13:02:15 
+13:02:16 [0m[1mInitializing provider plugins...[0m
+13:02:16 - Reusing previous version of hashicorp/azurerm from the dependency lock file
+13:02:16 - Reusing previous version of hashicorp/random from the dependency lock file
+13:02:16 - Using previously-installed hashicorp/azurerm v4.81.0
+13:02:17 - Using previously-installed hashicorp/random v3.9.1
+13:02:17 
+13:02:17 
+13:02:17 [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+13:02:17 [0m[32m
+13:02:17 You may now begin working with Terraform. Try running "terraform plan" to see
+13:02:17 any changes that are required for your infrastructure. All Terraform commands
+13:02:17 should now work.
+13:02:17 
+13:02:17 If you ever set or change modules or backend configuration for Terraform,
+13:02:17 rerun this command to reinitialize your working directory. If you forget, other
+13:02:17 commands will detect it and remind you to do so if necessary.[0m
+13:02:17 terraform -chdir=infra/app destroy
+13:02:18 Acquiring state lock. This may take a few moments...
+13:02:28 [0m[1mrandom_string.suffix: Refreshing state... [id=j7o3wc][0m
+13:02:38 [0m[1mdata.azurerm_client_config.current: Reading...[0m[0m
+13:02:38 [0m[1mdata.azurerm_user_assigned_identity.gh_plan: Reading...[0m[0m
+13:02:38 [0m[1mazurerm_resource_group.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m
+13:02:38 [0m[1mdata.azurerm_client_config.current: Read complete after 0s [id=Y2xpZW50Q29uZmlncy9jbGllbnRJZD0wNGIwNzc5NS04ZGRiLTQ2MWEtYmJlZS0wMmY5ZTFiZjdiNDY7b2JqZWN0SWQ9NDIzMzBjZGEtNTM3OC00ZjdlLWJmNGItNjA4YWIyZTYzMmVjO3N1YnNjcmlwdGlvbklkPTk4ODBhYTM0LTFmYjQtNDQwMi1iNjkyLTIzMmE5MGYxYTdiYjt0ZW5hbnRJZD01OGY4Mjc4OS02Njk1LTRmNGEtYWJkYi0zNTc2NjhkNTVjZmY=][0m
+13:02:40 [0m[1mdata.azurerm_user_assigned_identity.gh_plan: Read complete after 3s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-bootstrap/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-gh-plan][0m
+13:02:41 [0m[1mazurerm_user_assigned_identity.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-j7o3wc][0m
+13:02:41 [0m[1mazurerm_service_plan.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev][0m
+13:02:42 [0m[1mazurerm_linux_web_app.app: Refreshing state... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-j7o3wc][0m
+13:03:17 
+13:03:17 Terraform used the selected providers to generate the following execution
+13:03:17 plan. Resource actions are indicated with the following symbols:
+13:03:17   [31m-[0m destroy[0m
+13:03:17 
+13:03:17 Terraform will perform the following actions:
+13:03:17 
+13:03:17 [1m  # azurerm_linux_web_app.app[0m will be [1m[31mdestroyed[0m
+13:03:17 [0m  [31m-[0m[0m resource "azurerm_linux_web_app" "app" {
+13:03:17       [31m-[0m[0m app_settings                                   = {
+13:03:17           [31m-[0m[0m "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+13:03:17           [31m-[0m[0m "WEBSITES_PORT"                       = "80"
+13:03:17         } [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m client_affinity_enabled                        = false [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m client_certificate_enabled                     = false [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m client_certificate_mode                        = "Required" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m custom_domain_verification_id                  = (sensitive value) [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m default_hostname                               = "app-vsf-j7o3wc.azurewebsites.net" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m enabled                                        = true [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m ftp_publish_basic_authentication_enabled       = false [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m https_only                                     = true [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m id                                             = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-j7o3wc" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m key_vault_reference_identity_id                = "SystemAssigned" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m kind                                           = "app,linux,container" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m location                                       = "centralindia" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m name                                           = "app-vsf-j7o3wc" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m outbound_ip_address_list                       = [
+13:03:17           [31m-[0m[0m "20.244.59.254",
+13:03:17           [31m-[0m[0m "4.213.193.149",
+13:03:17           [31m-[0m[0m "135.235.233.148",
+13:03:17           [31m-[0m[0m "4.247.197.126",
+13:03:17           [31m-[0m[0m "98.70.238.212",
+13:03:17           [31m-[0m[0m "13.71.63.187",
+13:03:17           [31m-[0m[0m "20.192.171.16",
+13:03:17         ] [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m outbound_ip_addresses                          = "20.244.59.254,4.213.193.149,135.235.233.148,4.247.197.126,98.70.238.212,13.71.63.187,20.192.171.16" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m possible_outbound_ip_address_list              = [
+13:03:17           [31m-[0m[0m "135.235.234.222",
+13:03:17           [31m-[0m[0m "98.70.243.222",
+13:03:17           [31m-[0m[0m "4.224.233.63",
+13:03:17           [31m-[0m[0m "4.224.99.151",
+13:03:17           [31m-[0m[0m "20.235.201.140",
+13:03:17           [31m-[0m[0m "40.80.77.39",
+13:03:17           [31m-[0m[0m "4.224.148.174",
+13:03:17           [31m-[0m[0m "4.247.197.210",
+13:03:17           [31m-[0m[0m "20.219.168.86",
+13:03:17           [31m-[0m[0m "20.207.103.24",
+13:03:17           [31m-[0m[0m "20.207.81.31",
+13:03:17           [31m-[0m[0m "20.207.107.137",
+13:03:17           [31m-[0m[0m "20.219.225.99",
+13:03:17           [31m-[0m[0m "20.219.203.239",
+13:03:17           [31m-[0m[0m "20.244.71.197",
+13:03:17           [31m-[0m[0m "20.219.40.234",
+13:03:17           [31m-[0m[0m "4.187.141.167",
+13:03:17           [31m-[0m[0m "4.247.244.13",
+13:03:17           [31m-[0m[0m "20.244.59.254",
+13:03:17           [31m-[0m[0m "4.213.193.149",
+13:03:17           [31m-[0m[0m "135.235.233.148",
+13:03:17           [31m-[0m[0m "4.247.197.126",
+13:03:17           [31m-[0m[0m "98.70.238.212",
+13:03:17           [31m-[0m[0m "13.71.63.187",
+13:03:17           [31m-[0m[0m "20.207.105.55",
+13:03:17           [31m-[0m[0m "4.247.242.67",
+13:03:17           [31m-[0m[0m "4.187.200.51",
+13:03:17           [31m-[0m[0m "4.213.196.128",
+13:03:17           [31m-[0m[0m "20.207.113.105",
+13:03:17           [31m-[0m[0m "4.247.240.7",
+13:03:17           [31m-[0m[0m "20.192.171.16",
+13:03:17         ] [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m possible_outbound_ip_addresses                 = "135.235.234.222,98.70.243.222,4.224.233.63,4.224.99.151,20.235.201.140,40.80.77.39,4.224.148.174,4.247.197.210,20.219.168.86,20.207.103.24,20.207.81.31,20.207.107.137,20.219.225.99,20.219.203.239,20.244.71.197,20.219.40.234,4.187.141.167,4.247.244.13,20.244.59.254,4.213.193.149,135.235.233.148,4.247.197.126,98.70.238.212,13.71.63.187,20.207.105.55,4.247.242.67,4.187.200.51,4.213.196.128,20.207.113.105,4.247.240.7,20.192.171.16" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m public_network_access_enabled                  = true [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m resource_group_name                            = "rg-vsf-dev" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m service_plan_id                                = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev" [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m site_credential                                = (sensitive value) [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m tags                                           = {
+13:03:17           [31m-[0m[0m "env"        = "dev"
+13:03:17           [31m-[0m[0m "layer"      = "app"
+13:03:17           [31m-[0m[0m "managed_by" = "terraform"
+13:03:17           [31m-[0m[0m "owner"      = "intern"
+13:03:17           [31m-[0m[0m "project"    = "vsf"
+13:03:17         } [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m virtual_network_backup_restore_enabled         = false [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m vnet_image_pull_enabled                        = false [90m-> null[0m[0m
+13:03:17       [31m-[0m[0m webdeploy_publish_basic_authentication_enabled = false [90m-> null[0m[0m
+13:03:17         [90m# (4 unchanged attributes hidden)[0m[0m
+13:03:17 
+13:03:17       [31m-[0m[0m auth_settings {
+13:03:17           [31m-[0m[0m additional_login_parameters    = {} [90m-> null[0m[0m
+13:03:17           [31m-[0m[0m allowed_external_redirect_urls = [] [90m-> null[0m[0m
+13:03:17           [31m-[0m[0m enabled                        = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m token_refresh_extension_hours  = 0 [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m token_store_enabled            = false [90m-> null[0m[0m
+13:03:18             [90m# (4 unchanged attributes hidden)[0m[0m
+13:03:18         }
+13:03:18 
+13:03:18       [31m-[0m[0m identity {
+13:03:18           [31m-[0m[0m identity_ids = [
+13:03:18               [31m-[0m[0m "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-j7o3wc",
+13:03:18             ] [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m type         = "UserAssigned" [90m-> null[0m[0m
+13:03:18             [90m# (2 unchanged attributes hidden)[0m[0m
+13:03:18         }
+13:03:18 
+13:03:18       [31m-[0m[0m site_config {
+13:03:18           [31m-[0m[0m always_on                                     = true [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m container_registry_use_managed_identity       = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m default_documents                             = [
+13:03:18               [31m-[0m[0m "Default.htm",
+13:03:18               [31m-[0m[0m "Default.html",
+13:03:18               [31m-[0m[0m "Default.asp",
+13:03:18               [31m-[0m[0m "index.htm",
+13:03:18               [31m-[0m[0m "index.html",
+13:03:18               [31m-[0m[0m "iisstart.htm",
+13:03:18               [31m-[0m[0m "default.aspx",
+13:03:18               [31m-[0m[0m "index.php",
+13:03:18               [31m-[0m[0m "hostingstart.html",
+13:03:18             ] [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m detailed_error_logging_enabled                = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m ftps_state                                    = "Disabled" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m health_check_eviction_time_in_min             = 0 [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m http2_enabled                                 = true [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m ip_restriction_default_action                 = "Allow" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m linux_fx_version                              = "DOCKER|mcr.microsoft.com/appsvc/staticsite:latest" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m load_balancing_mode                           = "LeastRequests" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m local_mysql_enabled                           = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m managed_pipeline_mode                         = "Integrated" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m minimum_tls_version                           = "1.2" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m remote_debugging_enabled                      = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m remote_debugging_version                      = "VS2022" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m scm_ip_restriction_default_action             = "Allow" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m scm_minimum_tls_version                       = "1.2" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m scm_type                                      = "None" [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m scm_use_main_ip_restriction                   = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m use_32_bit_worker                             = true [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m vnet_route_all_enabled                        = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m websockets_enabled                            = false [90m-> null[0m[0m
+13:03:18           [31m-[0m[0m worker_count                                  = 1 [90m-> null[0m[0m
+13:03:18             [90m# (6 unchanged attributes hidden)[0m[0m
+13:03:18 
+13:03:18           [31m-[0m[0m application_stack {
+13:03:18               [31m-[0m[0m docker_image_name        = "appsvc/staticsite:latest" [90m-> null[0m[0m
+13:03:18               [31m-[0m[0m docker_registry_url      = "https://mcr.microsoft.com" [90m-> null[0m[0m
+13:03:18                 [90m# (11 unchanged attributes hidden)[0m[0m
+13:03:18             }
+13:03:18         }
+13:03:18     }
+13:03:18 
+13:03:18 [1m  # azurerm_resource_group.app[0m will be [1m[31mdestroyed[0m
+13:03:18 [0m  [31m-[0m[0m resource "azurerm_resource_group" "app" {
+13:03:18       [31m-[0m[0m id         = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m location   = "centralindia" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m name       = "rg-vsf-dev" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m tags       = {
+13:03:18           [31m-[0m[0m "env"        = "dev"
+13:03:18           [31m-[0m[0m "layer"      = "app"
+13:03:18           [31m-[0m[0m "managed_by" = "terraform"
+13:03:18           [31m-[0m[0m "owner"      = "intern"
+13:03:18           [31m-[0m[0m "project"    = "vsf"
+13:03:18         } [90m-> null[0m[0m
+13:03:18         [90m# (1 unchanged attribute hidden)[0m[0m
+13:03:18     }
+13:03:18 
+13:03:18 [1m  # azurerm_service_plan.app[0m will be [1m[31mdestroyed[0m
+13:03:18 [0m  [31m-[0m[0m resource "azurerm_service_plan" "app" {
+13:03:18       [31m-[0m[0m id                              = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m kind                            = "linux" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m location                        = "centralindia" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m maximum_elastic_worker_count    = 1 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m name                            = "asp-vsf-dev" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m os_type                         = "Linux" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m per_site_scaling_enabled        = false [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m premium_plan_auto_scale_enabled = false [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m reserved                        = true [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m resource_group_name             = "rg-vsf-dev" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m sku_name                        = "P0v3" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m tags                            = {
+13:03:18           [31m-[0m[0m "env"        = "dev"
+13:03:18           [31m-[0m[0m "layer"      = "app"
+13:03:18           [31m-[0m[0m "managed_by" = "terraform"
+13:03:18           [31m-[0m[0m "owner"      = "intern"
+13:03:18           [31m-[0m[0m "project"    = "vsf"
+13:03:18         } [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m worker_count                    = 1 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m zone_balancing_enabled          = false [90m-> null[0m[0m
+13:03:18         [90m# (1 unchanged attribute hidden)[0m[0m
+13:03:18     }
+13:03:18 
+13:03:18 [1m  # azurerm_user_assigned_identity.app[0m will be [1m[31mdestroyed[0m
+13:03:18 [0m  [31m-[0m[0m resource "azurerm_user_assigned_identity" "app" {
+13:03:18       [31m-[0m[0m client_id           = "011b4d79-6a70-4592-afab-6176df4810ad" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m id                  = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-j7o3wc" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m location            = "centralindia" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m name                = "id-vsf-app-j7o3wc" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m principal_id        = "e89de0b0-ebb1-4274-b770-a33fb0eeb1a9" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m resource_group_name = "rg-vsf-dev" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m tags                = {
+13:03:18           [31m-[0m[0m "env"        = "dev"
+13:03:18           [31m-[0m[0m "layer"      = "app"
+13:03:18           [31m-[0m[0m "managed_by" = "terraform"
+13:03:18           [31m-[0m[0m "owner"      = "intern"
+13:03:18           [31m-[0m[0m "project"    = "vsf"
+13:03:18         } [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m tenant_id           = "58f82789-6695-4f4a-abdb-357668d55cff" [90m-> null[0m[0m
+13:03:18         [90m# (1 unchanged attribute hidden)[0m[0m
+13:03:18     }
+13:03:18 
+13:03:18 [1m  # random_string.suffix[0m will be [1m[31mdestroyed[0m
+13:03:18 [0m  [31m-[0m[0m resource "random_string" "suffix" {
+13:03:18       [31m-[0m[0m id          = "j7o3wc" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m length      = 6 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m lower       = true [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m min_lower   = 0 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m min_numeric = 0 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m min_special = 0 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m min_upper   = 0 [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m number      = true [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m numeric     = true [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m result      = "j7o3wc" [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m special     = false [90m-> null[0m[0m
+13:03:18       [31m-[0m[0m upper       = false [90m-> null[0m[0m
+13:03:18     }
+13:03:18 
+13:03:18 [1mPlan:[0m [0m0 to add, 0 to change, 5 to destroy.
+13:03:18 
+13:03:18 Changes to Outputs:
+13:03:18   [31m-[0m[0m acr_name                       = "acrvsfj7o3wc" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m app_identity_client_id         = "011b4d79-6a70-4592-afab-6176df4810ad" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m app_identity_id                = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-j7o3wc" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m app_identity_principal_id      = "e89de0b0-ebb1-4274-b770-a33fb0eeb1a9" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m app_possible_outbound_ip_count = 31 [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m app_url                        = "https://app-vsf-j7o3wc.azurewebsites.net" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m key_vault_name                 = "kv-vsf-j7o3wc" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m location                       = "centralindia" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m mysql_database_name            = "appdb" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m name_suffix                    = "j7o3wc" [90m-> null[0m[0m
+13:03:18   [31m-[0m[0m resource_group_name            = "rg-vsf-dev" [90m-> null[0m[0m
+13:03:18 [0m[1m
+13:03:18 Do you really want to destroy all resources?[0m
+13:03:18   Terraform will destroy all your managed infrastructure, as shown above.
+13:03:18   There is no undo. Only 'yes' will be accepted to confirm.
+13:03:18 
+13:03:18   [1mEnter a value:[0m [0m
+13:03:30 [0m[1mazurerm_linux_web_app.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-j7o3wc][0m[0m
+13:03:40 [0m[1mazurerm_linux_web_app.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...ers/Microsoft.Web/sites/app-vsf-j7o3wc, 00m10s elapsed][0m[0m
+13:03:42 [0m[1mazurerm_linux_web_app.app: Destruction complete after 12s[0m
+13:03:43 [0m[1mazurerm_user_assigned_identity.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-j7o3wc][0m[0m
+13:03:43 [0m[1mazurerm_service_plan.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev][0m[0m
+13:03:52 [0m[1mazurerm_service_plan.app: Destruction complete after 9s[0m
+13:03:53 [0m[1mazurerm_user_assigned_identity.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...erAssignedIdentities/id-vsf-app-j7o3wc, 00m10s elapsed][0m[0m
+13:03:55 [0m[1mazurerm_user_assigned_identity.app: Destruction complete after 12s[0m
+13:03:55 [0m[1mazurerm_resource_group.app: Destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev][0m[0m
+13:03:55 [0m[1mrandom_string.suffix: Destroying... [id=j7o3wc][0m[0m
+13:03:55 [0m[1mrandom_string.suffix: Destruction complete after 0s[0m
+13:04:05 [0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m10s elapsed][0m[0m
+13:04:15 [0m[1mazurerm_resource_group.app: Still destroying... [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev, 00m20s elapsed][0m[0m
+13:04:19 [0m[1mazurerm_resource_group.app: Destruction complete after 24s[0m
+13:04:20 Releasing state lock. This may take a few moments...
+13:04:22 [0m[1m[32m
+13:04:22 Destroy complete! Resources: 5 destroyed.[0m
