@@ -40,7 +40,11 @@ resource "azurerm_role_assignment" "kv_secrets_officer_operator" {
 }
 
 # App đọc secret lúc chạy (Key Vault reference trong app settings, D12).
+# count: tắt bằng -var 'grant_app_keyvault_access=false' để đo M5 (app mất quyền
+# đọc vault → Key Vault reference đỏ → app gãy sau khi restart). Xem variables.tf.
 resource "azurerm_role_assignment" "kv_secrets_user_app" {
+  count = var.grant_app_keyvault_access ? 1 : 0
+
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_user_assigned_identity.app.principal_id

@@ -72,3 +72,22 @@ variable "db_name" {
   type        = string
   default     = "appdb"
 }
+
+# Hai công tắc dưới đây CHỈ để lấy bằng chứng "chứng minh ngược" của M1 và M5:
+# gỡ quyền của managed identity rồi chứng minh app gãy, sau đó trả lại. Luôn để
+# mặc định true trong code; đặt false bằng `-var` ngay trên dòng lệnh, đúng một
+# lần đo, rồi apply lại không có `-var` để trả quyền. Làm cách này thay vì gỡ
+# tay trên Portal: gỡ tay tạo drift phải nhớ xoá, còn ở đây `terraform plan`
+# sau khi đo xong phải ra No changes thì mới coi là đã dọn sạch.
+
+variable "grant_app_keyvault_access" {
+  description = "Gán role Key Vault Secrets User cho identity của app. Đặt false CHỈ khi đang đo M5 (app phải gãy khi mất quyền đọc Key Vault)."
+  type        = bool
+  default     = true
+}
+
+variable "grant_app_acr_pull" {
+  description = "Gán role AcrPull cho identity của app. Đặt false CHỈ khi đang đo chứng minh ngược của M1 (app phải không pull được image)."
+  type        = bool
+  default     = true
+}
