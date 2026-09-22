@@ -22,19 +22,22 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | [d07](d07/) | Terraform bootstrap, remote state, OIDC | log state lock, OIDC login/reject |
 | [d08](d08/) | Terraform compute + DB (App Service, MySQL) | log apply 2 pha, plan No changes, destroy |
 | [d09](d09/) | Terraform ACR + Key Vault + CI plan | log 429 throttle 7 lần, chẩn đoán đa vùng, apply thành công, destroy |
+| [d10](d10/) | GATE: destroy → apply lại từ rỗng | cặp log apply/destroy + verify, ảnh Portal → `M8.md` |
+| [d11](d11/) | Container pull ACR bằng Managed Identity | 9 ảnh (ACR admin disabled, IAM AcrPull, Deployment Center, env vars 2 slot) → `M1.md` |
+| [d12](d12/) | Key Vault reference · MySQL · gỡ quyền → app gãy | **chưa đo** — khung ở `M3.md`, `M4.md`, `M5.md` |
 
 ## Must-have (điền dần)
 
 | Mã | Yêu cầu | Trạng thái |
 |---|---|---|
-| M1 | Deploy bằng Docker image, ACR admin disabled, pull bằng MI | chờ D11 |
+| M1 | Deploy bằng Docker image, ACR admin disabled, pull bằng MI | `M1.md` — đạt ở D11; còn ô chứng minh ngược (gỡ AcrPull) hoãn sang D12 |
 | M2 | Zero downtime khi deploy | chờ D18 |
-| M3 | MySQL + firewall theo outbound IP | chờ D12 |
-| M4 | Managed Identity, không secret plaintext | chờ D12 |
-| M5 | Key Vault + chứng minh ngược | chờ D12 |
+| M3 | MySQL + firewall theo outbound IP | `M3.md` khung sẵn, **chưa đo** (D12) |
+| M4 | Managed Identity, không secret plaintext | `M4.md` khung sẵn, **chưa đo** (D12) |
+| M5 | Key Vault + chứng minh ngược | `M5.md` khung sẵn, **chưa đo** (D12) |
 | M6 | IP whitelist 200/403 | chờ D13 (bản làm tay đã có ở d02) |
 | M7 | Chiến lược tiết kiệm chi phí | chờ D19–D20 |
-| M8 | Terraform toàn bộ hạ tầng | chờ D10 |
+| M8 | Terraform toàn bộ hạ tầng | `M8.md` — đạt ở D10 |
 | M9 | CI chặn được cái sai | chờ D14 (Trivy baseline đã có ở d05) |
 | M10 | CD deploy từ main | chờ D16 |
 | M11 | Monitoring | chờ D21–D22 |
