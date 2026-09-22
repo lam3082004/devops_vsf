@@ -3,6 +3,18 @@
 Guide gốc: `docs/guides/d12-keyvault-mysql.md` · Bằng chứng: `evidence/M3.md`, `evidence/M4.md`, `evidence/M5.md` · Nhật ký: `notes/d12.md` (tạo khi làm).
 **AI:** từ D7 được sinh code. PR phải có mục `## AI usage`. Mọi `apply`/`destroy`/`az … create`/restart trên Azure thật cần bạn xác nhận trong phiên.
 
+## Tiến độ
+
+| Bước | Trạng thái |
+|---|---|
+| 0. Chuẩn bị máy | ☐ bạn làm đầu phiên D12 (tắt WARP, terminal mới, `az group list`) |
+| 1. PR-A đưa D11 vào `main` | ✅ **xong 2026-09-22** — PR #18 squash merge, CI 5/5 xanh, `main` = `eeddb4e`. Việc chặn B1 đã gỡ |
+| 2. PR-B hai biến toggle role | ✅ **xong 2026-09-22** — PR #20, `fmt` + `validate` sạch |
+| — kế hoạch này | ✅ PR #19 merge vào `main` (`2fde140`) |
+| 3–10 | ☐ phiên D12, cần môi trường bật |
+
+Việc chặn B2 (checkout chính bẩn) **vẫn còn** — xử lý bằng worktree sạch ở bước 0.
+
 ## Tình trạng đầu vào (đo 2026-09-22, chỉ đọc)
 
 - **Môi trường đang TẮT.** `az group list` chỉ còn `rg-vsf-bootstrap` + 2 RG mặc định của Azure → `make down` cuối D11 đã chạy xong, không tốn tiền qua đêm. D12 phải bật lại: `make up` ≈ 25 phút, `make down` ≈ 20 phút.
@@ -55,28 +67,24 @@ Guide gốc: `docs/guides/d12-keyvault-mysql.md` · Bằng chứng: `evidence/M3
 - [ ] Tạo worktree sạch cho D12 (giải B2), mọi lệnh của bài này chạy trong đó:
       `git worktree add .claude/worktrees/d12 -b feat/d12-kv-role-toggle main`
 
-### 1. PR-A — đưa D11 vào `main` (không tốn tiền, giải B1)
+### 1. PR-A — đưa D11 vào `main` — ✅ XONG 2026-09-22
 
-- [ ] Ở checkout chính: `git log --oneline main..feat/d11-acr-mi-pull` → đúng 5 commit; `git diff --stat main...feat/d11-acr-mi-pull` → chỉ `infra/app/{app,variables}.tf`, `evidence/M1.md`, 9 ảnh `evidence/d11/`, `notes/d11.md`. **Không** được có file của refactor OpsBoard.
-- [ ] `git push -u origin feat/d11-acr-mi-pull`, mở PR, mục `## AI usage`.
-- [ ] CI xanh (gitleaks, terraform fmt/validate/plan, test, lint) → squash merge → `git checkout main && git pull`.
-- [ ] Rebase worktree D12 lên `main` mới: `git -C .claude/worktrees/d12 rebase main`.
-- [ ] Ghi lại SHA: `git rev-parse --short HEAD` — **đây là tag image của phiên này**.
-- *Proof:* link PR + `git log --oneline -3 main` cho thấy commit D11 đã nằm trên `main`.
-- *Lưu ý:* `ai-failure-log.md` #11, `known-issues.md` và bản cập nhật plan của D11 đang nằm ở checkout chính lẫn với OpsBoard → `git add` từng file, tuyệt đối không `git add -A`.
+- [x] Kiểm nhánh: đúng 5 commit, diff chỉ `infra/app/{app,variables}.tf` + `evidence/M1.md` + 9 ảnh `evidence/d11/` + `notes/d11.md`, **không** lẫn file refactor OpsBoard.
+- [x] Push nhánh, mở **PR #18** có mục `## AI usage`.
+- [x] CI **5/5 xanh**: gitleaks · dotnet (format, build, test) · terraform (fmt, validate) · terraform plan (infra/app) · azure login (OIDC).
+- [x] Squash merge → `main` = **`eeddb4e`**. Việc chặn B1 đã gỡ.
+- [ ] **Bạn làm đầu phiên D12:** `git checkout main && git pull` ở checkout chính (an toàn: 2 commit mới không đụng file nào đang sửa dở của refactor OpsBoard), rồi `git rev-parse --short HEAD` — **SHA đó là tag image của phiên**.
+- *Lưu ý còn nguyên:* `ai-failure-log.md` #11, `known-issues.md` và bản cập nhật plan của D11 vẫn nằm ở checkout chính lẫn với OpsBoard → khi commit phải `git add` từng file, tuyệt đối không `git add -A`.
 
-### 2. PR-B — hai biến bật/tắt role (không tốn tiền, Decision B)
+### 2. PR-B — hai biến bật/tắt role (Decision B) — ✅ XONG 2026-09-22
 
-Sửa trong worktree `d12`:
-- [ ] `infra/app/variables.tf`: thêm
-      `variable "grant_app_keyvault_access" { type = bool, default = true }` — comment ghi rõ: đặt `false` **chỉ để lấy bằng chứng M5**, luôn trả về `true` ngay sau đó.
-      `variable "grant_app_acr_pull" { type = bool, default = true }` — tương tự cho chứng minh ngược M1.
-- [ ] `infra/app/keyvault.tf`: `azurerm_role_assignment.kv_secrets_user_app` thêm `count = var.grant_app_keyvault_access ? 1 : 0`.
-- [ ] `infra/app/acr.tf`: `azurerm_role_assignment.acr_pull` thêm `count = var.grant_app_acr_pull ? 1 : 0`.
-- [ ] **Bẫy `count` + `depends_on`:** `app.tf` đang `depends_on = [azurerm_role_assignment.kv_secrets_user_app]` ở cả Web App lẫn slot; với `count` tham chiếu này vẫn hợp lệ (trỏ cả tập, tập rỗng cũng được) → **không cần sửa**. Nhưng nếu chỗ nào dùng `azurerm_role_assignment.kv_secrets_user_app.id` thì phải đổi thành `[0].id` — kiểm bằng `grep -rn "kv_secrets_user_app\|acr_pull" infra/`.
-- [ ] `terraform -chdir=infra/app fmt -check` + `validate`. **Không** plan được lúc này (state rỗng, môi trường tắt) — CI cũng bỏ qua như đã thiết kế ở D9.
-- [ ] PR + `## AI usage` → CI xanh → squash merge → `git pull`.
-- *Proof:* `terraform validate` xanh + plan ở bước 3 ra đúng số resource như D11 (biến mặc định `true` ⇒ không đổi gì).
+- [x] `infra/app/variables.tf`: thêm `grant_app_keyvault_access` và `grant_app_acr_pull` (`bool`, mặc định `true`), kèm khối comment nói rõ: chỉ đặt `false` bằng `-var` trên dòng lệnh đúng một lần đo, apply lại không có `-var` để trả quyền, và `plan` sau đó phải ra No changes.
+- [x] `infra/app/keyvault.tf:43`: `kv_secrets_user_app` thêm `count = var.grant_app_keyvault_access ? 1 : 0`.
+- [x] `infra/app/acr.tf:17`: `acr_pull` thêm `count = var.grant_app_acr_pull ? 1 : 0`.
+- [x] **Bẫy `count` + `depends_on` — đã kiểm:** `grep -rn "kv_secrets_user_app\|acr_pull" infra/` chỉ ra 2 chỗ dùng là `depends_on` ở `app.tf:61` và `app.tf:121`. `depends_on` trỏ cả tập resource nên tập rỗng vẫn hợp lệ → **không phải sửa**; không chỗ nào dùng `.id` nên không cần đổi thành `[0].id`.
+- [x] `terraform -chdir=infra/app fmt -check -diff` → không có khác biệt; `terraform validate` → **Success! The configuration is valid.**
+- [x] PR **#20** có `## AI usage`.
+- *Proof:* `validate` xanh + job `terraform plan (infra/app)` trong CI. Với mặc định `true`, plan ở bước 3 phải ra đúng số resource như D11 — hai biến này không đổi gì khi chưa ai đặt `false`.
 
 ### 3. `make up` (TỐN TIỀN — bạn tự gõ `yes`, không pipe)
 

@@ -14,7 +14,11 @@ resource "azurerm_container_registry" "acr" {
 }
 
 # Cho phép danh tính của app (identity.tf) pull image từ ACR này.
+# count: tắt bằng -var 'grant_app_acr_pull=false' để đo chứng minh ngược của M1
+# (app mất quyền pull → container không khởi động được). Xem variables.tf.
 resource "azurerm_role_assignment" "acr_pull" {
+  count = var.grant_app_acr_pull ? 1 : 0
+
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.app.principal_id
