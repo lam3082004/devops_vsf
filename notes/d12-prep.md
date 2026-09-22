@@ -11,9 +11,13 @@ Guide gốc: `docs/guides/d12-keyvault-mysql.md` · Bằng chứng: `evidence/M3
 | 1. PR-A đưa D11 vào `main` | ✅ **xong 2026-09-22** — PR #18 squash merge, CI 5/5 xanh, `main` = `eeddb4e`. Việc chặn B1 đã gỡ |
 | 2. PR-B hai biến toggle role | ✅ **xong 2026-09-22** — PR #20, `fmt` + `validate` sạch |
 | — kế hoạch này | ✅ PR #19 merge vào `main` (`2fde140`) |
-| 3–10 | ☐ phiên D12, cần môi trường bật |
+| 0. Worktree sạch | ✅ **xong 2026-09-22** — `.claude/worktrees/d12` dựng từ `main`, xác nhận `app/Dockerfile` có mặt → việc chặn B2 đã gỡ. Còn lại của bước 0 (tắt WARP, kiểm `docker`/`dotnet`/`az`) là việc đầu phiên |
+| Khung bằng chứng | ✅ **xong 2026-09-22** — `evidence/M3.md`, `M4.md`, `M5.md`, `notes/d12.md`, `evidence/d12/screenshots/` |
+| 3–10 | ☐ phiên D12, cần môi trường bật (~2 tiếng, ≈ $0.26) |
 
-Việc chặn B2 (checkout chính bẩn) **vẫn còn** — xử lý bằng worktree sạch ở bước 0.
+Cả hai việc chặn đã gỡ. Phần còn lại **bắt buộc phải có bạn ở terminal**: `make up`
+hỏi `yes` tương tác, `terraform apply` / `az webapp restart` / swap bị bộ lọc Claude
+Code chặn (D11 đã gặp), và ảnh Portal chỉ bạn chụp được.
 
 ## Tình trạng đầu vào (đo 2026-09-22, chỉ đọc)
 
