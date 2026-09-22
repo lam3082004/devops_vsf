@@ -56,15 +56,15 @@ variable "owner" {
 }
 
 variable "placeholder_image" {
-  description = "Image công khai trên mcr.microsoft.com chạy tạm cho tới khi có ACR (D11)."
+  description = "Image công khai trên mcr.microsoft.com chạy tạm lúc dựng môi trường; sau đó image do CD/tay đặt (D11, D16). Phải nghe cùng cổng với container_port."
   type        = string
-  default     = "appsvc/staticsite:latest"
+  default     = "dotnet/samples:aspnetapp"
 }
 
 variable "container_port" {
-  description = "Cổng container lắng nghe (WEBSITES_PORT). Image mẫu dùng 80; app thật dùng 8080 (D11)."
+  description = "Cổng container lắng nghe (WEBSITES_PORT). Cả image mẫu aspnetapp lẫn app thật đều dùng 8080."
   type        = number
-  default     = 80
+  default     = 8080
 }
 
 variable "db_name" {
