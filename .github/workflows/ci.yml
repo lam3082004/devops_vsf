@@ -54,9 +54,9 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
-      - run: dotnet format app/NodeRegistry.csproj --verify-no-changes --severity warn
-      - run: dotnet build app/NodeRegistry.csproj -c Release
-      - run: dotnet test app.Tests/NodeRegistry.Tests.csproj -c Release
+      - run: dotnet format app/be/OpsBoard.csproj --verify-no-changes --severity warn
+      - run: dotnet build app/be/OpsBoard.csproj -c Release
+      - run: dotnet test app/be.Tests/OpsBoard.Tests.csproj -c Release
 
   terraform:
     name: terraform (fmt, validate)
