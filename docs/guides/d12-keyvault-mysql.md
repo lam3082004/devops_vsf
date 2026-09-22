@@ -2,6 +2,9 @@
 
 **Cần:** D11 (hoặc làm xen kẽ) · **Chi phí:** có · **Bằng chứng:** `evidence/M3.md`, `evidence/M4.md`, `evidence/M5.md`
 
+> **Kế hoạch chi tiết của phiên này: `notes/d12-prep.md`** (11 bước, 4 decision, 2 việc chặn phải xong trước khi tiêu tiền).
+> Tình trạng 2026-09-22: **mục 1–2 đã xong từ D11** (commit `c710815`: app settings DB + `DB_PASSWORD` Key Vault reference không version + `key_vault_reference_identity_id`, đã đo **Resolved** cả 2 slot) và **mục 3 (firewall) đã đúng từ D8**. Còn lại thật sự: M3 đo lại có ảnh Log stream, M4 rà app settings, M5 chứng minh ngược — cộng ô chứng minh ngược AcrPull còn nợ của M1.
+
 ## Mục tiêu
 - **M3:** `/items` đọc ghi MySQL; firewall MySQL **chỉ** mở cho outbound IPs của App Service.
 - **M4:** Managed Identity đọc Key Vault + pull ACR; **không secret plaintext** trong app settings.
