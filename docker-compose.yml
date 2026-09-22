@@ -6,7 +6,7 @@ services:
     image: mysql:8.4
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-devpass}
-      MYSQL_DATABASE: ${DB_NAME:-nodereg}
+      MYSQL_DATABASE: ${DB_NAME:-opsboard}
     ports:
       # 3307 ở máy host để không đụng MySQL cài sẵn (nếu có)
       - "3307:3306"
@@ -23,7 +23,7 @@ services:
 
   app:
     build:
-      context: ./app
+      context: ./app/be
       args:
         # Truyền SHA vào build để /version trả đúng; không có thì là "dev".
         GIT_SHA: ${GIT_SHA:-dev}
@@ -31,7 +31,7 @@ services:
       PORT: 8080
       DB_HOST: db          # tên service, Docker tự phân giải DNS
       DB_PORT: 3306        # cổng BÊN TRONG mạng compose, không phải 3307
-      DB_NAME: ${DB_NAME:-nodereg}
+      DB_NAME: ${DB_NAME:-opsboard}
       DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD:-devpass}
       DB_TLS: "false"      # MySQL local không bật TLS; trên Azure phải là true
