@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUserName } from "@/components/UserNameProvider";
 import { useCreateTicketDialog } from "@/components/CreateTicketProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // Điều hướng chung (wire-frame.md, mục "Điều hướng chung"). Board/Danh sách/Thống kê là trang của
 // FE-2/FE-3/FE-5 — chưa tồn tại ở FE-1, nav chỉ dựng khung liên kết trước.
@@ -57,6 +58,7 @@ export function AppHeader() {
         >
           👤 {userName ?? "Chưa đặt tên"}
         </button>
+        <ThemeToggle />
       </div>
     </header>
   );
