@@ -13,6 +13,7 @@ Guide gốc: `docs/guides/d12-keyvault-mysql.md` · Bằng chứng: `evidence/M3
 | — kế hoạch này | ✅ PR #19 merge vào `main` (`2fde140`) |
 | 0. Worktree sạch | ✅ **xong 2026-09-22** — `.claude/worktrees/d12` dựng từ `main`, xác nhận `app/Dockerfile` có mặt → việc chặn B2 đã gỡ. Còn lại của bước 0 (tắt WARP, kiểm `docker`/`dotnet`/`az`) là việc đầu phiên |
 | Khung bằng chứng | ✅ **xong 2026-09-22** — `evidence/M3.md`, `M4.md`, `M5.md`, `notes/d12.md`, `evidence/d12/screenshots/` |
+| Script gom bằng chứng M3+M4 | ✅ **xong 2026-09-22** — `scripts/d12-verify.sh`, shellcheck sạch, đã thử cả 2 nhánh tiền kiểm |
 | 3–10 | ☐ phiên D12, cần môi trường bật (~2 tiếng, ≈ $0.26) |
 
 Cả hai việc chặn đã gỡ. Phần còn lại **bắt buộc phải có bạn ở terminal**: `make up`
@@ -110,6 +111,12 @@ Code chặn (D11 đã gặp), và ảnh Portal chỉ bạn chụp được.
 - *Nếu 503 kéo dài:* xem Log stream. Hai nguyên nhân đã gặp: `WEBSITES_PORT` lệch cổng, và role AcrPull chưa lan truyền.
 
 ### 5. M3 — `/items` đọc ghi MySQL
+
+> **Nhanh hơn:** `bash scripts/d12-verify.sh` chạy một lượt toàn bộ lệnh chỉ đọc của
+> M3 + M4 (và nhắc lại cờ MI của M1), lưu log vào `evidence/raw/d12-verify-<ngày>.log`.
+> Script tự tra tên resource từ `terraform output` nên không phải điền suffix bằng tay,
+> và dừng sớm với thông báo rõ nếu chưa `make tf-init` hoặc môi trường đang tắt.
+> Phần dưới là từng lệnh rời, dùng khi cần chạy lại một ô lẻ.
 
 - [ ] `curl -s -w '\n%{http_code}\n' https://<app>.azurewebsites.net/health` → 200 `{"status":"ok","db":"ok"}`.
 - [ ] `TS=$(date +%H%M%S)`; `curl -s -X POST …/items -H 'content-type: application/json' -d "{\"name\":\"d12-check-$TS\"}"` → **201** kèm `id`, `last_seen_at`.
