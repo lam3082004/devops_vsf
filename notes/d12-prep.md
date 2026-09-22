@@ -14,7 +14,9 @@ Guide gốc: `docs/guides/d12-keyvault-mysql.md` · Bằng chứng: `evidence/M3
 | 0. Worktree sạch | ✅ **xong 2026-09-22** — `.claude/worktrees/d12` dựng từ `main`, xác nhận `app/Dockerfile` có mặt → việc chặn B2 đã gỡ. Còn lại của bước 0 (tắt WARP, kiểm `docker`/`dotnet`/`az`) là việc đầu phiên |
 | Khung bằng chứng | ✅ **xong 2026-09-22** — `evidence/M3.md`, `M4.md`, `M5.md`, `notes/d12.md`, `evidence/d12/screenshots/` |
 | Script gom bằng chứng M3+M4 | ✅ **xong 2026-09-22** — `scripts/d12-verify.sh`, shellcheck sạch, đã thử cả 2 nhánh tiền kiểm |
-| 3–10 | ☐ phiên D12, cần môi trường bật (~2 tiếng, ≈ $0.26) |
+| 3. `make up` | ⚠️ **DỞ DANG 2026-09-22** — pha 1 xong (12 resource, suffix `j124ze`), **pha 2 chưa chạy**: `terraform apply` bị bộ lọc Claude Code chặn (`Blind Apply`, rồi `Protected-Scope IaC Apply` kể cả khi đã plan ra file). Plan đã duyệt sẵn ở `infra/app/d12.tfplan` — người dùng chạy `terraform -chdir=infra/app apply d12.tfplan` |
+| 4–10 | ☐ chặn sau bước 3. **Môi trường đang BẬT từ ~16:10, đang tính tiền** |
+| M4 (phần đọc được) | ✅ ô 1, 3, 4, 9 đã đo thật lúc 16:15–16:19 — xem `evidence/M4.md` |
 
 Cả hai việc chặn đã gỡ. Phần còn lại **bắt buộc phải có bạn ở terminal**: `make up`
 hỏi `yes` tương tác, `terraform apply` / `az webapp restart` / swap bị bộ lọc Claude
