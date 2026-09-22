@@ -9,6 +9,7 @@ import { TicketMainPanel } from "@/components/ticket-detail/TicketMainPanel";
 import { TicketSidePanel } from "@/components/ticket-detail/TicketSidePanel";
 import type { TicketEditDraft, TicketFieldErrors } from "@/components/ticket-detail/types";
 import type { Activity, Comment, PatchTicketInput, Ticket } from "@/lib/types";
+import { userNameHeaders } from "@/lib/userHeader";
 
 const TITLE_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -131,7 +132,7 @@ export function TicketDetailView({ ticket, activities, comments }: TicketDetailV
     try {
       const res = await fetch(`/api/tickets/${ticket.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "X-User-Name": userName },
+        headers: userNameHeaders(userName),
         body: JSON.stringify(patch),
       });
       if (res.ok) {

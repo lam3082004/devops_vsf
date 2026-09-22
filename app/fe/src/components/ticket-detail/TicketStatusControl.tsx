@@ -6,6 +6,8 @@ import { useUserName } from "@/components/UserNameProvider";
 import { VALID_TRANSITIONS } from "@/components/kanban/constants";
 import { parseErrorBody } from "@/components/ticket-detail/errors";
 import type { Ticket, TicketStatus } from "@/lib/types";
+import { STATUS_LABELS } from "@/lib/labels";
+import { userNameHeaders } from "@/lib/userHeader";
 
 interface TicketStatusControlProps {
   ticket: Ticket;
@@ -32,7 +34,7 @@ export function TicketStatusControl({ ticket }: TicketStatusControlProps) {
     return (
       <div>
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Trạng thái</h2>
-        <p className="mt-1 font-medium">{ticket.status}</p>
+        <p className="mt-1 font-medium">{STATUS_LABELS[ticket.status]}</p>
       </div>
     );
   }
@@ -48,7 +50,7 @@ export function TicketStatusControl({ ticket }: TicketStatusControlProps) {
     try {
       const res = await fetch(`/api/tickets/${ticket.id}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "X-User-Name": userName },
+        headers: userNameHeaders(userName),
         body: JSON.stringify({ status: next }),
       });
       if (res.ok) {
@@ -73,10 +75,10 @@ export function TicketStatusControl({ ticket }: TicketStatusControlProps) {
         onChange={handleChange}
         className="mt-1 w-full rounded border border-zinc-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800"
       >
-        <option value={ticket.status}>{ticket.status}</option>
+        <option value={ticket.status}>{STATUS_LABELS[ticket.status]}</option>
         {nextOptions.map((status) => (
           <option key={status} value={status}>
-            {status}
+            {STATUS_LABELS[status]}
           </option>
         ))}
       </select>

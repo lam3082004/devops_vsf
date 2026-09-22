@@ -1,11 +1,14 @@
 // Hằng số dùng chung cho bảng kanban (FE-2): thứ tự/nhãn cột + bảng chuyển trạng thái hợp lệ.
 import type { Severity, TicketStatus } from "@/lib/types";
+import { STATUS_LABELS } from "@/lib/labels";
 
+// label lấy từ STATUS_LABELS (nguồn sự thật duy nhất cho nhãn trạng thái) — nơi khác dùng `label` của
+// COLUMNS (KanbanColumn.tsx, stats/page.tsx) tự động Việt hoá theo mà không cần sửa riêng.
 export const COLUMNS: ReadonlyArray<{ status: TicketStatus; label: string }> = [
-  { status: "open", label: "Open" },
-  { status: "in_progress", label: "In progress" },
-  { status: "resolved", label: "Resolved" },
-  { status: "closed", label: "Closed" },
+  { status: "open", label: STATUS_LABELS.open },
+  { status: "in_progress", label: STATUS_LABELS.in_progress },
+  { status: "resolved", label: STATUS_LABELS.resolved },
+  { status: "closed", label: STATUS_LABELS.closed },
 ];
 
 // Bảng chuyển trạng thái hợp lệ (PRD mục 2, "Quy tắc nghiệp vụ"):

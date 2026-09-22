@@ -32,13 +32,27 @@ public sealed class UserNameFilter : IActionFilter
             return;
         }
 
-        if (raw.Length > MaxLength)
+        // HTTP header không mang được ký tự ngoài ASCII đáng tin cậy (trình duyệt tự mã hoá theo
+        // ISO-8859-1 hoặc ném lỗi trước cả khi gửi), nên frontend percent-encode UTF-8 trước khi đặt
+        // header — decode lại ở đây. Uri.UnescapeDataString bọc try/catch phòng trường hợp chuỗi có `%`
+        // lẻ không hợp lệ mà một số phiên bản coi là lỗi định dạng: dùng lại `raw` thô thay vì trả 500.
+        string value;
+        try
+        {
+            value = Uri.UnescapeDataString(raw);
+        }
+        catch (FormatException)
+        {
+            value = raw;
+        }
+
+        if (value.Length > MaxLength)
         {
             context.Result = BadRequest($"'{HeaderName}' toi da {MaxLength} ky tu");
             return;
         }
 
-        context.HttpContext.Items[ItemKey] = raw;
+        context.HttpContext.Items[ItemKey] = value;
     }
 
     public void OnActionExecuted(ActionExecutedContext context)

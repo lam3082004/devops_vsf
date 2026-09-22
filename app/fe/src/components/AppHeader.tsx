@@ -8,7 +8,7 @@ import { useCreateTicketDialog } from "@/components/CreateTicketProvider";
 // Điều hướng chung (wire-frame.md, mục "Điều hướng chung"). Board/Danh sách/Thống kê là trang của
 // FE-2/FE-3/FE-5 — chưa tồn tại ở FE-1, nav chỉ dựng khung liên kết trước.
 const NAV_LINKS = [
-  { href: "/", label: "Board" },
+  { href: "/", label: "Bảng" },
   { href: "/tickets", label: "Danh sách" },
   { href: "/stats", label: "Thống kê" },
 ] as const;
@@ -48,7 +48,7 @@ export function AppHeader() {
           }}
           className="rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900"
         >
-          + Ticket
+          + Tạo ticket
         </button>
         <button
           type="button"

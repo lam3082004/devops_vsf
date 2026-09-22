@@ -15,6 +15,7 @@ import { COLUMNS, VALID_TRANSITIONS } from "@/components/kanban/constants";
 import { KanbanColumn } from "@/components/kanban/KanbanColumn";
 import { Toast } from "@/components/kanban/Toast";
 import type { KanbanColumnsData } from "@/components/kanban/types";
+import { userNameHeaders } from "@/lib/userHeader";
 
 interface KanbanBoardProps {
   columns: KanbanColumnsData;
@@ -142,7 +143,7 @@ export function KanbanBoard({ columns: initialColumns }: KanbanBoardProps) {
     try {
       const res = await fetch(`/api/tickets/${ticketId}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "X-User-Name": userName },
+        headers: userNameHeaders(userName),
         body: JSON.stringify({ status: targetStatus }),
       });
       if (!res.ok) {

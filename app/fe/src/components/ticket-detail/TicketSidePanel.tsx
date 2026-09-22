@@ -5,6 +5,7 @@ import { TicketHistoryList } from "@/components/ticket-detail/TicketHistoryList"
 import { TicketStatusControl } from "@/components/ticket-detail/TicketStatusControl";
 import type { TicketEditDraft, TicketFieldErrors } from "@/components/ticket-detail/types";
 import type { Activity, Category, Severity, Ticket } from "@/lib/types";
+import { CATEGORY_LABELS, SEVERITY_LABELS } from "@/lib/labels";
 
 const ASSIGNEE_MAX_LENGTH = 50;
 
@@ -45,13 +46,13 @@ export function TicketSidePanel({
           >
             {SEVERITY_VALUES.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {SEVERITY_LABELS[value]}
               </option>
             ))}
           </select>
         ) : (
           <p className="mt-1">
-            <span aria-hidden>{SEVERITY_EMOJI[ticket.severity]}</span> {ticket.severity}
+            <span aria-hidden>{SEVERITY_EMOJI[ticket.severity]}</span> {SEVERITY_LABELS[ticket.severity]}
           </p>
         )}
       </div>
@@ -67,12 +68,12 @@ export function TicketSidePanel({
           >
             {CATEGORY_VALUES.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {CATEGORY_LABELS[value]}
               </option>
             ))}
           </select>
         ) : (
-          <p className="mt-1">{ticket.category}</p>
+          <p className="mt-1">{CATEGORY_LABELS[ticket.category]}</p>
         )}
       </div>
 

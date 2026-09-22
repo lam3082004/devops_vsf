@@ -6,6 +6,7 @@ import { useDraggable } from "@dnd-kit/core";
 import type { Ticket } from "@/lib/types";
 import { SEVERITY_EMOJI } from "@/components/kanban/constants";
 import { formatTicketAge } from "@/components/kanban/age";
+import { CATEGORY_LABELS } from "@/lib/labels";
 
 interface TicketCardProps {
   ticket: Ticket;
@@ -53,7 +54,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
           {ticket.title}
         </span>
         <span className="text-xs text-zinc-500 dark:text-zinc-400">
-          {ticket.category} · {formatTicketAge(ticket.created_at)}
+          {CATEGORY_LABELS[ticket.category]} · {formatTicketAge(ticket.created_at)}
           {ticket.assignee && <> · @{ticket.assignee}</>}
         </span>
       </Link>

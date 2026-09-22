@@ -12,6 +12,7 @@ import {
   STATUS_VALUES,
   ticketListHref,
 } from "@/components/tickets/query";
+import { CATEGORY_LABELS, SEVERITY_LABELS, STATUS_LABELS } from "@/lib/labels";
 
 interface TicketFiltersProps {
   query: TicketQuery;
@@ -119,7 +120,7 @@ export function TicketFilters({ query }: TicketFiltersProps) {
           <option value="">Tất cả</option>
           {STATUS_VALUES.map((value) => (
             <option key={value} value={value}>
-              {value}
+              {STATUS_LABELS[value]}
             </option>
           ))}
         </select>
@@ -139,7 +140,7 @@ export function TicketFilters({ query }: TicketFiltersProps) {
           <option value="">Tất cả</option>
           {SEVERITY_VALUES.map((value) => (
             <option key={value} value={value}>
-              {value}
+              {SEVERITY_LABELS[value]}
             </option>
           ))}
         </select>
@@ -159,7 +160,7 @@ export function TicketFilters({ query }: TicketFiltersProps) {
           <option value="">Tất cả</option>
           {CATEGORY_VALUES.map((value) => (
             <option key={value} value={value}>
-              {value}
+              {CATEGORY_LABELS[value]}
             </option>
           ))}
         </select>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Ticket } from "@/lib/types";
 import { SEVERITY_EMOJI } from "@/components/kanban/constants";
 import { formatTicketAge } from "@/components/kanban/age";
+import { CATEGORY_LABELS, SEVERITY_LABELS, STATUS_LABELS } from "@/lib/labels";
 
 interface TicketTableProps {
   tickets: Ticket[];
@@ -16,10 +17,10 @@ export function TicketTable({ tickets }: TicketTableProps) {
         <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
           <th className="px-2 py-2 font-medium">#</th>
           <th className="px-2 py-2 font-medium">Tiêu đề</th>
-          <th className="px-2 py-2 font-medium">Severity</th>
-          <th className="px-2 py-2 font-medium">Status</th>
-          <th className="px-2 py-2 font-medium">Assignee</th>
-          <th className="px-2 py-2 font-medium">Category</th>
+          <th className="px-2 py-2 font-medium">Mức độ</th>
+          <th className="px-2 py-2 font-medium">Trạng thái</th>
+          <th className="px-2 py-2 font-medium">Người xử lý</th>
+          <th className="px-2 py-2 font-medium">Phân loại</th>
           <th className="px-2 py-2 font-medium">Tạo</th>
         </tr>
       </thead>
@@ -41,12 +42,12 @@ export function TicketTable({ tickets }: TicketTableProps) {
             </td>
             <td className="px-2 py-2">
               <Link href={`/tickets/${ticket.id}`} className="block">
-                <span aria-hidden>{SEVERITY_EMOJI[ticket.severity]}</span> {ticket.severity}
+                <span aria-hidden>{SEVERITY_EMOJI[ticket.severity]}</span> {SEVERITY_LABELS[ticket.severity]}
               </Link>
             </td>
             <td className="px-2 py-2">
               <Link href={`/tickets/${ticket.id}`} className="block">
-                {ticket.status}
+                {STATUS_LABELS[ticket.status]}
               </Link>
             </td>
             <td className="px-2 py-2">
@@ -56,7 +57,7 @@ export function TicketTable({ tickets }: TicketTableProps) {
             </td>
             <td className="px-2 py-2">
               <Link href={`/tickets/${ticket.id}`} className="block">
-                {ticket.category}
+                {CATEGORY_LABELS[ticket.category]}
               </Link>
             </td>
             <td className="px-2 py-2">

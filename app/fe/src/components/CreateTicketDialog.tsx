@@ -6,6 +6,8 @@ import { useUserName } from "@/components/UserNameProvider";
 import { useCreateTicketDialog } from "@/components/CreateTicketProvider";
 import { CATEGORY_VALUES, SEVERITY_VALUES } from "@/components/tickets/query";
 import type { Category, CreateTicketInput, ErrorResponse, Severity } from "@/lib/types";
+import { CATEGORY_LABELS, SEVERITY_LABELS } from "@/lib/labels";
+import { userNameHeaders } from "@/lib/userHeader";
 
 const TITLE_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -86,7 +88,7 @@ export function CreateTicketDialog() {
     try {
       const res = await fetch("/api/tickets", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-User-Name": userName },
+        headers: userNameHeaders(userName),
         body: JSON.stringify(input),
       });
 
@@ -99,7 +101,7 @@ export function CreateTicketDialog() {
       const body: Partial<ErrorResponse> = await res.json().catch(() => ({}));
       setFormError(body.reason ?? body.detail ?? `Tạo ticket thất bại (HTTP ${res.status})`);
     } catch {
-      setFormError("Không thể kết nối tới máy chủ, thử lại.");
+      setFormError("Không gửi được yêu cầu, kiểm tra kết nối rồi thử lại.");
     } finally {
       setSubmitting(false);
     }
@@ -152,7 +154,7 @@ export function CreateTicketDialog() {
                     checked={form.severity === value}
                     onChange={() => setForm({ ...form, severity: value })}
                   />
-                  {value}
+                  {SEVERITY_LABELS[value]}
                 </label>
               ))}
             </div>
@@ -167,7 +169,7 @@ export function CreateTicketDialog() {
             >
               {CATEGORY_VALUES.map((value) => (
                 <option key={value} value={value}>
-                  {value}
+                  {CATEGORY_LABELS[value]}
                 </option>
               ))}
             </select>

@@ -6,6 +6,7 @@ import { useUserName } from "@/components/UserNameProvider";
 import { parseErrorBody } from "@/components/ticket-detail/errors";
 import { formatTime } from "@/components/ticket-detail/format";
 import type { Comment } from "@/lib/types";
+import { userNameHeaders } from "@/lib/userHeader";
 
 const BODY_MAX_LENGTH = 2000;
 
@@ -40,7 +41,7 @@ export function TicketComments({ ticketId, comments }: TicketCommentsProps) {
     try {
       const res = await fetch(`/api/tickets/${ticketId}/comments`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-User-Name": userName },
+        headers: userNameHeaders(userName),
         body: JSON.stringify({ body }),
       });
       if (res.ok) {

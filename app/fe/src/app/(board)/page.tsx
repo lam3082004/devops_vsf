@@ -43,7 +43,7 @@ export default async function Home() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-6">
-      <h1 className="mb-4 text-2xl font-semibold tracking-tight">Board</h1>
+      <h1 className="mb-4 text-2xl font-semibold tracking-tight">Bảng ticket</h1>
       <KanbanBoard columns={columns} />
     </main>
   );

@@ -7,6 +7,7 @@ import { formatResolutionMinutes } from "@/components/stats/formatResolutionMinu
 import { COLUMNS, SEVERITY_EMOJI } from "@/components/kanban/constants";
 import { ticketListHref } from "@/components/tickets/query";
 import type { Severity, Stats } from "@/lib/types";
+import { SEVERITY_LABELS } from "@/lib/labels";
 
 // Thứ tự + màu theo wire-frame S6 (🔴 critical, 🟠 high, 🟡 medium, 🟢 low) — KHÁC thứ tự SEVERITY_VALUES
 // của query.ts (low → critical), nên khai riêng ở đây thay vì tái dùng mảng đó.
@@ -76,7 +77,7 @@ export default async function StatsPage() {
           title="Theo mức độ"
           segments={SEVERITY_ORDER.map((severity) => ({
             key: severity,
-            label: severity,
+            label: SEVERITY_LABELS[severity],
             icon: SEVERITY_EMOJI[severity],
             count: stats.by_severity[severity],
             href: ticketListHref({ severity }, 0),

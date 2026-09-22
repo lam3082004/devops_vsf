@@ -30,8 +30,10 @@ public sealed class UserNameHeaderOperationFilter : IOperationFilter
             Name = UserNameFilter.HeaderName,
             In = ParameterLocation.Header,
             Required = true,
-            Description = "Tên người thao tác (1-50 ký tự), bắt buộc cho mọi request ghi (POST/PATCH); " +
-                "thiếu hoặc rỗng thì UserNameFilter trả 400 trước khi vào action.",
+            Description = "Tên người thao tác (1-50 ký tự sau khi decode), bắt buộc cho mọi request ghi " +
+                "(POST/PATCH); thiếu hoặc rỗng thì UserNameFilter trả 400 trước khi vào action. Giá trị " +
+                "PHẢI là UTF-8 đã percent-encode vì header HTTP không mang được ký tự ngoài ASCII đáng " +
+                "tin cậy (vd 'lâm' → 'l%C3%A2m').",
             Schema = new OpenApiSchema { Type = JsonSchemaType.String, MaxLength = UserNameFilter.MaxLength },
         });
     }
