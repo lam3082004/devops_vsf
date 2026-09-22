@@ -4,6 +4,8 @@ Mỗi file là **một bài**, không phải một ngày. Tiến độ tuỳ b�
 
 Nguồn yêu cầu: `topic.md`. Checklist tổng: `docs/plans/active/azure-app-service-internship.md`. Nhật ký từng bài: `notes/dXX.md`. Sổ khái niệm: https://claude.ai/artifact/DcVdzVVpzjVecMt128tGFM
 
+Tài liệu ứng dụng OpsBoard (brief, PRD, wire-frame, API spec, schema, kiến trúc, local dev): `docs/docs_app/README.md`.
+
 ## Luật dùng AI khi làm nhanh hơn lịch
 
 Đề bài gắn AI-OFF với **tuần 1 theo lịch** (D1–D5 ≈ 15/09–21/09) và cho bật AI từ **D7 ≈ 23/09**.

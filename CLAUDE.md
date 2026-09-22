@@ -20,5 +20,6 @@ Hướng dẫn từng bài: `docs/guides/` (mục lục `docs/guides/README.md`)
 
 ## Validation
 
-Chưa có code. Khi app/Terraform/CI xuất hiện, contract chính là những gì
+Code: `app/be` (.NET, `make test` · `make lint`) và `app/fe` (Next.js, `make fe-lint` · `make fe-build`).
+Contract chính là những gì
 `.github/workflows/ci.yml` chạy; cập nhật mục này và `~/.claude/harness/STACKS.md` theo đó.

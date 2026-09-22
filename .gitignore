@@ -7,7 +7,7 @@ obj/
 .env.*
 *.env
 !.env.example
-!app/.env.example
+!app/*/.env.example
 notes/d3-env.sh
 
 # Terraform (từ D7)
@@ -30,3 +30,6 @@ override.tf.json
 *.swp
 .idea/
 .vscode/
+
+# Worktree tạm của Claude Code — không phải nguồn của dự án (nặng hàng trăm MB)
+.claude/
