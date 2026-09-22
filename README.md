@@ -21,7 +21,9 @@ Repo thực tập: deploy app lên Azure App Service, CI/CD trunk-based, hạ t�
 
 | Đường dẫn | Là gì | Bài |
 |---|---|---|
-| `app/` | Source app + Dockerfile. Các endpoint bắt buộc: `/health` `/version` `/load` `/items` `/boom`, log JSON. | D4–D5 |
+| `app/be/` | Backend .NET + Dockerfile. Các endpoint bắt buộc: `/health` `/version` `/load` `/items` `/boom`, log JSON. Test ở `app/be.Tests/`. | D4–D5 |
+| `app/fe/` | Frontend Next.js (OpsBoard). Mới khởi tạo, chưa có màn hình. | — |
+| `docs/docs_app/` | Tài liệu ứng dụng: brief, PRD, wire-frame, API spec, architecture, database schema. | — |
 | `.github/workflows/` | `ci.yml` (gitleaks, `terraform fmt/validate`, test, docker build) và `cd.yml` tách riêng. | D6, D14, D16 |
 | `infra/` | Terraform: remote state + locking, App Service, MySQL, ACR, Key Vault, autoscale, alert. | D7–D10 |
 | `evidence/M1.md` … `M11.md` | Mỗi must-have một file bằng chứng (log · screenshot · output lệnh). | rải rác |

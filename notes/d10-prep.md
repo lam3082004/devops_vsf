@@ -195,6 +195,12 @@ của Terraform chỉ giấu khỏi output CLI (`plan`/`apply`), không mã hoá
 file state. Vì vậy storage chứa state phải khoá quyền chặt: đã tắt shared
 key (`shared_access_key_enabled = false`), chỉ Entra ID + RBAC được đọc/ghi.
 
+### 5b. Nói thêm với mentor (lệch so với guide, tự nói trước khi bị hỏi)
+
+1. **Không phải "bản clone mới".** GATE chạy trên checkout hiện có; `git diff` trên `infra/`, `Makefile`, `app/`, `.github/` rỗng so với `main` (`6464657`), nên code giống hệt bản clone. Nếu mentor đòi đúng chữ thì chạy lại từ clone mới (≈45 phút, tốn tiền).
+2. **Thứ tự thực tế là apply → destroy**, không phải destroy → apply như guide, vì state đang rỗng lúc bắt đầu (môi trường D9 đã `make down`). Vẫn chứng minh được "từ rỗng ra đủ" (apply) và "về rỗng sạch" (destroy); cặp log sạch ở `evidence/raw/m8-*-2026-09-21.log`.
+3. **6 lần lỗi trước khi qua** (4 đứt kết nối nghi Cloudflare WARP, 1 do cách nhập `yes`, 1 state dở dang → `Invalid for_each`): `known-issues.md` #7–#8, `ai-failure-log.md` #9–#10, `notes/d10.md`. Log lỗi giữ nguyên, log sạch là lần chạy mới.
+
 ## Xong khi
 - [x] 2 log thô (`evidence/raw/m8-destroy-*.log`, `m8-apply-*.log`)
 - [x] Bảng kiểm tra đầy đủ, số thật (không copy từ lần chạy tham khảo)
