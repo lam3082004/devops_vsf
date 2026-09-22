@@ -80,6 +80,27 @@ jobs:
           TEST_DB_NAME: opsboard_test
           # CI=true đã được GitHub Actions tự đặt sẵn — không khai lại ở đây.
 
+  frontend:
+    name: frontend (lint, build)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cài Node
+        uses: actions/setup-node@v4
+        with:
+          # Ghim major: Next 16 cần Node >= 20, máy dev đang dùng 24.
+          node-version: "24"
+          # Cache ~/.npm theo package-lock.json — cache-dependency-path phải
+          # trỏ đúng file vì lock nằm trong app/fe, không phải gốc repo.
+          cache: npm
+          cache-dependency-path: app/fe/package-lock.json
+      # `ci` chứ không phải `install`: cài đúng cây phụ thuộc trong lock file
+      # và đỏ nếu package.json lệch lock — build phải tái lập được.
+      - run: npm --prefix app/fe ci
+      - run: npm --prefix app/fe run lint
+      # Build cũng là bước kiểm kiểu: `next build` chạy tsc, lỗi type → PR đỏ.
+      - run: npm --prefix app/fe run build
+
   terraform:
     name: terraform (fmt, validate)
     runs-on: ubuntu-24.04

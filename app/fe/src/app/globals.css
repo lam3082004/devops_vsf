@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Tailwind v4 mặc định biến thể `dark:` bám theo prefers-color-scheme, không đọc class nào cả. ThemeToggle
+   (src/components/ThemeToggle.tsx) cần cho chọn thủ công Sáng/Tối bất kể OS, nên phải chuyển `dark:` sang
+   selector-based theo class .dark trên <html>. Cú pháp lấy đúng từ chính bản Tailwind đang cài (xác nhận
+   bằng cách grep "@custom-variant" trong node_modules/tailwindcss/dist/lib.mjs) — repo không có
+   tailwind.config.js nên KHÔNG dùng công thức darkMode: 'class' của Tailwind v3 (không áp dụng ở v4). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@media (prefers-color-scheme: dark) {
+  /* :not(.light) — khi chọn "Sáng" thủ công lúc OS đang tối, ThemeToggle gắn class .light lên <html> để
+     chặn hẳn khối này, không cho OS ghi đè ngược lựa chọn thủ công (xem applyThemeClass trong ThemeToggle.tsx). */
+  :root:not(.light) {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Ghi đè khi chọn "Tối" thủ công dù OS đang sáng. Specificity của ":root.dark" bằng ":root:not(.light)" ở
+   khối @media trên (đều là 2 lớp pseudo/class) nên phần thắng nằm ở thứ tự trong file — đặt SAU khối @media
+   để luôn thắng, đúng ý "chọn thủ công override được OS". */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

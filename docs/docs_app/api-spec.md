@@ -15,7 +15,11 @@ lệch thì sửa file này cùng PR.
   - Cài đặt (`Infrastructure/ApiSetup.cs`): mặc định toàn cục là `DefaultIgnoreCondition = Never`, và
     `ErrorResponse` tự mang `[property: JsonIgnore(WhenWritingNull)]` trên `Reason`/`Detail`. Đảo chiều như vậy
     thì DTO dữ liệu thêm về sau mặc định đã đúng, không ai phải nhớ gắn attribute.
-- Header `X-User-Name` (1–50 ký tự): **bắt buộc với mọi thao tác ghi** (POST/PATCH). Thiếu → `400 bad_request`.
+- Header `X-User-Name` (1–50 ký tự sau khi decode): **bắt buộc với mọi thao tác ghi** (POST/PATCH). Thiếu →
+  `400 bad_request`. Giá trị **phải là UTF-8 đã percent-encode** — HTTP header không mang được ký tự ngoài
+  ASCII đáng tin cậy (trình duyệt tự mã hoá theo ISO-8859-1 hoặc `fetch()` ném lỗi ngay). Ví dụ `lâm` →
+  `l%C3%A2m`. Backend decode bằng `Uri.UnescapeDataString` trước khi validate độ dài/gán vào
+  reporter/assignee/author/actor; chuỗi thuần ASCII (không có `%`) không cần encode.
 - Header `traceparent` (W3C) được nhận và chuyển tiếp; response luôn có `X-Trace-Id`. Giá trị lấy từ
   `TraceIdMiddleware`: ưu tiên `Activity.Current?.TraceId`, **nếu null** thì lấy trace-id từ header `traceparent` do frontend gửi, cuối cùng mới sinh ngẫu nhiên. (`Activity.Current` chỉ có khi có listener; app gọi `Logging.ClearProviders()` nên bình thường là null — xem `ai-failure-log.md` #12.) Nhờ vậy `trace_id` trong
   log JSON và header `X-Trace-Id` làm được ngay ở bước viết app này. OpenTelemetry (D20) chỉ thêm exporter để
@@ -161,9 +165,10 @@ Khi tạo ticket mà client không gửi `severity`/`category`, service gọi `T
 
 ## Ví dụ
 ```
-curl -H 'X-User-Name: Lâm' -H 'Content-Type: application/json' \
+# X-User-Name phải percent-encode UTF-8 (Lâm -> L%C3%A2m) — JSON body thì không cần, body vốn đã UTF-8.
+curl -H 'X-User-Name: L%C3%A2m' -H 'Content-Type: application/json' \
   -d '{"title":"API chậm","severity":"high"}' https://<host>/items
-curl -X PATCH -H 'X-User-Name: Lâm' -H 'Content-Type: application/json' \
+curl -X PATCH -H 'X-User-Name: L%C3%A2m' -H 'Content-Type: application/json' \
   -d '{"status":"in_progress"}' https://<host>/items/41/status
 ```
 
