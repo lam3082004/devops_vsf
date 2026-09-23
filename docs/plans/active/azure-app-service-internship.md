@@ -4,6 +4,26 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
+## Tiến độ — cập nhật 2026-09-23 (hết D14)
+
+**D1–D14 xong.** `main` = `d7e4f98`. Azure **đang tắt** (chỉ còn `rg-vsf-bootstrap`).
+Bài tiếp: **D15** — kế hoạch chi tiết ở `notes/d15-prep.md`.
+
+| Mốc | Trạng thái | Bằng chứng |
+|---|---|---|
+| M1 — ACR pull bằng MI | ĐẠT (D11) | `evidence/M1.md` |
+| M3 — app ↔ MySQL qua TLS | ĐẠT (D12) | `evidence/M3.md` — *thiếu 1 ảnh Log stream* |
+| M4 — Key Vault reference | ĐẠT (D12) | `evidence/M4.md` — *thiếu ảnh Portal* |
+| M5 — app gãy khi mất quyền | ĐẠT (D12) | `evidence/M5.md` — *ảnh: đề xuất bỏ* |
+| M6 — IP whitelist 4 bề mặt | ĐẠT (D13) | `evidence/M6.md` — *thiếu 3 ảnh Portal* |
+| M8 — Terraform toàn bộ hạ tầng | ĐẠT lần 1 (D10) | `evidence/M8.md` — *cần lần 2 ở D15* |
+| M9 — CI chặn được cái sai | ĐẠT (D14) | `evidence/M9.md` |
+| M2, M7, M10, M11 | chưa tới lịch | D16–D22 |
+
+**Còn nợ, không chặn D15:** 6 ảnh Portal — gom hết vào `notes/screenshot-debt.md`, chụp
+trong cửa sổ `make up` của M8 lần 2 ở D15 chứ không bật môi trường riêng.
+**Sổ lỗi:** `ai-failure-log.md` 27 case (đề cần 6–8) · `known-issues.md` 13 mục.
+
 ## Authority
 
 - Yêu cầu, lịch, deliverables: `topic.md` (mục 2, 4, 6, 7, 8; thay `a.md` cũ, đã xoá) + mục 9 bổ sung Sprint 1–3.
@@ -154,10 +174,16 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 **D14 ĐẠT.** `ai-failure-log.md` thêm #25–#27, `known-issues.md` thêm #12–#13.
 
 ### D15 — Cross-review lần 1 + dọn
-- [ ] Review repo bạn kia → `review-<tên>.md` (theo REVIEW bar: đúng, bảo mật, chứng minh được)
-- [ ] Nhận review, sửa qua PR
-- [ ] Cập nhật `README.md` bản nháp (prereq, biến cần set, up/down)
+> Kế hoạch chi tiết: **`notes/d15-prep.md`**. **Chặn: cần repo của bạn intern kia** — 2/4 ô
+> phụ thuộc người khác, xin link trước rồi làm song song 3 việc không cần ai.
+> **Tốn tiền đúng một bước:** `make down` → `make up` cho M8 lần 2 (~45 phút) — gộp luôn
+> 6 ảnh Portal còn nợ vào cửa sổ đó, đừng bật môi trường riêng.
+- [ ] Review repo bạn kia → `review-<tên>.md` (theo REVIEW bar: đúng, bảo mật, chứng minh được) — *cần link repo*
+- [ ] Nhận review, sửa qua PR riêng, tham chiếu số phát hiện — *cần bạn kia*
+- [ ] Tự review repo mình trước bằng chính checklist của guide (3 điểm ⚠️ đã biết, xem prep)
+- [ ] Cập nhật `README.md` bản nháp (prereq, biến cần set, up/down, teardown)
 - [ ] `destroy` → `apply` lại lần 2 sau khi thêm ACR/KV/whitelist — *proof: log* (cập nhật M8)
+- [ ] **6 ảnh Portal còn nợ** (M6 ×3, D12 ×3) — `notes/screenshot-debt.md`, làm trong cửa sổ `make up` ở trên
 
 ---
 
