@@ -186,10 +186,11 @@ jobs:
           ACR_NAME: ${{ needs.preflight.outputs.acr_name }}
         run: az acr login -n "$ACR_NAME"
 
-      # Build cả hai image. fe KHÔNG nhận --build-arg GIT_SHA: app/fe/Dockerfile
-      # không khai ARG nào tên đó (đã đọc lại trước khi viết bước này) — truyền
-      # vào chỉ là biến vô nghĩa, dễ gây hiểu lầm là fe cũng in SHA ra /version
-      # trong khi thực chất không có route nào của fe làm việc đó.
+      # Build cả hai image. CẢ HAI đều nhận --build-arg GIT_SHA: be nhúng vào
+      # binary lúc dịch (OpsBoard.csproj, target EmbedGitSha) còn fe nhúng thành
+      # ENV ở stage runtime cho route /api/version đọc lúc chạy. Thiếu cờ này ở
+      # một trong hai thì service đó trả sha "dev" trên production, và triệu
+      # chứng trông hệt như CD không deploy được.
       - name: Build image be + fe (đo thời gian)
         env:
           GIT_SHA: ${{ github.sha }}
@@ -200,7 +201,8 @@ jobs:
           docker build --build-arg GIT_SHA="$GIT_SHA" \
             -t "$ACR_LOGIN_SERVER/vsf-be:$GIT_SHA" app/be/
           T1=$(date +%s)
-          docker build -t "$ACR_LOGIN_SERVER/vsf-fe:$GIT_SHA" app/fe/
+          docker build --build-arg GIT_SHA="$GIT_SHA" \
+            -t "$ACR_LOGIN_SERVER/vsf-fe:$GIT_SHA" app/fe/
           T2=$(date +%s)
           echo "build-be: $((T1-T0))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
           echo "build-fe: $((T2-T1))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"

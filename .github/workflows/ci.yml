@@ -273,8 +273,15 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+      # --build-arg GIT_SHA giống hệt cd.yml: image quét ở CI phải build bằng
+      # đúng lệnh mà CD sẽ dùng, nếu không thì cái được quét không phải cái được
+      # deploy (bẫy "build trong CD khác bản đã test ở CI").
       - name: docker build (fe)
-        run: docker build -t opsboard-fe:${{ github.sha }} app/fe/
+        run: |
+          docker build \
+            --build-arg GIT_SHA=${{ github.sha }} \
+            -t opsboard-fe:${{ github.sha }} \
+            app/fe/
       - name: Cache database Trivy
         uses: actions/cache@v4
         with:
