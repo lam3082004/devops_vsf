@@ -15,7 +15,8 @@ WORKDIR /src
 # Build một layer restore riêng: chỉ copy file project trước, sửa code sau
 # này không phải tải lại NuGet — tương đương cache Cargo.toml/Cargo.lock.
 COPY OpsBoard.csproj ./
-RUN dotnet restore OpsBoard.csproj
+# D14 — HỎNG CÓ CHỦ Ý: sai tên lệnh, docker build phải đỏ.
+RUN dotnet restoree OpsBoard.csproj
 
 COPY . .
 
