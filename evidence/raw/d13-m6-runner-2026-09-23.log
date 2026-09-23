@@ -1,0 +1,22 @@
+# M6 — 4 bề mặt nhìn từ runner GitHub Actions (D13, 2026-09-23)
+# Workflow: .github/workflows/m6-check.yml, workflow_dispatch, app=app-vsf-p0hef1, expect=403
+# IP của runner KHÔNG nằm trong allowed_ips (whitelist chỉ có 2 IP hotspot của máy làm việc).
+
+# --- Run 1 — TRƯỚC khi thêm scm_ip_restriction_default_action = "Deny" ---
+# https://github.com/lam3082004/devops_vsf/actions/runs/35818720751   (job ĐỎ)
+# Site chính bị chặn đúng, nhưng SCM trả 401 chứ không phải 403.
+# 401 ở đây KHÔNG chứng minh được gì: Kudu trả 401 cho mọi request không xác thực,
+# chặn hay không chặn cũng vậy. Kiểm bằng request CÓ token mới lộ ra SCM vẫn mở.
+2026-09-23T04:32:10+00:00  source_ip=52.176.139.85  GET https://app-vsf-p0hef1.azurewebsites.net/health  -> 403  (đạt)
+2026-09-23T04:32:11+00:00  source_ip=52.176.139.85  GET https://app-vsf-p0hef1-staging.azurewebsites.net/health  -> 403  (đạt)
+2026-09-23T04:32:12+00:00  source_ip=52.176.139.85  GET https://app-vsf-p0hef1.scm.azurewebsites.net  -> 401  (LỆCH)
+2026-09-23T04:32:13+00:00  source_ip=52.176.139.85  GET https://app-vsf-p0hef1-staging.scm.azurewebsites.net  -> 401  (LỆCH)
+
+# --- Run 2 — SAU khi thêm scm_ip_restriction_default_action = "Deny" ---
+# https://github.com/lam3082004/devops_vsf/actions/runs/35819073928   (job XANH)
+# Cả 4 bề mặt đều 403. Sau khi vá, ngay cả request không xác thực cũng bị chặn ở
+# tầng front-end trước khi Kudu kịp trả 401 — nên 401 của Run 1 chính là dấu hiệu.
+2026-09-23T04:37:26+00:00  source_ip=134.33.77.40  GET https://app-vsf-p0hef1.azurewebsites.net/health  -> 403  (đạt)
+2026-09-23T04:37:27+00:00  source_ip=134.33.77.40  GET https://app-vsf-p0hef1-staging.azurewebsites.net/health  -> 403  (đạt)
+2026-09-23T04:37:28+00:00  source_ip=134.33.77.40  GET https://app-vsf-p0hef1.scm.azurewebsites.net  -> 403  (đạt)
+2026-09-23T04:37:29+00:00  source_ip=134.33.77.40  GET https://app-vsf-p0hef1-staging.scm.azurewebsites.net  -> 403  (đạt)

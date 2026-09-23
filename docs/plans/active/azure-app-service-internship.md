@@ -132,13 +132,19 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] Rà soát: không còn secret plaintext nào trong app settings — *proof: screenshot* → `evidence/M4.md`
 - [ ] **Chứng minh ngược M5:** gỡ role MI khỏi KV → refresh reference/restart → app gãy → trả role → app sống lại — *proof: log từng bước* → `evidence/M5.md` (sau đó `apply` lại để không lệch state)
 
-### D13 — IP whitelist
-- [ ] Access restrictions cho prod slot, staging slot và SCM site; default deny — *proof: plan*
-- [ ] curl từ IP cho phép → 200; từ hotspot điện thoại → 403 — *proof: log 2 lần curl kèm IP nguồn* → `evidence/M6.md`
-- [ ] Ghi vấn đề: runner GitHub không nằm trong whitelist → cách xử lý cho CD tuần 4 (Decision)
+### D13 — IP whitelist ✅ **XONG 2026-09-23** (PR #30 + #31, môi trường suffix `p0hef1`)
+- [x] Access restrictions cho prod slot, staging slot và SCM site; default deny — *proof:* `infra/app/app.tf`, `evidence/raw/d13-m6-access-restriction*.json`. **Cần 3 dòng chứ không phải 2:** `ip_restriction_default_action` + `scm_use_main_ip_restriction` + **`scm_ip_restriction_default_action`** — thiếu dòng thứ ba thì Kudu vẫn mở
+- [x] curl từ IP cho phép → 200; từ IP ngoài → 403 — *proof:* 4 bề mặt × 3 nguồn IP trong `evidence/M6.md`; runner GitHub `134.33.77.40` 403 cả bốn ([run xanh](https://github.com/lam3082004/devops_vsf/actions/runs/35819073928)), run đỏ trước khi vá giữ lại làm bằng chứng lỗ hổng. Cách test của guide (đổi sang hotspot) **không dùng được** — dùng GitHub Actions + Cloudflare WARP
+- [x] Ghi vấn đề: runner GitHub không nằm trong whitelist → Decision "mở tạm luật cho IP runner, xoá ở bước `if: always()`" (mục Decisions, dùng lại ở D17)
+- [ ] *(hoãn, không chặn D14)* 3 ảnh Portal của M6 — môi trường đã `make down`; gộp với 3 ảnh còn nợ của D12 vào một phiên có môi trường bật
 
 ### D14 — CI mở rộng
-- [ ] Job lint + unit test — *proof: PR xanh*
+> Kế hoạch chi tiết: **`notes/d14-prep.md`**. Không tốn tiền, không cần bật Azure.
+> Hai thứ chặn phải xử lý trước khi viết job: **Q4 chưa chốt** (phải quét thật `app/be`
+> và `app/fe` lấy số rồi mới chọn chính sách — D5 đo ảnh Rust, app nay là .NET), và
+> **required checks có thể vẫn trỏ tên job đã chết** `rust (fmt, clippy, test)`.
+> `ci.yml` hiện có 6 job, thiếu đúng `docker-build` và `trivy`.
+- [ ] Job lint + unit test — *proof: PR xanh* — **đã có sẵn** (`dotnet`, `frontend`)
 - [ ] Docker build (không push) — *proof: PR cố tình làm Dockerfile hỏng → đỏ*
 - [ ] Trivy scan image, fail khi có CVE (theo câu trả lời Q4) → đạt 0 CVE — *proof: output*
 - [ ] **Bằng chứng đỏ:** PR cắm secret giả → gitleaks đỏ + nút merge bị khoá; thử merge khi pipeline đỏ → bị chặn — *proof: 2 screenshot* → `evidence/M9.md`
@@ -282,6 +288,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - 2026-09-21 — **Q10: hai service.** `fe` (Next.js) và `be` (.NET) là hai Web App riêng trên **cùng một** App Service Plan (không thêm plan → không thêm tiền plan). Đổi lấy: trace có chặng `fe → be` thật, đúng yêu cầu distributed tracing; giá phải trả là CD, swap, access restriction và Trivy phải làm cho cả hai.
 - 2026-09-21 — **Đổi tên kỹ thuật `NodeRegistry` → `OpsBoard`** (csproj, namespace, assembly `OpsBoard.dll`, Dockerfile ENTRYPOINT, Makefile, `ci.yml`, `DB_NAME` local `nodereg`→`opsboard`). **Không đổi** `var.db_name` trên Azure (vẫn `appdb`, tên chung — đổi sẽ tạo lại database). `notes/`, `evidence/`, `ai-failure-log.md` giữ tên cũ vì là nhật ký lịch sử.
 - 2026-09-21 — **R5 chấp nhận, không xử lý:** `be` chỉ chặn theo IP, không xác nhận được request thật sự đến từ `fe`. Lý do: công cụ nội bộ, mạng công ty là biên tin cậy, M6 chỉ yêu cầu chặn theo IP.
+- 2026-09-23 — **D13/M6 (SỬA cùng ngày, sau khi đo): `scm_use_main_ip_restriction = true` KHÔNG đủ để khoá Kudu.** Nó chỉ cho SCM dùng lại *danh sách luật* của site chính, không kéo theo hành động mặc định — `scmIpSecurityRestrictionsDefaultAction` vẫn là `Allow`, nên IP không khớp luật nào rơi xuống Allow và vào được Kudu. Đo thật: cùng một IP ngoài whitelist, cùng thời điểm, site chính 403 còn SCM trả **200** với token ARM. Phải khai thêm `scm_ip_restriction_default_action = "Deny"` cho **cả** Web App lẫn slot. Suýt bỏ lọt vì `curl` không xác thực vào Kudu luôn trả 401 dù chặn hay không — guide bảo "401 là đạt" (mục 3.2) và điều đó **sai** cho bài này; phải gọi có token mới phân biệt được. Bằng chứng: `evidence/M6.md`, `evidence/raw/d13-m6-scm-hole-2026-09-23.log`.
 - 2026-09-23 — **D13/M6: SCM dùng chung luật với site chính** (`scm_use_main_ip_restriction = true`) trên cả Web App lẫn slot staging, thay vì khai danh sách SCM riêng. Lý do: danh sách SCM để riêng có mặc định `Deny all`, quên khai allow là tự khoá mình khỏi Kudu — D3 đã dính đúng bẫy đó khi cấu hình bằng CLI (`notes/d3-cli.md:34-36`); dùng chung thì sửa IP một chỗ, không lệch giữa hai danh sách. Đánh đổi: không siết SCM chặt hơn site chính được (ví dụ chỉ cho IP nhà vào Kudu nhưng vẫn cho IP mentor xem app) — khi cần thì phải tách, và mọi thay đổi từ đó phải làm hai lần.
 - 2026-09-23 — **D13/M6: IP cá nhân không vào repo.** `var.allowed_ips` kiểu `map(string)` (khoá = tên luật, giá trị = CIDR), giá trị thật nằm trong `infra/app/terraform.tfvars` bị `.gitignore` chặn; repo chỉ có `terraform.tfvars.example`. Hệ quả đã biết, không phải drift: job `terraform-plan` của CI chạy **không có** tfvars nên luôn thấy `allowed_ips = {}` → khi môi trường thật đang bật, plan của CI sẽ báo xoá các luật. Chấp nhận (CI chỉ plan, không apply); muốn hết thì phải đẩy IP vào GitHub Variable, tức là đưa IP cá nhân lên repo — không đổi.
 - 2026-09-23 — **D13/M6: bằng chứng 403 lấy từ GitHub Actions**, không phải đổi laptop sang hotspot như guide gợi ý — máy làm việc vốn chạy bằng chính hotspot đó nên hai bên chung một IP công khai. Workflow `.github/workflows/m6-check.yml` (`workflow_dispatch`, không secret, không OIDC) gọi 4 bề mặt và đỏ nếu mã HTTP lệch. Azure Cloud Shell làm lần đo thứ hai.

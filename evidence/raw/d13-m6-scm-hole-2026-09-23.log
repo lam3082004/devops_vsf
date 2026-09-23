@@ -1,0 +1,39 @@
+# M6 — chứng minh lỗ hổng SCM và chứng minh đã vá (D13, 2026-09-23)
+# IP nhà che 2 octet cuối theo evidence/screenshots-convention.md.
+# IP "ngoài whitelist" lấy bằng cách bật Cloudflare WARP (IP thoát của Cloudflare,
+# chắc chắn không nằm trong allowed_ips) — cùng máy, đổi được trong vài giây.
+#
+# Điểm mấu chốt: `curl` KHÔNG xác thực vào Kudu luôn trả 401, chặn hay không cũng vậy.
+# Phải gọi CÓ token ARM mới phân biệt được "bị chặn" (403) với "vào được" (200).
+#   TOK=$(az account get-access-token --resource https://management.core.windows.net/ \
+#         --query accessToken -o tsv)
+#   curl -4 -H "Authorization: Bearer $TOK" https://<app>.scm.azurewebsites.net/api/settings
+
+# === TRƯỚC khi vá: chỉ có scm_use_main_ip_restriction = true ===
+# Cấu hình đọc bằng `az webapp config access-restriction show` — NHÌN như đã khoá:
+#   ipSecurityRestrictionsDefaultAction   : Deny
+#   scmIpSecurityRestrictionsUseMain      : true
+#   scmIpSecurityRestrictionsDefaultAction: Allow      <-- thủ phạm
+#
+# Cùng một IP nguồn, cùng thời điểm:
+2026-09-23T11:33:19+07:00  source_ip=104.28.xxx.xxx  GET https://app-vsf-p0hef1.scm.azurewebsites.net/api/settings          (có token)  -> 200   # SCM VÀO ĐƯỢC
+2026-09-23T11:33:19+07:00  source_ip=104.28.xxx.xxx  GET https://app-vsf-p0hef1-staging.scm.azurewebsites.net/api/settings  (có token)  -> 200   # SCM VÀO ĐƯỢC
+2026-09-23T11:33:4x+07:00  source_ip=104.28.xxx.xxx  GET https://app-vsf-p0hef1.azurewebsites.net/                                      -> 403   # site chính bị chặn
+2026-09-23T11:33:4x+07:00  source_ip=104.28.xxx.xxx  GET https://app-vsf-p0hef1-staging.azurewebsites.net/                              -> 403   # site chính bị chặn
+
+# === Vá: thêm scm_ip_restriction_default_action = "Deny" cho cả Web App lẫn slot ===
+# terraform apply → Apply complete! Resources: 0 added, 2 changed, 0 destroyed.
+
+# === SAU khi vá, vẫn IP ngoài whitelist đó ===
+2026-09-23T11:36:49+07:00  source_ip=104.28.xxx.xxx  GET https://app-vsf-p0hef1.scm.azurewebsites.net/api/settings          (có token)  -> 403
+2026-09-23T11:36:49+07:00  source_ip=104.28.xxx.xxx  GET https://app-vsf-p0hef1-staging.scm.azurewebsites.net/api/settings  (có token)  -> 403
+
+# === SAU khi vá, từ IP ĐÃ allow (WARP tắt) — không tự khoá mình ===
+2026-09-23T11:37:06+07:00  source_ip=113.22.xxx.xxx  GET https://app-vsf-p0hef1.azurewebsites.net/                                      -> 200
+2026-09-23T11:37:07+07:00  source_ip=113.22.xxx.xxx  GET https://app-vsf-p0hef1-staging.azurewebsites.net/                              -> 200
+2026-09-23T11:37:07+07:00  source_ip=113.22.xxx.xxx  GET https://app-vsf-p0hef1.scm.azurewebsites.net/api/settings          (có token)  -> 200
+2026-09-23T11:37:09+07:00  source_ip=113.22.xxx.xxx  GET https://app-vsf-p0hef1-staging.scm.azurewebsites.net/api/settings  (có token)  -> 200
+
+# === Cả hai IP NAT của hotspot đều vào được (CGNAT, xem known-issues.md #11) ===
+# 20 request tới site chính  -> 20 × 200
+# 20 request tới slot staging -> 20 × 200
