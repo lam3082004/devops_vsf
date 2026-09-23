@@ -6,7 +6,9 @@ ARG SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:10.0
 # Khác bản Rust (musl + scratch, static binary): app ở đây publish
 # framework-dependent nên vẫn cần runtime ASP.NET Core bên trong image, không
 # thể xuống tới scratch — 0 CVE không chắc đạt được, phải đo lại bằng Trivy.
-ARG RUNTIME_IMAGE=mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled
+# D14 — HỎNG CÓ CHỦ Ý: quay về base image cũ, không chiselled. Đo local:
+# 4 CRITICAL + 52 HIGH → cổng Trivy phải đỏ.
+ARG RUNTIME_IMAGE=mcr.microsoft.com/dotnet/aspnet:8.0
 
 # ---------- Stage 1: build ----------
 FROM ${SDK_IMAGE} AS builder
