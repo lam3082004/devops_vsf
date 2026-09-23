@@ -1,0 +1,25 @@
+2026-09-23T14:04:02+07:00	INFO	[vuln] Vulnerability scanning is enabled
+2026-09-23T14:04:02+07:00	INFO	Detected OS	family="ubuntu" version="24.04"
+2026-09-23T14:04:02+07:00	INFO	[ubuntu] Detecting vulnerabilities...	os_version="24.04" pkg_num=8
+2026-09-23T14:04:02+07:00	INFO	Number of language-specific files	num=3
+2026-09-23T14:04:02+07:00	INFO	[dotnet-core] Detecting vulnerabilities...
+
+Report Summary
+
+┌──────────────────────────────────────────────────────────────────────────────────┬─────────────┬─────────────────┐
+│                                      Target                                      │    Type     │ Vulnerabilities │
+├──────────────────────────────────────────────────────────────────────────────────┼─────────────┼─────────────────┤
+│ opsboard-be:d14 (ubuntu 24.04)                                                   │   ubuntu    │        0        │
+├──────────────────────────────────────────────────────────────────────────────────┼─────────────┼─────────────────┤
+│ app/OpsBoard.deps.json                                                           │ dotnet-core │        0        │
+├──────────────────────────────────────────────────────────────────────────────────┼─────────────┼─────────────────┤
+│ usr/share/dotnet/shared/Microsoft.AspNetCore.App/10.0.12/Microsoft.AspNetCore.A- │ dotnet-core │        0        │
+│ pp.deps.json                                                                     │             │                 │
+├──────────────────────────────────────────────────────────────────────────────────┼─────────────┼─────────────────┤
+│ usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/Microsoft.NETCore.App.dep- │ dotnet-core │        0        │
+│ s.json                                                                           │             │                 │
+└──────────────────────────────────────────────────────────────────────────────────┴─────────────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+

@@ -202,11 +202,116 @@ jobs:
           path: infra/app/plan.txt
           retention-days: 14
 
+  # Hai job dưới đây build image rồi quét NGAY trong cùng job. Không tách
+  # "build" và "scan" thành hai job: image nằm trong docker daemon của runner,
+  # job khác không thấy nó — tách ra thì hoặc phải docker save/load qua artifact,
+  # hoặc (bẫy thường gặp) Trivy lặng lẽ kéo một image cùng tên từ Internet về
+  # quét, báo xanh cho thứ không phải bản vừa build.
+  docker-build-be:
+    name: docker build + trivy (be)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      # KHÔNG push. PR đến từ nhánh bất kỳ; push nghĩa là cho code chưa review
+      # ghi vào registry mà production kéo từ đó. Push là việc của cd.yml (D16),
+      # sau khi đã merge vào main.
+      - name: docker build (be)
+        run: |
+          docker build \
+            --build-arg GIT_SHA=${{ github.sha }} \
+            -t opsboard-be:${{ github.sha }} \
+            app/be/
+      # Cache database CVE để job không đỏ vì mạng và không tải lại ~700MB mỗi
+      # lần. Khoá theo NGÀY: database đổi liên tục, giữ quá lâu là quét bằng dữ
+      # liệu cũ và bỏ lọt CVE mới.
+      - name: Cache database Trivy
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: trivy-db-${{ runner.os }}-
+      # Chạy thẳng binary thay vì trivy-action, cùng lý do như gitleaks ở trên:
+      # giữ token ở mức chỉ đọc và ghim version để kết quả tái lập được.
+      - name: Cài trivy ${{ env.TRIVY_VERSION }}
+        env:
+          TRIVY_VERSION: 0.74.0
+        run: |
+          curl -sSL -o /tmp/trivy.tar.gz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
+          sudo install /tmp/trivy /usr/local/bin/trivy
+          trivy --version
+      # Bảng đầy đủ để đọc, KHÔNG làm đỏ job: MEDIUM/LOW là thông tin theo dõi
+      # drift, không phải cổng. Chính sách cổng nằm ở bước sau.
+      - name: Trivy — bảng đầy đủ (không phải cổng)
+        run: |
+          trivy image --scanners vuln --severity CRITICAL,HIGH,MEDIUM,LOW \
+            --timeout 10m --no-progress opsboard-be:${{ github.sha }} \
+            | tee /tmp/trivy-be-full.txt
+          {
+            echo "### Trivy — be (mọi mức độ, chỉ để đọc)"
+            echo '```'
+            grep -E '^Total' /tmp/trivy-be-full.txt || echo "0 CVE"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      # CỔNG. Không có continue-on-error ở đây, và đó là cả điểm của bước này:
+      # bước quét lỗi vì BẤT KỲ lý do gì — mạng hỏng, không tải được database,
+      # timeout — phải làm job ĐỎ. continue-on-error biến cổng bảo mật thành đồ
+      # trang trí: vẫn hiện trong tab Checks, vẫn xanh, nhưng không chặn gì.
+      # Chính sách (Q4, chốt D14 bằng số đo thật): CRITICAL,HIGH và KHÔNG
+      # --ignore-unfixed. Cả hai image đo ra 0 ở mức này nên không cần cửa thoát;
+      # thêm --ignore-unfixed lúc này chỉ làm cổng yếu đi mà không đổi màu gì.
+      # Buộc phải bỏ qua một CVE → .trivyignore kèm mã CVE + lý do + ngày xem lại.
+      - name: Trivy — cổng CRITICAL/HIGH
+        run: |
+          trivy image --scanners vuln --severity CRITICAL,HIGH \
+            --exit-code 1 --timeout 10m --no-progress \
+            opsboard-be:${{ github.sha }}
+
+  docker-build-fe:
+    name: docker build + trivy (fe)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: docker build (fe)
+        run: docker build -t opsboard-fe:${{ github.sha }} app/fe/
+      - name: Cache database Trivy
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: trivy-db-${{ runner.os }}-
+      - name: Cài trivy ${{ env.TRIVY_VERSION }}
+        env:
+          TRIVY_VERSION: 0.74.0
+        run: |
+          curl -sSL -o /tmp/trivy.tar.gz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
+          sudo install /tmp/trivy /usr/local/bin/trivy
+          trivy --version
+      - name: Trivy — bảng đầy đủ (không phải cổng)
+        run: |
+          trivy image --scanners vuln --severity CRITICAL,HIGH,MEDIUM,LOW \
+            --timeout 10m --no-progress opsboard-fe:${{ github.sha }} \
+            | tee /tmp/trivy-fe-full.txt
+          {
+            echo "### Trivy — fe (mọi mức độ, chỉ để đọc)"
+            echo '```'
+            grep -E '^Total' /tmp/trivy-fe-full.txt || echo "0 CVE"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Trivy — cổng CRITICAL/HIGH
+        run: |
+          trivy image --scanners vuln --severity CRITICAL,HIGH \
+            --exit-code 1 --timeout 10m --no-progress \
+            opsboard-fe:${{ github.sha }}
+
   azure-oidc:
     name: azure login (OIDC)
     runs-on: ubuntu-24.04
     # Chỉ job này cần id-token. Khai ở CẤP JOB, không phải cấp workflow:
-    # permissions cấp workflow áp cho mọi job, mà 3 job kia không cần token OIDC.
+    # permissions cấp workflow áp cho mọi job, mà các job còn lại không cần token OIDC.
     permissions:
       id-token: write
       contents: read
