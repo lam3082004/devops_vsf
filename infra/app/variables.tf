@@ -67,6 +67,12 @@ variable "container_port" {
   default     = 8080
 }
 
+variable "fe_container_port" {
+  description = "Cổng container của fe (WEBSITES_PORT). Khác var.container_port vì app/fe/Dockerfile đặt ENV PORT=3000 (Next.js standalone) — be nghe 8080, fe nghe 3000, dùng chung biến là fe health check hỏng ngay (D16, notes/d16-prep.md mục 'vấp #2')."
+  type        = number
+  default     = 3000
+}
+
 variable "db_name" {
   description = "Tên database của app trên MySQL Flexible."
   type        = string
