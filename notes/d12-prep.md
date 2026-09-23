@@ -3,6 +3,10 @@
 Guide gốc: `docs/guides/d12-keyvault-mysql.md` · Bằng chứng: `evidence/M3.md`, `evidence/M4.md`, `evidence/M5.md` · Nhật ký: `notes/d12.md` (tạo khi làm).
 **AI:** từ D7 được sinh code. PR phải có mục `## AI usage`. Mọi `apply`/`destroy`/`az … create`/restart trên Azure thật cần bạn xác nhận trong phiên.
 
+> **Tài liệu lịch sử — D12 đã xong 2026-09-23.** Đọc kết quả ở `notes/d12.md`, bàn giao ở
+> `notes/handoff-d12.md`. Các lệnh `docker build … app/` trong file này đúng ở thời điểm chạy;
+> sau khi `main` merge refactor OpsBoard (#24, #25, #28) thì đường dẫn là **`app/be/`**.
+
 ## Tiến độ
 
 | Bước | Trạng thái |

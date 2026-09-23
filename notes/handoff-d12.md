@@ -67,7 +67,7 @@ M3/M4/M5 đã đo xong. Làm xen kẽ được.
 
 - `main` = `7db4994`.
 - Nhánh `feat/d12-evidence`, PR #27 mở — chờ re-run CI rồi merge.
-- Worktree làm việc: `.claude/worktrees/d12` (sạch, có `app/Dockerfile` nên `docker build app/` chạy được).
+- Worktree làm việc: `.claude/worktrees/d12`. **Lưu ý:** `main` đã merge refactor OpsBoard (#24, #25, #28) nên `app/` giờ là `app/be` + `app/fe` — lệnh build image của D12 (`docker build … app/`) **không còn đúng**, từ D13 trở đi phải là `app/be/` (và `app/fe/` khi CD hai service ở D16).
 - Checkout chính đang ở nhánh khác (`feat/be-integration-tests`) với refactor OpsBoard chưa
   commit — **đừng `git add -A` ở đó**.
 - Worktree cũ `.claude/worktrees/docs-d10-close-d11-plan` còn giữ nhánh `feat/d11-acr-mi-pull`
