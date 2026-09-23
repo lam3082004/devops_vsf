@@ -72,3 +72,39 @@ M3/M4/M5 đã đo xong. Làm xen kẽ được.
   commit — **đừng `git add -A` ở đó**.
 - Worktree cũ `.claude/worktrees/docs-d10-close-d11-plan` còn giữ nhánh `feat/d11-acr-mi-pull`
   đã merge, xoá được.
+
+## Bắt đầu D13 thế nào
+
+Đọc `notes/d13-prep.md` (đã có sẵn 4 decision, 8 bước, workflow mẫu, bảng bẫy).
+Thứ tự ba việc đầu, hai việc đầu **không tốn tiền**:
+
+```bash
+cd ~/"Màn hình nền/devops_vsf/.claude/worktrees/d12"   # worktree sạch, dùng lại được
+git checkout main && git pull
+git checkout -b feat/d13-ip-whitelist
+
+# 1. lấy IP công khai của máy — giá trị cho var.allowed_ips
+curl -4 -s https://ifconfig.me; echo
+curl -s https://ifconfig.me; echo    # nếu ra IPv6 thì đọc Decision C
+
+# 2. viết code Terraform theo bước 1 của d13-prep.md, rồi:
+terraform -chdir=infra/app fmt -check
+terraform -chdir=infra/app validate
+```
+
+Sau đó mới `make up` (tốn tiền, ~25 phút) và apply luật truy cập.
+
+**Nhớ trước khi bật môi trường:** tắt Cloudflare WARP (thủ phạm nhiều lần đứt mạng,
+gồm cả một lần làm hỏng `destroy` ở phiên này), và đặt sẵn mốc giờ sẽ `make down`.
+
+**Quyền đã có sẵn:** rule `Bash(terraform -chdir=infra/app apply:*)` đã được thêm vào
+settings ở phiên này, nên Claude chạy được `apply` mà không bị chặn nữa. `destroy` thì
+chưa thử — nếu bị chặn thì bạn chạy tay.
+
+## Hai điều đừng lặp lại
+
+1. **Đừng để `make down` là bước cuối của một chuỗi dài có thể chết giữa chừng.** Phiên này
+   môi trường chạy 16 tiếng rưỡi vì sub-agent hết hạn mức ngay trước bước đó.
+2. **Lệnh hạ tầng dài thì đừng bọc `timeout`.** `destroy` cần ~20 phút (31 firewall rule
+   MySQL xoá rất chậm); bọc `timeout 590` làm nó bị cắt giữa chừng, và `EXIT=0` của chuỗi
+   shell che mất thất bại đó. Xác nhận bằng dòng `Destroy complete` trong log.
