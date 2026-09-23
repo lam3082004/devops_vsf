@@ -40,9 +40,10 @@ Log thô: `evidence/raw/d12-*`. Nhật ký + 5 sai sót của phiên: `notes/d12
 | #21 | Khung bằng chứng M3/M4/M5 | `61fd7c7` |
 | #26 | `scripts/d12-verify.sh` | `7db4994` |
 
-**Chưa merge:** PR #27, nhánh `feat/d12-evidence` — bằng chứng D12 đầy đủ + kế hoạch D13 +
-`known-issues.md` #9. CI job `terraform plan` từng đỏ vì môi trường dựng dở; môi trường đã
-destroy nên re-run là xanh.
+| #27 | Bằng chứng D12 đầy đủ + kế hoạch D13 + `known-issues.md` #9, #10 | `6d350f7` |
+
+**Tất cả đã merge.** `main` = `6d350f7`. Lưu ý `main` cũng đã có refactor OpsBoard
+(#24, #25, #28) từ phiên khác, nên `app/` giờ là `app/be` + `app/fe`.
 
 ## D13 — sẵn sàng bắt đầu
 
@@ -66,7 +67,7 @@ M3/M4/M5 đã đo xong. Làm xen kẽ được.
 ## Trạng thái git
 
 - `main` = `7db4994`.
-- Nhánh `feat/d12-evidence`, PR #27 mở — chờ re-run CI rồi merge.
+- Nhánh `feat/d12-evidence` đã merge và xoá. Không còn việc git nào treo.
 - Worktree làm việc: `.claude/worktrees/d12`. **Lưu ý:** `main` đã merge refactor OpsBoard (#24, #25, #28) nên `app/` giờ là `app/be` + `app/fe` — lệnh build image của D12 (`docker build … app/`) **không còn đúng**, từ D13 trở đi phải là `app/be/` (và `app/fe/` khi CD hai service ở D16).
 - Checkout chính đang ở nhánh khác (`feat/be-integration-tests`) với refactor OpsBoard chưa
   commit — **đừng `git add -A` ở đó**.
