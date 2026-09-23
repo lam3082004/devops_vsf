@@ -4,12 +4,18 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-23 (hết D14)
+## Tiến độ — cập nhật 2026-09-23 (D16 làm dở)
 
 **D1–D14 xong. D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **đang tắt**
 (chỉ còn `rg-vsf-bootstrap`).
-**Bài đang làm: D16 — CD pipeline.** Kế hoạch step-by-step: `notes/d16-prep.md`.
-D16 **tốn tiền** và **có thêm `fe`**: Web App `fe` chưa tồn tại trong `infra/`, dựng trong bài này.
+**Bài đang làm: D16 — CD pipeline, LÀM DỞ.** Nhật ký: `notes/d16.md`. Kế hoạch gốc:
+`notes/d16-prep.md` (⚠️ mục "vấp #1" của file đó **kê sai thuốc** — cả hai cách nó đề xuất đều
+tạo `Cycle:` trong Terraform; cách chữa thật ở `notes/d16.md`).
+
+**Đã xong, không tốn tiền, kiểm chứng được:** Web App `fe` + slot trong Terraform · sửa
+`ip_restriction` của `be` · 3 role cho `id-gh-deploy` · 4 federated credential dạng
+`environment:` · 2 GitHub environment giới hạn nhánh `main` · `cd.yml` 3 job.
+**Chưa làm, cần bật Azure:** `make up` (nay **3 pha**) · chạy end-to-end · `evidence/M10.md`.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -27,7 +33,7 @@ D16 **tốn tiền** và **có thêm `fe`**: Web App `fe` chưa tồn tại tron
 - **6 ảnh Portal** — `notes/screenshot-debt.md`. Ban đầu định gộp vào cửa sổ `make up` của
   M8 lần 2 ở D15; D15 hoãn nên **chụp trong cửa sổ `make up` của D16** (bước 5), vì bài đó
   cũng phải bật môi trường. Cần trình duyệt: Chrome extension của Claude chưa kết nối.
-**Sổ lỗi:** `ai-failure-log.md` 27 case (đề cần 6–8) · `known-issues.md` 13 mục.
+**Sổ lỗi:** `ai-failure-log.md` 29 case (đề cần 6–8) · `known-issues.md` 14 mục.
 
 ## Authority
 
@@ -200,17 +206,19 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ## Tuần 4 — D16–D20 · CD, zero-downtime, autoscale, chi phí
 
 ### D16 — CD pipeline
-> Kế hoạch step-by-step: **`notes/d16-prep.md`**. **Tốn tiền** (phải `make up` để có chỗ deploy).
-> Ba quyết định đã chốt 2026-09-23: **có cả `fe`** · trigger **tự động** theo push `main` ·
-> **bật duyệt tay trước swap**.
-- [ ] **Web App `fe` + slot** trong Terraform (chưa tồn tại) — `WEBSITES_PORT=3000`, `API_BASE_URL` trỏ `be`, **đủ 3 dòng** `ip_restriction*` cho cả site lẫn slot
-- [ ] Allow outbound IP của App Service vào `ip_restriction` của `be` — nếu không, `fe` gọi `be` bị chính whitelist của `be` chặn
-- [ ] Quyền `id-gh-deploy`: `AcrPush` (ACR) + `Website Contributor` (scope **resource group**, để phủ cả slot)
-- [ ] Hai GitHub environment: `staging-deploy` (không reviewer) và `production` (có reviewer), cả hai giới hạn nhánh `main`
-- [ ] `cd.yml` 3 job: `preflight` (ngoài environment, bỏ qua xanh khi Azure tắt) → `build-deploy-staging` → `swap` — *proof: run log*
-- [ ] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — *proof: nhánh khác không deploy được*
-- [ ] Chạy end-to-end → `/version` production đổi SHA trên **cả hai** service → `evidence/M10.md`
-- [ ] `evidence/M6.md` thêm **4 dòng** cho 4 bề mặt mới của `fe` (nếu không, M6 nói dối: ghi 4 bề mặt mà thực tế 8)
+> Nhật ký: **`notes/d16.md`** · kế hoạch gốc `notes/d16-prep.md`. **Tốn tiền** (phải `make up`).
+> Quyết định 2026-09-23: **có cả `fe`** · trigger **tự động** theo push `main` ·
+> ~~bật duyệt tay trước swap~~ → **không làm được**, GitHub chặn required reviewer với repo
+> private (`known-issues.md` #14). CD chạy tự động hoàn toàn, khớp tiêu chí "Xong khi" của guide.
+- [x] **Web App `fe` + slot** trong Terraform — `infra/app/app-fe.tf`, `WEBSITES_PORT=3000`, `API_BASE_URL` trỏ `be`, **đủ 3 dòng** `ip_restriction*` cho cả site lẫn slot
+- [x] Allow outbound IP của App Service vào `ip_restriction` của `be` — `local.be_ip_rules`; phải cắt cạnh `fe`→`be` bằng `local.be_hostname` để không `Cycle:`, kéo theo `make up` **2 pha → 3 pha**
+- [x] Quyền `id-gh-deploy`: `AcrPush` (ACR) + `Website Contributor` (RG) + **`Reader` (RG)** — `AcrPush` không cấp `registries/read` nên thiếu `Reader` là `az acr login` 403
+- [x] Bốn federated credential dạng `environment:` — job có `environment` đổi subject OIDC sang `repo:O/R:environment:<tên>`, thiếu là `azure/login` fail *(kế hoạch gốc không nêu)*
+- [x] Hai GitHub environment `staging-deploy` / `production`, cả hai giới hạn nhánh `main` — **không** có reviewer, xem trên
+- [x] `cd.yml` 3 job: `preflight` (ngoài environment, bỏ qua xanh khi Azure tắt) → `build-deploy-staging` → `swap`
+- [ ] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — *proof: nhánh khác không deploy được* — **cần chạy thật**
+- [ ] Chạy end-to-end → `/version` production đổi SHA trên **cả hai** service → `evidence/M10.md` — **cần `make up`**
+- [x] `evidence/M6.md` — đã ghi `fe` thêm 4 bề mặt (tổng 8), **đánh dấu rõ là chưa đo**; phần đo thật còn nợ
 
 ### D17 — Swap an toàn
 - [ ] Health check path + swap warm-up path `/health`; xác định setting nào slot-sticky — *proof: Decision*
