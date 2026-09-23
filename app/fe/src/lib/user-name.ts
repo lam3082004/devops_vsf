@@ -6,5 +6,6 @@ export const USER_NAME_MAX_LENGTH = 50;
 
 export function isValidUserName(value: string): boolean {
   const trimmed = value.trim();
-  return trimmed.length >= 1 && trimmed.length <= USER_NAME_MAX_LENGTH;
+  // D14 — HỎNG CÓ CHỦ Ý: so sánh string với number, `next build` chạy tsc sẽ đỏ.
+  return trimmed.length >= 1 && trimmed <= USER_NAME_MAX_LENGTH;
 }
