@@ -1,0 +1,63 @@
+name: M6 check — 4 bề mặt nhìn từ IP ngoài
+
+# Bằng chứng "chứng minh ngược" của M6 (D13): gọi app từ một IP KHÔNG có trong
+# whitelist và chứng minh bị chặn. Máy làm việc chạy bằng hotspot điện thoại nên
+# máy và điện thoại chung một IP công khai — đổi mạng không tạo ra IP thứ hai,
+# runner GitHub thì có (notes/d13-prep.md, mục "lấy đâu ra IP thứ hai").
+#
+# Chỉ gọi HTTP từ ngoài vào: không secret, không OIDC, không đụng Azure.
+# Chạy tay thôi — không gắn vào push/PR, vì môi trường thường đang tắt.
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: Tên Web App, ví dụ app-vsf-j124ze (suffix đổi mỗi lần dựng lại)
+        required: true
+      expect:
+        description: Mã HTTP mong đợi — 403 sau khi apply whitelist, 200 để đo trạng thái trước
+        required: true
+        default: "403"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: 4 bề mặt
+    runs-on: ubuntu-24.04
+    steps:
+      - name: IP công khai của runner
+        # Ghi lại để bằng chứng có nguồn: "403 nhìn từ IP nào".
+        run: |
+          echo "runner_ip=$(curl -4 -s --max-time 15 https://ifconfig.me)" | tee -a "$GITHUB_ENV"
+
+      - name: Gọi 4 bề mặt và đối chiếu mã HTTP
+        env:
+          APP: ${{ inputs.app }}
+          EXPECT: ${{ inputs.expect }}
+        # -4 là bắt buộc: luật chỉ khai IPv4, đi bằng IPv6 thì kết quả không nói
+        # lên điều gì (Decision C). Bốn bề mặt chứ không phải hai — quên SCM hoặc
+        # quên slot là hai lỗ thường gặp nhất của bài này.
+        run: |
+          set -u
+          fail=0
+          {
+            echo "### M6 — nhìn từ runner \`$runner_ip\` (mong đợi \`$EXPECT\`)"
+            echo
+            echo "| thời gian | bề mặt | mã | kết quả |"
+            echo "|---|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for u in \
+            "https://$APP.azurewebsites.net/health" \
+            "https://$APP-staging.azurewebsites.net/health" \
+            "https://$APP.scm.azurewebsites.net" \
+            "https://$APP-staging.scm.azurewebsites.net"; do
+            code=$(curl -4 -s -o /dev/null -w '%{http_code}' --max-time 20 "$u" || echo "000")
+            ts=$(date -Is)
+            if [ "$code" = "$EXPECT" ]; then verdict="đạt"; else verdict="LỆCH"; fail=1; fi
+            echo "$ts  source_ip=$runner_ip  GET $u  -> $code  ($verdict)"
+            echo "| $ts | $u | $code | $verdict |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          # Job đỏ khi có bề mặt lệch: bằng chứng phải tự tố cáo được, đọc log
+          # bằng mắt thì sớm muộn cũng bỏ sót một dòng.
+          exit "$fail"

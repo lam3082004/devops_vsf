@@ -1,12 +1,49 @@
 # D13 — Kế hoạch chi tiết: IP whitelist (M6)
 
 Guide gốc: `docs/guides/d13-ip-whitelist.md` · Bằng chứng: `evidence/M6.md` · Nhật ký: `notes/d13.md` (tạo khi làm).
-**AI:** từ D7 được sinh code, PR phải có `## AI usage`. Mọi `apply`/`destroy` trên Azure thật cần bạn chạy — bộ lọc Claude Code chặn `terraform apply` (đã gặp ở D12, lý do `Protected-Scope IaC Apply`).
+**AI:** từ D7 được sinh code, PR phải có `## AI usage`. Mọi `apply`/`destroy` trên Azure thật đều **hỏi bạn trước** (luật project). Rule `Bash(terraform -chdir=infra/app apply:*)` đã thêm vào settings ở phiên D12 nên Claude chạy được `apply` khi bạn đồng ý; `destroy` chưa thử, bị chặn thì bạn chạy tay.
 
-## Tình trạng đầu vào (đo 2026-09-22)
+## Cập nhật đầu phiên 2026-09-23 (bàn giao từ phiên D12)
 
-- **Hạ tầng chưa có một luật truy cập nào.** `grep -rn "ip_restriction\|allowed_ips" infra/` → không kết quả. D13 viết mới hoàn toàn.
-- **D12 chưa xong** (apply pha 2 bị chặn). Guide ghi D13 *cần* D12, nhưng thực tế D13 chỉ cần app chạy được và có slot staging — tức là cần **pha 2 của `make up`**, không cần M3/M4/M5 đã đo xong. Có thể làm xen kẽ.
+`main` = `27330bd`. Azure **đang tắt** — chỉ còn `rg-vsf-bootstrap` (state storage).
+Worktree dùng lại: `.claude/worktrees/d12`. Nhánh phiên này: `feat/d13-ip-whitelist`.
+
+**Hai điều đã chốt, không bàn lại:**
+
+1. **Cách test 403 = GitHub Actions**, không phải đổi sang hotspot. Máy làm việc vốn đã chạy
+   bằng chính hotspot điện thoại → máy và điện thoại chung một IP công khai, curl từ hotspot
+   vẫn ra 200. Workflow mẫu có sẵn ở mục 4 dưới đây. Cloud Shell là lần đo thứ hai.
+2. **`scm_use_main_ip_restriction = true`** cho cả Web App lẫn slot (Decision A). D3 đã chứng
+   minh để danh sách SCM riêng mà quên khai allow thì tự khoá mình khỏi Kudu.
+
+**`app/` đã tách thành `app/be` + `app/fe`** (refactor OpsBoard, PR #24/#25/#28). Mọi lệnh
+build image từ D13 trở đi phải trỏ `app/be/`, không còn `app/` — lệnh cũ của D12 sai đường dẫn.
+
+**Trả nợ D12 khi môi trường bật** (chỉ còn ảnh + 1 ô API, làm kèm ở bước 3 của D13):
+
+- [ ] Ảnh Environment variables **production** + **slot staging**: `DB_PASSWORD` nhãn *Key vault Reference* + **Resolved**.
+- [ ] Ảnh **Log stream** lúc gọi `/health` và `POST /items` (bằng chứng #4 của M3).
+- [ ] Ảnh **MySQL → Networking** với danh sách firewall rule.
+- [ ] Gọi API `configreferences` cho **slot staging** — ô duy nhất còn `CHƯA ĐO` trong `evidence/M4.md`.
+
+**Ba bài học mang sang D13:**
+
+- Thu hồi quyền **không tự làm gãy** thứ đang chạy: M5 cần restart mới thấy gãy, M1 cần cả
+  tag image mới vì image đã cache trên worker. Luật truy cập cũng có độ trễ — đợi vài chục
+  giây sau apply rồi mới test, đừng kết luận từ lần curl đầu tiên.
+- Đừng kết luận quyền/trạng thái từ **một lệnh `az` duy nhất**; đọc chéo bằng API
+  (`configreferences` kèm `identityType`) mới phân biệt được hai lỗi triệu chứng giống nhau.
+- Phép đo `curl` ngắn **không** chứng minh mạng ổn (`known-issues.md` #10).
+
+**Ba sai sót của phiên trước, đừng lặp:** môi trường chạy 16 tiếng rưỡi vì `make down` là bước
+cuối của một chuỗi bị đứt giữa chừng; `destroy` bị `timeout` của chính lệnh gọi cắt ngang mà
+`EXIT=0` che mất (xác nhận bằng dòng `Destroy complete`, đừng bọc `timeout`); phép đo `curl`
+ngắn bị tưởng là bằng chứng mạng ổn.
+
+## Tình trạng đầu vào (đo 2026-09-22, kiểm lại 2026-09-23)
+
+- **Hạ tầng chưa có một luật truy cập nào.** `grep -rn "ip_restriction\|allowed_ips" infra/` → không kết quả (kiểm lại 2026-09-23 trên `27330bd`: vẫn trống). D13 viết mới hoàn toàn cho **4 bề mặt**: site chính + SCM, nhân 2 cho slot staging.
+- **D12 đã xong** (M3/M4/M5 đạt, `plan` cuối ra `No changes`). D13 chỉ cần app chạy được và có slot staging — tức là cần **pha 2 của `make up`**. `.gitignore` kiểm lại: **chưa có** mẫu nào cho `tfvars`, phải thêm ở bước 1.
 - **D3 đã phát hiện sẵn bẫy SCM** (`notes/d3-cli.md:34-36`): làm bằng CLI thì mặc định
   `scmIpSecurityRestrictionsUseMain = false`, danh sách SCM chỉ có `Deny all` → **chính máy mình cũng 403 vào Kudu**. Portal thì tick sẵn *Use main site rules*. Terraform phải khai rõ.
 - Tên thuộc tính đã kiểm bằng `terraform providers schema` (azurerm 4.81), không phải đoán:

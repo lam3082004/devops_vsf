@@ -73,6 +73,23 @@ variable "db_name" {
   default     = "appdb"
 }
 
+variable "allowed_ips" {
+  description = "Danh sách IP được vào app và Kudu (M6). Khoá = tên luật, giá trị = CIDR IPv4. Giá trị cá nhân — khai trong infra/app/terraform.tfvars (KHÔNG commit), mẫu ở terraform.tfvars.example."
+  type        = map(string)
+  # map chứ không phải list: đổi thứ tự hay thêm một IP không làm lệch tên luật,
+  # cùng lý do đã chọn for_each cho firewall MySQL ở D8.
+  #
+  # CẢNH BÁO: rỗng + ip_restriction_default_action = "Deny" (app.tf) = KHOÁ TẤT
+  # CẢ, kể cả chính mình — chỉ gỡ được qua Portal. Kiểm terraform.tfvars có IP
+  # trước khi apply. CI chạy plan KHÔNG có tfvars nên luôn thấy map rỗng; plan
+  # của CI vì thế sẽ báo "xoá luật" khi môi trường thật đang bật — đó là hệ quả
+  # đã biết của việc không commit IP, không phải drift thật.
+  #
+  # Chỉ khai IPv4 (Decision C của notes/d13-prep.md): mạng có IPv6 thì request
+  # đi bằng IPv6 sẽ không khớp luật IPv4 → tự nhận 403. Khi test luôn ép curl -4.
+  default = {}
+}
+
 # Hai công tắc dưới đây CHỈ để lấy bằng chứng "chứng minh ngược" của M1 và M5:
 # gỡ quyền của managed identity rồi chứng minh app gãy, sau đó trả lại. Luôn để
 # mặc định true trong code; đặt false bằng `-var` ngay trên dòng lệnh, đúng một
