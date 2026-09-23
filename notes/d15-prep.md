@@ -3,6 +3,14 @@
 Guide gốc: `docs/guides/d15-cross-review-1.md` · Deliverable: `review-<tên bạn kia>.md`
 Nhật ký: `notes/d15.md` (tạo khi làm) · Phiên trước (D14): `notes/d14.md`
 
+> **HOÃN — quyết định 2026-09-23.** Chưa có repo của intern kia, mà 2/4 ô "Xong khi" phụ
+> thuộc người đó, nên nhảy sang D16 (`notes/d16-prep.md`) thay vì đứng chờ. **File này
+> không mất hiệu lực** — có link repo là quay lại làm tiếp từ bước 0.
+>
+> Một thay đổi khi quay lại: bước 4 (**M8 lần 2** + 6 ảnh Portal) là việc duy nhất ở đây
+> không cần ai mà lại cần môi trường bật. D16 cũng phải `make up`, nên **cân nhắc làm bước
+> 4 ngay trong cửa sổ đó** rồi gạch khỏi D15.
+
 ## Đọc 60 giây này trước
 
 | | |
@@ -54,7 +62,7 @@ thật sự hỏi gì.
 | Secret | `.gitignore` chặn `terraform.tfvars`; gitleaks quét toàn lịch sử; hook pre-commit | `evidence/M9.md` |
 | Secret | ⚠️ artifact `plan.txt` của CI **chứa IP thật** — repo private nên chưa lộ, chuyển public là phải xử lý | Decision 2026-09-23 |
 | Quyền | 3 principal tách role riêng trên Key Vault; CI dùng OIDC, không secret | Decision 2026-09-18 |
-| Mạng | ⚠️ `fe` **chưa có** Web App trong `infra/` → D13 mới phủ 4 bề mặt, không phải 8 | Decision 2026-09-23 |
+| Mạng | ⚠️ `fe` chưa có Web App trong `infra/` → D13 mới phủ 4 bề mặt, không phải 8. **D16 dựng `fe` nên khi quay lại D15 phải kiểm lại dòng này** — nếu `evidence/M6.md` chưa có đủ 8 bề mặt thì đó là một phát hiện Chặn của chính mình | Decision 2026-09-23 |
 | M1/M4 | ACR admin tắt, pull bằng user-assigned MI, KV reference có `keyVaultReferenceIdentity` | `evidence/M4.md` |
 | Tái lập | ⚠️ `purge_protection_enabled = false` trên Key Vault — cố ý, để destroy→apply lại cùng tên | Decision 2026-09-18 |
 | CI gate | 8 job, tất cả required, `bypass_actors` trống, không `continue-on-error` | `evidence/M9.md` |

@@ -6,8 +6,10 @@
 
 ## Tiến độ — cập nhật 2026-09-23 (hết D14)
 
-**D1–D14 xong.** `main` = `d7e4f98`. Azure **đang tắt** (chỉ còn `rg-vsf-bootstrap`).
-Bài tiếp: **D15** — kế hoạch chi tiết ở `notes/d15-prep.md`.
+**D1–D14 xong. D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **đang tắt**
+(chỉ còn `rg-vsf-bootstrap`).
+**Bài đang làm: D16 — CD pipeline.** Kế hoạch step-by-step: `notes/d16-prep.md`.
+D16 **tốn tiền** và **có thêm `fe`**: Web App `fe` chưa tồn tại trong `infra/`, dựng trong bài này.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -20,8 +22,11 @@ Bài tiếp: **D15** — kế hoạch chi tiết ở `notes/d15-prep.md`.
 | M9 — CI chặn được cái sai | ĐẠT (D14) | `evidence/M9.md` |
 | M2, M7, M10, M11 | chưa tới lịch | D16–D22 |
 
-**Còn nợ, không chặn D15:** 6 ảnh Portal — gom hết vào `notes/screenshot-debt.md`, chụp
-trong cửa sổ `make up` của M8 lần 2 ở D15 chứ không bật môi trường riêng.
+**Còn nợ, không chặn D16:**
+- **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
+- **6 ảnh Portal** — `notes/screenshot-debt.md`. Ban đầu định gộp vào cửa sổ `make up` của
+  M8 lần 2 ở D15; D15 hoãn nên **chụp trong cửa sổ `make up` của D16** (bước 5), vì bài đó
+  cũng phải bật môi trường. Cần trình duyệt: Chrome extension của Claude chưa kết nối.
 **Sổ lỗi:** `ai-failure-log.md` 27 case (đề cần 6–8) · `known-issues.md` 13 mục.
 
 ## Authority
@@ -31,12 +36,12 @@ trong cửa sổ `make up` của M8 lần 2 ở D15 chứ không bật môi trư
 - Luật làm việc của project: `CLAUDE.md`.
 - **Chưa định nghĩa (phải hỏi mentor, chặn bước liên quan):**
   - Q1. M11 "không enable App Insights" vs `/boom` "Alert + App Insights" vs lịch D20 vs brief mới đòi distributed tracing → được bật App Insights (workspace-based) làm backend trace không? Nếu không: OTel → Jaeger/Tempo (tốn hạ tầng) hoặc chỉ log `trace_id`. **Mặc định làm theo hướng (a) workspace-based App Insights, đánh dấu tạm** đến khi mentor trả lời. (chặn D20)
-  - Q2. Repo public hay private? GitHub Free không có branch protection cho private. (chặn D6)
+  - ~~Q2. Repo public hay private? GitHub Free không có branch protection cho private.~~ **Đã trả lời 2026-09-23 bằng quan sát:** repo là `PRIVATE` (`gh repo view`) mà ruleset `protect-main` vẫn `enforcement: active` và D14 đã chứng minh nó **chặn merge thật** (6 PR đỏ đều `mergeable_state = blocked`, `evidence/M9.md`). Tiền đề của câu hỏi sai: **ruleset** khác branch protection cũ và có hiệu lực trên private repo Free.
   - Q3. "5xx rate" là count hay tỷ lệ %? (chặn D22)
   - ~~Q4. Trivy "không còn CVE" có cho `--ignore-unfixed` không?~~ **Đã chốt 2026-09-23 bằng số đo thật (D14): KHÔNG** — cổng `CRITICAL,HIGH` không `--ignore-unfixed`, vì cả hai image đo ra 0 ở mức đó. Chi tiết ở mục Decisions.
   - ~~Q6. App registration cho OIDC?~~ **Đã trả lời 2026-09-15 (az cli):** tenant `allowedToCreateApps=false` → dùng user-assigned MI + federated credential.
   - ~~Q7. ABAC condition trên Owner?~~ **Đã kiểm 2026-09-15 (az cli):** 2 assignment Owner ở scope subscription, `condition = null`. Banner Portal không phản ánh giới hạn trên assignment của mình; nếu gán role vẫn bị chặn thì hỏi mentor về policy cấp trên.
-  - Q8. AI-OFF gắn với tuần 1 theo lịch (trước 23/09) hay theo bài D1–D6? Làm nhanh hơn lịch thì bài D7+ trước 23/09 có được nhờ AI sinh code không? (ảnh hưởng tốc độ D7–D9)
+  - ~~Q8. AI-OFF gắn với tuần 1 theo lịch (trước 23/09) hay theo bài D1–D6?~~ **Hết hiệu lực 2026-09-23:** hôm nay đã là 23/09, tuần 1 kết thúc, D7–D14 đã làm xong với AI theo đúng luật `CLAUDE.md` (mỗi PR có mục `## AI usage`). Không còn gì để quyết.
   - Q5. Subscription Free Trial hết hạn **2026-10-15 (= D23)** → mentor cấp sub khác hay tự upgrade Pay-As-You-Go? (chặn D22)
 
 ## Mốc cố định
@@ -173,7 +178,12 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 
 **D14 ĐẠT.** `ai-failure-log.md` thêm #25–#27, `known-issues.md` thêm #12–#13.
 
-### D15 — Cross-review lần 1 + dọn
+### D15 — Cross-review lần 1 + dọn — **HOÃN** (quyết định 2026-09-23)
+> **Hoãn tới khi có repo của intern kia.** 2/4 ô "Xong khi" phụ thuộc người khác nên không
+> tự làm hết được; nhảy thẳng sang D16 để không đứng chờ. `notes/d15-prep.md` **giữ nguyên
+> giá trị**, quay lại là làm tiếp được ngay. Việc duy nhất của D15 không cần ai mà lại cần
+> môi trường bật — **M8 lần 2** — cân nhắc làm ghép vào cửa sổ `make up` của D16.
+>
 > Kế hoạch chi tiết: **`notes/d15-prep.md`**. **Chặn: cần repo của bạn intern kia** — 2/4 ô
 > phụ thuộc người khác, xin link trước rồi làm song song 3 việc không cần ai.
 > **Tốn tiền đúng một bước:** `make down` → `make up` cho M8 lần 2 (~45 phút) — gộp luôn
@@ -190,8 +200,17 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ## Tuần 4 — D16–D20 · CD, zero-downtime, autoscale, chi phí
 
 ### D16 — CD pipeline
-- [ ] `cd.yml` (tách file khỏi CI), trigger push `main`: build (SHA) → push ACR → set image slot staging — *proof: run log*
-- [ ] Deploy chỉ từ `main` (environment/OIDC subject giới hạn ref main) — *proof: branch khác không deploy được*
+> Kế hoạch step-by-step: **`notes/d16-prep.md`**. **Tốn tiền** (phải `make up` để có chỗ deploy).
+> Ba quyết định đã chốt 2026-09-23: **có cả `fe`** · trigger **tự động** theo push `main` ·
+> **bật duyệt tay trước swap**.
+- [ ] **Web App `fe` + slot** trong Terraform (chưa tồn tại) — `WEBSITES_PORT=3000`, `API_BASE_URL` trỏ `be`, **đủ 3 dòng** `ip_restriction*` cho cả site lẫn slot
+- [ ] Allow outbound IP của App Service vào `ip_restriction` của `be` — nếu không, `fe` gọi `be` bị chính whitelist của `be` chặn
+- [ ] Quyền `id-gh-deploy`: `AcrPush` (ACR) + `Website Contributor` (scope **resource group**, để phủ cả slot)
+- [ ] Hai GitHub environment: `staging-deploy` (không reviewer) và `production` (có reviewer), cả hai giới hạn nhánh `main`
+- [ ] `cd.yml` 3 job: `preflight` (ngoài environment, bỏ qua xanh khi Azure tắt) → `build-deploy-staging` → `swap` — *proof: run log*
+- [ ] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — *proof: nhánh khác không deploy được*
+- [ ] Chạy end-to-end → `/version` production đổi SHA trên **cả hai** service → `evidence/M10.md`
+- [ ] `evidence/M6.md` thêm **4 dòng** cho 4 bề mặt mới của `fe` (nếu không, M6 nói dối: ghi 4 bề mặt mà thực tế 8)
 
 ### D17 — Swap an toàn
 - [ ] Health check path + swap warm-up path `/health`; xác định setting nào slot-sticky — *proof: Decision*
@@ -328,6 +347,11 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - 2026-09-23 — **Q4 CHỐT bằng số đo thật: cổng Trivy = `CRITICAL,HIGH`, KHÔNG `--ignore-unfixed`.** Đo local (trivy 0.74.0, `--scanners vuln`): `be` (`aspnet:10.0-noble-chiseled`) **0 CRITICAL / 0 HIGH**, còn 7 MEDIUM đều ở `libc6` — 6 cái đã có bản vá `2.39-0ubuntu8.9` nhưng image Microsoft published chưa kèm (`docker pull` xác nhận base đang là bản mới nhất), 1 cái chưa có bản vá. `fe` sau khi vá Dockerfile: **0 CVE ở mọi mức**. Vì cả hai đo ra 0 ở mức cổng nên KHÔNG thêm `--ignore-unfixed`: thêm vào lúc này không đổi màu gì mà chỉ làm cổng yếu đi về sau. **Không** đưa MEDIUM/LOW vào cổng — 7 MEDIUM của `be` nằm ở base image không tự vá được, gate mức đó là CI đỏ triền miên vì thứ team không sửa được; vẫn quét và in bảng đầy đủ vào job summary để thấy drift. Cửa thoát khi buộc phải bỏ qua: `.trivyignore` kèm mã CVE + lý do + **ngày xem lại**. Output thô: `evidence/raw/d14-trivy-*-2026-09-23.txt`.
 - 2026-09-23 — **D14: `app/fe/Dockerfile` viết mới** (trước đó chưa tồn tại — `output: "standalone"` đã bật sẵn từ D11 nhưng file thì chưa có, nên vế "Trivy phải làm cho cả hai" của Q10 không thực hiện được). Hai quyết định trong đó đều do Trivy ép ra, không phải chọn trước: (1) base `node:24-alpine3.23` chứ không phải `3.22` — bản 3.22 còn openssl `3.5.6-r0` với 2 CVE HIGH đã có bản vá ở `3.5.7`/`3.5.8`; (2) **xoá npm khỏi stage runtime** — 10 CVE (trong đó **1 CRITICAL**, `tar` CVE-2026-59873) đều nằm ở `/usr/local/lib/node_modules/npm`, không cái nào thuộc app, mà runtime chạy `node server.js` thì không dùng npm. Tổng cộng 1 CRITICAL + 13 HIGH → 0, bằng cách **bớt thứ có trong image**, không phải nới chính sách quét. Ngược với phản xạ thường gặp: thấy image đỏ thì đi tìm cờ để tắt, trong khi chỗ đúng để sửa là Dockerfile.
 - 2026-09-23 — **D14: `docker-build` và `trivy` gộp một job cho mỗi service** (`docker build + trivy (be)`, `docker build + trivy (fe)`), không tách hai job. Lý do đúng như bẫy guide cảnh báo: image nằm trong docker daemon của runner, job khác không thấy — tách ra thì phải `docker save`/artifact/`docker load` (thêm chỗ để lệch), hoặc tệ hơn là Trivy lặng lẽ kéo một image trùng tên từ Internet về quét và báo xanh cho thứ không phải bản vừa build. Giá phải trả: tên job dài hơn và required checks thành 8 thay vì 7.
+- 2026-09-23 — **D15 hoãn, làm D16 trước.** D15 mở đầu bằng *"Cần: bạn intern kia đã có repo"* và 2/4 ô "Xong khi" phụ thuộc người khác, nên đứng chờ là mất buổi. `notes/d15-prep.md` giữ nguyên giá trị, quay lại làm tiếp được ngay. Hệ quả phải nhớ: **M8 lần 2** (destroy → apply sau thay đổi tuần 3) vốn nằm trong D15 và là việc duy nhất của D15 không cần ai — cân nhắc ghép vào cửa sổ `make up` của D16 thay vì để treo. 6 ảnh Portal còn nợ cũng chuyển sang cửa sổ đó.
+- 2026-09-23 — **D16 làm cả `fe`, không tách sang buổi khác.** Q10 chốt hai service từ 21/09 nhưng `infra/` tới giờ mới có Web App của `be`; để lệch thêm nữa thì mọi bài sau (D17 swap, D19 autoscale, D21 log) đều phải làm hai lần. Giá phải trả: D16 phồng gần gấp đôi vì thêm một khối Terraform chưa từng apply — Web App + slot + `WEBSITES_PORT = 3000` (khác `be` 8080) + `API_BASE_URL` + **ba** dòng `ip_restriction*` cho cả site lẫn slot. Dùng lại `azurerm_user_assigned_identity.app` (đã có `AcrPull`) và cùng App Service Plan nên không thêm tiền plan.
+- 2026-09-23 — **`fe` gọi `be` phải được allow bằng outbound IP của App Service.** `app/fe/src/lib/api.ts:62` gọi `be` từ **phía server**, nên request đi ra Internet rồi vòng lại bằng outbound IP của App Service chứ không đi đường nội bộ — mà `be` từ D13 đang `ip_restriction_default_action = "Deny"`. Không xử lý thì mọi trang của `fe` hỏng, và **triệu chứng trông như lỗi app** (trang trắng, lỗi fetch) chứ không như lỗi mạng. Dùng lại đúng mẫu `infra/app/db.tf:77` (`possible_outbound_ip_address_list`), hai app chung plan nên chung IP. Đánh đổi đã biết và chấp nhận: outbound IP dùng chung cho cả scale unit nên app của khách khác cùng stamp cũng vào được `be` — đúng hạn chế `evidence/M3.md` đã nêu cho firewall MySQL, nay lặp ở tầng HTTP; R5 (Decision 2026-09-21) đã chấp nhận mô hình chặn theo IP. Muốn chặt hơn phải VNet integration + Private Endpoint (S3).
+- 2026-09-23 — **`cd.yml` chia 3 job và dùng HAI environment**, thay vì một job một environment. `preflight` nằm **ngoài** environment và soi xem Web App có tồn tại không: repo có kỷ luật `make down` cuối ngày nên phần lớn push vào `main` rơi vào lúc không có gì để deploy, mà environment protection áp ở **cấp job** — để job đầu trong environment thì mọi PR tài liệu đều sinh một yêu cầu duyệt treo. Hai environment vì nút duyệt phải nằm **trước swap**, không phải trước build: `staging-deploy` (chỉ `main`, không reviewer) cho build/push/deploy slot, `production` (chỉ `main`, có reviewer) cho swap. Một environment duy nhất có reviewer sẽ chặn ngay từ bước build, tức bắt bấm duyệt khi image còn chưa tồn tại.
+- 2026-09-23 — **Bật required reviewer trước swap, và phải giải trình với M10.** Guide D16 mục "Xong khi" đòi *"merge → production đổi SHA **không thao tác tay**"*, trong khi nút duyệt là đúng một thao tác tay. Chọn bật vì không muốn có gì vào production mà không ai nhìn (guide mục 2 cho phép: *"tuỳ chọn: required reviewers"*). `evidence/M10.md` **phải nói rõ**: build → push ACR → deploy slot staging là hoàn toàn tự động, người chỉ duyệt đúng bước swap cuối. Đường lui nếu người chấm không chấp nhận: tắt reviewer, merge thêm một PR, chụp lần chạy không có bước duyệt — ~10 phút, không phải sửa code.
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
