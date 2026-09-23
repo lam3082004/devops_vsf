@@ -1,0 +1,26 @@
+Acquiring state lock. This may take a few moments...
+azurerm_role_assignment.kv_secrets_user_app[0]: Creating...
+azurerm_role_assignment.kv_secrets_user_app[0]: Still creating... [00m10s elapsed]
+azurerm_role_assignment.kv_secrets_user_app[0]: Still creating... [00m20s elapsed]
+azurerm_role_assignment.kv_secrets_user_app[0]: Creation complete after 29s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-j124ze/providers/Microsoft.Authorization/roleAssignments/63dbc08e-4653-4cd9-30fe-b1743de72888]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+acr_login_server = "acrvsfj124ze.azurecr.io"
+acr_name = "acrvsfj124ze"
+app_identity_client_id = "6fc199a7-4603-44a9-b9aa-216c46d35727"
+app_identity_id = "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-j124ze"
+app_identity_principal_id = "73600143-fd49-4528-b49e-70f3b7062a09"
+app_possible_outbound_ip_count = 31
+app_url = "https://app-vsf-j124ze.azurewebsites.net"
+key_vault_name = "kv-vsf-j124ze"
+key_vault_uri = "https://kv-vsf-j124ze.vault.azure.net/"
+location = "centralindia"
+mysql_database_name = "appdb"
+mysql_fqdn = "mysql-vsf-j124ze-sea.mysql.database.azure.com"
+name_suffix = "j124ze"
+resource_group_name = "rg-vsf-dev"
+staging_url = "https://app-vsf-j124ze-staging.azurewebsites.net"

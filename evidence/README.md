@@ -24,17 +24,17 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | [d09](d09/) | Terraform ACR + Key Vault + CI plan | log 429 throttle 7 lần, chẩn đoán đa vùng, apply thành công, destroy |
 | [d10](d10/) | GATE: destroy → apply lại từ rỗng | cặp log apply/destroy + verify, ảnh Portal → `M8.md` |
 | [d11](d11/) | Container pull ACR bằng Managed Identity | 9 ảnh (ACR admin disabled, IAM AcrPull, Deployment Center, env vars 2 slot) → `M1.md` |
-| [d12](d12/) | Key Vault reference · MySQL · gỡ quyền → app gãy | **chưa đo** — khung ở `M3.md`, `M4.md`, `M5.md` |
+| [d12](d12/) | Key Vault reference · MySQL · gỡ quyền → app gãy | log thô trong `raw/d12-*` (apply, verify, M5 gỡ/trả role, JSON tham chiếu hỏng, AcrPull bị từ chối, plan No changes, destroy) |
 
 ## Must-have (điền dần)
 
 | Mã | Yêu cầu | Trạng thái |
 |---|---|---|
-| M1 | Deploy bằng Docker image, ACR admin disabled, pull bằng MI | `M1.md` — đạt ở D11; còn ô chứng minh ngược (gỡ AcrPull) hoãn sang D12 |
+| M1 | Deploy bằng Docker image, ACR admin disabled, pull bằng MI | **`M1.md` — ĐẠT**, gồm cả chứng minh ngược (gỡ AcrPull → `ACRTokenRetrievalFailure`, D12) |
 | M2 | Zero downtime khi deploy | chờ D18 |
-| M3 | MySQL + firewall theo outbound IP | `M3.md` khung sẵn, **chưa đo** (D12) |
-| M4 | Managed Identity, không secret plaintext | `M4.md` khung sẵn, **chưa đo** (D12) |
-| M5 | Key Vault + chứng minh ngược | `M5.md` khung sẵn, **chưa đo** (D12) |
+| M3 | MySQL + firewall theo outbound IP | **`M3.md` — ĐẠT** (31 rule = 31 outbound IP); thiếu ảnh Log stream |
+| M4 | Managed Identity, không secret plaintext | **`M4.md` — ĐẠT**; thiếu ảnh Portal và API configreferences cho slot |
+| M5 | Key Vault + chứng minh ngược | **`M5.md` — ĐẠT** (`AccessToKeyVaultDenied`, container exit 1 sau 0.2s, hồi phục, plan No changes) |
 | M6 | IP whitelist 200/403 | chờ D13 (bản làm tay đã có ở d02) |
 | M7 | Chiến lược tiết kiệm chi phí | chờ D19–D20 |
 | M8 | Terraform toàn bộ hạ tầng | `M8.md` — đạt ở D10 |

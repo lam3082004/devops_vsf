@@ -1,0 +1,11 @@
+[
+  {
+    "activeVersion": null,
+    "details": "Key Vault reference was not able to be resolved because site was denied access to Key Vault reference's vault.",
+    "identityType": "UserAssigned",
+    "reference": "@Microsoft.KeyVault(SecretUri=https://kv-vsf-j124ze.vault.azure.net/secrets/mysql-admin-password)",
+    "secretName": "mysql-admin-password",
+    "status": "AccessToKeyVaultDenied",
+    "vaultName": "kv-vsf-j124ze"
+  }
+]

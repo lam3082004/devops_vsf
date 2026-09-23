@@ -1,0 +1,335 @@
+D12 verify — 2026-09-22 21:39:55 +0700
+Thư mục: /home/tts/Màn hình nền/devops_vsf/.claude/worktrees/d12
+Commit:  f38c127
+
+app=app-vsf-j124ze  mysql=mysql-vsf-j124ze-sea  acr=acrvsfj124ze  kv=kv-vsf-j124ze
+
+==============================================================
+== M3 ô1 — /health
+== $ curl -s -w 
+<<HTTP %{http_code}>>
+ https://app-vsf-j124ze.azurewebsites.net/health
+==============================================================
+{"status":"ok","db":"ok"}
+<<HTTP 200>>
+
+==============================================================
+== M3 ô2 — POST /items (bản ghi test d12-check-214019)
+== $ curl -s -w 
+<<HTTP %{http_code}>>
+ -X POST https://app-vsf-j124ze.azurewebsites.net/items -H content-type: application/json -d {"name":"d12-check-214019"}
+==============================================================
+{"id":1,"name":"d12-check-214019","role":"worker","last_seen_at":"2026-09-22T14:40:19Z"}
+<<HTTP 201>>
+
+==============================================================
+== M3 ô3 — GET /items (phải thấy d12-check-214019)
+== $ curl -s -w 
+<<HTTP %{http_code}>>
+ https://app-vsf-j124ze.azurewebsites.net/items
+==============================================================
+[{"id":1,"name":"d12-check-214019","role":"worker","last_seen_at":"2026-09-22T14:40:19Z"}]
+<<HTTP 200>>
+
+==============================================================
+== M3 ô5-8 — firewall MySQL (chỉ được có rule app-outbound-*)
+== $ az mysql flexible-server firewall-rule list -g rg-vsf-dev -n mysql-vsf-j124ze-sea -o table
+==============================================================
+EndIpAddress     Name                          ResourceGroup    StartIpAddress
+---------------  ----------------------------  ---------------  ----------------
+20.219.205.51    app-outbound-20-219-205-51    rg-vsf-dev       20.219.205.51
+20.207.77.23     app-outbound-20-207-77-23     rg-vsf-dev       20.207.77.23
+4.187.208.16     app-outbound-4-187-208-16     rg-vsf-dev       4.187.208.16
+4.224.104.24     app-outbound-4-224-104-24     rg-vsf-dev       4.224.104.24
+4.224.99.161     app-outbound-4-224-99-161     rg-vsf-dev       4.224.99.161
+4.186.49.214     app-outbound-4-186-49-214     rg-vsf-dev       4.186.49.214
+52.140.85.23     app-outbound-52-140-85-23     rg-vsf-dev       52.140.85.23
+20.207.127.157   app-outbound-20-207-127-157   rg-vsf-dev       20.207.127.157
+4.224.1.187      app-outbound-4-224-1-187      rg-vsf-dev       4.224.1.187
+4.186.49.217     app-outbound-4-186-49-217     rg-vsf-dev       4.186.49.217
+20.207.127.16    app-outbound-20-207-127-16    rg-vsf-dev       20.207.127.16
+20.192.171.19    app-outbound-20-192-171-19    rg-vsf-dev       20.192.171.19
+4.247.209.159    app-outbound-4-247-209-159    rg-vsf-dev       4.247.209.159
+4.187.208.70     app-outbound-4-187-208-70     rg-vsf-dev       4.187.208.70
+135.235.144.66   app-outbound-135-235-144-66   rg-vsf-dev       135.235.144.66
+4.187.189.47     app-outbound-4-187-189-47     rg-vsf-dev       4.187.189.47
+98.70.214.25     app-outbound-98-70-214-25     rg-vsf-dev       98.70.214.25
+135.13.178.173   app-outbound-135-13-178-173   rg-vsf-dev       135.13.178.173
+4.224.72.242     app-outbound-4-224-72-242     rg-vsf-dev       4.224.72.242
+135.13.176.215   app-outbound-135-13-176-215   rg-vsf-dev       135.13.176.215
+20.207.96.31     app-outbound-20-207-96-31     rg-vsf-dev       20.207.96.31
+98.70.234.222    app-outbound-98-70-234-222    rg-vsf-dev       98.70.234.222
+20.204.216.249   app-outbound-20-204-216-249   rg-vsf-dev       20.204.216.249
+20.207.79.94     app-outbound-20-207-79-94     rg-vsf-dev       20.207.79.94
+135.235.177.224  app-outbound-135-235-177-224  rg-vsf-dev       135.235.177.224
+4.224.68.163     app-outbound-4-224-68-163     rg-vsf-dev       4.224.68.163
+135.235.241.13   app-outbound-135-235-241-13   rg-vsf-dev       135.235.241.13
+20.204.200.6     app-outbound-20-204-200-6     rg-vsf-dev       20.204.200.6
+20.204.221.7     app-outbound-20-204-221-7     rg-vsf-dev       20.204.221.7
+20.207.108.104   app-outbound-20-207-108-104   rg-vsf-dev       20.207.108.104
+20.204.218.39    app-outbound-20-204-218-39    rg-vsf-dev       20.204.218.39
+
+==============================================================
+== M3 ô5 — SỐ rule firewall
+== $ az mysql flexible-server firewall-rule list -g rg-vsf-dev -n mysql-vsf-j124ze-sea --query length(@)
+==============================================================
+31
+
+==============================================================
+== M3 ô5 — SỐ possible outbound IP (phải BẰNG số trên)
+== $ terraform -chdir=infra/app output -raw app_possible_outbound_ip_count
+==============================================================
+31
+==============================================================
+== M4 ô1,3 — app settings production (mong đợi đúng 7 khoá)
+== $ az webapp config appsettings list -g rg-vsf-dev -n app-vsf-j124ze -o table
+==============================================================
+Name                                 SlotSetting    Value
+-----------------------------------  -------------  -------------------------------------------------------------------------------------------------
+DB_HOST                              False          mysql-vsf-j124ze-sea.mysql.database.azure.com
+DB_NAME                              False          appdb
+DB_TLS                               False          true
+DB_USER                              False          vsfadmin
+DOCKER_REGISTRY_SERVER_PASSWORD      False
+DOCKER_REGISTRY_SERVER_URL           False          https://acrvsfj124ze.azurecr.io
+DOCKER_REGISTRY_SERVER_USERNAME      False
+WEBSITES_ENABLE_APP_SERVICE_STORAGE  False          false
+WEBSITES_PORT                        False          8080
+DB_PASSWORD                          False          @Microsoft.KeyVault(SecretUri=https://kv-vsf-j124ze.vault.azure.net/secrets/mysql-admin-password)
+
+==============================================================
+== M4 ô2 — app settings slot staging (phải giống production)
+== $ az webapp config appsettings list -g rg-vsf-dev -n app-vsf-j124ze --slot staging -o table
+==============================================================
+Name                                 SlotSetting    Value
+-----------------------------------  -------------  -------------------------------------------------------------------------------------------------
+DB_HOST                              False          mysql-vsf-j124ze-sea.mysql.database.azure.com
+DB_NAME                              False          appdb
+DB_TLS                               False          true
+DB_USER                              False          vsfadmin
+DOCKER_REGISTRY_SERVER_PASSWORD      False
+DOCKER_REGISTRY_SERVER_URL           False          https://mcr.microsoft.com
+DOCKER_REGISTRY_SERVER_USERNAME      False
+WEBSITES_ENABLE_APP_SERVICE_STORAGE  False          false
+WEBSITES_PORT                        False          8080
+DB_PASSWORD                          False          @Microsoft.KeyVault(SecretUri=https://kv-vsf-j124ze.vault.azure.net/secrets/mysql-admin-password)
+
+==============================================================
+== M4 ô3 — DB_PASSWORD phải là tham chiếu KHÔNG kèm version
+== $ az webapp config appsettings list -g rg-vsf-dev -n app-vsf-j124ze --query [?name=='DB_PASSWORD'].value -o tsv
+==============================================================
+@Microsoft.KeyVault(SecretUri=https://kv-vsf-j124ze.vault.azure.net/secrets/mysql-admin-password)
+
+==============================================================
+== M4 ô6 — connection strings (mong đợi rỗng)
+== $ az webapp config connection-string list -g rg-vsf-dev -n app-vsf-j124ze
+==============================================================
+[]
+
+==============================================================
+== M4 ô7 — ACR admin user (mong đợi false)
+== $ az acr show -n acrvsfj124ze --query adminUserEnabled
+==============================================================
+false
+
+==============================================================
+== M4 ô8-9 — role của managed identity, --all để thấy cả role kế thừa
+== $ az role assignment list --assignee 73600143-fd49-4528-b49e-70f3b7062a09 --all --query [].{role:roleDefinitionName,scope:scope} -o table
+==============================================================
+Role                    Scope
+----------------------  -------------------------------------------------------------------------------------------------------------------------------------------
+Key Vault Secrets User  /subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-j124ze
+AcrPull                 /subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ContainerRegistry/registries/acrvsfj124ze
+
+==============================================================
+== M1 — cờ pull bằng MI (az webapp config show trả null cho client id, phải đọc qua az resource show)
+== $ az resource show -g rg-vsf-dev --resource-type Microsoft.Web/sites/config --name app-vsf-j124ze/web --query properties.{mi:acrUseManagedIdentityCreds,clientId:acrUserManagedIdentityID,image:linuxFxVersion}
+==============================================================
+ERROR: Operation returned an invalid status 'Not Found'
+!! LỆNH LỖI (exit 3) — ghi lại nguyên trạng, đừng bỏ qua
+
+==============================================================
+== M1 — client id mong đợi
+== $ terraform -chdir=infra/app output -raw app_identity_client_id
+==============================================================
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mFailed to load state: executing request: authorizing request: running Azure CLI: exit status 1: ERROR: The command failed with an unexpected error. Here is the traceback:
+[31m│[0m [0mERROR: HTTPSConnectionPool(host='login.microsoftonline.com', port=443): Max retries exceeded with url: /58f82789-6695-4f4a-abdb-357668d55cff/oauth2/v2.0/token (Caused by NameResolutionError("HTTPSConnection(host='login.microsoftonline.com', port=443): Failed to resolve 'login.microsoftonline.com' ([Errno -3] Temporary failure in name resolution)"))
+[31m│[0m [0mTraceback (most recent call last):
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+[31m│[0m [0m    sock = connection.create_connection(
+[31m│[0m [0m        (self._dns_host, self.port),
+[31m│[0m [0m    ...<2 lines>...
+[31m│[0m [0m        socket_options=self.socket_options,
+[31m│[0m [0m    )
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/util/connection.py", line 60, in create_connection
+[31m│[0m [0m    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+[31m│[0m [0m               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/socket.py", line 987, in getaddrinfo
+[31m│[0m [0m    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+[31m│[0m [0m               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0msocket.gaierror: [Errno -3] Temporary failure in name resolution
+[31m│[0m [0m
+[31m│[0m [0mThe above exception was the direct cause of the following exception:
+[31m│[0m [0m
+[31m│[0m [0mTraceback (most recent call last):
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+[31m│[0m [0m    response = self._make_request(
+[31m│[0m [0m        conn,
+[31m│[0m [0m    ...<10 lines>...
+[31m│[0m [0m        **response_kw,
+[31m│[0m [0m    )
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+[31m│[0m [0m    raise new_e
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+[31m│[0m [0m    self._validate_conn(conn)
+[31m│[0m [0m    ~~~~~~~~~~~~~~~~~~~^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connectionpool.py", line 1106, in _validate_conn
+[31m│[0m [0m    conn.connect()
+[31m│[0m [0m    ~~~~~~~~~~~~^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connection.py", line 759, in connect
+[31m│[0m [0m    self.sock = sock = self._new_conn()
+[31m│[0m [0m                       ~~~~~~~~~~~~~~^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connection.py", line 211, in _new_conn
+[31m│[0m [0m    raise NameResolutionError(self.host, self, e) from e
+[31m│[0m [0murllib3.exceptions.NameResolutionError: HTTPSConnection(host='login.microsoftonline.com', port=443): Failed to resolve 'login.microsoftonline.com' ([Errno -3] Temporary failure in name resolution)
+[31m│[0m [0m
+[31m│[0m [0mThe above exception was the direct cause of the following exception:
+[31m│[0m [0m
+[31m│[0m [0mTraceback (most recent call last):
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/requests/adapters.py", line 645, in send
+[31m│[0m [0m    resp = conn.urlopen(
+[31m│[0m [0m        method=request.method,
+[31m│[0m [0m    ...<9 lines>...
+[31m│[0m [0m        chunked=chunked,
+[31m│[0m [0m    )
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connectionpool.py", line 872, in urlopen
+[31m│[0m [0m    return self.urlopen(
+[31m│[0m [0m           ~~~~~~~~~~~~^
+[31m│[0m [0m        method,
+[31m│[0m [0m        ^^^^^^^
+[31m│[0m [0m    ...<13 lines>...
+[31m│[0m [0m        **response_kw,
+[31m│[0m [0m        ^^^^^^^^^^^^^^
+[31m│[0m [0m    )
+[31m│[0m [0m    ^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+[31m│[0m [0m    retries = retries.increment(
+[31m│[0m [0m        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+[31m│[0m [0m    )
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/urllib3/util/retry.py", line 543, in increment
+[31m│[0m [0m    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[31m│[0m [0m    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0murllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='login.microsoftonline.com', port=443): Max retries exceeded with url: /58f82789-6695-4f4a-abdb-357668d55cff/oauth2/v2.0/token (Caused by NameResolutionError("HTTPSConnection(host='login.microsoftonline.com', port=443): Failed to resolve 'login.microsoftonline.com' ([Errno -3] Temporary failure in name resolution)"))
+[31m│[0m [0m
+[31m│[0m [0mDuring handling of the above exception, another exception occurred:
+[31m│[0m [0m
+[31m│[0m [0mTraceback (most recent call last):
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/knack/cli.py", line 233, in invoke
+[31m│[0m [0m    cmd_result = self.invocation.execute(args)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/commands/__init__.py", line 677, in execute
+[31m│[0m [0m    raise ex
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/commands/__init__.py", line 820, in _run_jobs_serially
+[31m│[0m [0m    results.append(self._run_job(expanded_arg, cmd_copy))
+[31m│[0m [0m                   ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/commands/__init__.py", line 789, in _run_job
+[31m│[0m [0m    result = cmd_copy(params)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/commands/__init__.py", line 335, in __call__
+[31m│[0m [0m    return self.handler(*args, **kwargs)
+[31m│[0m [0m           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/commands/command_operation.py", line 120, in handler
+[31m│[0m [0m    return op(**command_args)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/command_modules/profile/custom.py", line 89, in get_access_token
+[31m│[0m [0m    creds, subscription, tenant = profile.get_raw_token(subscription=subscription, resource=resource, scopes=scopes,
+[31m│[0m [0m                                  ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m                                                        tenant=tenant)
+[31m│[0m [0m                                                        ^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/_profile.py", line 418, in get_raw_token
+[31m│[0m [0m    msal_token = cred.acquire_token(scopes)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/azure/cli/core/auth/msal_credentials.py", line 76, in acquire_token
+[31m│[0m [0m    result = self._msal_app.acquire_token_silent_with_error(
+[31m│[0m [0m        scopes, self._account, claims_challenge=claims_challenge, **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/application.py", line 1495, in acquire_token_silent_with_error
+[31m│[0m [0m    return _clean_up(self._acquire_token_silent_with_error(
+[31m│[0m [0m                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[31m│[0m [0m        scopes, account, authority=authority, force_refresh=force_refresh,
+[31m│[0m [0m        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m        claims_challenge=claims_challenge, auth_scheme=auth_scheme, **kwargs))
+[31m│[0m [0m        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/application.py", line 1518, in _acquire_token_silent_with_error
+[31m│[0m [0m    result = self._acquire_token_silent_from_cache_and_possibly_refresh_it(
+[31m│[0m [0m        scopes, account, self.authority, force_refresh=force_refresh,
+[31m│[0m [0m    ...<2 lines>...
+[31m│[0m [0m        auth_scheme=auth_scheme,
+[31m│[0m [0m        **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/application.py", line 1658, in _acquire_token_silent_from_cache_and_possibly_refresh_it
+[31m│[0m [0m    result = self._acquire_token_silent_by_finding_rt_belongs_to_me_or_my_family(
+[31m│[0m [0m        authority, self._decorate_scope(scopes), account,
+[31m│[0m [0m        refresh_reason=refresh_reason, claims_challenge=claims_challenge,
+[31m│[0m [0m        correlation_id=correlation_id,
+[31m│[0m [0m        **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/application.py", line 1726, in _acquire_token_silent_by_finding_rt_belongs_to_me_or_my_family
+[31m│[0m [0m    return self._acquire_token_silent_by_finding_specific_refresh_token(
+[31m│[0m [0m           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[31m│[0m [0m        authority, scopes, dict(query, client_id=self.client_id),
+[31m│[0m [0m        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m        **kwargs) or last_resp
+[31m│[0m [0m        ^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/application.py", line 1767, in _acquire_token_silent_by_finding_specific_refresh_token
+[31m│[0m [0m    response = client.obtain_token_by_refresh_token(
+[31m│[0m [0m        entry, rt_getter=lambda token_item: token_item["secret"],
+[31m│[0m [0m    ...<13 lines>...
+[31m│[0m [0m                self._client_capabilities, claims_challenge)),
+[31m│[0m [0m        **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/oauth2cli/oauth2.py", line 849, in obtain_token_by_refresh_token
+[31m│[0m [0m    resp = super(Client, self).obtain_token_by_refresh_token(
+[31m│[0m [0m        rt_getter(token_item)
+[31m│[0m [0m    ...<2 lines>...
+[31m│[0m [0m        also_save_rt=on_updating_rt is False,
+[31m│[0m [0m        **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/oauth2cli/oauth2.py", line 265, in obtain_token_by_refresh_token
+[31m│[0m [0m    return self._obtain_token("refresh_token", data=data, **kwargs)
+[31m│[0m [0m           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/oauth2cli/oidc.py", line 169, in _obtain_token
+[31m│[0m [0m    ret = super(Client, self)._obtain_token(grant_type, *args, **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/oauth2cli/oauth2.py", line 790, in _obtain_token
+[31m│[0m [0m    resp = super(Client, self)._obtain_token(
+[31m│[0m [0m        grant_type, params, _data, *args, **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/oauth2cli/oauth2.py", line 237, in _obtain_token
+[31m│[0m [0m    resp = (post or self._http_client.post)(
+[31m│[0m [0m        self.configuration["token_endpoint"],
+[31m│[0m [0m        headers=_headers, params=params, data=_data,
+[31m│[0m [0m        **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/individual_cache.py", line 273, in wrapper
+[31m│[0m [0m    value = function(*args, **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/individual_cache.py", line 273, in wrapper
+[31m│[0m [0m    value = function(*args, **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/msal/throttled_http_client.py", line 96, in post
+[31m│[0m [0m    return NormalizedResponse(self.http_client.post(*args, **kwargs))
+[31m│[0m [0m                              ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/requests/sessions.py", line 640, in post
+[31m│[0m [0m    return self.request("POST", url, data=data, json=json, **kwargs)
+[31m│[0m [0m           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/requests/sessions.py", line 592, in request
+[31m│[0m [0m    resp = self.send(prep, **send_kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/requests/sessions.py", line 706, in send
+[31m│[0m [0m    r = adapter.send(request, **kwargs)
+[31m│[0m [0m  File "/opt/az/lib/python3.14/site-packages/requests/adapters.py", line 678, in send
+[31m│[0m [0m    raise ConnectionError(e, request=request)
+[31m│[0m [0mrequests.exceptions.ConnectionError: HTTPSConnectionPool(host='login.microsoftonline.com', port=443): Max retries exceeded with url: /58f82789-6695-4f4a-abdb-357668d55cff/oauth2/v2.0/token (Caused by NameResolutionError("HTTPSConnection(host='login.microsoftonline.com', port=443): Failed to resolve 'login.microsoftonline.com' ([Errno -3] Temporary failure in name resolution)"))
+[31m│[0m [0mTo check existing issues, please visit: https://github.com/Azure/azure-cli/issues[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m
+[31m╵[0m[0m
+!! LỆNH LỖI (exit 1) — ghi lại nguyên trạng, đừng bỏ qua
+
+==============================================================
+== Trạng thái Key Vault reference sẽ KHÔNG hiện ở CLI — phải chụp Portal
+== $ echo Portal -> Web App -> Settings -> Environment variables -> DB_PASSWORD phải có nhãn 'Key vault Reference' + Resolved. Làm cho CẢ production và slot staging.
+==============================================================
+Portal -> Web App -> Settings -> Environment variables -> DB_PASSWORD phải có nhãn 'Key vault Reference' + Resolved. Làm cho CẢ production và slot staging.
+
+==============================================================
+Xong. Đọc lại log rồi chép số vào evidence/M3.md và evidence/M4.md.
+Còn thiếu (tự làm): ảnh Portal, M5, chứng minh ngược AcrPull.
+==============================================================

@@ -1,0 +1,505 @@
+2026-09-22T09:06:13.3675782Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T09:06:14.9595684Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T09:06:19.4273128Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T09:06:19.4276252Z Container start method called.
+2026-09-22T09:06:19.4276870Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image mcr.microsoft.com/dotnet/samples:aspnetapp for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T09:06:19.4277530Z Establishing network.
+2026-09-22T09:06:19.4278400Z Pulling image: mcr.microsoft.com/dotnet/samples:aspnetapp.
+2026-09-22T09:06:22.8118800Z Image mcr.microsoft.com/dotnet/samples:aspnetapp is pulled from registry mcr.microsoft.com
+2026-09-22T09:06:22.8121410Z Container is starting.
+2026-09-22T09:06:22.8124034Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T09:06:22.8124782Z Establishing user namespace if not established already.
+2026-09-22T09:06:22.8125586Z Establishing network if not established already.
+2026-09-22T09:06:22.8126662Z Mounting volumes.
+2026-09-22T09:06:22.8130576Z Nested mountpoint volatile/logs
+2026-09-22T09:06:22.8157204Z Nested mountpoint 
+2026-09-22T09:06:22.8163122Z Nested mountpoint 
+2026-09-22T09:06:22.8225632Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T09:06:22.8235526Z Creating container.
+2026-09-22T09:06:22.8237211Z Creating pipes for streaming container io.
+2026-09-22T09:06:22.8241538Z Creating stdout named pipe at /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stdout_a0bdc84e93b8476faae85b33df8d84d4.
+2026-09-22T09:06:22.8256841Z Successfully created stdout named pipe at: /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stdout_a0bdc84e93b8476faae85b33df8d84d4.
+2026-09-22T09:06:22.8259760Z Opening named pipe /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stdout_a0bdc84e93b8476faae85b33df8d84d4 for reading in non-blocking mode.
+2026-09-22T09:06:22.8260895Z Successfully opened named pipe: /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stdout_a0bdc84e93b8476faae85b33df8d84d4.
+2026-09-22T09:06:22.8261591Z Successfully removed non-blocking flag from /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stdout_a0bdc84e93b8476faae85b33df8d84d4.
+2026-09-22T09:06:22.8262738Z Creating stderr named pipe at /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stderr_f285af39606a4ef1927032445fb1a650.
+2026-09-22T09:06:22.8263780Z Successfully created stderr named pipe at: /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stderr_f285af39606a4ef1927032445fb1a650.
+2026-09-22T09:06:22.8264435Z Opening named pipe /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stderr_f285af39606a4ef1927032445fb1a650 for reading in non-blocking mode.
+2026-09-22T09:06:22.8265220Z Successfully opened named pipe: /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stderr_f285af39606a4ef1927032445fb1a650.
+2026-09-22T09:06:22.8265806Z Successfully removed non-blocking flag from /podr/container/pipe/cefb1280e41e_app-vsf-j124ze/stderr_f285af39606a4ef1927032445fb1a650.
+2026-09-22T09:06:22.8266722Z Creating container with image: mcr.microsoft.com/dotnet/samples:aspnetapp from registry: mcr.microsoft.com and fully qualified image name: mcr.microsoft.com/dotnet/samples:aspnetapp
+2026-09-22T09:06:23.0235128Z Starting container: cefb1280e41e_app-vsf-j124ze.
+2026-09-22T09:06:23.0586697Z Starting watchers and probes.
+2026-09-22T09:06:23.0675466Z Starting metrics collection.
+2026-09-22T09:06:23.0677557Z Container is running.
+2026-09-22T09:06:23.0678516Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T09:06:23.1694448Z Container start method finished after 3741 ms.
+2026-09-22T09:06:23.1697494Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T09:06:23.1858722Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T09:06:24.3192288Z Site startup probe succeeded after 1.1182533 seconds.
+2026-09-22T09:06:24.3869135Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 1.1182533 seconds., DetailsLevel: INFO
+2026-09-22T09:06:24.5084368Z Site started.
+2026-09-22T09:06:24.5098640Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 09:06:24 (UTC), DetailsLevel: INFO
+2026-09-22T14:39:04.4787937Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T14:39:05.1376217Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T14:39:08.9217125Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T14:39:08.9217968Z Container start method called.
+2026-09-22T14:39:08.9218372Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image mcr.microsoft.com/dotnet/samples:aspnetapp for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T14:39:08.9218970Z Establishing network.
+2026-09-22T14:39:08.9219838Z Pulling image: mcr.microsoft.com/dotnet/samples:aspnetapp.
+2026-09-22T14:39:09.3752150Z Container is starting.
+2026-09-22T14:39:09.3752969Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T14:39:09.3753595Z Establishing user namespace if not established already.
+2026-09-22T14:39:09.3754370Z Establishing network if not established already.
+2026-09-22T14:39:09.3755583Z Mounting volumes.
+2026-09-22T14:39:09.3756885Z Nested mountpoint volatile/logs
+2026-09-22T14:39:09.3947442Z Nested mountpoint 
+2026-09-22T14:39:09.3953056Z Nested mountpoint 
+2026-09-22T14:39:09.4297757Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T14:39:09.4298556Z Creating container.
+2026-09-22T14:39:09.4299214Z Creating pipes for streaming container io.
+2026-09-22T14:39:09.4299827Z Creating stdout named pipe at /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stdout_a47a163c32e941bc8f559f1723073e12.
+2026-09-22T14:39:09.4301363Z Successfully created stdout named pipe at: /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stdout_a47a163c32e941bc8f559f1723073e12.
+2026-09-22T14:39:09.4301922Z Opening named pipe /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stdout_a47a163c32e941bc8f559f1723073e12 for reading in non-blocking mode.
+2026-09-22T14:39:09.4302837Z Successfully opened named pipe: /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stdout_a47a163c32e941bc8f559f1723073e12.
+2026-09-22T14:39:09.4303697Z Successfully removed non-blocking flag from /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stdout_a47a163c32e941bc8f559f1723073e12.
+2026-09-22T14:39:09.4304847Z Creating stderr named pipe at /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stderr_0f2a7d57377e4fc9ad2a5d9dc7e98e98.
+2026-09-22T14:39:09.4306552Z Successfully created stderr named pipe at: /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stderr_0f2a7d57377e4fc9ad2a5d9dc7e98e98.
+2026-09-22T14:39:09.4307294Z Opening named pipe /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stderr_0f2a7d57377e4fc9ad2a5d9dc7e98e98 for reading in non-blocking mode.
+2026-09-22T14:39:09.4308033Z Successfully opened named pipe: /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stderr_0f2a7d57377e4fc9ad2a5d9dc7e98e98.
+2026-09-22T14:39:09.4308626Z Successfully removed non-blocking flag from /podr/container/pipe/9439ff125ced_app-vsf-j124ze/stderr_0f2a7d57377e4fc9ad2a5d9dc7e98e98.
+2026-09-22T14:39:09.4483429Z Creating container with image: mcr.microsoft.com/dotnet/samples:aspnetapp from registry: mcr.microsoft.com and fully qualified image name: mcr.microsoft.com/dotnet/samples:aspnetapp
+2026-09-22T14:39:09.6257621Z Starting container: 9439ff125ced_app-vsf-j124ze.
+2026-09-22T14:39:09.6397188Z Starting watchers and probes.
+2026-09-22T14:39:09.6398880Z Starting metrics collection.
+2026-09-22T14:39:09.6399975Z Container is running.
+2026-09-22T14:39:09.6400551Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T14:39:09.6802259Z Container start method finished after 758 ms.
+2026-09-22T14:39:09.6803718Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T14:39:09.6803947Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T14:39:10.7797389Z Site startup probe succeeded after 1.0990458 seconds.
+2026-09-22T14:39:10.8524533Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 1.0990458 seconds., DetailsLevel: INFO
+2026-09-22T14:39:10.9295041Z Site started.
+2026-09-22T14:39:10.9299126Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 14:39:10 (UTC), DetailsLevel: INFO
+2026-09-22T14:39:31.0170305Z State: Stopping, Action: StoppingSite, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 09:06:24 (UTC), DetailsLevel: INFO
+2026-09-22T14:39:31.0222723Z State: Stopping, Action: StoppingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 09:06:24 (UTC), DetailsLevel: INFO
+2026-09-22T14:39:31.0233431Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T14:39:31.0366336Z Stop and delete container. Retry count = 0
+2026-09-22T14:39:31.0377198Z Stopping container: cefb1280e41e_app-vsf-j124ze.
+2026-09-22T14:39:31.1095292Z Deleting container: cefb1280e41e_app-vsf-j124ze. Retry count = 0
+2026-09-22T14:39:31.2878359Z Container spec TerminationMessagePolicy  path 
+2026-09-22T14:39:31.2905559Z Container is terminated. Total time elapsed: 265 ms.
+2026-09-22T14:39:31.4305591Z Site: app-vsf-j124ze stopped.
+2026-09-22T14:39:31.7290945Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T14:39:32.2614494Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T14:39:34.9756559Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T14:39:34.9757442Z Container start method called.
+2026-09-22T14:39:34.9757973Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T14:39:34.9758633Z Establishing network.
+2026-09-22T14:39:34.9759664Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T14:39:37.4985825Z Image acrvsfj124ze.azurecr.io/vsf-app:f38c127 is pulled from registry acrvsfj124ze.azurecr.io
+2026-09-22T14:39:37.4986823Z Container is starting.
+2026-09-22T14:39:37.4987779Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T14:39:37.4988402Z Establishing user namespace if not established already.
+2026-09-22T14:39:37.4988988Z Establishing network if not established already.
+2026-09-22T14:39:37.4989718Z Mounting volumes.
+2026-09-22T14:39:37.4990905Z Nested mountpoint volatile/logs
+2026-09-22T14:39:37.5059988Z Nested mountpoint 
+2026-09-22T14:39:37.5067015Z Nested mountpoint 
+2026-09-22T14:39:37.5126296Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T14:39:37.5126877Z Creating container.
+2026-09-22T14:39:37.5127547Z Creating pipes for streaming container io.
+2026-09-22T14:39:37.5128195Z Creating stdout named pipe at /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stdout_e72eadb76c4a474a8c9288e987041241.
+2026-09-22T14:39:37.5129570Z Successfully created stdout named pipe at: /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stdout_e72eadb76c4a474a8c9288e987041241.
+2026-09-22T14:39:37.5130014Z Opening named pipe /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stdout_e72eadb76c4a474a8c9288e987041241 for reading in non-blocking mode.
+2026-09-22T14:39:37.5130668Z Successfully opened named pipe: /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stdout_e72eadb76c4a474a8c9288e987041241.
+2026-09-22T14:39:37.5131454Z Successfully removed non-blocking flag from /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stdout_e72eadb76c4a474a8c9288e987041241.
+2026-09-22T14:39:37.5144621Z Creating stderr named pipe at /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stderr_3c1c5a0de33d4c2a92cfc817f9999808.
+2026-09-22T14:39:37.5147545Z Successfully created stderr named pipe at: /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stderr_3c1c5a0de33d4c2a92cfc817f9999808.
+2026-09-22T14:39:37.5148144Z Opening named pipe /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stderr_3c1c5a0de33d4c2a92cfc817f9999808 for reading in non-blocking mode.
+2026-09-22T14:39:37.5148880Z Successfully opened named pipe: /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stderr_3c1c5a0de33d4c2a92cfc817f9999808.
+2026-09-22T14:39:37.5149399Z Successfully removed non-blocking flag from /podr/container/pipe/1ed1da4d3d92_app-vsf-j124ze/stderr_3c1c5a0de33d4c2a92cfc817f9999808.
+2026-09-22T14:39:37.5150346Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T14:39:37.6856507Z Starting container: 1ed1da4d3d92_app-vsf-j124ze.
+2026-09-22T14:39:37.7067823Z Starting watchers and probes.
+2026-09-22T14:39:37.7072183Z Starting metrics collection.
+2026-09-22T14:39:37.7079398Z Container is running.
+2026-09-22T14:39:37.7081864Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T14:39:37.7343926Z Container start method finished after 2758 ms.
+2026-09-22T14:39:37.7346301Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T14:39:37.7347103Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T14:39:39.8085830Z Site startup probe succeeded after 2.0736074 seconds.
+2026-09-22T14:39:39.9287219Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 2.0736074 seconds., DetailsLevel: INFO
+2026-09-22T14:39:39.9863692Z Site started.
+2026-09-22T14:39:39.9864485Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 14:39:39 (UTC), DetailsLevel: INFO
+2026-09-22T14:40:00.4626224Z State: Stopping, Action: StoppingSite, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 14:39:10 (UTC), DetailsLevel: INFO
+2026-09-22T14:40:00.4635899Z State: Stopping, Action: StoppingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 14:39:10 (UTC), DetailsLevel: INFO
+2026-09-22T14:40:00.4636688Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T14:40:00.4673707Z Stop and delete container. Retry count = 0
+2026-09-22T14:40:00.4683818Z Stopping container: 9439ff125ced_app-vsf-j124ze.
+2026-09-22T14:40:00.5409698Z Deleting container: 9439ff125ced_app-vsf-j124ze. Retry count = 0
+2026-09-22T14:40:00.5921875Z Container spec TerminationMessagePolicy  path 
+2026-09-22T14:40:00.5974305Z Container is terminated. Total time elapsed: 128 ms.
+2026-09-22T14:40:00.7547531Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:12:32.9387784Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T15:12:33.4810093Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T15:12:36.2718627Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T15:12:36.2727275Z Container start method called.
+2026-09-22T15:12:36.2727763Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:12:36.2728491Z Establishing network.
+2026-09-22T15:12:36.2729920Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T15:12:36.8961067Z Container is starting.
+2026-09-22T15:12:36.8961986Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:12:36.8962582Z Establishing user namespace if not established already.
+2026-09-22T15:12:36.8973592Z Establishing network if not established already.
+2026-09-22T15:12:36.8974717Z Mounting volumes.
+2026-09-22T15:12:36.8975817Z Nested mountpoint volatile/logs
+2026-09-22T15:12:36.9031076Z Nested mountpoint 
+2026-09-22T15:12:36.9066411Z Nested mountpoint 
+2026-09-22T15:12:36.9299651Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T15:12:36.9300296Z Creating container.
+2026-09-22T15:12:36.9300838Z Creating pipes for streaming container io.
+2026-09-22T15:12:36.9301479Z Creating stdout named pipe at /podr/container/pipe/2fee26265897_app-vsf-j124ze/stdout_23d85db757d64d859d0e09db8bb048d0.
+2026-09-22T15:12:36.9302851Z Successfully created stdout named pipe at: /podr/container/pipe/2fee26265897_app-vsf-j124ze/stdout_23d85db757d64d859d0e09db8bb048d0.
+2026-09-22T15:12:36.9303372Z Opening named pipe /podr/container/pipe/2fee26265897_app-vsf-j124ze/stdout_23d85db757d64d859d0e09db8bb048d0 for reading in non-blocking mode.
+2026-09-22T15:12:36.9304137Z Successfully opened named pipe: /podr/container/pipe/2fee26265897_app-vsf-j124ze/stdout_23d85db757d64d859d0e09db8bb048d0.
+2026-09-22T15:12:36.9304646Z Successfully removed non-blocking flag from /podr/container/pipe/2fee26265897_app-vsf-j124ze/stdout_23d85db757d64d859d0e09db8bb048d0.
+2026-09-22T15:12:36.9371571Z Creating stderr named pipe at /podr/container/pipe/2fee26265897_app-vsf-j124ze/stderr_f39ee745abdd41b7bfeffffacb9e2378.
+2026-09-22T15:12:36.9373308Z Successfully created stderr named pipe at: /podr/container/pipe/2fee26265897_app-vsf-j124ze/stderr_f39ee745abdd41b7bfeffffacb9e2378.
+2026-09-22T15:12:36.9373914Z Opening named pipe /podr/container/pipe/2fee26265897_app-vsf-j124ze/stderr_f39ee745abdd41b7bfeffffacb9e2378 for reading in non-blocking mode.
+2026-09-22T15:12:36.9374686Z Successfully opened named pipe: /podr/container/pipe/2fee26265897_app-vsf-j124ze/stderr_f39ee745abdd41b7bfeffffacb9e2378.
+2026-09-22T15:12:36.9375304Z Successfully removed non-blocking flag from /podr/container/pipe/2fee26265897_app-vsf-j124ze/stderr_f39ee745abdd41b7bfeffffacb9e2378.
+2026-09-22T15:12:36.9377333Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T15:12:37.1502679Z Starting container: 2fee26265897_app-vsf-j124ze.
+2026-09-22T15:12:37.1658211Z Starting watchers and probes.
+2026-09-22T15:12:37.1662306Z Starting metrics collection.
+2026-09-22T15:12:37.1663886Z Container is running.
+2026-09-22T15:12:37.1665093Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:12:37.1864012Z Container start method finished after 913 ms.
+2026-09-22T15:12:37.1866205Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:12:37.1866940Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T15:12:38.2888996Z Site startup probe succeeded after 1.1019569 seconds.
+2026-09-22T15:12:38.3647988Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 1.1019569 seconds., DetailsLevel: INFO
+2026-09-22T15:12:38.4300497Z Site started.
+2026-09-22T15:12:38.4301522Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 15:12:38 (UTC), DetailsLevel: INFO
+2026-09-22T15:12:58.4999294Z State: Stopping, Action: StoppingSite, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 14:39:39 (UTC), DetailsLevel: INFO
+2026-09-22T15:12:58.5001092Z State: Stopping, Action: StoppingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 14:39:39 (UTC), DetailsLevel: INFO
+2026-09-22T15:12:58.5005919Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:12:58.5045952Z Stop and delete container. Retry count = 0
+2026-09-22T15:12:58.5046643Z Stopping container: 1ed1da4d3d92_app-vsf-j124ze.
+2026-09-22T15:12:58.5771536Z Deleting container: 1ed1da4d3d92_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:12:58.6382767Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:12:58.6384793Z Container is terminated. Total time elapsed: 137 ms.
+2026-09-22T15:12:58.7713005Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:17:47.7649358Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T15:17:48.3340501Z State: Starting, Action: StartingMsiContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T15:17:50.9721349Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-09-22T15:17:50.9722464Z Container start method called.
+2026-09-22T15:17:50.9723000Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:17:50.9723795Z Establishing network.
+2026-09-22T15:17:50.9724811Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T15:17:51.5354715Z Container is starting.
+2026-09-22T15:17:51.5355550Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:17:51.5356590Z Establishing user namespace if not established already.
+2026-09-22T15:17:51.5357347Z Establishing network if not established already.
+2026-09-22T15:17:51.5358309Z Mounting volumes.
+2026-09-22T15:17:51.5359670Z Nested mountpoint volatile/logs
+2026-09-22T15:17:51.5407936Z Nested mountpoint 
+2026-09-22T15:17:51.5414303Z Nested mountpoint 
+2026-09-22T15:17:51.5567434Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T15:17:51.5568114Z Creating container.
+2026-09-22T15:17:51.5568651Z Creating pipes for streaming container io.
+2026-09-22T15:17:51.5569337Z Creating stdout named pipe at /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stdout_d540b5d323b441f3a04cb71a6f9c137f.
+2026-09-22T15:17:51.5570897Z Successfully created stdout named pipe at: /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stdout_d540b5d323b441f3a04cb71a6f9c137f.
+2026-09-22T15:17:51.5571382Z Opening named pipe /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stdout_d540b5d323b441f3a04cb71a6f9c137f for reading in non-blocking mode.
+2026-09-22T15:17:51.5615045Z Successfully opened named pipe: /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stdout_d540b5d323b441f3a04cb71a6f9c137f.
+2026-09-22T15:17:51.5620667Z Successfully removed non-blocking flag from /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stdout_d540b5d323b441f3a04cb71a6f9c137f.
+2026-09-22T15:17:51.5677153Z Creating stderr named pipe at /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stderr_8d60380851974dd3b66dd6c8e184400a.
+2026-09-22T15:17:51.5683997Z Successfully created stderr named pipe at: /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stderr_8d60380851974dd3b66dd6c8e184400a.
+2026-09-22T15:17:51.5736293Z Opening named pipe /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stderr_8d60380851974dd3b66dd6c8e184400a for reading in non-blocking mode.
+2026-09-22T15:17:51.5742380Z Successfully opened named pipe: /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stderr_8d60380851974dd3b66dd6c8e184400a.
+2026-09-22T15:17:51.5774573Z Successfully removed non-blocking flag from /podr/container/pipe/6bd53d84e876_app-vsf-j124ze/stderr_8d60380851974dd3b66dd6c8e184400a.
+2026-09-22T15:17:51.5775874Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T15:17:51.7234279Z Starting container: 6bd53d84e876_app-vsf-j124ze.
+2026-09-22T15:17:51.7398330Z Starting watchers and probes.
+2026-09-22T15:17:51.7399933Z Starting metrics collection.
+2026-09-22T15:17:51.7400867Z Container is running.
+2026-09-22T15:17:51.7401751Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:17:51.7638120Z Container start method finished after 790 ms.
+2026-09-22T15:17:51.7700195Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:17:51.7704920Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T15:17:51.8801667Z Container has finished running with exit code: 1.
+2026-09-22T15:17:51.8802602Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:17:51.8805145Z Stop and delete container. Retry count = 0
+2026-09-22T15:17:51.8805656Z Stopping container: 6bd53d84e876_app-vsf-j124ze.
+2026-09-22T15:17:51.8972346Z Deleting container: 6bd53d84e876_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:17:51.9793529Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:17:51.9798180Z Container is terminated. Total time elapsed: 99 ms.
+2026-09-22T15:17:51.9798938Z Site container: app-vsf-j124ze terminated during site startup.
+2026-09-22T15:17:51.9818038Z State: Stopping, Action: CancellingStartup, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:51.9836476Z Site startup probe failed after 0.2122536 seconds.
+2026-09-22T15:17:52.0608779Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:52.0628782Z Failed to start site. Revert by stopping site.
+2026-09-22T15:17:52.0629681Z State: Stopping, Action: StoppingSite, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:52.0631499Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:52.1520102Z Site container: app-vsf-j124ze_managedIdentity terminated during site startup.
+2026-09-22T15:17:52.1526777Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:52.1527776Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:18:12.5359518Z State: Stopping, Action: StoppingSite, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 15:12:38 (UTC), DetailsLevel: INFO
+2026-09-22T15:18:12.5363771Z State: Stopping, Action: StoppingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/22/2026 15:12:38 (UTC), DetailsLevel: INFO
+2026-09-22T15:18:12.5364835Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:18:12.5383022Z Stop and delete container. Retry count = 0
+2026-09-22T15:18:12.5383817Z Stopping container: 2fee26265897_app-vsf-j124ze.
+2026-09-22T15:18:12.5950878Z Deleting container: 2fee26265897_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:18:12.6512188Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:18:12.6513429Z Container is terminated. Total time elapsed: 114 ms.
+2026-09-22T15:18:12.7741720Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:17:52.1593126Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:52.2154960Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:17:52.3331246Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:17:52 (UTC), DetailsLevel: ERR
+2026-09-22T15:17:52.5200854Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:17:52 (UTC), DetailsLevel: ERR
+2026-09-22T15:18:19.8851132Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:17:52 (UTC), DetailsLevel: ERR
+2026-09-22T15:18:21.0081075Z State: Starting, Action: StartingMsiContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:17:52 (UTC), DetailsLevel: ERR
+2026-09-22T15:18:25.0873798Z State: Starting, Action: StartingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:17:52 (UTC), DetailsLevel: ERR
+2026-09-22T15:18:25.0874695Z Container start method called.
+2026-09-22T15:18:25.0875298Z State: Starting, Action: PullingImage, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:18:25.0909344Z Establishing network.
+2026-09-22T15:18:25.0923152Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T15:18:25.4665885Z Container is starting.
+2026-09-22T15:18:25.4666590Z State: Starting, Action: MountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:18:25.4667183Z Establishing user namespace if not established already.
+2026-09-22T15:18:25.4670663Z Establishing network if not established already.
+2026-09-22T15:18:25.4672239Z Mounting volumes.
+2026-09-22T15:18:25.4690997Z Nested mountpoint volatile/logs
+2026-09-22T15:18:25.4730178Z Nested mountpoint 
+2026-09-22T15:18:25.4749251Z Nested mountpoint 
+2026-09-22T15:18:25.4860334Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T15:18:25.4864175Z Creating container.
+2026-09-22T15:18:25.4876970Z Creating pipes for streaming container io.
+2026-09-22T15:18:25.4879450Z Creating stdout named pipe at /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stdout_ec49069fd38d46079d1d75db4f1d6701.
+2026-09-22T15:18:25.4883086Z Successfully created stdout named pipe at: /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stdout_ec49069fd38d46079d1d75db4f1d6701.
+2026-09-22T15:18:25.4886166Z Opening named pipe /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stdout_ec49069fd38d46079d1d75db4f1d6701 for reading in non-blocking mode.
+2026-09-22T15:18:25.4888583Z Successfully opened named pipe: /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stdout_ec49069fd38d46079d1d75db4f1d6701.
+2026-09-22T15:18:25.4893255Z Successfully removed non-blocking flag from /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stdout_ec49069fd38d46079d1d75db4f1d6701.
+2026-09-22T15:18:25.4903653Z Creating stderr named pipe at /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stderr_6e8687d83e594a40adbf0d9c5e690074.
+2026-09-22T15:18:25.4906566Z Successfully created stderr named pipe at: /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stderr_6e8687d83e594a40adbf0d9c5e690074.
+2026-09-22T15:18:25.4909096Z Opening named pipe /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stderr_6e8687d83e594a40adbf0d9c5e690074 for reading in non-blocking mode.
+2026-09-22T15:18:25.4911808Z Successfully opened named pipe: /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stderr_6e8687d83e594a40adbf0d9c5e690074.
+2026-09-22T15:18:25.4914970Z Successfully removed non-blocking flag from /podr/container/pipe/0e9376d22b02_app-vsf-j124ze/stderr_6e8687d83e594a40adbf0d9c5e690074.
+2026-09-22T15:18:25.4919668Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T15:18:25.6541262Z Starting container: 0e9376d22b02_app-vsf-j124ze.
+2026-09-22T15:18:25.6727282Z Starting watchers and probes.
+2026-09-22T15:18:25.6729627Z Starting metrics collection.
+2026-09-22T15:18:25.6730653Z Container is running.
+2026-09-22T15:18:25.6731165Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:18:25.6944804Z Container start method finished after 606 ms.
+2026-09-22T15:18:25.6946042Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:18:25.6946384Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T15:18:25.7877562Z Container has finished running with exit code: 1.
+2026-09-22T15:18:25.7878338Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:18:25.8726664Z Stop and delete container. Retry count = 0
+2026-09-22T15:18:25.8727801Z Stopping container: 0e9376d22b02_app-vsf-j124ze.
+2026-09-22T15:18:25.8869566Z Deleting container: 0e9376d22b02_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:18:25.9461577Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:18:25.9465510Z Container is terminated. Total time elapsed: 158 ms.
+2026-09-22T15:18:25.9466887Z Site container: app-vsf-j124ze terminated during site startup.
+2026-09-22T15:18:25.9467778Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:17:52, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:25.9479142Z Site startup probe failed after 0.2523971 seconds.
+2026-09-22T15:18:25.9972788Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:25.9991765Z Failed to start site. Revert by stopping site.
+2026-09-22T15:18:25.9998629Z State: Stopping, Action: StoppingSite, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:26.0006260Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:26.1087363Z Site container: app-vsf-j124ze_managedIdentity terminated during site startup.
+2026-09-22T15:18:26.1088409Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:26.1089356Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:18:26.1139846Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:26.1799719Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:18:26.4056221Z Site: app-vsf-j124ze will be blocked for 1 minutes till 09/22/2026 15:19:26
+2026-09-22T15:18:26.4057717Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site: app-vsf-j124ze will be blocked for 1 minutes till 09/22/2026 15:19:26, DetailsLevel: WARN
+2026-09-22T15:18:26.4104229Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:18:26 (UTC), DetailsLevel: WARN
+2026-09-22T15:18:26.6582778Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:18:26 (UTC), DetailsLevel: WARN
+2026-09-22T15:18:57.7729684Z State: Blocked, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:19:26, DetailsLevel: WARN
+2026-09-22T15:18:57.7730051Z Start site prohibitted because the site is being blocked.
+2026-09-22T15:19:26.4070404Z Site: app-vsf-j124ze is unblocked.
+2026-09-22T15:19:28.8400478Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:19:26, DetailsLevel: WARN
+2026-09-22T15:19:29.2854263Z State: Starting, Action: StartingMsiContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:19:26, DetailsLevel: WARN
+2026-09-22T15:19:31.8972228Z State: Starting, Action: StartingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:19:26, DetailsLevel: WARN
+2026-09-22T15:19:31.8973279Z Container start method called.
+2026-09-22T15:19:31.8974005Z State: Starting, Action: PullingImage, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:19:31.8974796Z Establishing network.
+2026-09-22T15:19:31.8975970Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T15:19:32.9837041Z Container is starting.
+2026-09-22T15:19:32.9838019Z State: Starting, Action: MountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:19:32.9838616Z Establishing user namespace if not established already.
+2026-09-22T15:19:32.9839322Z Establishing network if not established already.
+2026-09-22T15:19:32.9840023Z Mounting volumes.
+2026-09-22T15:19:32.9840907Z Nested mountpoint volatile/logs
+2026-09-22T15:19:32.9897103Z Nested mountpoint 
+2026-09-22T15:19:32.9917782Z Nested mountpoint 
+2026-09-22T15:19:32.9995688Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T15:19:33.0024815Z Creating container.
+2026-09-22T15:19:33.0025774Z Creating pipes for streaming container io.
+2026-09-22T15:19:33.0026459Z Creating stdout named pipe at /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stdout_421a990a8a4541cda86b105d4b0f1ee2.
+2026-09-22T15:19:33.0028191Z Successfully created stdout named pipe at: /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stdout_421a990a8a4541cda86b105d4b0f1ee2.
+2026-09-22T15:19:33.0028864Z Opening named pipe /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stdout_421a990a8a4541cda86b105d4b0f1ee2 for reading in non-blocking mode.
+2026-09-22T15:19:33.0029635Z Successfully opened named pipe: /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stdout_421a990a8a4541cda86b105d4b0f1ee2.
+2026-09-22T15:19:33.0030282Z Successfully removed non-blocking flag from /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stdout_421a990a8a4541cda86b105d4b0f1ee2.
+2026-09-22T15:19:33.0031284Z Creating stderr named pipe at /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stderr_b2bad5fd1c3c4b2b80b30a402b7cbc2e.
+2026-09-22T15:19:33.0032266Z Successfully created stderr named pipe at: /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stderr_b2bad5fd1c3c4b2b80b30a402b7cbc2e.
+2026-09-22T15:19:33.0032904Z Opening named pipe /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stderr_b2bad5fd1c3c4b2b80b30a402b7cbc2e for reading in non-blocking mode.
+2026-09-22T15:19:33.0033586Z Successfully opened named pipe: /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stderr_b2bad5fd1c3c4b2b80b30a402b7cbc2e.
+2026-09-22T15:19:33.0034202Z Successfully removed non-blocking flag from /podr/container/pipe/391fe18897e6_app-vsf-j124ze/stderr_b2bad5fd1c3c4b2b80b30a402b7cbc2e.
+2026-09-22T15:19:33.0034972Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T15:19:33.1478701Z Starting container: 391fe18897e6_app-vsf-j124ze.
+2026-09-22T15:19:33.1649221Z Starting watchers and probes.
+2026-09-22T15:19:33.1651043Z Starting metrics collection.
+2026-09-22T15:19:33.1652493Z Container is running.
+2026-09-22T15:19:33.1653116Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:19:33.1840332Z Container start method finished after 1286 ms.
+2026-09-22T15:19:33.1862553Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:19:33.1863136Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T15:19:33.2921488Z Container has finished running with exit code: 1.
+2026-09-22T15:19:33.2922608Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:19:33.2928547Z Stop and delete container. Retry count = 0
+2026-09-22T15:19:33.2929489Z Stopping container: 391fe18897e6_app-vsf-j124ze.
+2026-09-22T15:19:33.3065778Z Deleting container: 391fe18897e6_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:19:33.3491257Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:19:33.3493739Z Container is terminated. Total time elapsed: 56 ms.
+2026-09-22T15:19:33.3494396Z Site container: app-vsf-j124ze terminated during site startup.
+2026-09-22T15:19:33.3494967Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:18:25, LastErrorDetails: Container exited with exit code 1 during startup after 0.3s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.3499925Z Site startup probe failed after 0.1633993 seconds.
+2026-09-22T15:19:33.3967419Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.3992873Z Failed to start site. Revert by stopping site.
+2026-09-22T15:19:33.3993694Z State: Stopping, Action: StoppingSite, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.3995193Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.5286343Z Site container: app-vsf-j124ze_managedIdentity terminated during site startup.
+2026-09-22T15:19:33.5287340Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.5288207Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:19:33.5303568Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.5748108Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:19:33.8245629Z Site: app-vsf-j124ze will be blocked for 1 minutes till 09/22/2026 15:20:33
+2026-09-22T15:19:33.8246801Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site: app-vsf-j124ze will be blocked for 1 minutes till 09/22/2026 15:20:33, DetailsLevel: WARN
+2026-09-22T15:19:33.8251586Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:19:33 (UTC), DetailsLevel: WARN
+2026-09-22T15:19:34.0709143Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:19:33 (UTC), DetailsLevel: WARN
+2026-09-22T15:20:04.7264079Z State: Blocked, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:20:33, DetailsLevel: WARN
+2026-09-22T15:20:04.7264423Z Start site prohibitted because the site is being blocked.
+2026-09-22T15:20:33.8225024Z Site: app-vsf-j124ze is unblocked.
+2026-09-22T15:20:35.4285477Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:20:33, DetailsLevel: WARN
+2026-09-22T15:20:35.8774164Z State: Starting, Action: StartingMsiContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:20:33, DetailsLevel: WARN
+2026-09-22T15:20:38.4932325Z State: Starting, Action: StartingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:20:33, DetailsLevel: WARN
+2026-09-22T15:20:38.4933248Z Container start method called.
+2026-09-22T15:20:38.4933669Z State: Starting, Action: PullingImage, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:20:38.4934646Z Establishing network.
+2026-09-22T15:20:38.4935521Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T15:20:41.2229634Z Container is starting.
+2026-09-22T15:20:41.2235694Z State: Starting, Action: MountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:20:41.2236630Z Establishing user namespace if not established already.
+2026-09-22T15:20:41.2246991Z Establishing network if not established already.
+2026-09-22T15:20:41.2252520Z Mounting volumes.
+2026-09-22T15:20:41.2253617Z Nested mountpoint volatile/logs
+2026-09-22T15:20:41.2323120Z Nested mountpoint 
+2026-09-22T15:20:41.2327723Z Nested mountpoint 
+2026-09-22T15:20:41.2399461Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T15:20:41.2400029Z Creating container.
+2026-09-22T15:20:41.2400495Z Creating pipes for streaming container io.
+2026-09-22T15:20:41.2400923Z Creating stdout named pipe at /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stdout_c573118e04d24fdeb84c1e4787edbe75.
+2026-09-22T15:20:41.2402337Z Successfully created stdout named pipe at: /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stdout_c573118e04d24fdeb84c1e4787edbe75.
+2026-09-22T15:20:41.2402847Z Opening named pipe /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stdout_c573118e04d24fdeb84c1e4787edbe75 for reading in non-blocking mode.
+2026-09-22T15:20:41.2403433Z Successfully opened named pipe: /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stdout_c573118e04d24fdeb84c1e4787edbe75.
+2026-09-22T15:20:41.2403940Z Successfully removed non-blocking flag from /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stdout_c573118e04d24fdeb84c1e4787edbe75.
+2026-09-22T15:20:41.2534702Z Creating stderr named pipe at /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stderr_f17c2331b4584635aa9ee3a1cbecd901.
+2026-09-22T15:20:41.2536168Z Successfully created stderr named pipe at: /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stderr_f17c2331b4584635aa9ee3a1cbecd901.
+2026-09-22T15:20:41.2536948Z Opening named pipe /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stderr_f17c2331b4584635aa9ee3a1cbecd901 for reading in non-blocking mode.
+2026-09-22T15:20:41.2537914Z Successfully opened named pipe: /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stderr_f17c2331b4584635aa9ee3a1cbecd901.
+2026-09-22T15:20:41.2538766Z Successfully removed non-blocking flag from /podr/container/pipe/74a9440975cb_app-vsf-j124ze/stderr_f17c2331b4584635aa9ee3a1cbecd901.
+2026-09-22T15:20:41.2539870Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T15:20:41.4058559Z Starting container: 74a9440975cb_app-vsf-j124ze.
+2026-09-22T15:20:41.4199310Z Starting watchers and probes.
+2026-09-22T15:20:41.4202823Z Starting metrics collection.
+2026-09-22T15:20:41.4206075Z Container is running.
+2026-09-22T15:20:41.4206765Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:20:41.4406998Z Container start method finished after 2947 ms.
+2026-09-22T15:20:41.4408284Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:20:41.4408734Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T15:20:41.5673945Z Container has finished running with exit code: 1.
+2026-09-22T15:20:41.5677949Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:20:41.5684465Z Stop and delete container. Retry count = 0
+2026-09-22T15:20:41.5685303Z Stopping container: 74a9440975cb_app-vsf-j124ze.
+2026-09-22T15:20:41.5812470Z Deleting container: 74a9440975cb_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:20:41.6239393Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:20:41.6247382Z Container is terminated. Total time elapsed: 56 ms.
+2026-09-22T15:20:41.6248178Z Site container: app-vsf-j124ze terminated during site startup.
+2026-09-22T15:20:41.6256433Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:19:33, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:41.6267269Z Site startup probe failed after 0.1852409 seconds.
+2026-09-22T15:20:41.6740495Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:41.6758360Z Failed to start site. Revert by stopping site.
+2026-09-22T15:20:41.6760119Z State: Stopping, Action: StoppingSite, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:41.6761690Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:41.7845793Z Site container: app-vsf-j124ze_managedIdentity terminated during site startup.
+2026-09-22T15:20:41.7855881Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:41.7859438Z Site: app-vsf-j124ze stopped.
+2026-09-22T15:20:41.7881125Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:41.8552302Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:20:42.1047699Z Site: app-vsf-j124ze will be blocked for 2 minutes till 09/22/2026 15:22:42
+2026-09-22T15:20:42.1048896Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site: app-vsf-j124ze will be blocked for 2 minutes till 09/22/2026 15:22:42, DetailsLevel: WARN
+2026-09-22T15:20:42.1051052Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:20:42 (UTC), DetailsLevel: WARN
+2026-09-22T15:20:42.3660079Z State: Stopped, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site stopped at 09/22/2026 15:20:42 (UTC), DetailsLevel: WARN
+2026-09-22T15:21:13.7620355Z State: Blocked, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:22:42, DetailsLevel: WARN
+2026-09-22T15:21:13.7620691Z Start site prohibitted because the site is being blocked.
+2026-09-22T15:21:44.6690316Z State: Blocked, Action: None, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:22:42, DetailsLevel: WARN
+2026-09-22T15:21:44.6690623Z Start site prohibitted because the site is being blocked.
+2026-09-22T15:22:42.1056579Z Site: app-vsf-j124ze is unblocked.
+2026-09-22T15:22:51.5825084Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:22:42, DetailsLevel: WARN
+2026-09-22T15:22:52.3665367Z State: Starting, Action: StartingMsiContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:22:42, DetailsLevel: WARN
+2026-09-22T15:22:56.0918425Z State: Starting, Action: StartingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site is blocked due to multiple, consecutive cold start failures. Site scheduled to be unblocked at 09/22/2026 15:22:42, DetailsLevel: WARN
+2026-09-22T15:22:56.0919269Z Container start method called.
+2026-09-22T15:22:56.0919624Z State: Starting, Action: PullingImage, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Pulling image acrvsfj124ze.azurecr.io/vsf-app:f38c127 for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:22:56.0920148Z Establishing network.
+2026-09-22T15:22:56.0920825Z Pulling image: acrvsfj124ze.azurecr.io/vsf-app:f38c127.
+2026-09-22T15:22:56.5613243Z Container is starting.
+2026-09-22T15:22:56.5613991Z State: Starting, Action: MountingVolumes, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Mounting volumes for app-vsf-j124ze., DetailsLevel: INFO
+2026-09-22T15:22:56.5614716Z Establishing user namespace if not established already.
+2026-09-22T15:22:56.5615313Z Establishing network if not established already.
+2026-09-22T15:22:56.5615964Z Mounting volumes.
+2026-09-22T15:22:56.5616837Z Nested mountpoint volatile/logs
+2026-09-22T15:22:56.5694176Z Nested mountpoint 
+2026-09-22T15:22:56.5699510Z Nested mountpoint 
+2026-09-22T15:22:56.5899610Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for app-vsf-j124ze. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-09-22T15:22:56.5900330Z Creating container.
+2026-09-22T15:22:56.5900895Z Creating pipes for streaming container io.
+2026-09-22T15:22:56.5901560Z Creating stdout named pipe at /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stdout_10997d70a9b64a29952941c5cd078e11.
+2026-09-22T15:22:56.5903067Z Successfully created stdout named pipe at: /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stdout_10997d70a9b64a29952941c5cd078e11.
+2026-09-22T15:22:56.5903624Z Opening named pipe /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stdout_10997d70a9b64a29952941c5cd078e11 for reading in non-blocking mode.
+2026-09-22T15:22:56.5904364Z Successfully opened named pipe: /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stdout_10997d70a9b64a29952941c5cd078e11.
+2026-09-22T15:22:56.5904936Z Successfully removed non-blocking flag from /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stdout_10997d70a9b64a29952941c5cd078e11.
+2026-09-22T15:22:56.5905934Z Creating stderr named pipe at /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stderr_3fc6031de70149c48bc40c7afaba6c8b.
+2026-09-22T15:22:56.6015797Z Successfully created stderr named pipe at: /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stderr_3fc6031de70149c48bc40c7afaba6c8b.
+2026-09-22T15:22:56.6017128Z Opening named pipe /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stderr_3fc6031de70149c48bc40c7afaba6c8b for reading in non-blocking mode.
+2026-09-22T15:22:56.6018502Z Successfully opened named pipe: /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stderr_3fc6031de70149c48bc40c7afaba6c8b.
+2026-09-22T15:22:56.6019727Z Successfully removed non-blocking flag from /podr/container/pipe/5afac09468ab_app-vsf-j124ze/stderr_3fc6031de70149c48bc40c7afaba6c8b.
+2026-09-22T15:22:56.6064677Z Creating container with image: acrvsfj124ze.azurecr.io/vsf-app:f38c127 from registry: acrvsfj124ze.azurecr.io and fully qualified image name: acrvsfj124ze.azurecr.io/vsf-app:f38c127
+2026-09-22T15:22:56.7949949Z Starting container: 5afac09468ab_app-vsf-j124ze.
+2026-09-22T15:22:56.8089749Z Starting watchers and probes.
+2026-09-22T15:22:56.8091632Z Starting metrics collection.
+2026-09-22T15:22:56.8092948Z Container is running.
+2026-09-22T15:22:56.8093737Z State: Starting, Action: CreatingContainer, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:22:56.8361142Z Container start method finished after 744 ms.
+2026-09-22T15:22:56.8363469Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Container app-vsf-j124ze successfully created and is running., DetailsLevel: INFO
+2026-09-22T15:22:56.8363733Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-09-22T15:22:56.9568839Z Container has finished running with exit code: 1.
+2026-09-22T15:22:56.9569600Z Container is terminating. Grace period: 5 seconds.
+2026-09-22T15:22:56.9572986Z Stop and delete container. Retry count = 0
+2026-09-22T15:22:56.9573664Z Stopping container: 5afac09468ab_app-vsf-j124ze.
+2026-09-22T15:22:56.9715748Z Deleting container: 5afac09468ab_app-vsf-j124ze. Retry count = 0
+2026-09-22T15:22:57.0157307Z Container spec TerminationMessagePolicy  path 
+2026-09-22T15:22:57.0158440Z Container is terminated. Total time elapsed: 58 ms.
+2026-09-22T15:22:57.0159131Z Site container: app-vsf-j124ze terminated during site startup.
+2026-09-22T15:22:57.0159824Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:20:41, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:22:57.0164863Z Site startup probe failed after 0.1797048 seconds.
+2026-09-22T15:22:57.0725736Z State: Stopping, Action: CancellingStartup, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:22:57, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:22:57.0753435Z Failed to start site. Revert by stopping site.
+2026-09-22T15:22:57.0754981Z State: Stopping, Action: StoppingSite, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:22:57, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:22:57.0757857Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:22:57, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:22:58.5775008Z Site container: app-vsf-j124ze_managedIdentity terminated during site startup.
+2026-09-22T15:22:58.5780633Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerStartupFailure, LastErrorTimestamp: 09/22/2026 15:22:57, LastErrorDetails: Container exited with exit code 1 during startup after 0.2s. Please inspect your container logs for more details., Details: Site container: app-vsf-j124ze terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-09-22T15:22:58.5787135Z Site: app-vsf-j124ze stopped.
