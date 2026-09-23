@@ -290,6 +290,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
+- **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
 - 2026-09-21 (tối): **BE-1 xong** — `ApiSetup` gom DI/JSON/pipeline (hết 4 khối trùng giữa `Program.cs` và `HttpTests.cs`), `Result<T>` có `ErrorKind` 400/404/409, `JsonStringEnumConverter` snake_case, `EnumNames<T>`, đảo quy tắc null, `TraceIdMiddleware` (+`trace_id` trong log), `UserNameFilter`. **38 test pass** (trước 12). Chạy thật với MySQL: `/health` ok, `X-Trace-Id` có, `traceparent` từ client được giữ nguyên, thiếu `X-User-Name` → 400, body hỏng → `ErrorResponse`. Hai ca AI sai ghi vào `ai-failure-log.md` #12, #13. Cài lại gitleaks + pre-commit hook (`scripts/install-hooks.sh`) và docker compose plugin. Bài tiếp: BE-2 (domain Ticket).
