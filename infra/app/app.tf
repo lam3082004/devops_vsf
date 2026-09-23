@@ -45,7 +45,11 @@ locals {
 }
 
 resource "azurerm_linux_web_app" "app" {
-  name                = "app-${var.project}-${local.name_suffix}"
+  # local.be_app_name (locals.tf), KHÔNG nội suy trực tiếp ở đây: `fe`
+  # (app-fe.tf) cần đúng chuỗi này để tính API_BASE_URL mà không đọc
+  # default_hostname — hai chỗ tính cùng một local để không lệch nhau
+  # (D16 Việc 2).
+  name                = local.be_app_name
   resource_group_name = azurerm_resource_group.app.name
   location            = azurerm_resource_group.app.location
   service_plan_id     = azurerm_service_plan.app.id
@@ -102,14 +106,20 @@ resource "azurerm_linux_web_app" "app" {
     # `az ... access-restriction show` nhìn vẫn như đã khoá.
     scm_ip_restriction_default_action = "Deny"
 
+    # local.be_ip_rules (locals.tf), KHÔNG local.ip_rules: `be` phải thêm allow
+    # outbound IP của `fe` ngoài IP nhà, nếu không mọi lời gọi API từ `fe`
+    # nhận 403 (D16 Việc 2, notes/d16-prep.md mục "vấp #1"). `fe`/`fe_staging`
+    # (app-fe.tf) vẫn dùng local.ip_rules thường — chỉ `be` mới cần mở thêm.
     dynamic "ip_restriction" {
-      for_each = local.ip_rules
+      for_each = local.be_ip_rules
       content {
-        name        = ip_restriction.key
-        ip_address  = ip_restriction.value.ip_address
-        action      = "Allow"
-        priority    = ip_restriction.value.priority
-        description = "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
+        name       = ip_restriction.key
+        ip_address = ip_restriction.value.ip_address
+        action     = "Allow"
+        priority   = ip_restriction.value.priority
+        # Không dấu `,`/`;` (ai-failure-log.md #23). Rule outbound của fe có
+        # mô tả riêng để phân biệt trên Portal với IP nhà khai trong tfvars.
+        description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe cung App Service Plan xem locals.tf" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
 
@@ -181,14 +191,16 @@ resource "azurerm_linux_web_app_slot" "staging" {
     scm_use_main_ip_restriction       = true
     scm_ip_restriction_default_action = "Deny"
 
+    # local.be_ip_rules, giống site chính bên trên — slot staging cũng là
+    # `be` (swap lên production), phải mở cho outbound IP của `fe` như nhau.
     dynamic "ip_restriction" {
-      for_each = local.ip_rules
+      for_each = local.be_ip_rules
       content {
         name        = ip_restriction.key
         ip_address  = ip_restriction.value.ip_address
         action      = "Allow"
         priority    = ip_restriction.value.priority
-        description = "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
+        description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe cung App Service Plan xem locals.tf" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
 

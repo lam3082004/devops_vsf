@@ -44,6 +44,15 @@ RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 # Image node có sẵn user "node" (uid 1000) — dùng lại thay vì tạo user mới.
 USER node
 
+# SHA của commit, truyền lúc build: docker build --build-arg GIT_SHA=<sha>.
+# Khai ARG ở ĐÂY chứ không ở đầu file: ARG chỉ có hiệu lực trong stage khai nó,
+# và giá trị này phải tới được stage RUNTIME (route /api/version đọc bằng
+# process.env lúc chạy). Đặt ở stage builder là nó biến mất sau FROM thứ hai.
+# Cố ý KHÔNG truyền vào stage builder: `next build` mà thấy env đổi là mất cache
+# layer, trong khi SHA không ảnh hưởng gì tới output của bước dịch.
+ARG GIT_SHA
+ENV GIT_SHA=${GIT_SHA:-dev}
+
 # server.js chỉ nghe loopback nếu không khai HOSTNAME; đặt 0.0.0.0 để App Service
 # (WEBSITES_PORT) gọi được vào từ ngoài container.
 ENV PORT=3000 HOSTNAME=0.0.0.0

@@ -20,6 +20,14 @@ output "staging_url" {
   value = "https://${azurerm_linux_web_app_slot.staging.default_hostname}"
 }
 
+output "fe_url" {
+  value = "https://${azurerm_linux_web_app.fe.default_hostname}"
+}
+
+output "fe_staging_url" {
+  value = "https://${azurerm_linux_web_app_slot.fe_staging.default_hostname}"
+}
+
 output "app_possible_outbound_ip_count" {
   description = "Phải bằng số firewall rule MySQL (M3)."
   value       = length(azurerm_linux_web_app.app.possible_outbound_ip_address_list)

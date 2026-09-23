@@ -63,18 +63,30 @@ tf-init:
 plan: tf-init
 	$(TF) plan
 
-## Dựng môi trường — APPLY 2 PHA (TỐN TIỀN, hỏi xác nhận từng pha)
-## Pha 1 chỉ chạy khi Web App chưa có trong state: firewall MySQL dùng for_each trên
-## possible outbound IPs, giá trị này chưa biết trước khi Web App tồn tại.
-## Lý do chọn cách này: Decision trong notes/d8.md.
+## Dựng môi trường — APPLY 3 PHA (TỐN TIỀN, hỏi xác nhận từng pha)
+## Lý do gốc (2 pha, notes/d8.md): firewall MySQL dùng for_each trên possible
+## outbound IPs của `be`, giá trị "known after apply" cho tới khi Web App `be`
+## đã có trong state — Terraform không tính được tập khoá của for_each lúc
+## plan và từ chối (Invalid for_each argument).
+## D16 thêm một cạnh known-after-apply nữa TRƯỚC `be`: be.ip_restriction dùng
+## for_each trên fe.possible_outbound_ip_address_list (locals.tf:
+## local.be_ip_rules, D16 Việc 2) để fe gọi được be. Cùng lý do, `fe` phải có
+## trong state trước khi apply `be`. Ba pha theo đúng thứ tự phụ thuộc:
+## fe → be → apply toàn bộ (lúc đó firewall MySQL mới tính được).
 up: tf-init
+	@if ! $(TF) state list 2>/dev/null | grep -qx 'azurerm_linux_web_app.fe'; then \
+		echo ">>> pha 1/3: tao Web App fe de biet outbound IPs cho ip_restriction cua be"; \
+		$(TF) apply -target=azurerm_linux_web_app.fe || exit 1; \
+	else \
+		echo ">>> Web App fe da co trong state, bo qua pha 1"; \
+	fi
 	@if ! $(TF) state list 2>/dev/null | grep -qx 'azurerm_linux_web_app.app'; then \
-		echo ">>> pha 1/2: tao Web App (va cac phu thuoc) de biet outbound IPs"; \
+		echo ">>> pha 2/3: tao Web App be (va cac phu thuoc) de biet outbound IPs cho firewall MySQL"; \
 		$(TF) apply -target=azurerm_linux_web_app.app || exit 1; \
 	else \
-		echo ">>> Web App da co trong state, bo qua pha 1"; \
+		echo ">>> Web App be da co trong state, bo qua pha 2"; \
 	fi
-	@echo ">>> pha 2/2: apply toan bo"
+	@echo ">>> pha 3/3: apply toan bo"
 	$(TF) apply
 
 ## Xoá môi trường app (giữ nguyên rg-vsf-bootstrap chứa state)
