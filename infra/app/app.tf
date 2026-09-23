@@ -17,7 +17,7 @@ locals {
   # không mang cấu hình lạ lên production.
   app_settings = {
     # App Service chuyển traffic vào cổng này của container.
-    WEBSITES_PORT = tostring(var.container_port)
+        WEBSITES_PORT = tostring(var.container_port)
     # Không mount /home dùng chung vào container: app không ghi file, tắt đi
     # để container khởi động nhanh và không phụ thuộc storage của stamp.
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
