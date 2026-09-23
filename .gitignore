@@ -24,6 +24,11 @@ override.tf.json
 *_override.tf.json
 # giữ lock file của provider — nó là bản ghim version
 !.terraform.lock.hcl
+# tfvars chứa IP nhà / giá trị cá nhân (D13, M6) — chỉ commit bản .example.
+# gitleaks KHÔNG bắt địa chỉ IP, nên dòng này là thứ duy nhất đứng chắn.
+*.tfvars
+*.auto.tfvars
+!*.tfvars.example
 
 # Hệ điều hành / editor
 .DS_Store

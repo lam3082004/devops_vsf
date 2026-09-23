@@ -1,0 +1,15 @@
+# Mẫu cho infra/app/terraform.tfvars — CHÉP thành terraform.tfvars rồi điền IP thật.
+# Bản thật KHÔNG commit (.gitignore chặn *.tfvars, chỉ chừa *.tfvars.example).
+#
+# Lấy IP công khai của máy, luôn ép IPv4:
+#   curl -4 -s https://ifconfig.me
+# Tắt VPN/Cloudflare WARP trước khi đo — bật WARP thì IP đo được là IP thoát của
+# WARP, đổi theo từng request, whitelist vào đó là hỏng ngay lần gọi sau.
+#
+# Khoá = tên luật (hiện trên Portal → Networking → Access restrictions),
+# giá trị = CIDR IPv4. Chỉ IPv4 (Decision C, notes/d13-prep.md).
+# Rỗng = khoá tất cả, kể cả chính mình — đọc CẢNH BÁO ở variables.tf.
+allowed_ips = {
+  "nha-lam"  = "203.0.113.10/32"  # máy làm việc
+  "mentor"   = "198.51.100.25/32" # mở khi cần demo, xoá sau
+}
