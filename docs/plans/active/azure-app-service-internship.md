@@ -147,8 +147,11 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Docker build (không push) — `docker build + trivy (be)` và `(fe)`, build rồi quét trong cùng job
 - [x] Trivy scan image, fail khi có CVE (Q4: `CRITICAL,HIGH`, không `--ignore-unfixed`) → **0 CVE cả hai image** — *proof: `evidence/raw/d14-trivy-*-2026-09-23.txt`*
 - [x] `app/fe/Dockerfile` viết mới (chưa từng tồn tại) — không có nó thì không quét Trivy cho `fe` được
-- [ ] Ruleset `protect-main`: đủ 8 required check (đang 4)
-- [ ] **Bằng chứng đỏ:** 6 PR cố tình sai + thử merge khi đỏ → bị chặn; 1 PR xanh đối chứng → `evidence/M9.md`
+- [x] Ruleset `protect-main`: đủ **8** required check (trước đó chỉ 4 — `frontend` và `azure login` không được cưỡng chế, một lỗ M9 thật)
+- [x] **Bằng chứng đỏ:** 6 PR cố tình sai, tất cả `mergeable_state = blocked`; `gh pr merge` khi đỏ bị GitHub từ chối; 1 PR xanh đối chứng merge được — *proof: `evidence/M9.md`*
+- [x] Kiểm chứng secret giả **không** nằm trên `main` (3 cách độc lập)
+
+**D14 ĐẠT.** `ai-failure-log.md` thêm #25–#27, `known-issues.md` thêm #12–#13.
 
 ### D15 — Cross-review lần 1 + dọn
 - [ ] Review repo bạn kia → `review-<tên>.md` (theo REVIEW bar: đúng, bảo mật, chứng minh được)

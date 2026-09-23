@@ -1,0 +1,88 @@
+D14 / M9 — 6 PR cố tình sai + 1 PR xanh đối chứng
+Thu lúc: 2026-09-23T15:24:07+07:00
+main = 45c164d
+
+==============================================================
+PR #33  [OPEN]  test/d14-red-frontend-not-required
+test(d14): KHÔNG MERGE — chứng minh job frontend không required thì không chặn merge
+--- checks:
+    docker build + trivy (fe)          fail
+    frontend (lint, build)             fail
+    azure login (OIDC)                 pass
+    docker build + trivy (be)          pass
+    dotnet (format, build, test)       pass
+    gitleaks                           pass
+    terraform (fmt, validate)          pass
+    terraform plan (infra/app)         pass
+--- mergeable_state: blocked
+
+==============================================================
+PR #34  [OPEN]  test/d14-red-gitleaks
+test(d14): CỐ Ý cắm secret giả — chứng minh gitleaks CI chặn (M9)
+--- checks:
+    gitleaks                           fail
+    azure login (OIDC)                 pass
+    docker build + trivy (be)          pass
+    docker build + trivy (fe)          pass
+    dotnet (format, build, test)       pass
+    frontend (lint, build)             pass
+    terraform (fmt, validate)          pass
+    terraform plan (infra/app)         pass
+--- mergeable_state: blocked
+
+==============================================================
+PR #35  [OPEN]  test/d14-red-docker-be
+test(d14): CỐ Ý làm hỏng Dockerfile be — chứng minh docker-build chặn (M9)
+--- checks:
+    docker build + trivy (be)          fail
+    gitleaks                           fail
+    terraform plan (infra/app)         fail
+    azure login (OIDC)                 pass
+    docker build + trivy (fe)          pass
+    dotnet (format, build, test)       pass
+    frontend (lint, build)             pass
+    terraform (fmt, validate)          pass
+--- mergeable_state: blocked
+
+==============================================================
+PR #36  [OPEN]  test/d14-red-dotnet-test
+test(d14): CỐ Ý gây regression thật — chứng minh unit test chặn (M9)
+--- checks:
+    dotnet (format, build, test)       fail
+    gitleaks                           fail
+    terraform plan (infra/app)         fail
+    azure login (OIDC)                 pass
+    docker build + trivy (be)          pass
+    docker build + trivy (fe)          pass
+    frontend (lint, build)             pass
+    terraform (fmt, validate)          pass
+--- mergeable_state: blocked
+
+==============================================================
+PR #37  [OPEN]  test/d14-red-terraform-fmt
+test(d14): CỐ Ý sai format Terraform — chứng minh terraform fmt chặn (M9)
+--- checks:
+    gitleaks                           fail
+    terraform (fmt, validate)          fail
+    terraform plan (infra/app)         skipping
+    azure login (OIDC)                 pass
+    docker build + trivy (be)          pass
+    docker build + trivy (fe)          pass
+    dotnet (format, build, test)       pass
+    frontend (lint, build)             pass
+--- mergeable_state: blocked
+
+==============================================================
+PR #38  [OPEN]  test/d14-red-trivy
+test(d14): CỐ Ý dùng base image cũ có CVE — chứng minh cổng Trivy chặn (M9)
+--- checks:
+    docker build + trivy (be)          fail
+    gitleaks                           fail
+    azure login (OIDC)                 pass
+    docker build + trivy (fe)          pass
+    dotnet (format, build, test)       pass
+    frontend (lint, build)             pass
+    terraform (fmt, validate)          pass
+    terraform plan (infra/app)         pass
+--- mergeable_state: blocked
+
