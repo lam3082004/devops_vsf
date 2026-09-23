@@ -42,6 +42,21 @@ jobs:
   dotnet:
     name: dotnet (format, build, test)
     runs-on: ubuntu-24.04
+    # MySQL thật cho be.Tests (BE-5): bộ test hiện tại không chạm DB, nên mọi
+    # lỗi SQL chỉ lộ khi chạy thật. RequiresMySqlFactAttribute tự skip nếu
+    # thiếu TEST_DB_HOST — service container này cấp đúng biến đó cho step
+    # `dotnet test` bên dưới.
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: testpass      # DB dùng một lần trong runner, không phải secret
+          MYSQL_DATABASE: opsboard_test
+        ports: ["3306:3306"]
+        # Thiếu health check thì step test chạy trước lúc MySQL nhận kết nối → đỏ ngẫu nhiên.
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -ptestpass"
+          --health-interval=5s --health-timeout=3s --health-retries=20
     steps:
       - uses: actions/checkout@v5
       - name: Cài .NET SDK
@@ -54,9 +69,37 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
-      - run: dotnet format app/NodeRegistry.csproj --verify-no-changes --severity warn
-      - run: dotnet build app/NodeRegistry.csproj -c Release
-      - run: dotnet test app.Tests/NodeRegistry.Tests.csproj -c Release
+      - run: dotnet format app/be/OpsBoard.csproj --verify-no-changes --severity warn
+      - run: dotnet build app/be/OpsBoard.csproj -c Release
+      - run: dotnet test app/be.Tests/OpsBoard.Tests.csproj -c Release
+        env:
+          TEST_DB_HOST: 127.0.0.1
+          TEST_DB_PORT: "3306"
+          TEST_DB_USER: root
+          TEST_DB_PASSWORD: testpass
+          TEST_DB_NAME: opsboard_test
+          # CI=true đã được GitHub Actions tự đặt sẵn — không khai lại ở đây.
+
+  frontend:
+    name: frontend (lint, build)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cài Node
+        uses: actions/setup-node@v4
+        with:
+          # Ghim major: Next 16 cần Node >= 20, máy dev đang dùng 24.
+          node-version: "24"
+          # Cache ~/.npm theo package-lock.json — cache-dependency-path phải
+          # trỏ đúng file vì lock nằm trong app/fe, không phải gốc repo.
+          cache: npm
+          cache-dependency-path: app/fe/package-lock.json
+      # `ci` chứ không phải `install`: cài đúng cây phụ thuộc trong lock file
+      # và đỏ nếu package.json lệch lock — build phải tái lập được.
+      - run: npm --prefix app/fe ci
+      - run: npm --prefix app/fe run lint
+      # Build cũng là bước kiểm kiểu: `next build` chạy tsc, lỗi type → PR đỏ.
+      - run: npm --prefix app/fe run build
 
   terraform:
     name: terraform (fmt, validate)
