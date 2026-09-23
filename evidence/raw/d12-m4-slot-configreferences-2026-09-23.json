@@ -1,0 +1,21 @@
+{
+  "id": null,
+  "nextLink": null,
+  "value": [
+    {
+      "id": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-p0hef1/slots/staging/config/configreferences/appsettings/DB_PASSWORD",
+      "location": "Central India",
+      "name": "DB_PASSWORD",
+      "properties": {
+        "activeVersion": null,
+        "details": "Reference has been successfully resolved.",
+        "identityType": "UserAssigned",
+        "reference": "@Microsoft.KeyVault(SecretUri=https://kv-vsf-p0hef1.vault.azure.net/secrets/mysql-admin-password)",
+        "secretName": "mysql-admin-password",
+        "status": "Resolved",
+        "vaultName": "kv-vsf-p0hef1"
+      },
+      "type": "Microsoft.Web/sites/config/configreferences"
+    }
+  ]
+}

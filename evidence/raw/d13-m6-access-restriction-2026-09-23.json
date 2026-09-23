@@ -1,0 +1,39 @@
+{
+  "ipSecurityRestrictions": [
+    {
+      "action": "Allow",
+      "description": "M6 (D13) — IP khai trong terraform.tfvars ngoài repo",
+      "ipAddress": "14.162.xxx.xxx/32",
+      "name": "hotspot-a",
+      "priority": 100,
+      "tag": "Default"
+    },
+    {
+      "action": "Allow",
+      "description": "M6 (D13) — IP khai trong terraform.tfvars ngoài repo",
+      "ipAddress": "113.22.xxx.xxx/32",
+      "name": "hotspot-b",
+      "priority": 110,
+      "tag": "Default"
+    },
+    {
+      "action": "Deny",
+      "description": "Deny all access",
+      "ipAddress": "Any",
+      "name": "Deny all",
+      "priority": 2147483647
+    }
+  ],
+  "ipSecurityRestrictionsDefaultAction": "Deny",
+  "scmIpSecurityRestrictions": [
+    {
+      "action": "Deny",
+      "description": "Deny all access",
+      "ipAddress": "Any",
+      "name": "Deny all",
+      "priority": 2147483647
+    }
+  ],
+  "scmIpSecurityRestrictionsDefaultAction": "Deny",
+  "scmIpSecurityRestrictionsUseMain": true
+}

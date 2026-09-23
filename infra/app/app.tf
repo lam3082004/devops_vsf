@@ -90,9 +90,17 @@ resource "azurerm_linux_web_app" "app" {
     # validate` không bắt được, chỉ lộ ra lúc apply (ai-failure-log.md #23).
     ip_restriction_default_action = "Deny"
     # Kudu/SCM dùng CHUNG danh sách với site chính (Decision A). Để danh sách SCM
-    # riêng thì mặc định của nó là "Deny all" và quên khai allow là tự khoá mình
-    # khỏi Kudu — D3 đã dính đúng bẫy này khi làm bằng CLI (notes/d3-cli.md:34-36).
+    # riêng thì quên khai allow là tự khoá mình khỏi Kudu — D3 đã dính đúng bẫy
+    # này khi làm bằng CLI (notes/d3-cli.md:34-36).
     scm_use_main_ip_restriction = true
+    # CẢ HAI dòng mới khoá được SCM. `scm_use_main_ip_restriction` chỉ cho SCM
+    # dùng lại DANH SÁCH LUẬT của site chính, KHÔNG kéo theo hành động mặc định:
+    # `scm_ip_restriction_default_action` vẫn là "Allow", nên IP không khớp luật
+    # nào sẽ rơi xuống Allow và vào được Kudu. Đo được ở D13: cùng một IP ngoài
+    # whitelist, cùng thời điểm — site chính 403 còn SCM trả 200 với token ARM
+    # (evidence/M6.md). Thiếu dòng dưới đây thì Kudu mở ra Internet trong khi
+    # `az ... access-restriction show` nhìn vẫn như đã khoá.
+    scm_ip_restriction_default_action = "Deny"
 
     dynamic "ip_restriction" {
       for_each = local.ip_rules
@@ -167,8 +175,11 @@ resource "azurerm_linux_web_app_slot" "staging" {
 
     # M6 cho slot staging — bốn bề mặt phải chặn, không phải hai: site chính,
     # SCM của site chính, slot staging, SCM của slot.
-    ip_restriction_default_action = "Deny"
-    scm_use_main_ip_restriction   = true
+    # `scm_ip_restriction_default_action` phải khai riêng: xem giải thích dài ở
+    # site chính bên trên, thiếu nó thì Kudu của slot vẫn mở.
+    ip_restriction_default_action     = "Deny"
+    scm_use_main_ip_restriction       = true
+    scm_ip_restriction_default_action = "Deny"
 
     dynamic "ip_restriction" {
       for_each = local.ip_rules
