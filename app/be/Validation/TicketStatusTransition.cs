@@ -16,6 +16,9 @@ public static class TicketStatusTransition
         (TicketStatus.InProgress, TicketStatus.Resolved) => true,
         (TicketStatus.Resolved, TicketStatus.InProgress) => true,
         (TicketStatus.Resolved, TicketStatus.Closed) => true,
+        // D14 — LỖI CÓ CHỦ Ý: PRD mục 2 nói closed là ngõ cụt. Dòng này cho mở
+        // lại ticket đã đóng — một regression THẬT, không phải sửa assert cho sai.
+        (TicketStatus.Closed, TicketStatus.Open) => true,
         _ => false,
     };
 }
