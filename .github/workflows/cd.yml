@@ -412,14 +412,37 @@ jobs:
           FE_APP: ${{ needs.preflight.outputs.fe_app }}
         run: |
           set -euo pipefail
+
+          # HAI swap, KHÔNG nguyên tử với nhau. Azure không có API swap nhiều app
+          # một lượt, nên giữa hai lệnh dưới đây luôn tồn tại một khoảng thời gian
+          # production chạy lệch phiên bản. Bản đầu của file này để hai lệnh chạy
+          # trần dưới `set -e`: `be` swap xong mà `fe` lỗi thì job chết ngay tại
+          # dòng đó, KHÔNG nói production đang lệch, KHÔNG nói cách chữa, và bước
+          # ghi summary phía dưới cũng không chạy — người vận hành mất đúng thông
+          # tin cần nhất vào đúng lúc cần nhất. Bắt lỗi tường minh từng lệnh.
           T0=$(date +%s)
-          az webapp deployment slot swap \
-            -g rg-vsf-dev -n "$BE_APP" --slot staging --target-slot production
+
+          # Swap `be` TRƯỚC `fe` là có chủ ý: `fe` gọi `be`, nên thứ tự này cho ra
+          # cửa sổ "fe cũ gọi be mới" (backend mới thường vẫn phục vụ được client
+          # cũ) thay vì "fe mới gọi be cũ" (giao diện mới đòi API chưa tồn tại).
+          if ! az webapp deployment slot swap \
+               -g rg-vsf-dev -n "$BE_APP" --slot staging --target-slot production; then
+            echo "::error::swap be THAT BAI. Production KHONG doi gi ca — ca be lan fe van la ban cu, he thong nhat quan. Khong can rollback. Doc log Azure roi chay lai workflow nay."
+            exit 1
+          fi
           T1=$(date +%s)
-          az webapp deployment slot swap \
-            -g rg-vsf-dev -n "$FE_APP" --slot staging --target-slot production
-          T2=$(date +%s)
           echo "swap-be: $((T1-T0))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
+          # Ghi NGAY, trước khi thử swap fe: bước summary (if: always()) đọc cờ này
+          # để biết production có đang lệch hay không.
+          echo "be_swapped=true" >> "$GITHUB_OUTPUT"
+
+          if ! az webapp deployment slot swap \
+               -g rg-vsf-dev -n "$FE_APP" --slot staging --target-slot production; then
+            echo "::error::PRODUCTION DANG LECH PHIEN BAN. be da swap sang ban moi, fe swap THAT BAI nen fe production van la ban cu. Chua co rollback tu dong."
+            echo "::error::Chua nhat quan tro lai bang mot trong hai cach: (1) swap lai be de ve dong bo ban cu: az webapp deployment slot swap -g rg-vsf-dev -n $BE_APP --slot staging --target-slot production  --  hoac (2) swap lai fe neu da ro nguyen nhan: az webapp deployment slot swap -g rg-vsf-dev -n $FE_APP --slot staging --target-slot production"
+            exit 1
+          fi
+          T2=$(date +%s)
           echo "swap-fe: $((T2-T1))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
 
           BE_URL=$(az webapp show -g rg-vsf-dev -n "$BE_APP" --query defaultHostName -o tsv)
@@ -427,25 +450,48 @@ jobs:
           echo "be_url=$BE_URL" >> "$GITHUB_OUTPUT"
           echo "fe_url=$FE_URL" >> "$GITHUB_OUTPUT"
 
+      # if: always() — bước này PHẢI chạy cả khi swap lỗi. Đó chính là lúc người
+      # vận hành cần bảng tóm tắt và câu lệnh rollback nhất, mà bản đầu của file
+      # này lại bỏ qua nó đúng lúc đó.
       - name: Ghi job summary
+        if: always()
         env:
           GIT_SHA: ${{ github.sha }}
           BE_URL: ${{ steps.swap.outputs.be_url }}
           FE_URL: ${{ steps.swap.outputs.fe_url }}
+          BE_APP: ${{ needs.preflight.outputs.be_app }}
+          FE_APP: ${{ needs.preflight.outputs.fe_app }}
+          BE_SWAPPED: ${{ steps.swap.outputs.be_swapped }}
+          SWAP_RESULT: ${{ steps.swap.outcome }}
         run: |
           set -euo pipefail
           {
             echo "### CD — swap staging → production"
             echo ""
+            if [ "$SWAP_RESULT" != "success" ] && [ "$BE_SWAPPED" = "true" ]; then
+              echo "> ⚠️ **PRODUCTION ĐANG LỆCH PHIÊN BẢN.** \`be\` đã swap sang bản mới, \`fe\` thì chưa."
+              echo "> Đưa về nhất quán bằng cách swap lại \`be\`:"
+              echo '> ```'
+              echo "> az webapp deployment slot swap -g rg-vsf-dev -n $BE_APP --slot staging --target-slot production"
+              echo '> ```'
+              echo ""
+            elif [ "$SWAP_RESULT" != "success" ]; then
+              echo "> ❌ Swap thất bại **trước khi đổi gì trên production** — hệ thống vẫn nhất quán ở bản cũ. Không cần rollback."
+              echo ""
+            fi
             echo "- SHA: \`$GIT_SHA\`"
             echo "- be: https://$BE_URL"
             echo "- fe: https://$FE_URL"
             echo ""
             echo "| Bước | Thời gian |"
             echo "|---|---|"
-            while IFS=: read -r STEP SECS; do
-              echo "|$STEP |$SECS |"
-            done < "$GITHUB_WORKSPACE/.cd-timings.txt"
+            if [ -s "$GITHUB_WORKSPACE/.cd-timings.txt" ]; then
+              while IFS=: read -r STEP SECS; do
+                echo "|$STEP |$SECS |"
+              done < "$GITHUB_WORKSPACE/.cd-timings.txt"
+            else
+              echo "| (chua buoc nao xong) | — |"
+            fi
             echo ""
             # Swap là hoán đổi: ngay sau khi swap xong, slot staging đang giữ
             # ĐÚNG bản production cũ. Rollback nhanh nhất khi bản mới lỗi là

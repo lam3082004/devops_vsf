@@ -117,9 +117,17 @@ resource "azurerm_linux_web_app" "app" {
         ip_address = ip_restriction.value.ip_address
         action     = "Allow"
         priority   = ip_restriction.value.priority
-        # Không dấu `,`/`;` (ai-failure-log.md #23). Rule outbound của fe có
-        # mô tả riêng để phân biệt trên Portal với IP nhà khai trong tfvars.
-        description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe cung App Service Plan xem locals.tf" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
+        # HAI ràng buộc của Azure cho trường này, `plan` KHÔNG bắt được cái nào,
+        # cả hai chỉ nổ lúc apply sau khi đã mất vài phút:
+        #   1. không được chứa `,` hay `;` (ai-failure-log.md #23)
+        #   2. TỐI ĐA 64 BYTE — "Description exceeds 64 characters" (400
+        #      BadRequest). Bản đầu của dòng dưới dài đúng 65 byte và làm hỏng
+        #      `make up` ở pha 2 (D16, ai-failure-log.md). Chuỗi của D13 chỉ 55
+        #      byte nên trước giờ chưa ai va phải. Dấu tiếng Việt tính NHIỀU
+        #      byte hơn một ký tự — đếm bằng byte, đừng đếm bằng mắt.
+        # Rule outbound của fe có mô tả riêng để phân biệt trên Portal với IP
+        # nhà khai trong tfvars.
+        description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe (locals.tf)" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
 
@@ -196,11 +204,12 @@ resource "azurerm_linux_web_app_slot" "staging" {
     dynamic "ip_restriction" {
       for_each = local.be_ip_rules
       content {
-        name        = ip_restriction.key
-        ip_address  = ip_restriction.value.ip_address
-        action      = "Allow"
-        priority    = ip_restriction.value.priority
-        description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe cung App Service Plan xem locals.tf" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
+        name       = ip_restriction.key
+        ip_address = ip_restriction.value.ip_address
+        action     = "Allow"
+        priority   = ip_restriction.value.priority
+        # Tối đa 64 byte, không `,`/`;` — xem giải thích dài ở site chính.
+        description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe (locals.tf)" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
 
