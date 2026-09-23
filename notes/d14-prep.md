@@ -1,7 +1,7 @@
 # D14 — Kế hoạch chi tiết: CI đầy đủ + bằng chứng đỏ (M9)
 
 Guide gốc: `docs/guides/d14-ci-extended.md` · Bằng chứng: `evidence/M9.md` · Nhật ký: `notes/d14.md` (tạo khi làm).
-Bàn giao phiên trước: `notes/handoff-d13.md`.
+Phiên trước (D13): `notes/d13.md`.
 
 > **Đề bài nói thẳng:** "cốt lõi của M9 **không phải** pipeline chạy xanh mà là **pipeline
 > chặn được cái sai**." Nên phần nặng nhất của D14 không phải viết job, mà là **6 PR cố

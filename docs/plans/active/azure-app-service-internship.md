@@ -13,7 +13,7 @@
   - Q1. M11 "không enable App Insights" vs `/boom` "Alert + App Insights" vs lịch D20 vs brief mới đòi distributed tracing → được bật App Insights (workspace-based) làm backend trace không? Nếu không: OTel → Jaeger/Tempo (tốn hạ tầng) hoặc chỉ log `trace_id`. **Mặc định làm theo hướng (a) workspace-based App Insights, đánh dấu tạm** đến khi mentor trả lời. (chặn D20)
   - Q2. Repo public hay private? GitHub Free không có branch protection cho private. (chặn D6)
   - Q3. "5xx rate" là count hay tỷ lệ %? (chặn D22)
-  - Q4. Trivy "không còn CVE" có cho `--ignore-unfixed` không? (chặn D14)
+  - ~~Q4. Trivy "không còn CVE" có cho `--ignore-unfixed` không?~~ **Đã chốt 2026-09-23 bằng số đo thật (D14): KHÔNG** — cổng `CRITICAL,HIGH` không `--ignore-unfixed`, vì cả hai image đo ra 0 ở mức đó. Chi tiết ở mục Decisions.
   - ~~Q6. App registration cho OIDC?~~ **Đã trả lời 2026-09-15 (az cli):** tenant `allowedToCreateApps=false` → dùng user-assigned MI + federated credential.
   - ~~Q7. ABAC condition trên Owner?~~ **Đã kiểm 2026-09-15 (az cli):** 2 assignment Owner ở scope subscription, `condition = null`. Banner Portal không phản ánh giới hạn trên assignment của mình; nếu gán role vẫn bị chặn thì hỏi mentor về policy cấp trên.
   - Q8. AI-OFF gắn với tuần 1 theo lịch (trước 23/09) hay theo bài D1–D6? Làm nhanh hơn lịch thì bài D7+ trước 23/09 có được nhờ AI sinh code không? (ảnh hưởng tốc độ D7–D9)
@@ -139,15 +139,16 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] *(hoãn, không chặn D14)* 3 ảnh Portal của M6 — môi trường đã `make down`; gộp với 3 ảnh còn nợ của D12 vào một phiên có môi trường bật
 
 ### D14 — CI mở rộng
-> Kế hoạch chi tiết: **`notes/d14-prep.md`**. Không tốn tiền, không cần bật Azure.
-> Hai thứ chặn phải xử lý trước khi viết job: **Q4 chưa chốt** (phải quét thật `app/be`
-> và `app/fe` lấy số rồi mới chọn chính sách — D5 đo ảnh Rust, app nay là .NET), và
-> **required checks có thể vẫn trỏ tên job đã chết** `rust (fmt, clippy, test)`.
-> `ci.yml` hiện có 6 job, thiếu đúng `docker-build` và `trivy`.
-- [ ] Job lint + unit test — *proof: PR xanh* — **đã có sẵn** (`dotnet`, `frontend`)
-- [ ] Docker build (không push) — *proof: PR cố tình làm Dockerfile hỏng → đỏ*
-- [ ] Trivy scan image, fail khi có CVE (theo câu trả lời Q4) → đạt 0 CVE — *proof: output*
-- [ ] **Bằng chứng đỏ:** PR cắm secret giả → gitleaks đỏ + nút merge bị khoá; thử merge khi pipeline đỏ → bị chặn — *proof: 2 screenshot* → `evidence/M9.md`
+> Kế hoạch chi tiết: **`notes/d14-prep.md`**. Nhật ký: `notes/d14.md`. Không tốn tiền, không cần bật Azure.
+> Hai thứ chặn đã xử lý xong 2026-09-23: **Q4 đã chốt** bằng số đo thật (mục Decisions), và
+> **ruleset đã đọc, không đoán** — tên job chết `rust (fmt, clippy, test)` đã được gỡ từ
+> 18/09, nhưng phát hiện thứ khác: chỉ **4/6** job là required check.
+- [x] Job lint + unit test — **đã có sẵn** (`dotnet`, `frontend`)
+- [x] Docker build (không push) — `docker build + trivy (be)` và `(fe)`, build rồi quét trong cùng job
+- [x] Trivy scan image, fail khi có CVE (Q4: `CRITICAL,HIGH`, không `--ignore-unfixed`) → **0 CVE cả hai image** — *proof: `evidence/raw/d14-trivy-*-2026-09-23.txt`*
+- [x] `app/fe/Dockerfile` viết mới (chưa từng tồn tại) — không có nó thì không quét Trivy cho `fe` được
+- [ ] Ruleset `protect-main`: đủ 8 required check (đang 4)
+- [ ] **Bằng chứng đỏ:** 6 PR cố tình sai + thử merge khi đỏ → bị chặn; 1 PR xanh đối chứng → `evidence/M9.md`
 
 ### D15 — Cross-review lần 1 + dọn
 - [ ] Review repo bạn kia → `review-<tên>.md` (theo REVIEW bar: đúng, bảo mật, chứng minh được)
@@ -294,6 +295,10 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - 2026-09-23 — **D13/M6: bằng chứng 403 lấy từ GitHub Actions**, không phải đổi laptop sang hotspot như guide gợi ý — máy làm việc vốn chạy bằng chính hotspot đó nên hai bên chung một IP công khai. Workflow `.github/workflows/m6-check.yml` (`workflow_dispatch`, không secret, không OIDC) gọi 4 bề mặt và đỏ nếu mã HTTP lệch. Azure Cloud Shell làm lần đo thứ hai.
 - 2026-09-23 — **D13 → D17: CD mở tạm luật cho IP runner rồi luôn xoá** ở bước dọn `if: always()`. Loại 3 cách kia: "mở dải IP GitHub" là hàng nghìn dải, coi như mở toang và không đạt M6; "chỉ dựa vào warm-up của swap" thì CD không tự kiểm tra được SHA đang chạy; self-hosted runner thì thêm một máy phải vận hành. Rủi ro của cách đã chọn: luật tạm không bị xoá khi job chết giữa chừng → whitelist rách âm thầm, nên bước dọn phải `if: always()` và M6 phải đo lại sau mỗi lần đổi CD. Log của `m6-check.yml` chính là bằng chứng "runner bị 403 nếu không mở tạm".
 - 2026-09-23 — **D13 hiện chỉ phủ 4 bề mặt, không phải 8.** Terraform mới có **một** Web App (`be`); Web App `fe` của Q10 chưa tồn tại trong `infra/`. Khi `fe` được dựng (D16) thì `ip_restriction` + `scm_use_main_ip_restriction` phải khai lại cho nó và `evidence/M6.md` phải thêm 4 dòng — nếu không, `fe` mở ra Internet trong khi `be` đã khoá.
+
+- 2026-09-23 — **Q4 CHỐT bằng số đo thật: cổng Trivy = `CRITICAL,HIGH`, KHÔNG `--ignore-unfixed`.** Đo local (trivy 0.74.0, `--scanners vuln`): `be` (`aspnet:10.0-noble-chiseled`) **0 CRITICAL / 0 HIGH**, còn 7 MEDIUM đều ở `libc6` — 6 cái đã có bản vá `2.39-0ubuntu8.9` nhưng image Microsoft published chưa kèm (`docker pull` xác nhận base đang là bản mới nhất), 1 cái chưa có bản vá. `fe` sau khi vá Dockerfile: **0 CVE ở mọi mức**. Vì cả hai đo ra 0 ở mức cổng nên KHÔNG thêm `--ignore-unfixed`: thêm vào lúc này không đổi màu gì mà chỉ làm cổng yếu đi về sau. **Không** đưa MEDIUM/LOW vào cổng — 7 MEDIUM của `be` nằm ở base image không tự vá được, gate mức đó là CI đỏ triền miên vì thứ team không sửa được; vẫn quét và in bảng đầy đủ vào job summary để thấy drift. Cửa thoát khi buộc phải bỏ qua: `.trivyignore` kèm mã CVE + lý do + **ngày xem lại**. Output thô: `evidence/raw/d14-trivy-*-2026-09-23.txt`.
+- 2026-09-23 — **D14: `app/fe/Dockerfile` viết mới** (trước đó chưa tồn tại — `output: "standalone"` đã bật sẵn từ D11 nhưng file thì chưa có, nên vế "Trivy phải làm cho cả hai" của Q10 không thực hiện được). Hai quyết định trong đó đều do Trivy ép ra, không phải chọn trước: (1) base `node:24-alpine3.23` chứ không phải `3.22` — bản 3.22 còn openssl `3.5.6-r0` với 2 CVE HIGH đã có bản vá ở `3.5.7`/`3.5.8`; (2) **xoá npm khỏi stage runtime** — 10 CVE (trong đó **1 CRITICAL**, `tar` CVE-2026-59873) đều nằm ở `/usr/local/lib/node_modules/npm`, không cái nào thuộc app, mà runtime chạy `node server.js` thì không dùng npm. Tổng cộng 1 CRITICAL + 13 HIGH → 0, bằng cách **bớt thứ có trong image**, không phải nới chính sách quét. Ngược với phản xạ thường gặp: thấy image đỏ thì đi tìm cờ để tắt, trong khi chỗ đúng để sửa là Dockerfile.
+- 2026-09-23 — **D14: `docker-build` và `trivy` gộp một job cho mỗi service** (`docker build + trivy (be)`, `docker build + trivy (fe)`), không tách hai job. Lý do đúng như bẫy guide cảnh báo: image nằm trong docker daemon của runner, job khác không thấy — tách ra thì phải `docker save`/artifact/`docker load` (thêm chỗ để lệch), hoặc tệ hơn là Trivy lặng lẽ kéo một image trùng tên từ Internet về quét và báo xanh cho thứ không phải bản vừa build. Giá phải trả: tên job dài hơn và required checks thành 8 thay vì 7.
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
