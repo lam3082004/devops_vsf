@@ -71,4 +71,6 @@ Từ máy bạn (whitelist chưa bật ở bài này, hoặc từ IP đã allow 
 3. Firewall MySQL theo outbound IP có chặn được app khác cùng scale unit Azure không? (hạn chế của cách này — gợi ý: S3 Private Endpoint)
 
 ## Xong khi
-- [ ] tham chiếu xanh cả 2 slot · [ ] `/items` đọc ghi · [ ] firewall đúng · [ ] M5 gãy → hồi phục có log · [ ] `evidence/M3.md` `evidence/M4.md` `evidence/M5.md` · [ ] drift đã xoá
+- [x] tham chiếu xanh cả 2 slot · [x] `/items` đọc ghi · [x] firewall đúng (31 = 31) · [x] M5 gãy → hồi phục có log · [x] `evidence/M3.md` `evidence/M4.md` `evidence/M5.md` · [x] drift đã xoá (`plan` No changes 08:42 ngày 23/09)
+
+**D12 XONG 2026-09-23.** Còn thiếu ảnh Portal — danh sách ở cuối `notes/d12.md`.

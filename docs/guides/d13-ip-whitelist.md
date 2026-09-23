@@ -2,6 +2,13 @@
 
 **Cần:** D12 · **Chi phí:** có · **Bằng chứng:** `evidence/M6.md`
 
+> **Kế hoạch chi tiết: `notes/d13-prep.md`** (4 decision, 8 bước, bảng bẫy, gợi ý trả lời 3 câu tự kiểm tra).
+> Hai điểm đã chốt trước khi viết code: **hạ tầng hiện chưa có luật truy cập nào**, và
+> **không dùng được cách test bằng hotspot** — máy làm việc đi chung IP với điện thoại, nên
+> bằng chứng 403 lấy từ GitHub Actions hoặc Azure Cloud Shell. Tên thuộc tính azurerm
+> (`ip_restriction_default_action`, `scm_use_main_ip_restriction`) đã kiểm bằng
+> `terraform providers schema`, không phải đoán.
+
 ## Mục tiêu (M6)
 Chỉ IP cho phép truy cập được app. `curl` từ IP cho phép → 200; từ IP khác (hotspot điện thoại hoặc VM region khác) → 403.
 
