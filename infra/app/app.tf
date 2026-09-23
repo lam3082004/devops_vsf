@@ -84,6 +84,10 @@ resource "azurerm_linux_web_app" "app" {
 
     # M6: mặc định chặn, chỉ IP trong var.allowed_ips được vào. Đọc CẢNH BÁO ở
     # variables.tf trước khi apply với map rỗng.
+    #
+    # `description` KHÔNG được chứa dấu `,` hay `;` — Azure trả 400 BadRequest
+    # `IpSecurityRestriction.Description has an invalid value`. `terraform
+    # validate` không bắt được, chỉ lộ ra lúc apply (ai-failure-log.md #23).
     ip_restriction_default_action = "Deny"
     # Kudu/SCM dùng CHUNG danh sách với site chính (Decision A). Để danh sách SCM
     # riêng thì mặc định của nó là "Deny all" và quên khai allow là tự khoá mình
@@ -97,7 +101,7 @@ resource "azurerm_linux_web_app" "app" {
         ip_address  = ip_restriction.value.ip_address
         action      = "Allow"
         priority    = ip_restriction.value.priority
-        description = "M6 (D13) — khai trong terraform.tfvars, không commit"
+        description = "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
 
@@ -173,7 +177,7 @@ resource "azurerm_linux_web_app_slot" "staging" {
         ip_address  = ip_restriction.value.ip_address
         action      = "Allow"
         priority    = ip_restriction.value.priority
-        description = "M6 (D13) — khai trong terraform.tfvars, không commit"
+        description = "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
 
