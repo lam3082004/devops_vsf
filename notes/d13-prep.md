@@ -113,8 +113,41 @@ Bốn bề mặt, ép IPv4:
 
 ### 4. Test 403 từ IP khác (Decision: GitHub Actions)
 
-- [ ] Thêm `.github/workflows/m6-check.yml`, trigger **chỉ** `workflow_dispatch`, không chạy theo push:
-  job in `curl -4 -s https://ifconfig.me` (IP của runner) rồi curl 4 URL, in mã HTTP. Không cần secret, không cần OIDC — chỉ gọi HTTP từ ngoài vào.
+- [ ] Thêm `.github/workflows/m6-check.yml`, trigger **chỉ** `workflow_dispatch`, không chạy
+      theo push. Không cần secret, không cần OIDC — chỉ gọi HTTP từ ngoài vào:
+
+```yaml
+name: M6 check (403 tu IP ngoai)
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: ten Web App, vi du app-vsf-j124ze
+        required: true
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: IP cua runner
+        run: curl -4 -s https://ifconfig.me; echo
+      - name: 4 be mat - ky vong 403 het
+        env:
+          APP: ${{ inputs.app }}
+        run: |
+          for u in \
+            "https://$APP.azurewebsites.net/health" \
+            "https://$APP-staging.azurewebsites.net/health" \
+            "https://$APP.scm.azurewebsites.net" \
+            "https://$APP-staging.scm.azurewebsites.net"; do
+            code=$(curl -4 -s -o /dev/null -w '%{http_code}' --max-time 20 "$u")
+            echo "$(date -Is)  $u  -> $code"
+          done
+```
+
+      Truyền tên app qua `inputs`, **đừng ghim suffix vào file** — suffix đổi mỗi lần dựng
+      lại môi trường (D12 là `j124ze`, D11 là `c2021f`). `-4` là bắt buộc: xem Decision C.
 - [ ] Chạy workflow, lưu log → 4 URL đều **403**.
 - [ ] Lặp lại từ Azure Cloud Shell cho lần đo thứ hai, chụp màn hình.
 - *Vì sao phải có bước này:* chứng minh ngược của M6. Chỉ có 200 thì chưa chứng minh được gì —
