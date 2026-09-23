@@ -132,13 +132,19 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] Rà soát: không còn secret plaintext nào trong app settings — *proof: screenshot* → `evidence/M4.md`
 - [ ] **Chứng minh ngược M5:** gỡ role MI khỏi KV → refresh reference/restart → app gãy → trả role → app sống lại — *proof: log từng bước* → `evidence/M5.md` (sau đó `apply` lại để không lệch state)
 
-### D13 — IP whitelist
-- [ ] Access restrictions cho prod slot, staging slot và SCM site; default deny — *proof: plan*
-- [ ] curl từ IP cho phép → 200; từ hotspot điện thoại → 403 — *proof: log 2 lần curl kèm IP nguồn* → `evidence/M6.md`
-- [ ] Ghi vấn đề: runner GitHub không nằm trong whitelist → cách xử lý cho CD tuần 4 (Decision)
+### D13 — IP whitelist ✅ **XONG 2026-09-23** (PR #30 + #31, môi trường suffix `p0hef1`)
+- [x] Access restrictions cho prod slot, staging slot và SCM site; default deny — *proof:* `infra/app/app.tf`, `evidence/raw/d13-m6-access-restriction*.json`. **Cần 3 dòng chứ không phải 2:** `ip_restriction_default_action` + `scm_use_main_ip_restriction` + **`scm_ip_restriction_default_action`** — thiếu dòng thứ ba thì Kudu vẫn mở
+- [x] curl từ IP cho phép → 200; từ IP ngoài → 403 — *proof:* 4 bề mặt × 3 nguồn IP trong `evidence/M6.md`; runner GitHub `134.33.77.40` 403 cả bốn ([run xanh](https://github.com/lam3082004/devops_vsf/actions/runs/35819073928)), run đỏ trước khi vá giữ lại làm bằng chứng lỗ hổng. Cách test của guide (đổi sang hotspot) **không dùng được** — dùng GitHub Actions + Cloudflare WARP
+- [x] Ghi vấn đề: runner GitHub không nằm trong whitelist → Decision "mở tạm luật cho IP runner, xoá ở bước `if: always()`" (mục Decisions, dùng lại ở D17)
+- [ ] *(hoãn, không chặn D14)* 3 ảnh Portal của M6 — môi trường đã `make down`; gộp với 3 ảnh còn nợ của D12 vào một phiên có môi trường bật
 
 ### D14 — CI mở rộng
-- [ ] Job lint + unit test — *proof: PR xanh*
+> Kế hoạch chi tiết: **`notes/d14-prep.md`**. Không tốn tiền, không cần bật Azure.
+> Hai thứ chặn phải xử lý trước khi viết job: **Q4 chưa chốt** (phải quét thật `app/be`
+> và `app/fe` lấy số rồi mới chọn chính sách — D5 đo ảnh Rust, app nay là .NET), và
+> **required checks có thể vẫn trỏ tên job đã chết** `rust (fmt, clippy, test)`.
+> `ci.yml` hiện có 6 job, thiếu đúng `docker-build` và `trivy`.
+- [ ] Job lint + unit test — *proof: PR xanh* — **đã có sẵn** (`dotnet`, `frontend`)
 - [ ] Docker build (không push) — *proof: PR cố tình làm Dockerfile hỏng → đỏ*
 - [ ] Trivy scan image, fail khi có CVE (theo câu trả lời Q4) → đạt 0 CVE — *proof: output*
 - [ ] **Bằng chứng đỏ:** PR cắm secret giả → gitleaks đỏ + nút merge bị khoá; thử merge khi pipeline đỏ → bị chặn — *proof: 2 screenshot* → `evidence/M9.md`
