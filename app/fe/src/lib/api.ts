@@ -7,6 +7,8 @@ if (typeof window !== "undefined") {
   );
 }
 
+import { connection } from "next/server";
+
 import type {
   AddCommentInput,
   Comment,
@@ -96,6 +98,11 @@ interface RequestOptions {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  // connection() phải đứng TRƯỚC requireBaseUrl(): lúc `next build` (trong Docker) không có
+  // API_BASE_URL, requireBaseUrl() ném lỗi thường trước khi fetch no-store kịp chạy → Next không thấy
+  // tín hiệu dynamic, prerender tĩnh trang có banner lỗi rồi cache 1 năm (s-maxage=31536000), runtime
+  // không bao giờ gọi backend. Gọi ở đây ép mọi page/route đọc backend render lúc request.
+  await connection();
   const baseUrl = requireBaseUrl();
   const headers = new Headers({ Accept: "application/json" });
   if (options.traceparent) headers.set("traceparent", options.traceparent);
