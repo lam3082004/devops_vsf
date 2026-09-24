@@ -4,18 +4,20 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-23 (D16 làm dở)
+## Tiến độ — cập nhật 2026-09-24 (hết D16)
 
 **D1–D14 xong. D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **đang tắt**
 (chỉ còn `rg-vsf-bootstrap`).
-**Bài đang làm: D16 — CD pipeline, LÀM DỞ.** Nhật ký: `notes/d16.md`. Kế hoạch gốc:
-`notes/d16-prep.md` (⚠️ mục "vấp #1" của file đó **kê sai thuốc** — cả hai cách nó đề xuất đều
-tạo `Cycle:` trong Terraform; cách chữa thật ở `notes/d16.md`).
+**D16 XONG — M10 ĐẠT.** Nhật ký: `notes/d16.md` · bằng chứng: `evidence/M10.md`.
+Kế hoạch gốc `notes/d16-prep.md` có một chỗ **kê sai thuốc** (mục "vấp #1": cả hai cách nó đề
+xuất đều tạo `Cycle:` trong Terraform) — cách chữa thật ở `notes/d16.md`.
 
-**Đã xong, không tốn tiền, kiểm chứng được:** Web App `fe` + slot trong Terraform · sửa
-`ip_restriction` của `be` · 3 role cho `id-gh-deploy` · 4 federated credential dạng
-`environment:` · 2 GitHub environment giới hạn nhánh `main` · `cd.yml` 3 job.
-**Chưa làm, cần bật Azure:** `make up` (nay **3 pha**) · chạy end-to-end · `evidence/M10.md`.
+Một lần chạy end-to-end thật: merge PR #43 → CD tự chạy đủ 3 job → `/version` của **cả hai**
+service đổi sang đúng SHA `e6658dc1…`, không một thao tác tay. Môi trường suffix `gdiz89`,
+`make up` nay **3 pha**, 35 resource.
+
+**Đi kèm:** `fe` có `/api/version` (M2 ở D18 sẽ cần) · M6 đo lại đủ **8 bề mặt** (4 be + 4 fe)
+· `make up` phát hiện `description` của `ip_restriction` giới hạn **64 byte**.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -26,14 +28,15 @@ tạo `Cycle:` trong Terraform; cách chữa thật ở `notes/d16.md`).
 | M6 — IP whitelist 4 bề mặt | ĐẠT (D13) | `evidence/M6.md` — *thiếu 3 ảnh Portal* |
 | M8 — Terraform toàn bộ hạ tầng | ĐẠT lần 1 (D10) | `evidence/M8.md` — *cần lần 2 ở D15* |
 | M9 — CI chặn được cái sai | ĐẠT (D14) | `evidence/M9.md` |
-| M2, M7, M10, M11 | chưa tới lịch | D16–D22 |
+| M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — *còn nợ 1 ảnh: nhánh khác bị chặn* |
+| M2, M7, M11 | chưa tới lịch | D18–D22 |
 
 **Còn nợ, không chặn D16:**
 - **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
 - **6 ảnh Portal** — `notes/screenshot-debt.md`. Ban đầu định gộp vào cửa sổ `make up` của
   M8 lần 2 ở D15; D15 hoãn nên **chụp trong cửa sổ `make up` của D16** (bước 5), vì bài đó
   cũng phải bật môi trường. Cần trình duyệt: Chrome extension của Claude chưa kết nối.
-**Sổ lỗi:** `ai-failure-log.md` 29 case (đề cần 6–8) · `known-issues.md` 14 mục.
+**Sổ lỗi:** `ai-failure-log.md` 30 case (đề cần 6–8) · `known-issues.md` 17 mục.
 
 ## Authority
 
@@ -216,9 +219,10 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Bốn federated credential dạng `environment:` — job có `environment` đổi subject OIDC sang `repo:O/R:environment:<tên>`, thiếu là `azure/login` fail *(kế hoạch gốc không nêu)*
 - [x] Hai GitHub environment `staging-deploy` / `production`, cả hai giới hạn nhánh `main` — **không** có reviewer, xem trên
 - [x] `cd.yml` 3 job: `preflight` (ngoài environment, bỏ qua xanh khi Azure tắt) → `build-deploy-staging` → `swap`
-- [ ] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — *proof: nhánh khác không deploy được* — **cần chạy thật**
-- [ ] Chạy end-to-end → `/version` production đổi SHA trên **cả hai** service → `evidence/M10.md` — **cần `make up`**
-- [x] `evidence/M6.md` — đã ghi `fe` thêm 4 bề mặt (tổng 8), **đánh dấu rõ là chưa đo**; phần đo thật còn nợ
+- [x] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — cấu hình đã kiểm bằng `gh api`; ảnh chạy tay từ nhánh khác còn nợ
+- [x] Chạy end-to-end → `/version` production đổi SHA trên **cả hai** service → `evidence/M10.md`
+- [x] `evidence/M6.md` — `fe` thêm 4 bề mặt (tổng **8**), đã **đo thật**: 8/8 trả 403 từ IP ngoài
+- [x] `fe` có `/api/version` — trước D16 không có route nào trả SHA nên không kiểm được service này
 
 ### D17 — Swap an toàn
 - [ ] Health check path + swap warm-up path `/health`; xác định setting nào slot-sticky — *proof: Decision*
