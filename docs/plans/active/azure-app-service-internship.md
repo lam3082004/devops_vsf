@@ -4,7 +4,7 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-24 (hết D16)
+## Tiến độ — cập nhật 2026-09-24 (hết D16 · D17 đã có kế hoạch)
 
 **D1–D14 xong. D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **đang tắt**
 (chỉ còn `rg-vsf-bootstrap`).
@@ -19,6 +19,14 @@ service đổi sang đúng SHA `e6658dc1…`, không một thao tác tay. Môi t
 **Đi kèm:** `fe` có `/api/version` (M2 ở D18 sẽ cần) · M6 đo lại đủ **8 bề mặt** (4 be + 4 fe)
 · `make up` phát hiện `description` của `ip_restriction` giới hạn **64 byte**.
 
+**Rà lại CI/CD sau D16 (2026-09-24, chỉ đọc):** lành, không lỗ mới — 8 job ↔ 8 required check
+khớp 1:1, 0 `continue-on-error`, 2 environment khoá `main`, 6 federated credential, actionlint 0
+lỗi, hợp đồng CI chạy lại ở máy xanh; 5 run CD gần nhất đủ 3 hành vi (bỏ qua khi tắt · deploy đủ ·
+nhánh khác chết ở `azure/login`). Chi tiết: `notes/d16.md` mục cuối.
+
+**Bài tiếp: D17 — kế hoạch làm tay từng bước ở `notes/d17-prep.md`** (4 quyết định A–D cần chốt
+trước khi viết code). D17 phải xong trước D18, nếu không phép đo M2 không có giá trị.
+
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
 | M1 — ACR pull bằng MI | ĐẠT (D11) | `evidence/M1.md` |
@@ -28,14 +36,17 @@ service đổi sang đúng SHA `e6658dc1…`, không một thao tác tay. Môi t
 | M6 — IP whitelist 4 bề mặt | ĐẠT (D13) | `evidence/M6.md` — *thiếu 3 ảnh Portal* |
 | M8 — Terraform toàn bộ hạ tầng | ĐẠT lần 1 (D10) | `evidence/M8.md` — *cần lần 2 ở D15* |
 | M9 — CI chặn được cái sai | ĐẠT (D14) | `evidence/M9.md` |
-| M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — *còn nợ 1 ảnh: nhánh khác bị chặn* |
+| M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — đủ, kể cả lớp 3 (run `35925778364`) |
 | M2, M7, M11 | chưa tới lịch | D18–D22 |
 
-**Còn nợ, không chặn D16:**
+**Còn nợ, không chặn D17:**
 - **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
-- **6 ảnh Portal** — `notes/screenshot-debt.md`. Ban đầu định gộp vào cửa sổ `make up` của
-  M8 lần 2 ở D15; D15 hoãn nên **chụp trong cửa sổ `make up` của D16** (bước 5), vì bài đó
-  cũng phải bật môi trường. Cần trình duyệt: Chrome extension của Claude chưa kết nối.
+- **6 ảnh Portal** — `notes/screenshot-debt.md`. **Cửa sổ D16 không chụp được** → dời sang
+  cửa sổ `make up` của D17 (`notes/d17-prep.md` Pha D).
+- **Ba việc vặt, không tốn tiền, chen được bất cứ lúc nào:** chuyển `docs/docs_app/architecture.md`
+  về **gốc repo** (`topic.md` mục deliverables đòi `architecture.md` ở đó) · test cho `app/fe`
+  (`known-issues.md` #16 — D17 quyết định B có thể mở màn) · dựng lại state `infra/bootstrap`
+  bằng `terraform import` (#17, **nên làm trước M8 lần 2**).
 **Sổ lỗi:** `ai-failure-log.md` 30 case (đề cần 6–8) · `known-issues.md` 17 mục.
 
 ## Authority
@@ -202,7 +213,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] Tự review repo mình trước bằng chính checklist của guide (3 điểm ⚠️ đã biết, xem prep)
 - [ ] Cập nhật `README.md` bản nháp (prereq, biến cần set, up/down, teardown)
 - [ ] `destroy` → `apply` lại lần 2 sau khi thêm ACR/KV/whitelist — *proof: log* (cập nhật M8)
-- [ ] **6 ảnh Portal còn nợ** (M6 ×3, D12 ×3) — `notes/screenshot-debt.md`, làm trong cửa sổ `make up` ở trên
+- [ ] **6 ảnh Portal còn nợ** (M6 ×3, D12 ×3) — `notes/screenshot-debt.md`. D16 không kịp chụp → **dời sang cửa sổ `make up` của D17** (`notes/d17-prep.md` Pha D)
 
 ---
 
@@ -219,15 +230,22 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Bốn federated credential dạng `environment:` — job có `environment` đổi subject OIDC sang `repo:O/R:environment:<tên>`, thiếu là `azure/login` fail *(kế hoạch gốc không nêu)*
 - [x] Hai GitHub environment `staging-deploy` / `production`, cả hai giới hạn nhánh `main` — **không** có reviewer, xem trên
 - [x] `cd.yml` 3 job: `preflight` (ngoài environment, bỏ qua xanh khi Azure tắt) → `build-deploy-staging` → `swap`
-- [x] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — cấu hình đã kiểm bằng `gh api`; ảnh chạy tay từ nhánh khác còn nợ
+- [x] Deploy chỉ từ `main`, chứng minh đủ **3 lớp** (trigger · deployment branch rule · OIDC subject) — cấu hình kiểm bằng `gh api`; lớp 3 đo bằng run thật `35925778364` (`AADSTS700213`)
 - [x] Chạy end-to-end → `/version` production đổi SHA trên **cả hai** service → `evidence/M10.md`
 - [x] `evidence/M6.md` — `fe` thêm 4 bề mặt (tổng **8**), đã **đo thật**: 8/8 trả 403 từ IP ngoài
 - [x] `fe` có `/api/version` — trước D16 không có route nào trả SHA nên không kiểm được service này
 
 ### D17 — Swap an toàn
-- [ ] Health check path + swap warm-up path `/health`; xác định setting nào slot-sticky — *proof: Decision*
-- [ ] Bước chờ staging trả đúng SHA mới (xử lý whitelist cho runner theo Decision D13, luôn gỡ rule tạm trong bước cleanup) — *proof: run log*
-- [ ] Swap staging → production — *proof: run log* → `evidence/M10.md` (1 lần chạy end-to-end từ merge)
+> Kế hoạch làm tay từng bước: **`notes/d17-prep.md`** (Pha A code lúc Azure tắt → B `make up` →
+> C 4 tình huống → D ghi chép → E `make down`). Nhật ký: `notes/d17.md`. **Tốn tiền** từ Pha B.
+> Chốt trước: A health path của `fe` · B cách chứng minh `fe`-staging gọi `be`-staging · C thử
+> rollback thật · D start time limit.
+- [ ] Health check path + swap warm-up path (`be` `/health`, `fe` theo quyết định A) + warm-up statuses `200`, bằng Terraform cho cả 4 khối site/slot — *proof: `az webapp config show` + `appsettings list` cả 4 bề mặt*
+- [ ] `API_BASE_URL` slot-sticky, `fe` staging trỏ `be` staging (đóng `known-issues.md` #15) — *proof: `slotSetting=true`, `terraform plan` sau swap No changes*
+- [ ] Bỏ `sleep 75`; job `swap` tự poll staging đúng SHA + health 200, dùng luật IP tạm cho runner (Decision D13) — *proof: run log*
+- [ ] Kiểm production sau swap, lỗi thì **swap ngược** trong cùng run — *proof: run log + activity log 2 swap/app*
+- [ ] Luật tạm luôn được gỡ (`if: always()`) — *proof: `access-restriction show` rỗng tên `cd-*`, `terraform plan` No changes, `m6-check` 403 ×8*
+- [ ] 3 tình huống lỗi của guide có run link (không khởi động · `/health` 503 · luật tạm) — *proof: `notes/d17.md`, `evidence/M10.md` mục D17*
 
 ### D18 — Bằng chứng zero-downtime
 - [ ] Script poll `/version` mỗi giây, ghi timestamp · HTTP code · version — *proof: script trong repo*
@@ -313,12 +331,15 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - [x] BE-5: test tích hợp MySQL thật + CI `services: mysql:8.4` + `make test-db` — *proof: `make check` 127 pass/12 skip, `make test-db` 139 pass/0 skip; trỏ `TEST_DB_NAME` sai → đúng 12 test đỏ (chứng minh không false-green)*
 - [x] BE-6: `app/be/seed.sql` 18 ticket / 7 bình luận / 31 activity — *proof: nạp vào DB thật, `/stats` ra `open_critical=1`, `avg_resolution_minutes=185`, 4 cột kanban đều có dữ liệu*
 - [x] Sửa 2 bug rò rỉ tên field trong message lỗi (`'id'` và `'payload'` thay vì tên field thật) — *proof: 3 trường hợp đều đúng trên app chạy thật*
-- [ ] FE-2→FE-5: kanban, danh sách + tạo, chi tiết, thống kê — *proof: chạy local với BE thật*
-- [x] FE-1 nền frontend: `types.ts` + `api.ts` (client phía server) + 4 route handler BFF + `NameGate` + layout nav + 4 trạng thái UI — *proof: `npm run lint` + `next build` sạch; chuỗi thật trình duyệt → BFF → backend → MySQL trả đúng lỗi từng chặng*
-- [ ] FE: màn hình theo `wire-frame.md` (kanban, danh sách, tạo, chi tiết, thống kê) — *proof: chạy local với BE thật*
+- [x] FE-1→FE-5: nền BFF + kanban (@dnd-kit) + danh sách/lọc/tạo + chi tiết + thống kê — *proof: HTTP thật với BE + MySQL; số đếm cột khớp `/stats`, lọc `?status=closed` ra đúng 4 dòng, hành trình tạo→kanban→chi tiết→bình luận→đổi trạng thái→thống kê thông suốt; tắt BE thì cả 4 trang hiện banner + nút "Thử lại"*
+- [x] Swagger dùng được: `ProducesResponseType` đủ mã cho 9 path, `X-User-Name` khai bắt buộc đúng 4 operation ghi, tắt ở Production — *proof: `/swagger` 200 ở Development, 404 ở Production; `swagger.json` có `409` ở `PATCH status`*
+- [x] **Sửa bug chặn:** tên tiếng Việt trong header `X-User-Name` làm hỏng mọi thao tác ghi ("lâm"→400, "hiếu"→fetch ném lỗi). Percent-encode phía gửi, decode ở backend — *proof: curl UTF-8 → 201 vs curl Latin-1 → 400; sau sửa cả 3 dạng tên đều 201, reporter trả về đúng dấu*
+- [x] Việt hoá toàn bộ nhãn (trừ "OpsBoard") + seed tiếng Việt có dấu (`SET NAMES utf8mb4`) + nút đổi Sáng/Tối/Theo hệ thống — *proof: HTML không còn nhãn tiếng Anh; giá trị API giữ nguyên (lọc vẫn 4 dòng, key `/stats` không đổi)*
+- [x] **4 PR đã merge vào `main`**: #22 (tài liệu/công cụ) · #28 (BE domain + Swagger) · #24 (test tích hợp) · #25 (FE + 2 bản sửa) — *proof: CI xanh đủ 6 job mỗi PR; `dotnet` 2m2s vì test MySQL thật chạy*
+- [x] FE: màn hình theo `wire-frame.md` (kanban, danh sách, tạo, chi tiết, thống kê) — *proof: như FE-1→FE-5 ở trên, PR #25*
 - [x] CI cho `fe` (job `frontend`: `npm ci` + lint + `next build`) — *proof: YAML hợp lệ 6 job, `npm ci` + lint xanh local*
 - [x] Đổi tên kỹ thuật `NodeRegistry` → **OpsBoard** (csproj, namespace, assembly, Dockerfile, Makefile, ci.yml, `DB_NAME` local) — *proof: `make test` 12 pass, `make lint` sạch sau khi đổi*
-- [ ] Dockerfile cho `fe` + Trivy scan image `fe`, CD hai service, Terraform web app thứ hai + access restriction — *Q10 đã chốt: hai service*
+- [x] Dockerfile cho `fe` + Trivy scan image `fe`, CD hai service, Terraform web app thứ hai + access restriction — *proof: Dockerfile + Trivy ở D14 (PR #32, `evidence/M9.md`); Web App `fe` + CD hai service ở D16 (PR #42–#44, `evidence/M10.md`)*
 - [ ] `TriageProvider` (bản luật) — Jev thật để Stretch, cần duyệt
 
 ~~Q10~~ **đã chốt 2026-09-21: hai service** (`fe` + `be`, hai Web App trên cùng một App Service Plan).
@@ -370,6 +391,8 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-24 14:50: **Môi trường ĐANG BẬT, suffix `jcip0s`** (`make up` do người dùng chạy). Run CD chạy tay `35971154164` (07:43Z) thành công: production `be` + `fe` = `9d4e160`, `/health` `db: ok`, 4 endpoint 200; hai slot staging giữ placeholder (đúng sau swap). ⚠️ **Whitelist sai:** luật `cong-ty` = `104.30.170.218/32` là IP thoát **Cloudflare WARP** (AS13335), không phải IP nhà mạng — mở app cho người dùng WARP khác và đổi IP bất chợt (nghi là nguyên nhân 403 lúc 11:36). `mentor`/`nha-lam` là IP dải tài liệu `198.51.100.x`/`203.0.113.x`, không dùng được. Việc cần làm: tắt WARP → đo IP thật nhiều lần → sửa `terraform.tfvars` → `terraform apply` (hỏi trước). **Cuối phiên: `make down`.** Swagger trên staging: đề xuất cờ `SWAGGER_ENABLED` slot-sticky, gộp vào D17 Pha A (chưa làm).
+- 2026-09-24 (chiều): **Rà lại CI/CD sau D16 + lên kế hoạch D17.** Không tốn tiền, Azure vẫn tắt. Pipeline D16 lành (chi tiết `notes/d16.md` mục cuối); không lỗ mới, 3 lỗ đã ghi sổ (`sleep 75`/không kiểm production sau swap · #15 · #16). Kế hoạch làm tay `notes/d17-prep.md`. **Lưu ý:** checkout chính ở máy đứng ở `b41af2d`, sau 5 commit D16 — `git pull` trước khi đọc, và sửa chưa commit trên file plan ở đó (mục OpsBoard FE) đã được gộp vào bản này. **Bước tiếp:** chốt 4 quyết định A–D trong `notes/d17-prep.md`, rồi Pha A trên nhánh `feat/d17-safe-swap`.
 - 2026-09-21 (tối): **BE-1 xong** — `ApiSetup` gom DI/JSON/pipeline (hết 4 khối trùng giữa `Program.cs` và `HttpTests.cs`), `Result<T>` có `ErrorKind` 400/404/409, `JsonStringEnumConverter` snake_case, `EnumNames<T>`, đảo quy tắc null, `TraceIdMiddleware` (+`trace_id` trong log), `UserNameFilter`. **38 test pass** (trước 12). Chạy thật với MySQL: `/health` ok, `X-Trace-Id` có, `traceparent` từ client được giữ nguyên, thiếu `X-User-Name` → 400, body hỏng → `ErrorResponse`. Hai ca AI sai ghi vào `ai-failure-log.md` #12, #13. Cài lại gitleaks + pre-commit hook (`scripts/install-hooks.sh`) và docker compose plugin. Bài tiếp: BE-2 (domain Ticket).
 - 2026-09-21 18:35: **D11 XONG. D1–D11 đã đóng, sẵn sàng D12.** Swap 18:08 → production `/version`=`c710815`, `/health` `db: ok`, image ACR, cờ MI + client id đúng sau swap. Lease mồ côi trên `app.tfstate` đã gỡ (người dùng `lease break` sau khi tắt Cloudflare WARP); mạng đo lại **20/20**; `terraform plan` chạy trọn → **No changes** (bằng chứng quyết định cho `ignore_changes`). Tranh thủ lấy luôn **M3 của D12**: POST `/items` 201 + GET `/items` 200 trên production (bản ghi `d11-check-182949`) — chép sang `evidence/M3.md` khi làm D12. 5 commit trên `feat/d11-acr-mi-pull`. **CÒN LẠI: `make down`** (môi trường bật từ ~16:14) và đưa các commit vào `main`.
 - 2026-09-21 18:20: **D11 xong về mặt bằng chứng M1; còn 1 việc chặn kỹ thuật.** Swap lúc 18:08 → production `/version` = `c710815`, `/health` `db: ok`, image ACR, cờ MI + client id đúng sau swap (staging nhận lại placeholder — đúng thiết kế). `evidence/M1.md` đủ, chỉ còn ô "chứng minh ngược" chủ ý hoãn sang D12 M5. 9 ảnh + tài liệu đã commit trên `feat/d11-acr-mi-pull` (`c710815`, `1c6c4a2`, `44bb3fd`). **CHẶN:** `terraform plan` lúc 18:12 đứt vì mạng và **không nhả được state lock** → lease `infinite` mồ côi trên `app.tfstate`, metadata rỗng nên `force-unlock` vô dụng; phải `az storage blob lease break` (Claude Code chặn, người dùng chạy). Lease này **chặn cả `make down`**. Môi trường vẫn BẬT từ ~16:14. Mạng lỗi 3 lần liên tiếp 18:10–18:15 — kiểm WARP trước khi destroy. Chi tiết `notes/d11.md`.
