@@ -18,7 +18,15 @@ permissions:
 
 # MỘT nhóm deploy DUY NHẤT cho toàn bộ pipeline — khác ci-terraform-plan (nhóm
 # theo ref) và khác ci chính (nhóm theo ref, huỷ được): ở đây hai lần merge
-# liên tiếp vào main phải XẾP HÀNG, không được chạy chồng lên nhau.
+# liên tiếp vào main không được chạy CHỒNG lên nhau.
+#
+# Không phải "xếp hàng vô hạn": GitHub chỉ giữ MỘT run đang chạy + MỘT run
+# CHỜ trong mỗi group. Merge dồn dập (3 lần merge liên tiếp) thì run đang chờ
+# CŨ HƠN bị HUỶ (status cancelled) mỗi khi có run mới hơn vào hàng — hàng đợi
+# tối đa dài 2, không phải "n lần merge thì n run nối đuôi nhau". Hệ quả: với
+# merge dồn dập, commit ở giữa không được deploy RIÊNG, nhưng không mất — run
+# mới nhất còn lại luôn build từ main mới nhất, tức đã chứa nó. Thấy một run
+# CD ở trạng thái cancelled trong danh sách là bình thường, không phải lỗi.
 #
 # cancel-in-progress: false là CỐ Ý, ngược hẳn với ci.yml. Swap slot không phải
 # thao tác nguyên tử theo góc nhìn người quan sát: nếu merge thứ hai huỷ ngang

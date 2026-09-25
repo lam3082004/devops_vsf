@@ -14,6 +14,9 @@ Phiên trước: `notes/d16.md` (mục cuối "Rà lại CI/CD 2026-09-24" — p
 | **Xong khi** | 5 ô cuối guide: health/warm-up bằng Terraform · CD chờ đúng SHA · rollback tự động · 3 tình huống lỗi có run link · không còn luật tạm |
 | **Sau D17** | D18 (M2 zero-downtime) mới đo được có giá trị. |
 
+⚠️ **Môi trường `jcip0s` để BẬT qua đêm 24→25/09 theo quyết định của người dùng** (rà lại lần hai + test luồng thật, `notes/d16.md` mục
+"Bug lọt qua D16"). **`make down` trước khi bắt đầu D17** — Pha A của D17 làm lúc Azure tắt.
+
 **Kỷ luật đã trả giá, đừng dính lại** (`known-issues.md`):
 - Đừng mở PR / re-run job khi `make up`/`make down` **chưa xong** (#9).
 - Đừng mở nhiều PR cùng lúc — các tình huống lỗi ở Pha C phải làm **tuần tự**, PR sau chỉ mở khi
@@ -27,7 +30,7 @@ Ghi câu trả lời vào `notes/d17.md` mục Decisions. Cột "Đề xuất" l
 | # | Câu hỏi | Lựa chọn | Đề xuất |
 |---|---|---|---|
 | A | Health check / warm-up path của `fe`? `fe` **không có** `/health`, chỉ có `/api/version` | (a) `/api/version` — chỉ chứng minh process sống · (b) route mới `/api/health` gọi `be` `/health` | **(a) cho health check nền tảng + warm-up.** (b) làm `fe` bị đánh dấu hỏng khi `be` hỏng — restart `fe` không chữa được `be`, chỉ làm tệ thêm |
-| B | CD kiểm "fe staging nói chuyện được với be staging" (#15) bằng gì? Các trang của `fe` trả **200 kèm banner lỗi** khi `be` chết, nên mã HTTP của trang không chứng minh gì | (a) không kiểm, chỉ tin cấu hình · (b) thêm `/api/health` ở `fe` (gọi `be` `/health` qua `API_BASE_URL`, trả kèm host đã gọi) và **chỉ CD poll** nó, không dùng làm health check nền tảng | **(b).** Nhỏ (một route), và là thứ duy nhất chứng minh được #15 đã chữa bằng số đo. Kèm 1–2 test → bắt đầu đóng #16 luôn |
+| B | CD kiểm "fe staging nói chuyện được với be staging" (#15) bằng gì? Các trang của `fe` trả **200 kèm banner lỗi** khi `be` chết, nên mã HTTP của trang không chứng minh gì | (a) không kiểm, chỉ tin cấu hình · (b) thêm `/api/health` ở `fe` (gọi `be` `/health` qua `API_BASE_URL`, trả kèm host đã gọi) và **chỉ CD poll** nó, không dùng làm health check nền tảng | **Khuyến nghị mạnh (b).** Bằng chứng mới: PR #46 (`notes/d16.md` mục "Bug lọt qua D16", `known-issues.md` #18) — kiểm SHA không đủ, CD + `evidence/M10.md` đều xanh suốt D16 trong khi UI production `fe` đóng băng banner lỗi cả buổi, không ai bắt được vì không có gì poll việc `fe` gọi được `be` thật. Nhỏ (một route), và là thứ duy nhất chứng minh được #15 đã chữa bằng số đo. Kèm 1–2 test → bắt đầu đóng #16 luôn |
 | C | Rollback tự động (bước 10b) có được **chạy thật** không? 3 tình huống của guide đều dừng **trước** swap, nên code swap ngược không bao giờ chạy | (a) không thử, chỉ đọc code · (b) thêm input `workflow_dispatch` `simulate_verify_failure` (mặc định `false`) làm bước kiểm production cố ý so sai SHA | **(b).** Code rollback chưa từng chạy = chưa có rollback. Input chỉ dùng được trên `main` (lớp 3 vẫn chặn nhánh khác). Giá: một nhánh `if` trong pipeline production — ghi rõ trong comment |
 | D | `WEBSITES_CONTAINER_START_TIME_LIMIT`? | để mặc định (230s) · đặt thấp (vd 120) | **Đo trước rồi mới đặt.** Xem log thời gian khởi động thật ở Pha C1; đặt ~3× số đo. Không có số đo thì để mặc định và ghi vậy |
 
@@ -107,6 +110,11 @@ Kiểm: `terraform -chdir=infra/app fmt -check && terraform -chdir=infra/app val
 - [ ] 1–2 test (khung test cho `app/fe` chưa có — #16; đây là lúc chọn vitest/jest + script `test`
       trong `package.json` + bước chạy trong job `frontend` của `ci.yml`). Nếu thấy phình, tách PR riêng
 - [ ] `make fe-lint && make fe-build` — build phải in `ƒ /api/health` (dynamic), không phải `○`
+- [ ] Cổng CI chặn prerender tĩnh **đã có** (`ci.yml` job `frontend`, thêm sau bug #46 —
+      `known-issues.md` #18): nó tự đọc `.next/prerender-manifest.json` sau `next build` và fail
+      nếu bất kỳ route nào (ngoài `/_...` và `/favicon.ico`) bị prerender tĩnh. `/api/health` mới
+      thêm ở đây **phải** ra `ƒ`; nếu quên `export const dynamic = "force-dynamic"` (hoặc quên gọi
+      `connection()`/fetch no-store) thì cổng này tự bắt được, không cần nhớ kiểm tay
 
 ### A4. `cd.yml` — viết lại luồng chờ + swap
 
@@ -120,10 +128,10 @@ comment dài ngay trên nó. Mọi thứ khác giữ nguyên.
 | 1 | Đăng nhập Azure OIDC | như cũ |
 | 2 | IP công khai runner | `curl -4 -s --max-time 15 https://api.ipify.org`, **kiểm đúng dạng IPv4** trước khi dùng (rỗng → fail sớm, đừng thêm luật `/32` rỗng) |
 | 3 | Thêm luật tạm vào **4 bề mặt** | tên `cd-${{ github.run_id }}-${{ github.run_attempt }}` (re-run không đụng luật cũ) · `--priority` < 100 (IP nhà bắt đầu 100) · `--description` ASCII, ≤ 64 **byte**, không `,`/`;` (#23, #30) · lệnh: `az webapp config access-restriction add -g rg-vsf-dev -n <app> [--slot staging] --rule-name … --action Allow --ip-address <ip>/32 --priority … --description …` |
-| 4 | Poll staging | mỗi 5s, tối đa ~300s. **Đạt** khi đủ cả: `be`-staging `/version` sha = `github.sha` **và** `/health` 200 · `fe`-staging `/api/version` sha = `github.sha` · (quyết định B) `fe`-staging `/api/health` 200. Luật tạm vừa thêm có thể 403 vài giây — 403 là "chưa", không phải "hỏng". `curl --max-time` mỗi lần gọi |
+| 4 | Poll staging | mỗi 5s, tối đa ~300s. **Đạt** khi đủ cả: `be`-staging `/version` sha = `github.sha` **và** `/health` 200 · `fe`-staging `/api/version` sha = `github.sha` · (quyết định B) `fe`-staging `/api/health` = **200** — in kèm host mà `/api/health` báo đã gọi (bằng chứng `fe`-staging thật sự nói chuyện với `be`-staging, không chỉ SHA khớp). Luật tạm vừa thêm có thể 403 vài giây — 403 là "chưa", không phải "hỏng". `curl --max-time` mỗi lần gọi |
 | 5 | Hết giờ → **dừng, không swap**, job đỏ | in lần gọi cuối của từng URL (mã + body rút gọn) để biết vì sao |
 | 6 | Swap `be` → swap `fe` | giữ nguyên code hiện tại |
-| 7 | Kiểm production | `be` `/version` = sha + `/health` 200 · `fe` `/api/version` = sha — **N lần liên tiếp** (vd 5 lần cách 5s), không phải một lần. (quyết định C) `simulate_verify_failure=true` → so với sha sai |
+| 7 | Kiểm production | `be` `/version` = sha + `/health` 200 · `fe` `/api/version` = sha · (quyết định B) `fe` `/api/health` = **200**, in kèm host đã gọi — **cùng kiểm phải làm ở production**, không chỉ ở staging (bài học #46/#18: SHA đúng không chứng minh `fe` gọi được `be`) — **N lần liên tiếp** (vd 5 lần cách 5s), không phải một lần. (quyết định C) `simulate_verify_failure=true` → so với sha sai |
 | 8 | Lỗi ở 6 (swap `fe` hỏng sau khi `be` đã swap) **hoặc** ở 7 → **swap ngược** mọi app đã swap | ngược thứ tự: `fe` trước rồi `be` · chỉ swap ngược app **đã** swap · job đỏ · summary ghi rõ "đã rollback" và production đang ở SHA nào |
 | 9 | Dọn luật — `if: always()` | gỡ trên 4 bề mặt, mỗi lệnh tự chịu lỗi (luật chưa kịp thêm thì remove báo lỗi — không được làm hỏng các lệnh sau), **rồi đọc lại** `az webapp config access-restriction show` và **fail nếu còn** `cd-${run_id}-…` |
 | 10 | Summary — `if: always()` | thêm: IP runner, số giây chờ staging, kết quả kiểm production, có rollback không |
@@ -147,13 +155,19 @@ Cập nhật comment đầu job `swap` và comment `concurrency` cho khớp lu�
 ### A5. Kiểm tĩnh (không tốn tiền) — phải xanh hết trước khi mở PR
 
 ```bash
+export DOTNET_ROOT=$HOME/.dotnet PATH=$HOME/.dotnet:$HOME/.nvm/versions/node/v24.21.0/bin:$PATH
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/cd.yml'))"
 docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest -no-color -oneline
 terraform -chdir=infra/app fmt -check -recursive && terraform -chdir=infra/app validate
 make lint && make test && make fe-lint && make fe-build
 ```
-Mốc hiện tại để so: actionlint trên `main` chỉ có **1** ghi chú style (SC2129, `cd.yml` bước probe).
-Mọi cảnh báo mới do D17 sinh ra phải đọc và xử lý hoặc giải thích.
+`DOTNET_ROOT`/`PATH` trước mọi lệnh `dotnet`/`node`: dotnet hệ thống hỏng, node hệ thống là 18 (<
+20 mà Next 16 cần). Mốc hiện tại để so: actionlint trên `main` chỉ có **1** ghi chú style (SC2129,
+`cd.yml` bước probe). Mọi cảnh báo mới do D17 sinh ra phải đọc và xử lý hoặc giải thích.
+
+`terraform fmt -check` ở `infra/app` sẽ báo `terraform.tfvars` (file local, gitignored, CI không
+thấy) chưa format — không phải lỗi của D17. Chạy `terraform fmt infra/app/terraform.tfvars` một
+lần ở máy để hết cảnh báo, hoặc bỏ qua đúng dòng đó khi đọc kết quả.
 
 Tự đọc lại bằng mắt 3 chỗ `bash -n`/actionlint **không** bắt được:
 - [ ] Bước dọn thật sự có `if: always()` và không phụ thuộc output của bước có thể chưa chạy
@@ -175,8 +189,13 @@ Tự đọc lại bằng mắt 3 chỗ `bash -n`/actionlint **không** bắt đ�
 
 - [ ] **B1.** `git switch main && git pull` ở checkout sẽ chạy `make` (xác nhận `git log -1` = commit
       merge của PR D17)
-- [ ] **B2.** `warp-cli disconnect` → đo IP: 40 lần `curl -4 -s https://api.ipify.org` (+ vài lần
-      `ifconfig.me`) → khai **mọi** IP ra được vào `infra/app/terraform.tfvars` → `warp-cli connect`
+- [ ] **B2. BẮT BUỘC, không tuỳ chọn.** Whitelist hiện tại của lần dựng `jcip0s` sai **3/3** địa
+      chỉ (`known-issues.md` #19): `cong-ty` = `104.30.x.x` là IP thoát Cloudflare WARP (dải
+      anycast dùng chung, không phải IP nhà), còn `mentor`/`nha-lam` = `198.51.100.x`/`203.0.113.x`
+      là dải tài liệu RFC 5737 — **không bao giờ route được trên Internet thật**, dùng để test là
+      vô dụng. `warp-cli disconnect` → đo IP: 40 lần `curl -4 -s https://api.ipify.org` (+ vài lần
+      `ifconfig.me`) → khai **mọi** IP đo được (chỉ IP thật, không dùng lại 3 giá trị cũ) vào
+      `infra/app/terraform.tfvars` → `warp-cli connect`
 - [ ] **B3.** ⚠️ **Xác nhận trước (tốn tiền).** `make up` — **3 pha**, đợi xong hẳn (`Apply complete`, `rc=0`). Không mở PR trong lúc này
 - [ ] **B4.** Kiểm cấu hình thật (chỉ đọc):
       ```bash
@@ -191,7 +210,12 @@ Tự đọc lại bằng mắt 3 chỗ `bash -n`/actionlint **không** bắt đ�
       ```
       Mong đợi: `hc` đúng path ở cả 4 · `API_BASE_URL` của `fe` production trỏ `app-…` còn của
       `fe` staging trỏ `app-…-staging`, **cả hai `sticky=True`** · warm-up setting có ở cả 4, `sticky=False`
-- [ ] **B5.** `terraform -chdir=infra/app plan` → **No changes** (mốc sạch để so sau mỗi run CD)
+- [ ] **B5.** `terraform -chdir=infra/app plan` → **No changes** (mốc sạch để so sau mỗi run CD).
+      Môi trường `jcip0s` từng có drift ở đây: khối `logs` của `fe` (http_logs file_system,
+      retention 3 ngày/100 MB, `detailed_error_messages=false`) bị bật **tay** trên Azure (Portal
+      hoặc `az`, không có trong code) — không phải bug code, nhưng **đừng bật log bằng tay** trên
+      Portal/CLI ở D17 nữa; logging thuộc D21, khai bằng Terraform. Nếu B5 thấy drift dạng này:
+      ghi lại nguồn (ai/khi nào bật tay) **trước khi** `apply` để xoá nó
 - [ ] **B6.** Ghi lại cho bẫy P1: `curl` production `be` `/health` trên image placeholder ra mã gì,
       và blade Health check trên Portal báo gì. Chỉ quan sát, không sửa
 
@@ -272,7 +296,8 @@ Làm **tuần tự** — không mở PR mới khi run CD trước chưa xong.
 - [ ] `notes/d17.md`: thứ tự thật đã làm, 4 quyết định A–D, link run C1–C5, số giây chờ staging,
       thứ gì kế hoạch này nói sai
 - [ ] `evidence/M10.md`: thêm mục "D17 — swap an toàn" (link run + log poll + log rollback)
-- [ ] `known-issues.md`: #15 → chuyển sang đã chữa (kèm số đo C1) · #16 nếu có test `fe`
+- [ ] `known-issues.md`: #15 → chuyển sang đã chữa (kèm số đo C1) · #16 nếu có test `fe` · **#18
+      đóng nốt phần "CÒN MỞ"** khi `/api/health` đã chạy thật (poll cả staging lẫn production) ở C1
 - [ ] `ai-failure-log.md` nếu AI sinh sai (hiện 30 case)
 - [ ] Plan `docs/plans/active/azure-app-service-internship.md`: tick D17, Recovery 1 dòng
 - [ ] 6 ảnh Portal còn nợ (`notes/screenshot-debt.md`) — tranh thủ lúc môi trường bật
@@ -302,6 +327,7 @@ Làm **tuần tự** — không mở PR mới khi run CD trước chưa xong.
 | P8 | `terraform apply` trong lúc CD đang chạy | apply xoá luật tạm (drift) giữa lúc CD poll → 403 → hết giờ | Không apply khi `gh run list -w CD` còn run `in_progress` |
 | P9 | Swap ngược khi staging đã bị deploy đè (guide) | quay về bản sai | Chỉ swap ngược trong **cùng run**; `concurrency: cd-deploy` không huỷ ngang giữ điều này |
 | P10 | Mở PR revert (C2/C3) trong lúc run CD trước chưa xong | hai run xếp hàng — không nguy hiểm, nhưng log hai tình huống trộn nhau, khó đọc bằng chứng | Đợi run xong mới mở PR tiếp |
+| P11 | **CD xanh nhưng UI hỏng** — kiểm SHA (`/version`) ≠ kiểm chạy được thật. Đã xảy ra suốt D16 (PR #46, `known-issues.md` #18): `fe` prerender tĩnh kèm banner lỗi, `/api/version` vẫn trả đúng SHA, CD/`evidence/M10.md` đều xanh | Bug production không ai biết cho tới khi có người mở tay một trang thật | Poll `/api/health` (quyết định B, cả staging lẫn production, không chỉ SHA) + cổng CI chặn prerender tĩnh (`ci.yml` job `frontend`, A3) |
 
 ## Gợi ý trả lời 3 câu tự kiểm tra (guide)
 
