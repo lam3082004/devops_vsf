@@ -243,20 +243,20 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 > Chốt trước: A health path của `fe` · B cách chứng minh `fe`-staging gọi `be`-staging · C thử
 > rollback thật · D start time limit.
 >
-> **Trạng thái 2026-09-26: Pha A (code) XONG, CHƯA CHẠY TRÊN AZURE.** Nhánh
-> `feat/d17-safe-swap`, `infra/app/*.tf` + `cd.yml` viết xong, `terraform plan -lock=false`
-> đã soi trên môi trường thật (`Plan: 0 to add, 4 to change, 0 to destroy` — đúng phạm vi
-> mong đợi + 1 drift đã biết của `fe.logs`); `make lint/test/fe-lint/fe-test/fe-build` xanh;
-> `actionlint` không có cảnh báo mới so với `main`. Các ô bên dưới cần **bằng chứng chạy
-> thật** (Pha B/C) nên CHƯA tick — chi tiết Pha A: `notes/d17.md`.
-- [ ] Health check path + swap warm-up path (`be` `/health`, `fe` theo quyết định A) + warm-up statuses `200`, bằng Terraform cho cả 4 khối site/slot — *proof: `az webapp config show` + `appsettings list` cả 4 bề mặt*
-- [ ] `API_BASE_URL` slot-sticky, `fe` staging trỏ `be` staging (đóng `known-issues.md` #15) — *proof: `slotSetting=true`, `terraform plan` sau swap No changes*
-- [ ] Bỏ `sleep 75`; job `swap` tự poll staging đúng SHA + health 200, dùng luật IP tạm cho runner (Decision D13) — *proof: run log*
+> **Trạng thái 2026-09-26: Pha A XONG (PR #47) · Pha B XONG (apply `0/4/0`, B4 đúng cả 4 bề
+> mặt, `plan` No changes) · Pha C CHỜ người dùng chạy** — classifier phiên AI chặn AI tự chạy
+> CD/merge. Chi tiết + lệnh từng tình huống: `notes/d17.md`. Môi trường `jcip0s` **để bật** theo
+> quyết định người dùng.
+- [x] Health check path + swap warm-up path (`be` `/health`, `fe` theo quyết định A) + warm-up statuses `200`, bằng Terraform cho cả 4 khối site/slot — *proof: `az webapp config show` + `appsettings list` cả 4 bề mặt (`notes/d17.md` B4)*
+- [ ] `API_BASE_URL` slot-sticky, `fe` staging trỏ `be` staging (đóng `known-issues.md` #15) — *proof: `slotSetting=true`, `terraform plan` sau swap No changes* — `slotSetting=True` đã đo (B4); còn thiếu `plan` **sau một swap** (C1)
+- [x] Bỏ `sleep 75`; job `swap` tự poll staging đúng SHA + health 200, dùng luật IP tạm cho runner (Decision D13) — *proof: run log* — run `36211355245` ("C0"): luật tạm 4/4, poll đạt sau 3s, verify 5/5
 - [ ] Kiểm production sau swap, lỗi thì **swap ngược** trong cùng run — *proof: run log + activity log 2 swap/app*
 - [ ] Luật tạm luôn được gỡ (`if: always()`) — *proof: `access-restriction show` rỗng tên `cd-*`, `terraform plan` No changes, `m6-check` 403 ×8*
 - [ ] 3 tình huống lỗi của guide có run link (không khởi động · `/health` 503 · luật tạm) — *proof: `notes/d17.md`, `evidence/M10.md` mục D17*
 
 ### D18 — Bằng chứng zero-downtime
+> Kế hoạch làm từng bước: **`notes/d18-prep.md`** (5 quyết định A–E; Pha A script → B xác nhận
+> môi trường → C đo quanh một swap thật → D `evidence/M2.md`). Cần tối thiểu C1 của D17 xanh trước.
 - [ ] Script poll `/version` mỗi giây, ghi timestamp · HTTP code · version — *proof: script trong repo*
 - [ ] Chạy script trong lúc merge → CD → swap; log thô: 0 non-200, version A→B — *proof: log* → `evidence/M2.md`
 - [ ] Nếu có non-200: tìm nguyên nhân (warm-up, start time, SIGTERM), sửa, chạy lại
@@ -403,6 +403,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-26: **D17 Pha A+B xong, Pha C chờ người dùng.** PR #47 merge 02:20Z lúc Azure bật → run CD `36211355245` xanh (cd.yml mới chạy thật lần đầu, trước apply). Apply Terraform D17 từ `main` `05b17bc` (0/4/0), B4 đúng 4 bề mặt, `plan` No changes, 0 luật `cd-*`. **Môi trường `jcip0s` ĐANG BẬT theo quyết định người dùng — không `make down`.** Bước tiếp: người dùng `! gh workflow run cd.yml --ref main` (C1), rồi C2–C4 theo `notes/d17.md`. Kế hoạch D18: `notes/d18-prep.md`.
 - 2026-09-24 22:15: **Môi trường vẫn BẬT** (`jcip0s`, từ chiều). Rà lại lần hai + test luồng thật
   trên môi trường thật (không chỉ kiểm SHA như lượt chiều) — phát hiện bug PR #46 (UI production
   `fe` đóng băng banner lỗi suốt D16) lọt qua cả CD, `evidence/M10.md` lẫn lượt rà chiều; đã sửa
