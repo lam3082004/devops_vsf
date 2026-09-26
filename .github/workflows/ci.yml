@@ -98,6 +98,9 @@ jobs:
       # và đỏ nếu package.json lệch lock — build phải tái lập được.
       - run: npm --prefix app/fe ci
       - run: npm --prefix app/fe run lint
+      # D17: node:test, không dependency mới (known-issues.md #16). Chạy TRƯỚC build —
+      # test đọc thẳng src/lib/health.ts (Node tự strip type), không cần build trước.
+      - run: npm --prefix app/fe run test
       # Build cũng là bước kiểm kiểu: `next build` chạy tsc, lỗi type → PR đỏ.
       - run: npm --prefix app/fe run build
 

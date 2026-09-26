@@ -20,6 +20,6 @@ Hướng dẫn từng bài: `docs/guides/` (mục lục `docs/guides/README.md`)
 
 ## Validation
 
-Code: `app/be` (.NET, `make test` · `make lint`) và `app/fe` (Next.js, `make fe-lint` · `make fe-build`).
+Code: `app/be` (.NET, `make test` · `make lint`) và `app/fe` (Next.js, `make fe-lint` · `make fe-test` · `make fe-build`).
 Contract chính là những gì
 `.github/workflows/ci.yml` chạy; cập nhật mục này và `~/.claude/harness/STACKS.md` theo đó.

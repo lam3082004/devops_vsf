@@ -242,6 +242,13 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 > C 4 tình huống → D ghi chép → E `make down`). Nhật ký: `notes/d17.md`. **Tốn tiền** từ Pha B.
 > Chốt trước: A health path của `fe` · B cách chứng minh `fe`-staging gọi `be`-staging · C thử
 > rollback thật · D start time limit.
+>
+> **Trạng thái 2026-09-26: Pha A (code) XONG, CHƯA CHẠY TRÊN AZURE.** Nhánh
+> `feat/d17-safe-swap`, `infra/app/*.tf` + `cd.yml` viết xong, `terraform plan -lock=false`
+> đã soi trên môi trường thật (`Plan: 0 to add, 4 to change, 0 to destroy` — đúng phạm vi
+> mong đợi + 1 drift đã biết của `fe.logs`); `make lint/test/fe-lint/fe-test/fe-build` xanh;
+> `actionlint` không có cảnh báo mới so với `main`. Các ô bên dưới cần **bằng chứng chạy
+> thật** (Pha B/C) nên CHƯA tick — chi tiết Pha A: `notes/d17.md`.
 - [ ] Health check path + swap warm-up path (`be` `/health`, `fe` theo quyết định A) + warm-up statuses `200`, bằng Terraform cho cả 4 khối site/slot — *proof: `az webapp config show` + `appsettings list` cả 4 bề mặt*
 - [ ] `API_BASE_URL` slot-sticky, `fe` staging trỏ `be` staging (đóng `known-issues.md` #15) — *proof: `slotSetting=true`, `terraform plan` sau swap No changes*
 - [ ] Bỏ `sleep 75`; job `swap` tự poll staging đúng SHA + health 200, dùng luật IP tạm cho runner (Decision D13) — *proof: run log*
