@@ -6,6 +6,10 @@ locals {
   # KHÔNG dùng lại local.app_settings (app.tf): nó có DB_HOST/DB_USER/DB_PASSWORD
   # của `be` — `fe` không nói chuyện với MySQL và không được có secret nào liên
   # quan tới DB trong app settings của nó.
+  #
+  # D17: mọi key ở đây dùng chung site + slot, TRỪ API_BASE_URL — key đó được
+  # `merge()` riêng cho slot staging (azurerm_linux_web_app_slot.fe_staging bên
+  # dưới) và khai sticky trên site chính, để đóng known-issues.md #15.
   fe_app_settings = {
     # App Service chuyển traffic vào cổng này của container (cùng ý nghĩa với
     # local.app_settings.WEBSITES_PORT ở app.tf, nhưng var.fe_container_port
@@ -20,6 +24,14 @@ locals {
     # azurerm_linux_web_app.app.default_hostname — đọc default_hostname ở đây
     # tạo cạnh fe→be, cộng cạnh be→fe (be cần outbound IP của fe, xem
     # local.be_ip_rules) thành `Cycle:` (D16 Việc 2).
+    #
+    # D17 (#15): giá trị NÀY chỉ còn dùng cho site chính (production). Slot
+    # staging GHI ĐÈ key này sang local.be_staging_hostname bằng merge() ở
+    # azurerm_linux_web_app_slot.fe_staging bên dưới — trước D17 cả hai slot
+    # dùng chung map này nên `fe` staging luôn gọi `be` PRODUCTION (bản cũ)
+    # trong lúc warm-up, không bao giờ thử được với `be` staging (bản mới)
+    # trước khi swap. `sticky_settings` trên site chính (dưới resource "fe")
+    # giữ cho lần swap đầu tiên KHÔNG mang giá trị staging này lên production.
     API_BASE_URL = "https://${local.be_hostname}"
 
     # Image PLACEHOLDER lúc ACR còn trống (dotnet/samples:aspnetapp, một app
@@ -32,6 +44,16 @@ locals {
     # đọc biến này — nó tự nghe cổng theo ENV PORT=3000 khai sẵn trong image —
     # nên đặt luôn, vô hại với image thật, cứu image mẫu.
     ASPNETCORE_HTTP_PORTS = tostring(var.fe_container_port)
+
+    # D17: warm-up trước khi swap, cùng cơ chế với `be` (app.tf) nhưng path
+    # khác — quyết định A (notes/d17-prep.md): `fe` KHÔNG có `/health`, chỉ
+    # `/api/version` (chứng minh process sống). KHÔNG dùng `/api/health` (route
+    # mới, quyết định B) làm warm-up path: route đó gọi sang `be`, và nếu `be`
+    # đang chậm/degraded thì warm-up của `fe` cũng thất bại theo — restart hay
+    # giữ `fe` lại ở staging không chữa được `be`, chỉ làm swap `fe` bị chặn
+    # oan vì lỗi của một app khác.
+    WEBSITE_SWAP_WARMUP_PING_PATH     = "/api/version"
+    WEBSITE_SWAP_WARMUP_PING_STATUSES = "200"
   }
 }
 
@@ -58,6 +80,20 @@ resource "azurerm_linux_web_app" "fe" {
   # Vault (không có DB_PASSWORD hay tương tự trong local.fe_app_settings) —
   # bỏ trống là cố ý, không phải quên. Vì lý do tương tự, không depends_on role
   # Key Vault nào (khác `be`, xem app.tf).
+
+  # D17 (#15): API_BASE_URL PHẢI sticky. Site chính và slot staging cố ý có
+  # GIÁ TRỊ KHÁC NHAU cho key này (production trỏ `be` production, staging trỏ
+  # `be` staging — merge() ở fe_staging bên dưới); nếu quên sticky thì lần swap
+  # ĐẦU TIÊN mang giá trị của staging lên production, `fe` production sẽ gọi
+  # nhầm sang `be` staging mà không ai báo lỗi (chỉ có dữ liệu "lạ"). Chỉ khối
+  # này ở `sticky_settings` — không có `connection_string_names` vì `fe` không
+  # có connection string nào. Block này CHỈ tồn tại ở site chính (schema
+  # provider: `sticky_settings` không có trên `azurerm_linux_web_app_slot`,
+  # xác nhận bằng `terraform providers schema -json` — sticky là thuộc tính
+  # của SLOT SETTING khai trên site, không phải khai lại trên từng slot).
+  sticky_settings {
+    app_setting_names = ["API_BASE_URL"]
+  }
 
   site_config {
     always_on           = true # không cold start; slot/swap warm-up cần app luôn chạy
@@ -102,6 +138,18 @@ resource "azurerm_linux_web_app" "fe" {
       }
     }
 
+    # D17 (P1, notes/d17-prep.md "Bảng bẫy"): quyết định A — health check nền
+    # tảng của `fe` là `/api/version`, KHÔNG phải `/api/health` (route mới,
+    # quyết định B). `/api/health` gọi sang `be`; dùng nó làm health check thì
+    # `be` hỏng sẽ kéo theo `fe` bị nền tảng coi là unhealthy và RESTART —
+    # restart `fe` không chữa được `be`, chỉ làm tệ thêm (mất luôn `fe` đang
+    # chạy tốt trong lúc `be` đang lỗi). `/api/version` chỉ chứng minh process
+    # còn sống — đúng phạm vi của health check nền tảng. eviction 5 phút,
+    # cùng lý do với `be` (app.tf) — image mẫu chưa có route này nên cũng dính
+    # P1 (unhealthy tới lần CD đầu tiên, chấp nhận được vì < 1 giờ).
+    health_check_path                 = "/api/version"
+    health_check_eviction_time_in_min = 5
+
     # Image mẫu công khai lúc ACR còn trống; registry URL + tag image sau đó
     # do CD (D16 bước 3) đặt thẳng trên Azure. Cùng lý do với `be` (app.tf).
     # ASPNETCORE_HTTP_PORTS ở local.fe_app_settings giữ placeholder nghe đúng
@@ -141,7 +189,16 @@ resource "azurerm_linux_web_app_slot" "fe_staging" {
     identity_ids = [azurerm_user_assigned_identity.app.id]
   }
 
-  app_settings = local.fe_app_settings
+  # D17 (#15): merge() đè riêng API_BASE_URL sang local.be_staging_hostname
+  # (locals.tf) — slot staging của `fe` phải gọi slot staging của `be`, không
+  # phải `be` production, để có một cửa sổ thật sự thử "bản mới nói chuyện
+  # với bản mới" TRƯỚC khi swap (trước D17: known-issues.md #15). Đây là lý do
+  # `fe` không thể dùng chung nguyên vẹn local.fe_app_settings cho cả site lẫn
+  # slot như mọi key khác — sticky_settings trên site chính (ở trên) giữ cho
+  # swap không mang giá trị này lên production.
+  app_settings = merge(local.fe_app_settings, {
+    API_BASE_URL = "https://${local.be_staging_hostname}"
+  })
 
   # Không key_vault_reference_identity_id, không depends_on role Key Vault —
   # cùng lý do với site chính ở trên: fe không dùng secret nào từ Key Vault.
@@ -171,6 +228,12 @@ resource "azurerm_linux_web_app_slot" "fe_staging" {
         description = "M6 (D16) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
+
+    # D17: cùng path/eviction với site chính ở trên (P1 — cùng hệ quả
+    # placeholder). Slot staging là nơi CD đặt image THẬT trước swap nên đây
+    # chính là bề mặt warm-up ping vào.
+    health_check_path                 = "/api/version"
+    health_check_eviction_time_in_min = 5
 
     # Khai image cho slot một cách tường minh: clone slot KHÔNG copy image →
     # slot rỗng trả 503, swap lên là production chết (D2, giống `be`).

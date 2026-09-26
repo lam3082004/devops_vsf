@@ -8,6 +8,21 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      # D17 quyết định C (notes/d17-prep.md): 3 tình huống lỗi của guide đều dừng
+      # TRƯỚC swap (poll staging hết giờ), nên nhánh rollback tự động (job `swap`,
+      # bước "Kiểm tra production" + "Rollback") CHƯA TỪNG chạy thật nếu không có
+      # cách nào ép nó chạy. Input này CỐ Ý so kiểm production với một SHA SAI để
+      # bước kiểm thất bại thật, kích rollback thật — chỉ dùng được qua
+      # workflow_dispatch trên `main` (lớp bảo vệ thứ 3 ở job `preflight` vẫn chặn
+      # nhánh khác, input này không mở thêm cửa nào). Trên sự kiện `push` (merge
+      # PR bình thường), `inputs.*` rỗng nên biểu thức dùng nó (env
+      # SIMULATE_VERIFY_FAILURE, job `swap`) LUÔN ra "false" — đã kiểm kỹ, xem
+      # notes/d17.md.
+      simulate_verify_failure:
+        description: "D17: co y lam buoc kiem production that bai de thu rollback"
+        type: boolean
+        default: false
 
 # Token cần đọc nội dung (checkout) và ghi id-token (OIDC vào Azure) — mọi job
 # trong file này đều đăng nhập Azure nên khai ở cấp workflow, không lặp lại
@@ -18,16 +33,24 @@ permissions:
 
 # MỘT nhóm deploy DUY NHẤT cho toàn bộ pipeline — khác ci-terraform-plan (nhóm
 # theo ref) và khác ci chính (nhóm theo ref, huỷ được): ở đây hai lần merge
-# liên tiếp vào main phải XẾP HÀNG, không được chạy chồng lên nhau.
+# liên tiếp vào main không được chạy CHỒNG lên nhau.
+#
+# Không phải "xếp hàng vô hạn": GitHub chỉ giữ MỘT run đang chạy + MỘT run
+# CHỜ trong mỗi group. Merge dồn dập (3 lần merge liên tiếp) thì run đang chờ
+# CŨ HƠN bị HUỶ (status cancelled) mỗi khi có run mới hơn vào hàng — hàng đợi
+# tối đa dài 2, không phải "n lần merge thì n run nối đuôi nhau". Hệ quả: với
+# merge dồn dập, commit ở giữa không được deploy RIÊNG, nhưng không mất — run
+# mới nhất còn lại luôn build từ main mới nhất, tức đã chứa nó. Thấy một run
+# CD ở trạng thái cancelled trong danh sách là bình thường, không phải lỗi.
 #
 # cancel-in-progress: false là CỐ Ý, ngược hẳn với ci.yml. Swap slot không phải
 # thao tác nguyên tử theo góc nhìn người quan sát: nếu merge thứ hai huỷ ngang
-# lúc merge thứ nhất đang swap be/fe, production có thể dừng lại ở trạng thái
-# không ai biết — production trỏ bản A trong khi slot đang trỏ bản B (hoặc
-# be đã swap mà fe thì chưa), và biết được sự thật chỉ bằng cách đi đọc từng
-# app một. Chờ thì chậm hơn nhưng luôn kết thúc ở một trạng thái xác định được.
-# Ở CI thì ngược lại: huỷ một lần build dở dang không để lại hậu quả nào, nên
-# cancel-in-progress: true ở đó là đúng.
+# lúc merge thứ nhất đang poll/swap/kiểm production/rollback (D17: TẤT CẢ dồn
+# vào một job `swap` duy nhất, xem comment ở job đó), production có thể dừng
+# lại ở trạng thái không ai biết — kể cả để lại một luật access restriction
+# tạm không được dọn (lỗ hổng M6). Chờ thì chậm hơn nhưng luôn kết thúc ở một
+# trạng thái xác định được. Ở CI thì ngược lại: huỷ một lần build dở dang
+# không để lại hậu quả nào, nên cancel-in-progress: true ở đó là đúng.
 concurrency:
   group: cd-deploy
   cancel-in-progress: false
@@ -158,6 +181,35 @@ jobs:
               echo "- Lý do bỏ qua: $REASON"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # D17 (tuỳ chọn, notes/d17-prep.md điều 4): CHỈ CẢNH BÁO, KHÔNG gỡ. Lưới
+      # cho trường hợp job `swap` của một lần chạy trước bị HUỶ GIỮA CHỪNG theo
+      # kiểu runner chết (không phải job bị cancel bình thường — `if: always()`
+      # ở bước dọn của `swap` vẫn chạy khi job bị cancel, chỉ KHÔNG chạy khi
+      # runner mất hẳn). `terraform plan` (C6 trong notes/d17-prep.md) là lưới
+      # chính; bước này chỉ là lớp cảnh báo sớm, chạy mỗi lần preflight nên
+      # không cần chờ tới lúc ai đó nhớ chạy plan tay.
+      - name: Quét luật cd-* mồ côi còn sót trên 4 bề mặt (chỉ cảnh báo, không gỡ)
+        if: steps.probe.outputs.should_deploy == 'true'
+        env:
+          BE_APP: ${{ steps.probe.outputs.be_app }}
+          FE_APP: ${{ steps.probe.outputs.fe_app }}
+        run: |
+          set -uo pipefail
+          for SURFACE in be be-staging fe fe-staging; do
+            case "$SURFACE" in
+              be) APP="$BE_APP"; SLOT_ARGS=() ;;
+              be-staging) APP="$BE_APP"; SLOT_ARGS=(--slot staging) ;;
+              fe) APP="$FE_APP"; SLOT_ARGS=() ;;
+              fe-staging) APP="$FE_APP"; SLOT_ARGS=(--slot staging) ;;
+            esac
+            ORPHANS=$(az webapp config access-restriction show \
+              -g rg-vsf-dev -n "$APP" "${SLOT_ARGS[@]}" \
+              --query "ipSecurityRestrictions[?starts_with(name,'cd-')].name" -o tsv 2>/dev/null || true)
+            if [ -n "$ORPHANS" ]; then
+              echo "::warning::luat cd-* mo coi tren $SURFACE ($APP): $ORPHANS — co the mot lan chay truoc bi runner chet giua chung (buoc don o job swap khong kip chay). Kiem tay, go bang 'az webapp config access-restriction remove'."
+            fi
+          done
 
   # ==========================================================================
   # build-deploy-staging — environment staging-deploy (không required reviewer,
@@ -340,17 +392,12 @@ jobs:
       # KHÔNG curl kiểm chứng ở đây: slot staging có ip_restriction_default_action
       # = "Deny" và runner GitHub Actions không nằm trong var.allowed_ips (IP nhà
       # đã khai riêng) → curl từ CI chắc chắn nhận 403, không phản ánh đúng trạng
-      # thái container. Chờ thời gian cố định là tạm đủ cho D16; bước "chờ staging
-      # sẵn sàng + đúng SHA" bằng cách mở tạm access restriction là việc của D17
-      # (docs/guides/d16-cd.md bước 8) — ở đây chỉ chờ rồi giao thẳng cho swap.
-      - name: Chờ container khởi động (thời gian cố định)
-        run: |
-          set -euo pipefail
-          T0=$(date +%s)
-          sleep 75
-          T1=$(date +%s)
-          echo "wait-staging-warmup: $((T1-T0))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
-
+      # thái container. D16 chờ thời gian cố định (sleep 75) ở đây là tạm đủ; từ
+      # D17 việc "chờ staging sẵn sàng + đúng SHA" chuyển hẳn sang job `swap` bằng
+      # cách mở tạm access restriction rồi poll (docs/guides/d17-safe-swap.md bước
+      # 8) — job này giờ chỉ build + push + đặt image rồi giao thẳng cho `swap`,
+      # không còn chờ gì ở đây nữa (P3, notes/d17-prep.md: luật tạm thêm ở job này
+      # thì kiểm ở job khác sẽ 403 vì IP RUNNER KHÁC NHAU GIỮA CÁC JOB).
       - name: Ghi job summary
         env:
           GIT_SHA: ${{ github.sha }}
@@ -375,17 +422,41 @@ jobs:
   # swap — environment `production`. HIỆN TẠI environment này CHỈ có deployment
   # branch policy = `main`, KHÔNG có required reviewer: GitHub từ chối tạo luật
   # đó cho repo private — "Please ensure the billing plan supports the required
-  # reviewers protection rule" (HTTP 422, 23/09). Xem known-issues.md.
+  # reviewers protection rule" (HTTP 422, 23/09). Xem known-issues.md #14.
   #
-  # Hệ quả: pipeline chạy TỰ ĐỘNG HOÀN TOÀN từ merge tới production, không một
-  # thao tác tay nào — đúng tiêu chí "Xong khi" của docs/guides/d16-cd.md
-  # (*merge → production đổi SHA không thao tác tay*).
+  # D17: MỘT job DUY NHẤT làm hết — thêm luật tạm, poll staging, swap, kiểm
+  # production, rollback nếu cần, dọn luật, ghi summary. Lý do dồn hết vào một
+  # job (P3, notes/d17-prep.md điều 1): mỗi job GitHub Actions chạy trên MỘT
+  # RUNNER RIÊNG, IP công khai khác nhau giữa các job. Thêm luật allow IP ở
+  # job A rồi gọi (poll/kiểm) từ job B sẽ 403 vì đó là IP khác. Thứ tự bước
+  # thật trong job này (không nhất thiết đúng số thứ tự trong guide/prep):
+  #   1. Đăng nhập Azure OIDC
+  #   2. Lấy + kiểm dạng IPv4 của runner
+  #   3. Thêm luật access restriction tạm (4 bề mặt: be, be-staging, fe, fe-staging)
+  #   4. Poll staging tới khi be-staging /version=SHA + /health 200 VÀ
+  #      fe-staging /api/version=SHA + /api/health 200 (bằng chứng #15 — fe
+  #      staging THẬT SỰ gọi được be staging, không chỉ SHA khớp — xem #18).
+  #      Hết giờ (~300s) → KHÔNG swap, job đỏ.
+  #   5. Swap be rồi fe (giữ nguyên logic + cờ be_swapped/fe_swapped cũ).
+  #   6. Kiểm production N=5 lần cách nhau 5s (be /version+/health, fe
+  #      /api/version+/api/health) — quyết định C: input simulate_verify_failure
+  #      cố ý so với SHA sai để nhánh rollback chạy thật được ít nhất một lần.
+  #   7. Lỗi ở bước 5 (fe swap hỏng sau khi be đã swap) HOẶC bước 6 → rollback:
+  #      swap ngược app ĐÃ swap, thứ tự fe trước rồi be (P6: không bao giờ
+  #      swap ngược app CHƯA swap).
+  #   8. Dọn luật tạm — if: always(), LUÔN chạy dù mọi bước trên đỏ/bị huỷ, tự
+  #      chịu lỗi từng lệnh remove rồi ĐỌC LẠI bằng access-restriction show và
+  #      FAIL nếu còn sót — báo "thành công" không phải bằng chứng, đọc lại mới
+  #      là bằng chứng (điều 4, notes/d17-prep.md).
+  #   9. Ghi summary — if: always().
   #
-  # Nếu bật được nút duyệt sau này thì ĐÂY là chỗ đúng để đặt nó, không phải ở
-  # job build: duyệt cái đã build + push + đặt vào staging xong, chứ không phải
-  # duyệt một dự định còn mơ hồ. Bật lại chỉ tốn một lời gọi
-  # `gh api -X PUT repos/<repo>/environments/production` kèm mảng `reviewers` —
-  # KHÔNG phải sửa file này.
+  # P7 (notes/d17-prep.md "Bảng bẫy"): ĐỪNG re-run một mình job `swap` sau khi
+  # nó đã swap xong — swap lần 2 nghĩa là đưa bản CŨ trở lại production. Muốn
+  # thử lại, re-run cả WORKFLOW từ đầu (build lại, set image mới vào staging
+  # rồi mới swap), không re-run job lẻ.
+  #
+  # Nếu bật được nút duyệt tay sau này thì ĐÂY là chỗ đúng để đặt nó (trước
+  # bước swap), không phải ở job build.
   # ==========================================================================
   swap:
     name: swap staging → production
@@ -397,6 +468,22 @@ jobs:
     environment:
       name: production
       url: https://${{ needs.preflight.outputs.fe_app }}.azurewebsites.net
+    # Job-level env: mọi step bên dưới đọc được thẳng bằng $BE_APP, $FE_APP...
+    # (biến môi trường OS), không cần khai lại `env:` trong từng step trừ khi
+    # cần thứ chỉ step đó có (vd RUNNER_IP — output của step "IP công khai").
+    env:
+      BE_APP: ${{ needs.preflight.outputs.be_app }}
+      FE_APP: ${{ needs.preflight.outputs.fe_app }}
+      GIT_SHA: ${{ github.sha }}
+      # run_attempt (không chỉ run_id) vào tên luật: re-run cùng workflow run
+      # (không re-run job lẻ, xem P7) vẫn ra tên MỚI, không đụng luật cũ nếu
+      # lần trước dọn chưa kịp.
+      RULE_NAME: cd-${{ github.run_id }}-${{ github.run_attempt }}
+      # Quyết định C: rỗng ở sự kiện `push` (merge PR bình thường) vì `inputs.*`
+      # không tồn tại ngoài workflow_dispatch — biểu thức dưới đây cho ra
+      # "false" trong mọi trường hợp KHÔNG PHẢI cố ý bật bằng tay qua
+      # workflow_dispatch trên main.
+      SIMULATE_VERIFY_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.simulate_verify_failure && 'true' || 'false' }}
     steps:
       - name: Đăng nhập Azure OIDC (id-gh-deploy)
         uses: azure/login@v2
@@ -405,21 +492,147 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: IP công khai của runner (kiểm đúng dạng IPv4 trước khi dùng)
+        id: runner-ip
+        run: |
+          set -uo pipefail
+          IP=$(curl -4 -s --max-time 15 https://api.ipify.org || true)
+
+          # Rỗng hoặc sai dạng (IPv6, trang lỗi HTML của ipify...) thì KHÔNG
+          # được đi tiếp thêm luật "/32" — fail sớm ở đây rẻ hơn nhiều so với
+          # phát hiện muộn lúc `az access-restriction add` báo lỗi cú pháp CIDR
+          # (hoặc tệ hơn, âm thầm khai một dải sai).
+          VALID=1
+          if ! [[ "$IP" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            VALID=0
+          else
+            IFS='.' read -r O1 O2 O3 O4 <<< "$IP"
+            for O in "$O1" "$O2" "$O3" "$O4"; do
+              if [ "$O" -gt 255 ]; then VALID=0; fi
+            done
+          fi
+
+          if [ "$VALID" -ne 1 ]; then
+            echo "::error::IP runner khong hop le hoac rong: '$IP' — dung lai, khong them luat access restriction voi gia tri nay."
+            exit 1
+          fi
+
+          echo "runner IP: $IP"
+          echo "ip=$IP" >> "$GITHUB_OUTPUT"
+
+      # P3 (notes/d17-prep.md): 4 bề mặt = be + be-staging + fe + fe-staging.
+      # THÊM CẢ production (be, fe) từ bước này, không chỉ staging — bước kiểm
+      # production (sau swap) chạy TRONG CÙNG job này nên cần quyền vào production
+      # từ ngay bây giờ, không phải đợi swap xong mới mở thêm.
+      - name: Thêm luật access restriction tạm cho IP runner (4 bề mặt)
+        id: add-rules
+        env:
+          RUNNER_IP: ${{ steps.runner-ip.outputs.ip }}
+        run: |
+          set -uo pipefail
+          # priority < 100: IP nhà (Terraform, infra/app/app.tf local.ip_rules)
+          # chiếm dải 100+ — luật tạm này không được đụng vào đó.
+          # description: ASCII thuần, không dấu `,`/`;`, dưới 64 byte
+          # (ai-failure-log.md #23, #30) — chuỗi dưới đây 47 byte, đo bằng
+          # `len(s.encode())` lúc soạn, không đếm bằng mắt.
+          PRIORITY=50
+          DESC="D17 CD tam - runner IP - tu go sau job (cd.yml)"
+
+          FAIL=0
+          for SURFACE in be be-staging fe fe-staging; do
+            case "$SURFACE" in
+              be) APP="$BE_APP"; SLOT_ARGS=() ;;
+              be-staging) APP="$BE_APP"; SLOT_ARGS=(--slot staging) ;;
+              fe) APP="$FE_APP"; SLOT_ARGS=() ;;
+              fe-staging) APP="$FE_APP"; SLOT_ARGS=(--slot staging) ;;
+            esac
+            if ! az webapp config access-restriction add \
+                 -g rg-vsf-dev -n "$APP" "${SLOT_ARGS[@]}" \
+                 --rule-name "$RULE_NAME" --action Allow \
+                 --ip-address "$RUNNER_IP/32" --priority "$PRIORITY" \
+                 --description "$DESC"; then
+              echo "::error::khong them duoc luat tam vao $SURFACE ($APP) — xem log az o tren."
+              FAIL=1
+            fi
+          done
+          exit "$FAIL"
+
+      # Thay hẳn bước "sleep 75" cũ (build-deploy-staging, D16) bằng chờ ĐÚNG
+      # điều kiện. KHÔNG set -e: một lần curl/jq lỗi (403 vài giây đầu sau khi
+      # thêm luật, mất gói tin...) chỉ là "chưa", không được giết cả vòng poll
+      # (P4, notes/d17-prep.md). set -o pipefail giữ để `curl | jq` báo đúng mã
+      # lỗi khi CẦN — nhưng mọi lệnh trong vòng lặp đều có `|| true`/`|| echo`
+      # riêng nên pipefail không làm vòng lặp chết giữa chừng.
+      - name: Poll staging tới khi đúng SHA + health 200 (be VÀ fe, #15)
+        id: poll
+        run: |
+          set -uo pipefail
+
+          BE_STAGING="https://$BE_APP-staging.azurewebsites.net"
+          FE_STAGING="https://$FE_APP-staging.azurewebsites.net"
+
+          T0=$(date +%s)
+          DEADLINE=$((T0 + 300))
+          OK=0
+
+          while [ "$(date +%s)" -lt "$DEADLINE" ]; do
+            BE_VER_BODY=$(curl -4 -s --max-time 10 "$BE_STAGING/version" || true)
+            BE_HEALTH_CODE=$(curl -4 -s -o /dev/null -w '%{http_code}' --max-time 10 "$BE_STAGING/health" || true)
+            FE_VER_BODY=$(curl -4 -s --max-time 10 "$FE_STAGING/api/version" || true)
+            FE_HEALTH_RESP=$(curl -4 -s -w $'\n%{http_code}' --max-time 10 "$FE_STAGING/api/health" || true)
+            FE_HEALTH_CODE=$(printf '%s' "$FE_HEALTH_RESP" | tail -n1)
+            FE_HEALTH_BODY=$(printf '%s' "$FE_HEALTH_RESP" | sed '$d')
+
+            BE_SHA=$(printf '%s' "$BE_VER_BODY" | jq -r '.sha // empty' 2>/dev/null || true)
+            FE_SHA=$(printf '%s' "$FE_VER_BODY" | jq -r '.sha // empty' 2>/dev/null || true)
+            # be_host: bằng chứng fe-staging THẬT SỰ gọi be-staging (#15), không
+            # chỉ trùng ngẫu nhiên SHA — in mỗi vòng để có trong log dù thành
+            # công hay hết giờ.
+            FE_BE_HOST=$(printf '%s' "$FE_HEALTH_BODY" | jq -r '.be_host // empty' 2>/dev/null || true)
+
+            echo "$(date -Is) poll be.sha=$BE_SHA be.health=$BE_HEALTH_CODE fe.sha=$FE_SHA fe.health=$FE_HEALTH_CODE fe.health.be_host=$FE_BE_HOST"
+
+            if [ "$BE_SHA" = "$GIT_SHA" ] && [ "$BE_HEALTH_CODE" = "200" ] \
+               && [ "$FE_SHA" = "$GIT_SHA" ] && [ "$FE_HEALTH_CODE" = "200" ]; then
+              OK=1
+              break
+            fi
+            sleep 5
+          done
+
+          T1=$(date +%s)
+          WAITED=$((T1 - T0))
+          echo "waited_seconds=$WAITED" >> "$GITHUB_OUTPUT"
+          echo "wait-staging-poll: ${WAITED}s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
+
+          if [ "$OK" -ne 1 ]; then
+            echo "::error::het gio poll staging (300s, cho $WAITED s) — SHA hoac health chua dat dieu kien. KHONG swap."
+            echo "--- lan goi cuoi cung cua tung URL (ma + body rut gon) ---"
+            printf 'be /version: '; curl -4 -s --max-time 10 "$BE_STAGING/version" | head -c 300; echo
+            printf 'be /health: code='; curl -4 -s -o /dev/null -w '%{http_code}\n' --max-time 10 "$BE_STAGING/health"
+            printf 'fe /api/version: '; curl -4 -s --max-time 10 "$FE_STAGING/api/version" | head -c 300; echo
+            printf 'fe /api/health: '; curl -4 -s --max-time 10 "$FE_STAGING/api/health" | head -c 300; echo
+            exit 1
+          fi
+
+          echo "poll_ok=true" >> "$GITHUB_OUTPUT"
+          echo "staging san sang sau ${WAITED}s (SHA=$GIT_SHA, be+fe health 200)"
+
       - name: Swap slot staging → production (be + fe, đo thời gian)
         id: swap
-        env:
-          BE_APP: ${{ needs.preflight.outputs.be_app }}
-          FE_APP: ${{ needs.preflight.outputs.fe_app }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
+
+          # Mặc định false — nếu step chết trước khi kịp ghi lại (không thể xảy
+          # ra với luồng dưới đây, nhưng ghi trước cho chắc) thì output vẫn tồn
+          # tại thay vì rỗng, bước rollback phía sau đọc an toàn hơn.
+          echo "be_swapped=false" >> "$GITHUB_OUTPUT"
+          echo "fe_swapped=false" >> "$GITHUB_OUTPUT"
 
           # HAI swap, KHÔNG nguyên tử với nhau. Azure không có API swap nhiều app
           # một lượt, nên giữa hai lệnh dưới đây luôn tồn tại một khoảng thời gian
-          # production chạy lệch phiên bản. Bản đầu của file này để hai lệnh chạy
-          # trần dưới `set -e`: `be` swap xong mà `fe` lỗi thì job chết ngay tại
-          # dòng đó, KHÔNG nói production đang lệch, KHÔNG nói cách chữa, và bước
-          # ghi summary phía dưới cũng không chạy — người vận hành mất đúng thông
-          # tin cần nhất vào đúng lúc cần nhất. Bắt lỗi tường minh từng lệnh.
+          # production chạy lệch phiên bản. Bắt lỗi tường minh từng lệnh — KHÔNG
+          # để hai lệnh chạy trần dưới set -e, để biết CHÍNH XÁC app nào đã đổi.
           T0=$(date +%s)
 
           # Swap `be` TRƯỚC `fe` là có chủ ý: `fe` gọi `be`, nên thứ tự này cho ra
@@ -427,61 +640,200 @@ jobs:
           # cũ) thay vì "fe mới gọi be cũ" (giao diện mới đòi API chưa tồn tại).
           if ! az webapp deployment slot swap \
                -g rg-vsf-dev -n "$BE_APP" --slot staging --target-slot production; then
-            echo "::error::swap be THAT BAI. Production KHONG doi gi ca — ca be lan fe van la ban cu, he thong nhat quan. Khong can rollback. Doc log Azure roi chay lai workflow nay."
+            echo "::error::swap be THAT BAI. Production KHONG doi gi ca — ca be lan fe van la ban cu, he thong nhat quan. Khong can rollback."
             exit 1
           fi
           T1=$(date +%s)
           echo "swap-be: $((T1-T0))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
-          # Ghi NGAY, trước khi thử swap fe: bước summary (if: always()) đọc cờ này
-          # để biết production có đang lệch hay không.
+          # Ghi NGAY sau khi be swap xong: bước rollback (if: failure()) đọc cờ
+          # này để biết có cần swap ngược be hay không, kể cả khi bước NÀY sau đó
+          # tự exit 1 (do fe swap hỏng) — output ghi trước khi exit vẫn giữ được.
           echo "be_swapped=true" >> "$GITHUB_OUTPUT"
 
           if ! az webapp deployment slot swap \
                -g rg-vsf-dev -n "$FE_APP" --slot staging --target-slot production; then
-            echo "::error::PRODUCTION DANG LECH PHIEN BAN. be da swap sang ban moi, fe swap THAT BAI nen fe production van la ban cu. Chua co rollback tu dong."
-            echo "::error::Chua nhat quan tro lai bang mot trong hai cach: (1) swap lai be de ve dong bo ban cu: az webapp deployment slot swap -g rg-vsf-dev -n $BE_APP --slot staging --target-slot production  --  hoac (2) swap lai fe neu da ro nguyen nhan: az webapp deployment slot swap -g rg-vsf-dev -n $FE_APP --slot staging --target-slot production"
+            echo "::error::PRODUCTION DANG LECH PHIEN BAN. be da swap sang ban moi, fe swap THAT BAI nen fe production van la ban cu. Buoc rollback ke tiep se swap NGUOC be de tro ve nhat quan."
             exit 1
           fi
           T2=$(date +%s)
           echo "swap-fe: $((T2-T1))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
+          echo "fe_swapped=true" >> "$GITHUB_OUTPUT"
 
-          BE_URL=$(az webapp show -g rg-vsf-dev -n "$BE_APP" --query defaultHostName -o tsv)
-          FE_URL=$(az webapp show -g rg-vsf-dev -n "$FE_APP" --query defaultHostName -o tsv)
-          echo "be_url=$BE_URL" >> "$GITHUB_OUTPUT"
-          echo "fe_url=$FE_URL" >> "$GITHUB_OUTPUT"
+      # Chỉ chạy nếu swap CẢ HAI thành công (mặc định: step chỉ chạy khi mọi
+      # step trước đó xanh — không cần `if:` tường minh).
+      - name: Kiểm tra production N=5 lần cách nhau 5s (đúng SHA + health 200)
+        id: verify
+        run: |
+          set -uo pipefail
 
-      # if: always() — bước này PHẢI chạy cả khi swap lỗi. Đó chính là lúc người
-      # vận hành cần bảng tóm tắt và câu lệnh rollback nhất, mà bản đầu của file
-      # này lại bỏ qua nó đúng lúc đó.
+          BE_URL="https://$BE_APP.azurewebsites.net"
+          FE_URL="https://$FE_APP.azurewebsites.net"
+
+          EXPECT_SHA="$GIT_SHA"
+          if [ "$SIMULATE_VERIFY_FAILURE" = "true" ]; then
+            # Quyết định C (notes/d17-prep.md): CHỈ đọc được true qua
+            # workflow_dispatch trên main (xem env ở đầu job) — cố ý so với một
+            # SHA SAI để bước này thất bại THẬT, cho nhánh rollback bên dưới
+            # chạy thật ít nhất một lần (3 tình huống lỗi khác của guide đều
+            # dừng TRƯỚC swap nên không bao giờ chạm tới đây).
+            EXPECT_SHA="0000000000000000000000000000000000dead"
+            echo "::notice::simulate_verify_failure=true — co y so voi SHA sai ($EXPECT_SHA) de kiem tra nhanh rollback."
+          fi
+
+          OK=1
+          for i in 1 2 3 4 5; do
+            BE_VER_BODY=$(curl -4 -s --max-time 10 "$BE_URL/version" || true)
+            BE_HEALTH_CODE=$(curl -4 -s -o /dev/null -w '%{http_code}' --max-time 10 "$BE_URL/health" || true)
+            FE_VER_BODY=$(curl -4 -s --max-time 10 "$FE_URL/api/version" || true)
+            FE_HEALTH_CODE=$(curl -4 -s -o /dev/null -w '%{http_code}' --max-time 10 "$FE_URL/api/health" || true)
+
+            BE_SHA=$(printf '%s' "$BE_VER_BODY" | jq -r '.sha // empty' 2>/dev/null || true)
+            FE_SHA=$(printf '%s' "$FE_VER_BODY" | jq -r '.sha // empty' 2>/dev/null || true)
+
+            echo "$(date -Is) verify #$i be.sha=$BE_SHA(expect $EXPECT_SHA) be.health=$BE_HEALTH_CODE fe.sha=$FE_SHA fe.health=$FE_HEALTH_CODE"
+
+            if [ "$BE_SHA" != "$EXPECT_SHA" ] || [ "$BE_HEALTH_CODE" != "200" ] \
+               || [ "$FE_SHA" != "$EXPECT_SHA" ] || [ "$FE_HEALTH_CODE" != "200" ]; then
+              OK=0
+              break
+            fi
+            sleep 5
+          done
+
+          if [ "$OK" -ne 1 ]; then
+            echo "::error::kiem tra production sau swap THAT BAI o lan #$i — se swap NGUOC o buoc ke tiep."
+            exit 1
+          fi
+          echo "production dang o SHA $GIT_SHA, dat 5/5 lan kiem lien tiep."
+
+      # Chạy khi: (a) swap fe hỏng SAU KHI be đã swap (be_swapped=true,
+      # fe_swapped=false — chỉ swap ngược be), hoặc (b) kiểm production thất
+      # bại sau khi CẢ HAI đã swap (be_swapped=fe_swapped=true — swap ngược cả
+      # hai, fe TRƯỚC rồi be, P6: chỉ swap ngược app ĐÃ swap). `failure()` cũng
+      # đúng cho các lỗi KHÔNG liên quan (vd IP runner sai dạng) — điều kiện
+      # `be_swapped == 'true'` lọc bỏ đúng những trường hợp đó (step `swap`
+      # chưa từng chạy tới nên output rỗng, không phải 'true').
+      - name: Rollback — swap ngược app đã swap, fe trước rồi be
+        id: rollback
+        if: failure() && steps.swap.outputs.be_swapped == 'true'
+        env:
+          FE_SWAPPED: ${{ steps.swap.outputs.fe_swapped }}
+        run: |
+          set -uo pipefail
+          # rolled_back = ĐÃ THỬ swap ngược; rollback_ok = swap ngược THÀNH CÔNG.
+          # Tách hai cờ: nếu chính lệnh swap ngược hỏng mà summary vẫn in "đã
+          # rollback, production về bản cũ" thì người vận hành bị báo sai đúng
+          # lúc production đang ở trạng thái không xác định.
+          echo "rolled_back=true" >> "$GITHUB_OUTPUT"
+          FAIL=0
+
+          if [ "$FE_SWAPPED" = "true" ]; then
+            echo "fe da swap truoc do — swap NGUOC fe (production ve ban cu)"
+            if ! az webapp deployment slot swap \
+                 -g rg-vsf-dev -n "$FE_APP" --slot staging --target-slot production; then
+              echo "::error::SWAP NGUOC fe THAT BAI — production dang o TRANG THAI KHONG XAC DINH, phai vao Portal kiem tay ngay."
+              FAIL=1
+            fi
+          else
+            echo "fe CHUA tung swap trong lan chay nay — khong dung toi (P6, khong swap nguoc app chua swap)"
+          fi
+
+          echo "swap NGUOC be (production ve ban cu)"
+          if ! az webapp deployment slot swap \
+               -g rg-vsf-dev -n "$BE_APP" --slot staging --target-slot production; then
+            echo "::error::SWAP NGUOC be THAT BAI — production dang o TRANG THAI KHONG XAC DINH, phai vao Portal kiem tay ngay."
+            FAIL=1
+          fi
+
+          if [ "$FAIL" -eq 0 ]; then
+            echo "rollback_ok=true" >> "$GITHUB_OUTPUT"
+          fi
+          exit "$FAIL"
+
+      # if: always() — LUÔN chạy, kể cả khi mọi bước trên đỏ hoặc job bị huỷ
+      # (huỷ bình thường qua GitHub UI/API; KHÔNG chạy nếu runner chết hẳn —
+      # điều 4, notes/d17-prep.md; lưới cho trường hợp đó là bước quét mồ côi
+      # ở job `preflight` + `terraform plan` đọc drift, xem C6 trong prep).
+      # KHÔNG phụ thuộc output của step nào có thể chưa chạy — BE_APP/FE_APP/
+      # RULE_NAME đều là job-level env (từ needs.preflight + github context),
+      # luôn có giá trị ngay từ đầu job.
+      - name: Xoá luật access restriction tạm (4 bề mặt) — LUÔN chạy
+        id: cleanup
+        if: always()
+        run: |
+          set -uo pipefail
+          for SURFACE in be be-staging fe fe-staging; do
+            case "$SURFACE" in
+              be) APP="$BE_APP"; SLOT_ARGS=() ;;
+              be-staging) APP="$BE_APP"; SLOT_ARGS=(--slot staging) ;;
+              fe) APP="$FE_APP"; SLOT_ARGS=() ;;
+              fe-staging) APP="$FE_APP"; SLOT_ARGS=(--slot staging) ;;
+            esac
+            # Tự chịu lỗi: luật có thể chưa từng được thêm (fail sớm ở bước "Thêm
+            # luật" hoặc job dừng trước đó) — remove trên rule không tồn tại trả
+            # lỗi, KHÔNG được để nó làm hỏng lượt xoá của 3 bề mặt còn lại.
+            az webapp config access-restriction remove \
+              -g rg-vsf-dev -n "$APP" "${SLOT_ARGS[@]}" --rule-name "$RULE_NAME" \
+              || echo "::warning::khong xoa duoc luat $RULE_NAME tren $SURFACE (co the chua ton tai) — kiem lai o buoc doc lai ben duoi."
+          done
+
+          # "Xoá báo thành công" KHÔNG phải bằng chứng — đọc lại mới là bằng
+          # chứng thật (điều 4, notes/d17-prep.md). FAIL job nếu còn SÓT bất kỳ
+          # luật cd-<run_id>-<run_attempt> nào: đây là lỗ hổng whitelist M6, phải
+          # lộ ra ngay, không được lặng lẽ trôi qua.
+          LEFTOVER=0
+          for SURFACE in be be-staging fe fe-staging; do
+            case "$SURFACE" in
+              be) APP="$BE_APP"; SLOT_ARGS=() ;;
+              be-staging) APP="$BE_APP"; SLOT_ARGS=(--slot staging) ;;
+              fe) APP="$FE_APP"; SLOT_ARGS=() ;;
+              fe-staging) APP="$FE_APP"; SLOT_ARGS=(--slot staging) ;;
+            esac
+            REMAIN=$(az webapp config access-restriction show \
+              -g rg-vsf-dev -n "$APP" "${SLOT_ARGS[@]}" \
+              --query "ipSecurityRestrictions[?name=='$RULE_NAME'].name" -o tsv 2>/dev/null || true)
+            if [ -n "$REMAIN" ]; then
+              echo "::error::luat $RULE_NAME VAN CON tren $SURFACE sau khi xoa — go tay ngay tren Portal/az, day la lo hong whitelist M6."
+              LEFTOVER=1
+            fi
+          done
+          exit "$LEFTOVER"
+
+      # if: always() — bước này PHẢI chạy cả khi các bước trên lỗi. Đó chính là
+      # lúc người vận hành cần bảng tóm tắt nhất.
       - name: Ghi job summary
         if: always()
         env:
-          GIT_SHA: ${{ github.sha }}
-          BE_URL: ${{ steps.swap.outputs.be_url }}
-          FE_URL: ${{ steps.swap.outputs.fe_url }}
-          BE_APP: ${{ needs.preflight.outputs.be_app }}
-          FE_APP: ${{ needs.preflight.outputs.fe_app }}
-          BE_SWAPPED: ${{ steps.swap.outputs.be_swapped }}
+          WAITED_SECONDS: ${{ steps.poll.outputs.waited_seconds }}
+          POLL_OK: ${{ steps.poll.outputs.poll_ok }}
           SWAP_RESULT: ${{ steps.swap.outcome }}
+          VERIFY_RESULT: ${{ steps.verify.outcome }}
+          ROLLED_BACK: ${{ steps.rollback.outputs.rolled_back }}
+          ROLLBACK_OK: ${{ steps.rollback.outputs.rollback_ok }}
+          RUNNER_IP: ${{ steps.runner-ip.outputs.ip }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           {
-            echo "### CD — swap staging → production"
+            echo "### CD — swap staging → production (D17)"
             echo ""
-            if [ "$SWAP_RESULT" != "success" ] && [ "$BE_SWAPPED" = "true" ]; then
-              echo "> ⚠️ **PRODUCTION ĐANG LỆCH PHIÊN BẢN.** \`be\` đã swap sang bản mới, \`fe\` thì chưa."
-              echo "> Đưa về nhất quán bằng cách swap lại \`be\`:"
-              echo '> ```'
-              echo "> az webapp deployment slot swap -g rg-vsf-dev -n $BE_APP --slot staging --target-slot production"
-              echo '> ```'
-              echo ""
-            elif [ "$SWAP_RESULT" != "success" ]; then
-              echo "> ❌ Swap thất bại **trước khi đổi gì trên production** — hệ thống vẫn nhất quán ở bản cũ. Không cần rollback."
-              echo ""
-            fi
+            echo "- Runner IP: \`${RUNNER_IP:-(khong lay duoc)}\`"
+            echo "- Chờ staging sẵn sàng: \`${WAITED_SECONDS:-?}\`s (poll_ok=\`${POLL_OK:-false}\`)"
             echo "- SHA: \`$GIT_SHA\`"
-            echo "- be: https://$BE_URL"
-            echo "- fe: https://$FE_URL"
+            if [ "${ROLLED_BACK:-}" = "true" ] && [ "${ROLLBACK_OK:-}" != "true" ]; then
+              echo ""
+              echo "> 🛑 **ROLLBACK THẤT BẠI.** Đã thử swap ngược nhưng ít nhất một lệnh swap ngược lỗi —"
+              echo "> production đang ở **trạng thái không xác định**. Kiểm tay ngay: \`/version\` của be và \`/api/version\` của fe."
+            elif [ "${ROLLED_BACK:-}" = "true" ]; then
+              echo ""
+              echo "> ⚠️ **ĐÃ ROLLBACK.** Swap fe thất bại sau khi be đã swap, hoặc kiểm tra production sau swap thất bại."
+              echo "> Production hiện KHÔNG ở SHA \`$GIT_SHA\` — đã swap ngược về bản trước lần chạy này."
+            elif [ "${VERIFY_RESULT:-}" = "success" ]; then
+              echo "- Kiểm tra production: **ĐẠT** (5/5 lần) — production đang ở SHA \`$GIT_SHA\`."
+            elif [ "${POLL_OK:-}" != "true" ]; then
+              echo "- Poll staging hết giờ — **KHÔNG swap**. Production không đổi gì so với trước lần chạy này."
+            else
+              echo "- Kết quả chưa rõ ràng, xem log từng bước ở trên."
+            fi
             echo ""
             echo "| Bước | Thời gian |"
             echo "|---|---|"
@@ -490,12 +842,6 @@ jobs:
                 echo "|$STEP |$SECS |"
               done < "$GITHUB_WORKSPACE/.cd-timings.txt"
             else
-              echo "| (chua buoc nao xong) | — |"
+              echo "| (chưa bước nào xong) | — |"
             fi
-            echo ""
-            # Swap là hoán đổi: ngay sau khi swap xong, slot staging đang giữ
-            # ĐÚNG bản production cũ. Rollback nhanh nhất khi bản mới lỗi là
-            # swap lại — vài chục giây, không build lại, không kéo image mới.
-            # Điều kiện: đừng deploy chồng lần thứ hai trước khi rollback.
-            echo "> Rollback nhanh nhất nếu bản mới lỗi: **swap lại** (slot staging đang giữ đúng bản production cũ)."
           } >> "$GITHUB_STEP_SUMMARY"

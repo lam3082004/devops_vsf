@@ -30,6 +30,16 @@ locals {
     # Key Vault reference, URI KHÔNG kèm version để nhận bản mới khi xoay vòng.
     # Không có secret plaintext nào trong app settings (M4).
     DB_PASSWORD = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mysql_admin_password.versionless_id})"
+
+    # D17: warm-up trước khi swap (docs/guides/d17-safe-swap.md mục 1) — nền
+    # tảng gọi path này vào slot đích SAU khi áp cấu hình production, TRƯỚC
+    # khi đổi định tuyến. `WEBSITE_SWAP_WARMUP_PING_STATUSES` cố ý CHỈ "200":
+    # `/health` trả 503 khi không ping được DB (Services/HealthService.cs) —
+    # nếu 503 cũng được coi là "đã phản hồi" thì swap đưa lên production một
+    # bản không nói chuyện được với DB. Rộng hơn (để trống) thì cả 404 do path
+    # sai cũng qua — bẫy thứ 3 của guide.
+    WEBSITE_SWAP_WARMUP_PING_PATH     = "/health"
+    WEBSITE_SWAP_WARMUP_PING_STATUSES = "200"
   }
 
   # Luật truy cập theo IP (M6), dùng chung cho production và slot staging —
@@ -131,10 +141,26 @@ resource "azurerm_linux_web_app" "app" {
       }
     }
 
+    # D17 (P1, notes/d17-prep.md "Bảng bẫy"): health check + warm-up (app_settings
+    # ở trên) bật TỪ LÚC apply, kể cả khi ACR còn trống và cả 4 bề mặt đang chạy
+    # image mẫu (dotnet/samples:aspnetapp — KHÔNG có /health, trả 404). Hệ quả:
+    # instance "unhealthy" từ lúc `make up` tới lần CD đầu tiên đẩy image thật.
+    # Một instance (worker_count = 1) thì không bị loại — nền tảng chỉ thay
+    # instance khi unhealthy QUÁ 1 GIỜ liên tục — nên chấp nhận được miễn cửa sổ
+    # từ `make up` tới lần deploy đầu tiên ngắn hơn 1 giờ. KHÔNG đổi path này để
+    # khớp placeholder: health check phải đo đúng app thật, không phải app mẫu.
+    #
+    # eviction_time_in_min = 5: khoảng cho phép là 2–10 (schema provider, xem
+    # `terraform providers schema -json`). Chọn 5 (giữa khoảng) — đủ dài để
+    # không loại instance vì một lần health check trượt do cold start/deploy
+    # tạm thời, đủ ngắn để một instance thật sự hỏng không phục vụ traffic lâu.
+    # Chưa có số đo tải thật (M7 autoscale) để tinh chỉnh hơn — ghi vào notes/d17.md.
+    health_check_path                 = "/health"
+    health_check_eviction_time_in_min = 5
+
     # Image mẫu công khai (cùng cổng 8080 với app thật): ACR trống lúc dựng môi
     # trường. Registry URL + image sau đó do tay/CD đặt sang ACR (D11, D16);
     # ignore_changes bên dưới giữ Terraform khỏi đảo ngược.
-    # health_check_path = "/health" bật ở D17 — image mẫu không có /health.
     application_stack {
       docker_registry_url = "https://mcr.microsoft.com"
       docker_image_name   = var.placeholder_image
@@ -212,6 +238,12 @@ resource "azurerm_linux_web_app_slot" "staging" {
         description = startswith(ip_restriction.key, "fe-outbound-") ? "M6 (D16) - outbound IP cua fe (locals.tf)" : "M6 (D13) — IP khai trong terraform.tfvars ngoài repo"
       }
     }
+
+    # D17: cùng path/eviction với site chính ở trên (P1 — cùng hệ quả placeholder,
+    # cùng lý do không đổi path để khớp placeholder). Slot staging là nơi CD đặt
+    # image THẬT trước swap nên đây chính là bề mặt warm-up ping vào.
+    health_check_path                 = "/health"
+    health_check_eviction_time_in_min = 5
 
     # Khai image cho slot một cách tường minh: D2 thấy clone slot KHÔNG copy
     # image → slot rỗng trả 503, swap lên là production chết.

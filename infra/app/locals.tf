@@ -25,6 +25,14 @@ locals {
   be_app_name = "app-${var.project}-${local.name_suffix}"
   be_hostname = "${local.be_app_name}.azurewebsites.net"
 
+  # D17 (#15): hostname slot staging của `be`, tính TAY như be_hostname ở trên —
+  # KHÔNG đọc azurerm_linux_web_app_slot.staging.default_hostname. Lý do giống
+  # hệt be_hostname: đọc attribute thật của slot staging (app.tf) từ đây sẽ mở
+  # lại đúng cạnh fe→be mà be_hostname đã cắt (D16 Việc 2), khép thành `Cycle:`.
+  # Tên slot mặc định của Azure Web App luôn là "<app>-staging" nên tính được
+  # trước lúc plan, giống be_hostname.
+  be_staging_hostname = "${local.be_app_name}-staging.azurewebsites.net"
+
   # M6 cho `be`, MỞ RỘNG so với local.ip_rules (app.tf): ngoài IP nhà, phải
   # allow cả outbound IP của `fe`. `fe` gọi `be` từ phía server (BFF,
   # app/fe/src/lib/api.ts) nên request đi ra Internet rồi vòng lại bằng

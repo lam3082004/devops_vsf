@@ -1,4 +1,4 @@
-.PHONY: fe-install fe-dev fe-lint fe-build db-up db-down db-logs run test test-db lint fmt check tf-init plan up down outputs check-empty
+.PHONY: fe-install fe-dev fe-lint fe-build fe-test db-up db-down db-logs run test test-db lint fmt check tf-init plan up down outputs check-empty
 
 ENV_FILE := app/be/.env.local
 DB_CONTAINER := d4-mysql
@@ -47,7 +47,7 @@ fmt:
 ## Cổng kiểm tra trước khi commit — đúng những gì CI chạy cho code (be + fe)
 check:
 	dotnet format app/be/OpsBoard.csproj --verify-no-changes --severity warn && dotnet test app/be.Tests/OpsBoard.Tests.csproj
-	npm --prefix app/fe run lint && npm --prefix app/fe run build
+	npm --prefix app/fe run lint && npm --prefix app/fe run test && npm --prefix app/fe run build
 
 # ---------- Terraform: môi trường app trên Azure (từ D8) ----------
 # Yêu cầu: `az login`. Subscription lấy từ az nếu chưa đặt ARM_SUBSCRIPTION_ID.
@@ -116,3 +116,7 @@ fe-lint:
 
 fe-build:
 	npm --prefix app/fe run build
+
+## D17: test thuần Node (node:test), không dependency mới — xem app/fe/src/lib/health.test.mjs
+fe-test:
+	npm --prefix app/fe run test

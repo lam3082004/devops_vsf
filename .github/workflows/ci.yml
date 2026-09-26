@@ -98,8 +98,40 @@ jobs:
       # và đỏ nếu package.json lệch lock — build phải tái lập được.
       - run: npm --prefix app/fe ci
       - run: npm --prefix app/fe run lint
+      # D17: node:test, không dependency mới (known-issues.md #16). Chạy TRƯỚC build —
+      # test đọc thẳng src/lib/health.ts (Node tự strip type), không cần build trước.
+      - run: npm --prefix app/fe run test
       # Build cũng là bước kiểm kiểu: `next build` chạy tsc, lỗi type → PR đỏ.
       - run: npm --prefix app/fe run build
+
+      # CỔNG chặn tái phát #46: lúc `next build` trong Docker không có API_BASE_URL,
+      # requireBaseUrl() ném lỗi TRƯỚC khi fetch no-store kịp chạy → Next không thấy tín hiệu
+      # dynamic, prerender TĨNH trang kèm banner lỗi rồi cache 1 năm (s-maxage=31536000) — runtime
+      # không bao giờ gọi backend nữa. Sửa ở PR #46 bằng `await connection()` đầu `request()`
+      # (`src/lib/api.ts`); cổng này đọc `.next/prerender-manifest.json` và fail nếu còn route nào
+      # (ngoài route nội bộ `/_...` và asset tĩnh `/favicon.ico`) bị prerender tĩnh — mọi trang thật
+      # của app đều đọc backend nên phải render lúc request.
+      - name: Cổng chặn route đọc backend bị prerender tĩnh (tái phát #46)
+        run: |
+          node -e '
+          var fs = require("fs");
+          var manifest = JSON.parse(fs.readFileSync("app/fe/.next/prerender-manifest.json", "utf8"));
+          var routes = Object.keys(manifest.routes || {});
+          var bad = routes.filter(function (r) { return r !== "/favicon.ico" && r.indexOf("/_") !== 0; });
+          if (bad.length > 0) {
+            bad.forEach(function (r) {
+              console.log(
+                "::error::route " + r + " bi prerender TINH (prerender-manifest.json)" +
+                " — moi trang cua app deu doc backend, phai render luc request, khong duoc cache." +
+                " Dung bug #46 (thieu await connection() truoc requireBaseUrl() trong src/lib/api.ts," +
+                " hoac thieu export const dynamic = force-dynamic o route handler moi)." +
+                " Xem PR #46, known-issues.md #18."
+              );
+            });
+            process.exit(1);
+          }
+          console.log("OK - " + routes.length + " route tinh, toan bo la noi bo (_...) hoac favicon.ico: " + routes.join(", "));
+          '
 
   terraform:
     name: terraform (fmt, validate)
