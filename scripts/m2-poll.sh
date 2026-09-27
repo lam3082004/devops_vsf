@@ -18,7 +18,10 @@
 # ĐẦU request) là thứ tự thật, tóm tắt tự sắp lại.
 #
 # Cột log (TSV, UTC):
-#   ts_utc_ms  tick  svc  http_code  sha  curl_exit  time_total_s
+#   ts_utc_ms  tick  svc  http_code  sha  curl_exit  time_total_s  t_connect  t_tls  t_ttfb
+#   t_* là mốc (giây từ lúc bắt đầu) TCP xong / TLS xong / byte đầu về; 0 = chưa tới mốc
+#   đó. Dùng để phân loại timeout: chết trước khi xong TLS là mạng/handshake, xong TLS
+#   mà chưa có byte đầu là đang chờ server (run 1 D18: ~1s mỗi request là handshake).
 #   svc ∈ {be, fe, fe-page}. fe-page chỉ tham khảo (quyết định D), không tính vào M2.
 #   Mọi response ≠ 200, hoặc 200 mà không đọc được sha: 300 byte đầu của body vào
 #   <out>.bodies (known-issues #20 — phân biệt 403 nền tảng / whitelist / app).
@@ -35,7 +38,7 @@ FE_PAGE="/"
 MAX_TIME=3
 
 usage() {
-	sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
 	exit "${1:-0}"
 }
 
@@ -95,7 +98,7 @@ fi
 mkdir -p "$(dirname "$OUT")"
 BODIES="$OUT.bodies"
 
-printf 'ts_utc_ms\ttick\tsvc\thttp_code\tsha\tcurl_exit\ttime_total_s\n' >"$OUT"
+printf 'ts_utc_ms\ttick\tsvc\thttp_code\tsha\tcurl_exit\ttime_total_s\tt_connect\tt_tls\tt_ttfb\n' >"$OUT"
 {
 	echo "# m2-poll start $(date -u +%Y-%m-%dT%H:%M:%SZ) host=$(hostname)"
 	echo "# be=$BE_URL/version fe=$FE_URL/api/version fe-page=${FE_PAGE} max_time=${MAX_TIME}s"
@@ -105,18 +108,24 @@ printf 'ts_utc_ms\ttick\tsvc\thttp_code\tsha\tcurl_exit\ttime_total_s\n' >"$OUT"
 # Một request. Ghi đúng một dòng TSV (một lần write, append nguyên tử với dòng ngắn).
 probe() {
 	local tick="$1" svc="$2" url="$3"
-	local ts resp rc t rest code body sha snippet
+	local ts resp rc t tc tt tf rest code body sha snippet
 	ts="$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
 	# Một lần gọi: body + mã + thời gian. `$?` bắt ngay sau lệnh, không qua `|| ...`
 	# (bẫy P2 — `|| echo 000` in ra `000000`).
-	resp="$(curl -4 -s --max-time "$MAX_TIME" -w $'\n%{http_code}\n%{time_total}' "$url")"
+	resp="$(curl -4 -s --max-time "$MAX_TIME" \
+		-w $'\n%{http_code}\n%{time_total} %{time_connect} %{time_appconnect} %{time_starttransfer}' "$url")"
 	rc=$?
-	t="${resp##*$'\n'}"
+	read -r t tc tt tf <<<"${resp##*$'\n'}"
 	rest="${resp%$'\n'*}"
 	code="${rest##*$'\n'}"
 	if [[ "$rest" == *$'\n'* ]]; then body="${rest%$'\n'*}"; else body=""; fi
 	[[ "$code" =~ ^[0-9]{3}$ ]] || code="000"
-	[[ "$t" =~ ^[0-9.]+$ ]] || t="-"
+	[[ "${t:-}" =~ ^[0-9.]+$ ]] || t="-"
+	[[ "${tc:-}" =~ ^[0-9.]+$ ]] || tc="-"
+	[[ "${tt:-}" =~ ^[0-9.]+$ ]] || tt="-"
+	[[ "${tf:-}" =~ ^[0-9.]+$ ]] || tf="-"
+	# http:// không có TLS: curl để appconnect = 0 — coi TLS "xong" cùng lúc TCP.
+	[[ "$url" == http://* ]] && tt="$tc"
 
 	sha="-"
 	if [[ "$svc" != "fe-page" ]]; then
@@ -124,7 +133,8 @@ probe() {
 		[[ -n "$sha" ]] || sha="-"
 	fi
 
-	printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$ts" "$tick" "$svc" "$code" "$sha" "$rc" "$t" >>"$OUT"
+	printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+		"$ts" "$tick" "$svc" "$code" "$sha" "$rc" "$t" "$tc" "$tt" "$tf" >>"$OUT"
 	printf '%s %-7s %s %-8.8s exit=%s %ss\n' "${ts:11:12}" "$svc" "$code" "$sha" "$rc" "$t"
 
 	if [[ "$code" != "200" || ("$svc" != "fe-page" && "$sha" == "-") ]]; then
@@ -153,7 +163,11 @@ summarize() {
 	{
 		svc = $3; code = $4; sha = $5; ex = $6; ts = $1; tk = $2
 		n[svc]++
-		if (ex != 0 || code == "000") cli[svc]++
+		if (ex != 0 || code == "000") {
+			cli[svc]++
+			# Chết ở pha nào (cột 9 = t_tls, 10 = t_ttfb; 0 = chưa tới mốc).
+			if ($9 == 0) ph[svc, "net"]++; else if ($10 == 0) ph[svc, "srv"]++; else ph[svc, "body"]++
+		}
 		else if (code != "200") srv[svc]++
 		if (sha != "-") {
 			if (!((svc, sha) in first)) { first[svc, sha] = ts; order[svc] = order[svc] " " sha }
@@ -169,6 +183,7 @@ summarize() {
 			s = svcs[i]
 			if (!(s in n)) continue
 			printf "# [%s] requests=%d  server_non200=%d  client_err=%d%s\n", s, n[s], srv[s] + 0, cli[s] + 0, (s == "fe-page" ? "  (chỉ tham khảo)" : "")
+			if (cli[s]) printf "#   client_err theo pha: chưa xong TLS=%d  chờ byte đầu=%d  đang nhận body=%d\n", ph[s, "net"], ph[s, "srv"], ph[s, "body"]
 			if (s == "fe-page") continue
 			m = split(substr(order[s], 2), shas, " ")
 			for (j = 1; j <= m; j++)
