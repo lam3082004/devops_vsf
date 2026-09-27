@@ -4,12 +4,13 @@ Guide gốc: `docs/guides/d18-zero-downtime.md` · Nhật ký: `notes/d18.md` (t
 Bằng chứng: `evidence/M2.md`, log thô `evidence/raw/m2-*.log`
 Phiên trước: `notes/d17.md`, `notes/d17-prep.md` (4 quyết định A–D, Pha A code xong)
 
-> **Điều kiện vào D18:** Terraform D17 **đã apply** trên `jcip0s` (26/09, `notes/d17.md` mục Pha B:
-> health check + warm-up 4 bề mặt, `API_BASE_URL` sticky, `plan` → No changes). **Tối thiểu** tình
-> huống C1 của D17 (CD chạy trên hạ tầng đã apply, `fe`-staging báo `be_host` = `…-staging`) phải
-> xanh trước khi đo M2 — đó mới là cơ chế swap mà M2 muốn chứng minh. C2–C4 của D17 không chặn
-> D18 nhưng nên xong trước để CD không còn đổi giữa hai bài. B0 vẫn đọc lại trạng thái thật bằng
-> `az` — tài liệu có thể trôi, số đo tại chỗ mới là căn cứ.
+> **Điều kiện vào D18 — ĐÃ ĐẠT (2026-09-27):** D17 xong trọn (`notes/d17.md`): Terraform D17 đã
+> apply trên `jcip0s`, C1–C4 chạy thật, 0 luật tạm sót, `plan` No changes, M6 8/8. Production lúc
+> đóng D17: `be` + `fe` = `507710a`. Môi trường **đang bật** theo quyết định người dùng. B0 vẫn
+> đọc lại trạng thái thật bằng `az` trước khi đo — tài liệu có thể trôi, số đo tại chỗ mới là căn cứ.
+>
+> **Mới từ D17, đọc trước khi viết script:** slot vừa đổi container có thể trả **403 / body lạ**
+> trong ~1 phút (`known-issues.md` #20, chưa rõ nguồn) — lý do script phải lưu body (A1) và bẫy P12.
 
 ## Đọc 60 giây này trước
 
@@ -97,6 +98,11 @@ công cụ đo, không đổi hành vi app/infra).
       tick của service kia và làm lệch nhịp 1s
 - [ ] Vừa in ra màn hình (rút gọn: `svc code sha8 exit t` một dòng) vừa ghi file — giữ đúng yêu
       cầu "vừa in vừa ghi" của guide
+- [ ] **Mọi response có mã ≠ 200 (hoặc 200 mà không parse được `sha`): lưu 300 byte đầu của body**
+      vào file phụ `<out>.bodies` (dòng: `ts svc code <body một dòng>`). Lý do: D17 thấy slot
+      staging trả **403 / body lạ** ~1 phút sau khi đặt image mới (`known-issues.md` #20) mà
+      `cd.yml` không in body nên không tra được nguồn. Nếu M2 thấy non-200 lúc swap, body là thứ
+      duy nhất phân biệt 403 của nền tảng (trang HTML Azure) với 403 của whitelist hay 5xx của app
 - [ ] Bắt `SIGINT`/`SIGTERM` (trap): dừng vòng lặp, in **tóm tắt** ra cả màn hình lẫn cuối file
       log (dạng comment `#` để không phá TSV khi `awk`/`cut` đọc lại), rồi `exit 0`. Tóm tắt gồm:
       tổng số tick mỗi service, số "server non-200" (curl_exit=0 và code≠200) tách riêng số
@@ -279,6 +285,7 @@ Sửa → PR → chạy lại **toàn bộ Pha C** → giữ **cả log thất b
 | P8 | Mở PR/kích hoạt CD mới trong khi script + CD của lần chạy trước chưa xong | Hai swap chồng lên nhau trong cùng file log, khó tách bạch bằng chứng của từng lần chạy (giống P10 ở `notes/d17-prep.md`) | Làm tuần tự: đợi Ctrl+C + lưu tóm tắt xong mới mở PR tiếp |
 | P9 | AI tự chạy `gh pr merge`/`gh workflow run cd.yml` | Vi phạm luật "tốn tiền = hỏi trước" và bộ lọc phiên này chặn AI trigger deploy | Mọi lệnh loại này đánh dấu 👤 người dùng chạy, AI chỉ chuẩn bị PR và đọc kết quả |
 | P10 | Tin số đo "IP ổn định 6/6 lần" của phiên trước mà không đo lại | Nếu whitelist thật ra đã đổi (như từng thấy ở #11, #19) thì cả log sẽ đầy 403 và bị hiểu nhầm thành lỗi swap | B0/B1 luôn đo lại tại chỗ, không dùng số cũ |
+| P12 | 403 **tạm thời** trên slot vừa đổi container — đã thấy ở D17 C1/C2r/C3 trên **staging** (`known-issues.md` #20, chưa rõ nguồn) | Nếu cùng hiện tượng xảy ra ở production lúc swap: M2 thấy vài 403 và dễ đổ nhầm cho whitelist (P4) | Đọc file `.bodies` (A1): trang HTML nền tảng ≠ trang 403 whitelist; đối chiếu thời điểm với activity log swap. Có 403 kiểu này thì M2 **chưa đạt**, phải ghi thật, không loại khỏi log |
 | P11 | Đọc log tóm tắt của script rồi coi đó là `evidence/M2.md` | Tóm tắt do script tự in không có ngữ cảnh (link PR/run, giải thích cửa sổ lệch SHA) mà đề bài yêu cầu | Pha D viết `evidence/M2.md` tay, dùng tóm tắt script làm **nguyên liệu**, không phải bản nộp |
 
 ## Gợi ý trả lời 3 câu tự kiểm tra (guide)
