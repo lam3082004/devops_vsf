@@ -87,31 +87,54 @@ printf 'ts_utc\tcapacity\tbe_inst\tfe_inst\tmetric_min_utc\tcpu_avg\tcpu_max\tme
 	echo "# d19-watch start $(date -u +%Y-%m-%dT%H:%M:%SZ) plan=$RG/$PLAN be=$BE_APP fe=$FE_APP interval=${INTERVAL}s"
 } >>"$OUT"
 
-# Mỗi lệnh az tối đa 20s: D19 Pha C một lần az treo ~4 phút (mạng đứt) làm mất mẫu, và
-# SIGTERM chỉ có tác dụng sau khi az trả về. Hết giờ → cột đó ghi `-`.
+# Mỗi lệnh az tối đa 20s: D19 Pha C một lần az treo ~4 phút (mạng đứt) làm mất mẫu. Hết
+# giờ → cột đó ghi `-`.
 AZ_TIMEOUT=20
+TMPD="$(mktemp -d)"
+AZ_PID=""
+
+# Một lệnh az, kết quả vào file $1. Chạy nền + `wait` (không dùng $(...)): bash chỉ chạy
+# trap sau khi lệnh foreground xong, nên az foreground làm Ctrl+C/SIGTERM trễ tới
+# AZ_TIMEOUT giây mỗi lệnh (review vòng 2). `wait` thì bị trap cắt ngang ngay.
+az_q() {
+	local out="$1"
+	shift
+	: >"$out"
+	timeout "$AZ_TIMEOUT" az "$@" >"$out" 2>/dev/null &
+	AZ_PID=$!
+	wait "$AZ_PID" 2>/dev/null
+	AZ_PID=""
+}
 
 num_or_dash() {
 	[[ "$1" =~ ^[0-9]+$ ]] && echo "$1" || echo "-"
 }
 
+# Dừng giữa chừng (STOP=1) → trả 1, không ghi dòng thiếu cột.
 sample() {
 	local ts cap be fe m t cpu cmax mem
 	ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-	cap="$(num_or_dash "$(timeout "$AZ_TIMEOUT" az appservice plan show --ids "$PLAN_ID" --query sku.capacity -o tsv 2>/dev/null)")"
-	be="$(num_or_dash "$(timeout "$AZ_TIMEOUT" az webapp list-instances -g "$RG" -n "$BE_APP" --query 'length(@)' -o tsv 2>/dev/null)")"
-	fe="$(num_or_dash "$(timeout "$AZ_TIMEOUT" az webapp list-instances -g "$RG" -n "$FE_APP" --query 'length(@)' -o tsv 2>/dev/null)")"
+	az_q "$TMPD/cap" appservice plan show --ids "$PLAN_ID" --query sku.capacity -o tsv
+	((STOP == 0)) || return 1
+	az_q "$TMPD/be" webapp list-instances -g "$RG" -n "$BE_APP" --query 'length(@)' -o tsv
+	((STOP == 0)) || return 1
+	az_q "$TMPD/fe" webapp list-instances -g "$RG" -n "$FE_APP" --query 'length(@)' -o tsv
+	((STOP == 0)) || return 1
 	# 6 phút gần nhất, lấy phút MỚI NHẤT có số liệu CPU (phút đang chạy thường rỗng).
-	m="$(timeout "$AZ_TIMEOUT" az monitor metrics list --resource "$PLAN_ID" --metric CpuPercentage MemoryPercentage \
+	az_q "$TMPD/m" monitor metrics list --resource "$PLAN_ID" --metric CpuPercentage MemoryPercentage \
 		--interval PT1M --aggregation Average Maximum \
-		--start-time "$(date -u -d '-6 min' +%Y-%m-%dT%H:%M:%SZ)" -o json 2>/dev/null |
-		jq -r '
+		--start-time "$(date -u -d '-6 min' +%Y-%m-%dT%H:%M:%SZ)" -o json
+	((STOP == 0)) || return 1
+	cap="$(num_or_dash "$(tr -d '[:space:]' <"$TMPD/cap")")"
+	be="$(num_or_dash "$(tr -d '[:space:]' <"$TMPD/be")")"
+	fe="$(num_or_dash "$(tr -d '[:space:]' <"$TMPD/fe")")"
+	m="$(jq -r '
 			[.value[] | {k: .name.value, d: [.timeseries[0].data[]? | select(.average != null)]}]
 			| (map(select(.k == "CpuPercentage"))[0].d | last) as $c
 			| (map(select(.k == "MemoryPercentage"))[0].d // [] | map(select(.timeStamp == $c.timeStamp)) | last) as $m
 			| if $c == null then "-\t-\t-\t-"
 			  else [$c.timeStamp[0:16], ($c.average | floor), ($c.maximum | floor), (($m.average // null) | if . == null then "-" else floor end)] | map(tostring) | join("\t") end
-		' 2>/dev/null)"
+		' "$TMPD/m" 2>/dev/null)"
 	[[ -n "$m" ]] || m=$'-\t-\t-\t-'
 	IFS=$'\t' read -r t cpu cmax mem <<<"$m"
 	printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$ts" "$cap" "$be" "$fe" "$t" "$cpu" "$cmax" "$mem" >>"$OUT"
@@ -119,7 +142,13 @@ sample() {
 }
 
 STOP=0
-trap 'STOP=1' INT TERM
+# Dừng: đánh dấu + giết lệnh az đang chạy (timeout chuyển tín hiệu cho az).
+# shellcheck disable=SC2317 # gọi gián tiếp qua trap
+on_stop() {
+	STOP=1
+	[[ -z "$AZ_PID" ]] || kill "$AZ_PID" 2>/dev/null
+}
+trap on_stop INT TERM
 echo ">> ghi $OUT mỗi ${INTERVAL}s. Ctrl+C để dừng." >&2
 next=$EPOCHSECONDS
 while ((STOP == 0)); do
@@ -135,5 +164,6 @@ while ((STOP == 0)); do
 		wait $! 2>/dev/null
 	done
 done
+rm -rf "$TMPD"
 echo "# d19-watch stop $(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "$OUT"
 exit 0

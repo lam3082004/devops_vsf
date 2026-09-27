@@ -132,9 +132,14 @@ worker() {
 		# INT (cả nhóm tiến trình) và TERM (từ script cha) có thể tới cùng lúc —
 		# chỉ xử lý một lần, không ghi hai dòng aborted.
 		trap '' INT TERM
-		if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
-			kill "$pid" 2>/dev/null
-			wait "$pid" 2>/dev/null
+		# `jobs -p`, không dựa vào $pid: tín hiệu tới đúng giữa `curl … &` và `pid=$!`
+		# thì $pid còn rỗng, curl vừa bung ra sẽ mồ côi và server đốt CPU tiếp (review vòng 2).
+		local inflight
+		inflight="$(jobs -p)"
+		if [[ -n "$inflight" ]]; then
+			# shellcheck disable=SC2086 # cố ý tách từ: danh sách pid
+			kill $inflight 2>/dev/null
+			wait 2>/dev/null
 			printf '%s\t%s\t000\taborted\t-\t-\n' "$ts" "$id" >>"$OUT"
 		fi
 		exit 0
