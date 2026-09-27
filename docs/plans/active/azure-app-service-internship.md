@@ -4,10 +4,10 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-24 (hết D16 · D17 đã có kế hoạch)
+## Tiến độ — cập nhật 2026-09-27 (hết D17 · D18 đã có kế hoạch)
 
-**D1–D14 xong. D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **đang tắt**
-(chỉ còn `rg-vsf-bootstrap`).
+**D1–D14, D16, D17 xong. D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
+(`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
 **D16 XONG — M10 ĐẠT.** Nhật ký: `notes/d16.md` · bằng chứng: `evidence/M10.md`.
 Kế hoạch gốc `notes/d16-prep.md` có một chỗ **kê sai thuốc** (mục "vấp #1": cả hai cách nó đề
 xuất đều tạo `Cycle:` trong Terraform) — cách chữa thật ở `notes/d16.md`.
@@ -26,8 +26,12 @@ nhánh khác chết ở `azure/login`). Chi tiết: `notes/d16.md` mục cuối.
 lần hai (test luồng thật trên `fe`, không chỉ kiểm SHA) phát hiện kết luận "không lỗ mới" ở trên
 **sai** — bug PR #46 lọt qua suốt D16 — xem `notes/d16.md` mục "Bug lọt qua D16" (cuối file).
 
-**Bài tiếp: D17 — kế hoạch làm tay từng bước ở `notes/d17-prep.md`** (4 quyết định A–D cần chốt
-trước khi viết code). D17 phải xong trước D18, nếu không phép đo M2 không có giá trị.
+**D17 XONG (2026-09-27)** — swap an toàn chạy thật: bình thường · không khởi động (không swap) ·
+`/health` 503 (không swap) · rollback thật (activity log 2 swap/app) · 0 luật tạm sót · M6 8/8.
+`evidence/M10.md` mục D17, `notes/d17.md`. **Môi trường `jcip0s` ĐANG BẬT theo quyết định người dùng.**
+
+**Bài tiếp: D18 — kế hoạch từng bước ở `notes/d18-prep.md`** (5 quyết định A–E cần chốt trước khi
+viết script `scripts/m2-poll.sh`).
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -39,6 +43,7 @@ trước khi viết code). D17 phải xong trước D18, nếu không phép đo 
 | M8 — Terraform toàn bộ hạ tầng | ĐẠT lần 1 (D10) | `evidence/M8.md` — *cần lần 2 ở D15* |
 | M9 — CI chặn được cái sai | ĐẠT (D14) | `evidence/M9.md` |
 | M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — đủ, kể cả lớp 3 (run `35925778364`) |
+| M10 — mở rộng D17: swap an toàn | **ĐẠT (D17)** | `evidence/M10.md` mục D17 — 4 tình huống có run link |
 | M2, M7, M11 | chưa tới lịch | D18–D22 |
 
 **Còn nợ, không chặn D17:**
@@ -49,7 +54,7 @@ trước khi viết code). D17 phải xong trước D18, nếu không phép đo 
   về **gốc repo** (`topic.md` mục deliverables đòi `architecture.md` ở đó) · test cho `app/fe`
   (`known-issues.md` #16 — D17 quyết định B có thể mở màn) · dựng lại state `infra/bootstrap`
   bằng `terraform import` (#17, **nên làm trước M8 lần 2**).
-**Sổ lỗi:** `ai-failure-log.md` 30 case (đề cần 6–8) · `known-issues.md` 19 mục.
+**Sổ lỗi:** `ai-failure-log.md` 31 case (đề cần 6–8) · `known-issues.md` 20 mục.
 
 ## Authority
 
@@ -243,20 +248,19 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 > Chốt trước: A health path của `fe` · B cách chứng minh `fe`-staging gọi `be`-staging · C thử
 > rollback thật · D start time limit.
 >
-> **Trạng thái 2026-09-26: Pha A (code) XONG, CHƯA CHẠY TRÊN AZURE.** Nhánh
-> `feat/d17-safe-swap`, `infra/app/*.tf` + `cd.yml` viết xong, `terraform plan -lock=false`
-> đã soi trên môi trường thật (`Plan: 0 to add, 4 to change, 0 to destroy` — đúng phạm vi
-> mong đợi + 1 drift đã biết của `fe.logs`); `make lint/test/fe-lint/fe-test/fe-build` xanh;
-> `actionlint` không có cảnh báo mới so với `main`. Các ô bên dưới cần **bằng chứng chạy
-> thật** (Pha B/C) nên CHƯA tick — chi tiết Pha A: `notes/d17.md`.
-- [ ] Health check path + swap warm-up path (`be` `/health`, `fe` theo quyết định A) + warm-up statuses `200`, bằng Terraform cho cả 4 khối site/slot — *proof: `az webapp config show` + `appsettings list` cả 4 bề mặt*
-- [ ] `API_BASE_URL` slot-sticky, `fe` staging trỏ `be` staging (đóng `known-issues.md` #15) — *proof: `slotSetting=true`, `terraform plan` sau swap No changes*
-- [ ] Bỏ `sleep 75`; job `swap` tự poll staging đúng SHA + health 200, dùng luật IP tạm cho runner (Decision D13) — *proof: run log*
-- [ ] Kiểm production sau swap, lỗi thì **swap ngược** trong cùng run — *proof: run log + activity log 2 swap/app*
-- [ ] Luật tạm luôn được gỡ (`if: always()`) — *proof: `access-restriction show` rỗng tên `cd-*`, `terraform plan` No changes, `m6-check` 403 ×8*
-- [ ] 3 tình huống lỗi của guide có run link (không khởi động · `/health` 503 · luật tạm) — *proof: `notes/d17.md`, `evidence/M10.md` mục D17*
+> **Trạng thái 2026-09-27: XONG.** Pha A (PR #47) · B (apply 0/4/0, `plan` No changes) · C: C1
+> `36229314990` · C2 `36251180593` (không swap) · C3 `36293629836` (không swap) · C4 `36294708119`
+> (rollback) · 2 revert (#50, #52) · M6 8/8. Chi tiết: `notes/d17.md`, `evidence/M10.md` mục D17.
+- [x] Health check path + swap warm-up path (`be` `/health`, `fe` theo quyết định A) + warm-up statuses `200`, bằng Terraform cho cả 4 khối site/slot — *proof: `az webapp config show` + `appsettings list` cả 4 bề mặt (`notes/d17.md` B4)*
+- [x] `API_BASE_URL` slot-sticky, `fe` staging trỏ `be` staging (đóng `known-issues.md` #15) — *proof: `slotSetting=true`, `terraform plan` sau swap No changes* — `slotSetting=True` (B4) + C1 `be_host=…-staging` + `plan` No changes sau swap (C1) và sau rollback (C4)
+- [x] Bỏ `sleep 75`; job `swap` tự poll staging đúng SHA + health 200, dùng luật IP tạm cho runner (Decision D13) — *proof: run log* — run `36211355245` ("C0"): luật tạm 4/4, poll đạt sau 3s, verify 5/5
+- [x] Kiểm production sau swap, lỗi thì **swap ngược** trong cùng run — *proof: run log + activity log 2 swap/app* — C4 `36294708119`: be→ 04:40:58, fe→ 04:42:08, fe← 04:43:17, be← 04:44:37
+- [x] Luật tạm luôn được gỡ (`if: always()`) — *proof: `access-restriction show` rỗng tên `cd-*`, `terraform plan` No changes, `m6-check` 403 ×8* — 0 luật sau cả 7 run, `m6-check` `36295338058` + `36295339943`
+- [x] 3 tình huống lỗi của guide có run link (không khởi động · `/health` 503 · luật tạm) — *proof: `notes/d17.md`, `evidence/M10.md` mục D17* — C2 `36251180593` · C3 `36293629836` · luật tạm: mọi run
 
 ### D18 — Bằng chứng zero-downtime
+> Kế hoạch làm từng bước: **`notes/d18-prep.md`** (5 quyết định A–E; Pha A script → B xác nhận
+> môi trường → C đo quanh một swap thật → D `evidence/M2.md`). Cần tối thiểu C1 của D17 xanh trước.
 - [ ] Script poll `/version` mỗi giây, ghi timestamp · HTTP code · version — *proof: script trong repo*
 - [ ] Chạy script trong lúc merge → CD → swap; log thô: 0 non-200, version A→B — *proof: log* → `evidence/M2.md`
 - [ ] Nếu có non-200: tìm nguyên nhân (warm-up, start time, SIGTERM), sửa, chạy lại
@@ -403,6 +407,8 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-27 04:50Z: **D17 XONG.** C1–C4 + 2 revert chạy thật (AI chạy sau khi người dùng cấp quyền `gh workflow run`/`gh pr merge`). Production `be`+`fe` = `507710a`, `/health` `db: ok`, 0 luật `cd-*`, `plan` No changes, M6 8/8. **Môi trường `jcip0s` ĐANG BẬT theo quyết định người dùng — không `make down`** (~0.12 USD/giờ + ACR 0.17 USD/ngày). Câu hỏi mở: 403 tạm thời trên staging lúc container khởi động (`known-issues.md` #20) — ảnh hưởng cách đọc log M2. **Bước tiếp: D18** theo `notes/d18-prep.md`, bắt đầu Pha A (viết `scripts/m2-poll.sh`, không tốn tiền).
+- 2026-09-26: **D17 Pha A+B xong, Pha C chờ người dùng.** PR #47 merge 02:20Z lúc Azure bật → run CD `36211355245` xanh (cd.yml mới chạy thật lần đầu, trước apply). Apply Terraform D17 từ `main` `05b17bc` (0/4/0), B4 đúng 4 bề mặt, `plan` No changes, 0 luật `cd-*`. **Môi trường `jcip0s` ĐANG BẬT theo quyết định người dùng — không `make down`.** Bước tiếp: người dùng `! gh workflow run cd.yml --ref main` (C1), rồi C2–C4 theo `notes/d17.md`. Kế hoạch D18: `notes/d18-prep.md`.
 - 2026-09-24 22:15: **Môi trường vẫn BẬT** (`jcip0s`, từ chiều). Rà lại lần hai + test luồng thật
   trên môi trường thật (không chỉ kiểm SHA như lượt chiều) — phát hiện bug PR #46 (UI production
   `fe` đóng băng banner lỗi suốt D16) lọt qua cả CD, `evidence/M10.md` lẫn lượt rà chiều; đã sửa
