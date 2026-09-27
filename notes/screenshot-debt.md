@@ -1,6 +1,6 @@
 # Ảnh Portal còn nợ — gộp vào một phiên có môi trường bật
 
-Trạng thái: **6 ảnh chưa chụp** · Cập nhật 2026-09-23 (sau D14)
+Trạng thái: **8 ảnh chưa chụp** (6 cũ + 2 của M7/D19) · Cập nhật 2026-09-27 (D19)
 Quy ước tên + luật che: `evidence/screenshots-convention.md`
 
 > **Không chặn bài nào.** Cả M3, M4, M5, M6 đều đã **ĐẠT** bằng log thô + JSON; ảnh Portal
@@ -39,6 +39,20 @@ Lấy suffix thật ngay sau khi `make up` xong:
 ```bash
 terraform -chdir=infra/app output -raw name_suffix
 ```
+
+## M7 (D19) — 2 ảnh autoscale · ⚠️ chụp TRƯỚC `make down`
+
+Khác 6 ảnh bên dưới: hai ảnh này **không chụp lại được** sau khi xoá plan — `make down` xoá
+`asp-vsf-dev` cùng metric và Run history của autoscale setting. Môi trường `jcip0s` đang bật (27/09),
+chụp ngay trong phiên D19/D20. Thiếu ảnh thì M7 vẫn có log thô (`evidence/M7.md` mục 2), nhưng guide
+ghi "screenshot 1→2 và 2→1" trong "Xong khi".
+
+Đặt vào `evidence/d19/screenshots/`. Chỉnh khung giờ Portal sang **UTC** hoặc ghi rõ múi giờ trong tên.
+
+| # | Đường đi trong Portal | Trong ảnh PHẢI thấy | Tên file gợi ý |
+|---|---|---|---|
+| M7-1 | App Service Plan `asp-vsf-dev` → **Monitoring → Metrics** → `CPU Percentage` (Avg) + `Instance Count` nếu có, khung **2026-09-27 16:00–16:45Z** | CPU lên ~100% từ ~16:16, về ~10% từ ~16:24 | `m7-plan-cpu-metric-20260927.png` |
+| M7-2 | App Service Plan → **Scale out (App Service plan)** → tab **Run history** (khung 1 ngày) | Sự kiện scale **out 1→2** (~16:20:42Z) và **in 2→1** (~16:32:37Z) | `m7-autoscale-run-history-20260927.png` |
 
 ## Sáu ảnh
 

@@ -1,0 +1,207 @@
+{
+  "cost": 60,
+  "interval": "PT1M",
+  "namespace": "Microsoft.Web/serverFarms",
+  "resourceregion": "centralindia",
+  "timespan": "2026-09-27T15:05:00Z/2026-09-27T15:21:00Z",
+  "value": [
+    {
+      "displayDescription": "The average CPU used across all instances of the plan.",
+      "errorCode": "Success",
+      "id": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev/providers/Microsoft.Insights/metrics/CpuPercentage",
+      "name": {
+        "localizedValue": "CPU Percentage",
+        "value": "CpuPercentage"
+      },
+      "resourceGroup": "rg-vsf-dev",
+      "timeseries": [
+        {
+          "data": [
+            {
+              "average": 9.0,
+              "maximum": 9.0,
+              "timeStamp": "2026-09-27T15:05:00Z"
+            },
+            {
+              "average": 6.0,
+              "maximum": 6.0,
+              "timeStamp": "2026-09-27T15:06:00Z"
+            },
+            {
+              "average": 8.0,
+              "maximum": 8.0,
+              "timeStamp": "2026-09-27T15:07:00Z"
+            },
+            {
+              "average": 13.0,
+              "maximum": 13.0,
+              "timeStamp": "2026-09-27T15:08:00Z"
+            },
+            {
+              "average": 11.0,
+              "maximum": 11.0,
+              "timeStamp": "2026-09-27T15:09:00Z"
+            },
+            {
+              "average": 10.0,
+              "maximum": 10.0,
+              "timeStamp": "2026-09-27T15:10:00Z"
+            },
+            {
+              "average": 12.0,
+              "maximum": 12.0,
+              "timeStamp": "2026-09-27T15:11:00Z"
+            },
+            {
+              "average": 11.0,
+              "maximum": 11.0,
+              "timeStamp": "2026-09-27T15:12:00Z"
+            },
+            {
+              "average": 18.0,
+              "maximum": 18.0,
+              "timeStamp": "2026-09-27T15:13:00Z"
+            },
+            {
+              "average": 52.0,
+              "maximum": 52.0,
+              "timeStamp": "2026-09-27T15:14:00Z"
+            },
+            {
+              "average": 39.0,
+              "maximum": 39.0,
+              "timeStamp": "2026-09-27T15:15:00Z"
+            },
+            {
+              "average": 47.0,
+              "maximum": 47.0,
+              "timeStamp": "2026-09-27T15:16:00Z"
+            },
+            {
+              "average": 28.0,
+              "maximum": 28.0,
+              "timeStamp": "2026-09-27T15:17:00Z"
+            },
+            {
+              "average": 22.0,
+              "maximum": 22.0,
+              "timeStamp": "2026-09-27T15:18:00Z"
+            },
+            {
+              "average": 15.0,
+              "maximum": 15.0,
+              "timeStamp": "2026-09-27T15:19:00Z"
+            },
+            {
+              "average": 9.0,
+              "maximum": 9.0,
+              "timeStamp": "2026-09-27T15:20:00Z"
+            }
+          ],
+          "metadatavalues": []
+        }
+      ],
+      "type": "Microsoft.Insights/metrics",
+      "unit": "Percent"
+    },
+    {
+      "displayDescription": "The average memory used across all instances of the plan.",
+      "errorCode": "Success",
+      "id": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev/providers/Microsoft.Insights/metrics/MemoryPercentage",
+      "name": {
+        "localizedValue": "Memory Percentage",
+        "value": "MemoryPercentage"
+      },
+      "resourceGroup": "rg-vsf-dev",
+      "timeseries": [
+        {
+          "data": [
+            {
+              "average": 57.0,
+              "maximum": 57.0,
+              "timeStamp": "2026-09-27T15:05:00Z"
+            },
+            {
+              "average": 57.0,
+              "maximum": 57.0,
+              "timeStamp": "2026-09-27T15:06:00Z"
+            },
+            {
+              "average": 57.0,
+              "maximum": 57.0,
+              "timeStamp": "2026-09-27T15:07:00Z"
+            },
+            {
+              "average": 57.0,
+              "maximum": 57.0,
+              "timeStamp": "2026-09-27T15:08:00Z"
+            },
+            {
+              "average": 57.0,
+              "maximum": 57.0,
+              "timeStamp": "2026-09-27T15:09:00Z"
+            },
+            {
+              "average": 57.0,
+              "maximum": 57.0,
+              "timeStamp": "2026-09-27T15:10:00Z"
+            },
+            {
+              "average": 58.0,
+              "maximum": 58.0,
+              "timeStamp": "2026-09-27T15:11:00Z"
+            },
+            {
+              "average": 58.0,
+              "maximum": 58.0,
+              "timeStamp": "2026-09-27T15:12:00Z"
+            },
+            {
+              "average": 58.0,
+              "maximum": 58.0,
+              "timeStamp": "2026-09-27T15:13:00Z"
+            },
+            {
+              "average": 61.0,
+              "maximum": 61.0,
+              "timeStamp": "2026-09-27T15:14:00Z"
+            },
+            {
+              "average": 58.0,
+              "maximum": 58.0,
+              "timeStamp": "2026-09-27T15:15:00Z"
+            },
+            {
+              "average": 66.0,
+              "maximum": 66.0,
+              "timeStamp": "2026-09-27T15:16:00Z"
+            },
+            {
+              "average": 59.0,
+              "maximum": 59.0,
+              "timeStamp": "2026-09-27T15:17:00Z"
+            },
+            {
+              "average": 54.0,
+              "maximum": 54.0,
+              "timeStamp": "2026-09-27T15:18:00Z"
+            },
+            {
+              "average": 55.0,
+              "maximum": 55.0,
+              "timeStamp": "2026-09-27T15:19:00Z"
+            },
+            {
+              "average": 55.0,
+              "maximum": 55.0,
+              "timeStamp": "2026-09-27T15:20:00Z"
+            }
+          ],
+          "metadatavalues": []
+        }
+      ],
+      "type": "Microsoft.Insights/metrics",
+      "unit": "Percent"
+    }
+  ]
+}

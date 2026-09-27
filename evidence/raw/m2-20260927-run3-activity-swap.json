@@ -1,0 +1,58 @@
+[
+  {
+    "caller": "560fdb80-0334-4034-8088-e7cdaa399e4a",
+    "op": "Microsoft.Web/sites/slots/slotsswap/action",
+    "r": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/fe-vsf-jcip0s/slots/staging",
+    "st": "Succeeded",
+    "t": "2026-09-27T15:16:01.5768493Z"
+  },
+  {
+    "caller": "SlotSwapJobProcessor",
+    "op": "Microsoft.Web/sites/slots/SlotsSwap/action",
+    "r": "/SUBSCRIPTIONS/9880AA34-1FB4-4402-B692-232A90F1A7BB/RESOURCEGROUPS/RG-VSF-DEV/PROVIDERS/MICROSOFT.WEB/SITES/FE-VSF-JCIP0S/SLOTS/STAGING",
+    "st": "Succeeded",
+    "t": "2026-09-27T15:15:50Z"
+  },
+  {
+    "caller": "560fdb80-0334-4034-8088-e7cdaa399e4a",
+    "op": "Microsoft.Web/sites/slots/slotsswap/action",
+    "r": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/slots/staging",
+    "st": "Succeeded",
+    "t": "2026-09-27T15:14:39.6343322Z"
+  },
+  {
+    "caller": "560fdb80-0334-4034-8088-e7cdaa399e4a",
+    "op": "Microsoft.Web/sites/slots/slotsswap/action",
+    "r": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/fe-vsf-jcip0s/slots/staging",
+    "st": "Accepted",
+    "t": "2026-09-27T15:14:39.0019229Z"
+  },
+  {
+    "caller": "560fdb80-0334-4034-8088-e7cdaa399e4a",
+    "op": "Microsoft.Web/sites/slots/slotsswap/action",
+    "r": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/fe-vsf-jcip0s/slots/staging",
+    "st": "Started",
+    "t": "2026-09-27T15:14:37.6112801Z"
+  },
+  {
+    "caller": "SlotSwapJobProcessor",
+    "op": "Microsoft.Web/sites/slots/SlotsSwap/action",
+    "r": "/SUBSCRIPTIONS/9880AA34-1FB4-4402-B692-232A90F1A7BB/RESOURCEGROUPS/RG-VSF-DEV/PROVIDERS/MICROSOFT.WEB/SITES/APP-VSF-JCIP0S/SLOTS/STAGING",
+    "st": "Succeeded",
+    "t": "2026-09-27T15:14:35Z"
+  },
+  {
+    "caller": "560fdb80-0334-4034-8088-e7cdaa399e4a",
+    "op": "Microsoft.Web/sites/slots/slotsswap/action",
+    "r": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/slots/staging",
+    "st": "Accepted",
+    "t": "2026-09-27T15:13:34.2704975Z"
+  },
+  {
+    "caller": "560fdb80-0334-4034-8088-e7cdaa399e4a",
+    "op": "Microsoft.Web/sites/slots/slotsswap/action",
+    "r": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/slots/staging",
+    "st": "Started",
+    "t": "2026-09-27T15:13:32.582175Z"
+  }
+]

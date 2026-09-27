@@ -1,0 +1,74 @@
+{
+  "enabled": true,
+  "id": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/microsoft.insights/autoscalesettings/autoscale-vsf-dev",
+  "location": "centralindia",
+  "name": "autoscale-vsf-dev",
+  "notifications": [],
+  "predictiveAutoscalePolicy": {
+    "scaleMode": "Disabled"
+  },
+  "profiles": [
+    {
+      "capacity": {
+        "default": "1",
+        "maximum": "2",
+        "minimum": "1"
+      },
+      "name": "cpu",
+      "rules": [
+        {
+          "metricTrigger": {
+            "dimensions": [],
+            "dividePerInstance": false,
+            "metricName": "CpuPercentage",
+            "metricNamespace": "microsoft.web/serverfarms",
+            "metricResourceUri": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev",
+            "operator": "GreaterThan",
+            "statistic": "Average",
+            "threshold": 70.0,
+            "timeAggregation": "Average",
+            "timeGrain": "PT1M",
+            "timeWindow": "PT5M"
+          },
+          "scaleAction": {
+            "cooldown": "PT5M",
+            "direction": "Increase",
+            "type": "ChangeCount",
+            "value": "1"
+          }
+        },
+        {
+          "metricTrigger": {
+            "dimensions": [],
+            "dividePerInstance": false,
+            "metricName": "CpuPercentage",
+            "metricNamespace": "microsoft.web/serverfarms",
+            "metricResourceUri": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev",
+            "operator": "LessThan",
+            "statistic": "Average",
+            "threshold": 30.0,
+            "timeAggregation": "Average",
+            "timeGrain": "PT1M",
+            "timeWindow": "PT10M"
+          },
+          "scaleAction": {
+            "cooldown": "PT10M",
+            "direction": "Decrease",
+            "type": "ChangeCount",
+            "value": "1"
+          }
+        }
+      ]
+    }
+  ],
+  "resourceGroup": "rg-vsf-dev",
+  "tags": {
+    "env": "dev",
+    "layer": "app",
+    "managed_by": "terraform",
+    "owner": "intern",
+    "project": "vsf"
+  },
+  "targetResourceUri": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev",
+  "type": "Microsoft.Insights/autoscaleSettings"
+}
