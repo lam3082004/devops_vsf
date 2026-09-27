@@ -36,6 +36,4 @@ EXPOSE 8080
 # Dạng exec: process dotnet là PID 1, nhận thẳng SIGTERM từ docker stop và
 # App Service, nhờ đó graceful shutdown (Program.cs) chạy được. Bọc qua shell
 # là mất tín hiệu — nhưng image chiseled còn không có shell để bọc qua.
-# D17 C2 (CỐ Ý HỎNG, revert ngay qua PR): .dll không tồn tại → container thoát lúc start.
-# CI vẫn xanh (chỉ build + Trivy, không chạy container) — CD phải chặn ở bước poll staging.
-ENTRYPOINT ["dotnet", "OpsBoard.KhongTonTai.dll"]
+ENTRYPOINT ["dotnet", "OpsBoard.dll"]
