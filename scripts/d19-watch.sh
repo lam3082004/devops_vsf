@@ -69,7 +69,7 @@ die() {
 
 [[ "$INTERVAL" =~ ^[0-9]+$ && "$INTERVAL" -ge 10 ]] || die "--interval phải là số nguyên ≥ 10"
 [[ -n "${EPOCHSECONDS:-}" ]] || die "cần bash ≥ 5 (EPOCHSECONDS)"
-for bin in az jq date; do
+for bin in az jq date timeout; do
 	command -v "$bin" >/dev/null || die "thiếu $bin"
 done
 [[ ! -e "$OUT" ]] || die "$OUT đã tồn tại, chọn --out khác"
@@ -87,6 +87,10 @@ printf 'ts_utc\tcapacity\tbe_inst\tfe_inst\tmetric_min_utc\tcpu_avg\tcpu_max\tme
 	echo "# d19-watch start $(date -u +%Y-%m-%dT%H:%M:%SZ) plan=$RG/$PLAN be=$BE_APP fe=$FE_APP interval=${INTERVAL}s"
 } >>"$OUT"
 
+# Mỗi lệnh az tối đa 20s: D19 Pha C một lần az treo ~4 phút (mạng đứt) làm mất mẫu, và
+# SIGTERM chỉ có tác dụng sau khi az trả về. Hết giờ → cột đó ghi `-`.
+AZ_TIMEOUT=20
+
 num_or_dash() {
 	[[ "$1" =~ ^[0-9]+$ ]] && echo "$1" || echo "-"
 }
@@ -94,11 +98,11 @@ num_or_dash() {
 sample() {
 	local ts cap be fe m t cpu cmax mem
 	ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-	cap="$(num_or_dash "$(az appservice plan show --ids "$PLAN_ID" --query sku.capacity -o tsv 2>/dev/null)")"
-	be="$(num_or_dash "$(az webapp list-instances -g "$RG" -n "$BE_APP" --query 'length(@)' -o tsv 2>/dev/null)")"
-	fe="$(num_or_dash "$(az webapp list-instances -g "$RG" -n "$FE_APP" --query 'length(@)' -o tsv 2>/dev/null)")"
+	cap="$(num_or_dash "$(timeout "$AZ_TIMEOUT" az appservice plan show --ids "$PLAN_ID" --query sku.capacity -o tsv 2>/dev/null)")"
+	be="$(num_or_dash "$(timeout "$AZ_TIMEOUT" az webapp list-instances -g "$RG" -n "$BE_APP" --query 'length(@)' -o tsv 2>/dev/null)")"
+	fe="$(num_or_dash "$(timeout "$AZ_TIMEOUT" az webapp list-instances -g "$RG" -n "$FE_APP" --query 'length(@)' -o tsv 2>/dev/null)")"
 	# 6 phút gần nhất, lấy phút MỚI NHẤT có số liệu CPU (phút đang chạy thường rỗng).
-	m="$(az monitor metrics list --resource "$PLAN_ID" --metric CpuPercentage MemoryPercentage \
+	m="$(timeout "$AZ_TIMEOUT" az monitor metrics list --resource "$PLAN_ID" --metric CpuPercentage MemoryPercentage \
 		--interval PT1M --aggregation Average Maximum \
 		--start-time "$(date -u -d '-6 min' +%Y-%m-%dT%H:%M:%SZ)" -o json 2>/dev/null |
 		jq -r '

@@ -19,7 +19,8 @@
 #     app setting LOAD_MAX_SECONDS của `be` đã đổi, và phải khớp nó.
 #   --duration ≤ 480 (8 phút, TỔNG, không phải mỗi worker) · --workers 1..4.
 # Worker không bắt đầu request mới nếu nó không kịp xong trước hạn (giờ bắt đầu +
-# seconds + 3s dư cho độ trễ mạng > hạn), nên phía server không đốt CPU quá hạn.
+# seconds + 12s dư > hạn), nên phía server không đốt CPU quá hạn. 12s: D19 đo được
+# request 55s mất tới 66,2s qua WARP (dư 11s).
 # Tới hạn mà còn request đang bay thì bị huỷ như Ctrl+C.
 # Huỷ curl KHÔNG dừng được vòng lặp đốt CPU phía server (LoadService không nhận
 # cancellation): sau Ctrl+C, server còn đốt tối đa `seconds` giây nữa.
@@ -90,14 +91,18 @@ die() {
 }
 
 [[ -n "$URL" ]] || die "thiếu --url"
+# ^[1-9]: số có 0 đứng đầu (070) bị (( )) đọc theo hệ bát phân (= 56) → qua kiểm tra
+# trong khi URL vẫn gửi "070" = 70 > 60 → 400 hàng loạt (bẫy Q3 lọt qua).
 for v in WORKERS SECS DURATION MAX_SECS; do
-	[[ "${!v}" =~ ^[0-9]+$ ]] || die "$v phải là số nguyên dương"
+	[[ "${!v}" =~ ^[1-9][0-9]*$ ]] || die "$v phải là số nguyên dương, không có 0 đứng đầu"
 done
 ((MAX_SECS >= 1 && MAX_SECS <= 300)) || die "--max-seconds phải trong 1..300 (giới hạn của LOAD_MAX_SECONDS)"
 ((SECS >= 1 && SECS <= MAX_SECS)) || die "--seconds $SECS ngoài 1..$MAX_SECS — be sẽ trả 400 (bẫy Q3)"
 ((WORKERS >= 1 && WORKERS <= 4)) || die "--workers phải trong 1..4"
 ((DURATION <= 480)) || die "--duration $DURATION > 480 — trần cứng 8 phút (bẫy Q5/Q6)"
-((DURATION >= SECS)) || die "--duration phải ≥ --seconds, nếu không sẽ không có request nào"
+# Dư cho độ trễ mạng của request cuối (xem đầu file) + 1s vì EPOCHSECONDS làm tròn xuống.
+SLACK=12
+((DURATION >= SECS + SLACK + 1)) || die "--duration phải ≥ --seconds + $((SLACK + 1)), nếu không sẽ không có request nào"
 # curl phải chờ lâu hơn thời gian server đốt, nếu không mọi request đều timeout phía
 # client trong khi server vẫn đốt (bẫy Q4). 75 = 55 + dư cho độ trễ WARP.
 ((MAX_TIME > SECS + 10)) || MAX_TIME=$((SECS + 20))
@@ -135,7 +140,7 @@ worker() {
 		exit 0
 	}
 	trap abort INT TERM
-	while ((EPOCHSECONDS + SECS + 3 <= DEADLINE)); do
+	while ((EPOCHSECONDS + SECS + SLACK <= DEADLINE)); do
 		ts="$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
 		: >"$bodyf"
 		curl -4 -s --max-time "$MAX_TIME" -o "$bodyf" -w '%{http_code} %{time_total}' \
@@ -178,8 +183,14 @@ done
 
 REASON="hết hạn"
 ((STOP == 1)) && REASON="dừng tay (Ctrl+C/SIGTERM)"
+# Tín hiệu thứ hai (Ctrl+C lần 2, hoặc TERM cho cha + INT cho cả nhóm) trong lúc `wait`
+# làm `wait` trả về sớm → tóm tắt in trước khi worker ghi dòng `aborted`. Bỏ qua tín
+# hiệu từ đây, và chờ tới khi không còn worker nào sống.
+trap '' INT TERM
 kill -TERM "${pids[@]}" 2>/dev/null
-wait "${pids[@]}" 2>/dev/null
+while alive; do
+	wait "${pids[@]}" 2>/dev/null
+done
 rm -rf "$TMP"
 
 {

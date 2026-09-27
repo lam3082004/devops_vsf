@@ -42,7 +42,7 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 - Apply 1 added. `plan` ra No changes cả lúc **2 instance**.
 - Tải thật 3 × `/load?seconds=55` (người dùng chạy — classifier chặn AI): **1→2 sau 6m35s, 2→1 sau 10m43s** dừng tải.
 - Right sizing: **giữ P0v3** (CPU bình thường 10,5%, memory đỉnh 65%).
-- M2 lần 3 (merge #56): 0 non-200 nhưng cụm timeout trong swap `fe` lặp lại (2/3 lần, #21). Scale in 0 timeout.
+- M2 lần 3 (merge #56): 0 non-200; cụm timeout to hơn trong lúc swap `fe`, nhưng có ca đối chứng không swap cùng kiểu → #21 vẫn chưa quy được. Scale in 0 timeout.
 - `evidence/M7.md`, `notes/d19.md`. **Bài tiếp: D20 — kế hoạch ở `notes/d20-prep.md`.**
 
 | Mốc | Trạng thái | Bằng chứng |
@@ -56,8 +56,8 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 | M9 — CI chặn được cái sai | ĐẠT (D14) | `evidence/M9.md` |
 | M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — đủ, kể cả lớp 3 (run `35925778364`) |
 | M10 — mở rộng D17: swap an toàn | **ĐẠT (D17)** | `evidence/M10.md` mục D17 — 4 tình huống có run link |
-| M2 — zero-downtime khi swap | **Chờ mentor (D18)** — 0 response non-200 (đạt theo `topic.md`); 10 timeout, 6 quanh swap (chưa đạt theo guide) | `evidence/M2.md` — 2 lần, log thô `evidence/raw/m2-*.log` |
-| M7 — autoscale + right sizing + cost report | **Phần autoscale ĐẠT (D19)** bằng log thô — *thiếu 2 ảnh Portal*; cost report là D20 | `evidence/M7.md` |
+| M2 — zero-downtime khi swap | **Chờ mentor (D18)** — 0 response non-200 (đạt theo `topic.md`); 10 timeout, 6 quanh swap (chưa đạt theo guide) | `evidence/M2.md` — 3 lần swap (lần 3 ở D19: 0 non-200, 21 timeout trong swap `fe`) + đo lúc scale, log thô `evidence/raw/m2-*.log` |
+| M7 — autoscale + right sizing + cost report | **Phần autoscale: đạt về log thô (D19), chưa đủ "Xong khi" — thiếu 2 ảnh Portal**; cost report là D20 | `evidence/M7.md` |
 | M11 | chưa tới lịch | D22 |
 
 **Còn nợ, không chặn D17:**
