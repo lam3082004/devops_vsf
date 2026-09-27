@@ -32,7 +32,9 @@ lần hai (test luồng thật trên `fe`, không chỉ kiểm SHA) phát hiện
 
 **D18 đang làm** (`notes/d18.md`): 5 quyết định A–E chốt theo đề xuất prep · Pha A xong
 (`scripts/m2-poll.sh`, kiểm khô 3 bài trên server giả, bắt được 1 lỗi Ctrl+C mất dòng — #32) ·
-Pha B/C (đo thật quanh lần merge PR script) chưa chạy.
+Pha B xong (plan No changes, IP 15/15) · **Pha C lần 1** (merge #53): be/fe **0 server non-200**,
+A→B cả hai, nhưng 4 timeout client (1 của be trong cửa sổ swap) → chưa kết luận; lần 2 dùng script
+có cột pha timeout (`evidence/M2.md`).
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -408,6 +410,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-27 07:45Z: **D18 Pha C lần 1 xong, M2 chưa kết luận.** Merge #53 (07:21Z) → CD `36302841295` success, production be+fe = `64422c2`. Log `evidence/raw/m2-20260927-run1.log`: 0 server non-200, A→B, 4 timeout client (độ trễ nền 1.6s qua WARP). Nhánh `chore/d18-m2-timing` thêm cột pha timeout + `evidence/M2.md` lần 1. **Merge nhánh đó = lần đo 2 — cần người dùng xác nhận**, bật script ≥60s trước. Môi trường `jcip0s` vẫn BẬT.
 - 2026-09-27 05:30Z: **D18 Pha A xong** trên nhánh `chore/d18-m2-poll` (`scripts/m2-poll.sh` + `notes/d18.md` + `ai-failure-log.md` #32). Chưa chạm Azure. **Merge PR này = lần đo M2** (CD không path filter): trước khi merge phải bật `scripts/m2-poll.sh` trên production ≥60s baseline (Pha C2 prep). Môi trường `jcip0s` vẫn BẬT theo quyết định người dùng.
 - 2026-09-27 04:50Z: **D17 XONG.** C1–C4 + 2 revert chạy thật (AI chạy sau khi người dùng cấp quyền `gh workflow run`/`gh pr merge`). Production `be`+`fe` = `507710a`, `/health` `db: ok`, 0 luật `cd-*`, `plan` No changes, M6 8/8. **Môi trường `jcip0s` ĐANG BẬT theo quyết định người dùng — không `make down`** (~0.12 USD/giờ + ACR 0.17 USD/ngày). Câu hỏi mở: 403 tạm thời trên staging lúc container khởi động (`known-issues.md` #20) — ảnh hưởng cách đọc log M2. **Bước tiếp: D18** theo `notes/d18-prep.md`, bắt đầu Pha A (viết `scripts/m2-poll.sh`, không tốn tiền).
 - 2026-09-26: **D17 Pha A+B xong, Pha C chờ người dùng.** PR #47 merge 02:20Z lúc Azure bật → run CD `36211355245` xanh (cd.yml mới chạy thật lần đầu, trước apply). Apply Terraform D17 từ `main` `05b17bc` (0/4/0), B4 đúng 4 bề mặt, `plan` No changes, 0 luật `cd-*`. **Môi trường `jcip0s` ĐANG BẬT theo quyết định người dùng — không `make down`.** Bước tiếp: người dùng `! gh workflow run cd.yml --ref main` (C1), rồi C2–C4 theo `notes/d17.md`. Kế hoạch D18: `notes/d18-prep.md`.
