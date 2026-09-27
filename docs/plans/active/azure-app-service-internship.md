@@ -4,7 +4,7 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-27 (hết D18 · D19 đã có kế hoạch)
+## Tiến độ — cập nhật 2026-09-27 (hết D18 · D19 Pha A xong)
 
 **D1–D14, D16, D17, D18 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
@@ -36,6 +36,13 @@ A→B đủ, be≠fe 94–105s (đúng thiết kế be trước fe). Nhưng có 
 độ trễ nền 1,6s), 6 quanh swap, gồm cụm 5/50 request 25s sau swap `fe` lần 2 → **chưa đạt theo
 guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính lại số liệu, sửa theo.
 `evidence/M2.md`, `notes/d18.md`. **Bài tiếp: D19 — kế hoạch từng bước ở `notes/d19-prep.md`.**
+
+**D19 Pha A xong (2026-09-27, nhánh `feat/d19-autoscale`, chưa chạm Azure).** Quyết định A–F theo
+đề xuất prep. `infra/app/autoscale.tf` (Plan, CpuPercentage, 1/1/**2**, out >70% 5 phút, in <30% 10
+phút) + `ignore_changes = [worker_count]` trên plan → `terraform plan` **1 to add, 0 to change**.
+`scripts/load.sh` (3 × `/load?seconds=55`, trần 8 phút) + `scripts/d19-watch.sh` (chỉ đọc) kiểm khô
+đạt; `ai-failure-log.md` #34. **Tiếp: Pha B `terraform apply` và Pha C test tải — hỏi người dùng
+trước.** `notes/d19.md`.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -272,7 +279,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 
 ### D19 — Autoscale + right sizing
 > Kế hoạch làm từng bước: **`notes/d19-prep.md`**.
-- [ ] Autoscale setting: min 1, **max 2**, scale out CPU > ~70% trong 5 phút, scale in CPU < ~30% — *proof: plan*
+- [~] Autoscale setting: min 1, **max 2**, scale out CPU > ~70% trong 5 phút, scale in CPU < ~30% — *proof: plan* — `infra/app/autoscale.tf`, `plan` 1 to add (Pha A); **chưa apply** (Pha B)
 - [ ] Test tải ngắn bằng `/load` (vài phút) → thấy 1→2→1 instance — *proof: screenshot metric instance count + run history*
 - [ ] Right sizing: xem CPU/memory thực tế, quyết định tier — *proof: Decision*
 
@@ -413,6 +420,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-27 14:35Z: **D19 Pha A xong** trên nhánh `feat/d19-autoscale` (worktree `.claude/worktrees/d19-autoscale`): autoscale Terraform + `ignore_changes` (`plan` 1 to add, 0 change), `scripts/load.sh` + `scripts/d19-watch.sh` kiểm khô đạt, `notes/d19.md`, `ai-failure-log.md` #34. Chưa `apply`, chưa tải. **Merge PR này = một lần CD swap thật** (không path filter) — hỏi người dùng. Sau merge: Pha B (`terraform apply` từ `main`, hỏi trước) → Pha C (tải 8 phút, hỏi trước). Môi trường `jcip0s` VẪN BẬT theo quyết định người dùng.
 - 2026-09-27 08:20Z: **D18 xong phần việc, M2 chờ mentor.** Lần 2 = merge #54 (07:47Z) → CD `36304209433` success, production be+fe = `410c5ef` (PR chốt D18 merge sau đó sẽ đổi SHA lần nữa). M2: 0 response non-200 × 2 lần; 10 timeout (6 quanh swap) đã phân loại, chưa đạt tiêu chí chặt của guide (`evidence/M2.md`). **Môi trường `jcip0s` VẪN BẬT theo quyết định người dùng.** **Bước tiếp: D19** theo `notes/d19-prep.md` — chốt quyết định trước, Pha A (Terraform autoscale) không tốn tiền, `terraform apply` + test tải phải hỏi trước.
 - 2026-09-27 07:45Z: **D18 Pha C lần 1 xong, M2 chưa kết luận.** Merge #53 (07:21Z) → CD `36302841295` success, production be+fe = `64422c2`. Log `evidence/raw/m2-20260927-run1.log`: 0 server non-200, A→B, 4 timeout client (độ trễ nền 1.6s qua WARP). Nhánh `chore/d18-m2-timing` thêm cột pha timeout + `evidence/M2.md` lần 1. **Merge nhánh đó = lần đo 2 — cần người dùng xác nhận**, bật script ≥60s trước. Môi trường `jcip0s` vẫn BẬT.
 - 2026-09-27 05:30Z: **D18 Pha A xong** trên nhánh `chore/d18-m2-poll` (`scripts/m2-poll.sh` + `notes/d18.md` + `ai-failure-log.md` #32). Chưa chạm Azure. **Merge PR này = lần đo M2** (CD không path filter): trước khi merge phải bật `scripts/m2-poll.sh` trên production ≥60s baseline (Pha C2 prep). Môi trường `jcip0s` vẫn BẬT theo quyết định người dùng.

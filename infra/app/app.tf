@@ -10,6 +10,14 @@ resource "azurerm_service_plan" "app" {
   sku_name            = "P0v3"
   worker_count        = 1
   tags                = local.tags
+
+  # D19 quyết định A: Terraform chỉ đặt số instance BAN ĐẦU, lúc chạy thì
+  # autoscale (autoscale.tf) sở hữu nó. Thiếu dòng này thì khi autoscale đang
+  # ở 2 instance, `plan` báo drift 2 → 1 và `apply` lúc đó kéo plan về 1 giữa
+  # lúc tải cao — Terraform và autoscale đánh nhau.
+  lifecycle {
+    ignore_changes = [worker_count]
+  }
 }
 
 locals {
