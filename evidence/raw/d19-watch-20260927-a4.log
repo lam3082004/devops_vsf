@@ -1,0 +1,8 @@
+ts_utc	capacity	be_inst	fe_inst	metric_min_utc	cpu_avg	cpu_max	mem_avg
+# d19-watch start 2026-09-27T14:31:15Z plan=rg-vsf-dev/asp-vsf-dev be=app-vsf-jcip0s fe=fe-vsf-jcip0s interval=30s
+2026-09-27T14:31:15Z	1	1	1	2026-09-27T14:30	9	9	57
+2026-09-27T14:31:46Z	1	1	1	2026-09-27T14:31	9	9	57
+2026-09-27T14:32:15Z	1	1	1	2026-09-27T14:31	9	9	57
+2026-09-27T14:32:45Z	1	1	1	2026-09-27T14:32	6	6	57
+2026-09-27T14:33:15Z	1	1	1	2026-09-27T14:33	15	15	57
+# d19-watch stop 2026-09-27T14:33:24Z
