@@ -33,6 +33,11 @@ COPY --from=builder /app/publish .
 # Image chiseled đã chạy sẵn non-root (uid 64198) — không cần khai USER.
 EXPOSE 8080
 
+# D17 C3 (CỐ Ý HỎNG, revert ngay qua PR): Terraform không đặt DB_PORT nên giá trị trong
+# image có hiệu lực → app vẫn khởi động (DB lỗi chỉ cảnh báo) và /version ra SHA mới, nhưng
+# /health 503. CD phải thấy "đúng SHA nhưng chưa sẵn sàng" và KHÔNG swap.
+ENV DB_PORT=1
+
 # Dạng exec: process dotnet là PID 1, nhận thẳng SIGTERM từ docker stop và
 # App Service, nhờ đó graceful shutdown (Program.cs) chạy được. Bọc qua shell
 # là mất tín hiệu — nhưng image chiseled còn không có shell để bọc qua.
