@@ -1,0 +1,30 @@
+ts_start_utc	worker	http_code	curl_exit	time_total_s	body
+# load start 2026-09-27T16:14:07Z deadline 2026-09-27T16:22:07Z
+# url=https://app-vsf-jcip0s.azurewebsites.net/load?seconds=55 workers=3 duration=480s max_time=75s
+2026-09-27T16:14:07.352Z	2	200	0	56.524473	{"burned_seconds":55,"iterations":645718748}
+2026-09-27T16:14:07.354Z	3	200	0	56.528037	{"burned_seconds":55,"iterations":683043067}
+2026-09-27T16:14:07.352Z	1	200	0	56.793586	{"burned_seconds":55,"iterations":661533686}
+2026-09-27T16:15:03.904Z	3	200	0	56.552986	{"burned_seconds":55,"iterations":689413439}
+2026-09-27T16:15:03.901Z	2	200	0	56.827145	{"burned_seconds":55,"iterations":637322316}
+2026-09-27T16:15:04.169Z	1	200	0	56.557250	{"burned_seconds":55,"iterations":689246389}
+2026-09-27T16:16:00.749Z	2	200	0	59.455845	{"burned_seconds":55,"iterations":632958912}
+2026-09-27T16:16:00.479Z	3	200	0	59.726381	{"burned_seconds":55,"iterations":690496292}
+2026-09-27T16:16:00.750Z	1	200	0	61.716189	{"burned_seconds":55,"iterations":723927603}
+2026-09-27T16:17:00.232Z	3	200	0	56.292787	{"burned_seconds":55,"iterations":617145029}
+2026-09-27T16:17:00.229Z	2	200	0	56.469055	{"burned_seconds":55,"iterations":643692005}
+2026-09-27T16:17:02.489Z	1	200	0	56.462227	{"burned_seconds":55,"iterations":620231158}
+2026-09-27T16:17:56.724Z	2	200	0	56.730774	{"burned_seconds":55,"iterations":669585952}
+2026-09-27T16:17:56.547Z	3	200	0	56.985944	{"burned_seconds":55,"iterations":604791940}
+2026-09-27T16:17:58.976Z	1	200	0	56.760624	{"burned_seconds":55,"iterations":708987075}
+2026-09-27T16:18:53.557Z	3	200	0	57.627181	{"burned_seconds":55,"iterations":693533966}
+2026-09-27T16:18:53.476Z	2	200	0	57.707897	{"burned_seconds":55,"iterations":695693235}
+2026-09-27T16:18:55.762Z	1	200	0	58.677911	{"burned_seconds":55,"iterations":674765230}
+2026-09-27T16:19:54.465Z	1	200	0	61.330018	{"burned_seconds":55,"iterations":701831869}
+2026-09-27T16:19:51.209Z	3	200	0	65.924249	{"burned_seconds":55,"iterations":669729085}
+2026-09-27T16:19:51.209Z	2	200	0	66.152869	{"burned_seconds":55,"iterations":679875691}
+2026-09-27T16:20:55.819Z	1	200	0	56.556076	{"burned_seconds":55,"iterations":703752809}
+2026-09-27T16:20:57.157Z	3	200	0	56.431034	{"burned_seconds":55,"iterations":659487937}
+2026-09-27T16:20:57.384Z	2	200	0	56.482399	{"burned_seconds":55,"iterations":693081898}
+# load stop 2026-09-27T16:21:54Z lý do: hết hạn
+# requests=24
+#   200 exit=0: 24

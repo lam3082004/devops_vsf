@@ -1,0 +1,335 @@
+{
+  "cost": 8634,
+  "interval": "PT1H",
+  "namespace": "Microsoft.Web/sites",
+  "resourceregion": "centralindia",
+  "timespan": "2026-09-26T15:00:00Z/2026-09-27T15:00:00Z",
+  "value": [
+    {
+      "displayDescription": "The time taken for the app to serve requests, in seconds. For WebApps and FunctionApps.",
+      "errorCode": "Success",
+      "id": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/providers/Microsoft.Insights/metrics/HttpResponseTime",
+      "name": {
+        "localizedValue": "Response Time",
+        "value": "HttpResponseTime"
+      },
+      "resourceGroup": "rg-vsf-dev",
+      "timeseries": [
+        {
+          "data": [
+            {
+              "average": 0.25284615384615383,
+              "maximum": 0.512,
+              "timeStamp": "2026-09-26T15:00:00Z",
+              "total": 23.009
+            },
+            {
+              "average": 0.31332142857142853,
+              "maximum": 0.515,
+              "timeStamp": "2026-09-26T16:00:00Z",
+              "total": 17.546
+            },
+            {
+              "average": 0.31885,
+              "maximum": 0.503,
+              "timeStamp": "2026-09-26T17:00:00Z",
+              "total": 19.131
+            },
+            {
+              "average": 0.318327868852459,
+              "maximum": 0.505,
+              "timeStamp": "2026-09-26T18:00:00Z",
+              "total": 19.418
+            },
+            {
+              "average": 0.3306271186440678,
+              "maximum": 0.531,
+              "timeStamp": "2026-09-26T19:00:00Z",
+              "total": 19.507
+            },
+            {
+              "average": 0.32463333333333333,
+              "maximum": 0.501,
+              "timeStamp": "2026-09-26T20:00:00Z",
+              "total": 19.478
+            },
+            {
+              "average": 0.32625,
+              "maximum": 0.514,
+              "timeStamp": "2026-09-26T21:00:00Z",
+              "total": 19.575
+            },
+            {
+              "average": 0.32615,
+              "maximum": 0.509,
+              "timeStamp": "2026-09-26T22:00:00Z",
+              "total": 19.569
+            },
+            {
+              "average": 0.32681666666666664,
+              "maximum": 0.509,
+              "timeStamp": "2026-09-26T23:00:00Z",
+              "total": 19.609
+            },
+            {
+              "average": 0.32415,
+              "maximum": 0.551,
+              "timeStamp": "2026-09-27T00:00:00Z",
+              "total": 19.449
+            },
+            {
+              "average": 0.32398333333333335,
+              "maximum": 0.511,
+              "timeStamp": "2026-09-27T01:00:00Z",
+              "total": 19.439
+            },
+            {
+              "average": 0.3247333333333334,
+              "maximum": 0.559,
+              "timeStamp": "2026-09-27T02:00:00Z",
+              "total": 19.484
+            },
+            {
+              "average": 0.32171666666666665,
+              "maximum": 0.501,
+              "timeStamp": "2026-09-27T03:00:00Z",
+              "total": 19.303
+            },
+            {
+              "average": 0.16038265306122448,
+              "maximum": 0.548,
+              "timeStamp": "2026-09-27T04:00:00Z",
+              "total": 62.87
+            },
+            {
+              "average": 0.21218840579710144,
+              "maximum": 0.521,
+              "timeStamp": "2026-09-27T05:00:00Z",
+              "total": 29.282
+            },
+            {
+              "average": 0.32589999999999997,
+              "maximum": 0.526,
+              "timeStamp": "2026-09-27T06:00:00Z",
+              "total": 19.554
+            },
+            {
+              "average": 0.1301862124680221,
+              "maximum": 5.198,
+              "timeStamp": "2026-09-27T07:00:00Z",
+              "total": 966.893
+            },
+            {
+              "average": 0.20743999999999999,
+              "maximum": 0.618,
+              "timeStamp": "2026-09-27T08:00:00Z",
+              "total": 31.116
+            },
+            {
+              "average": 0.31832142857142853,
+              "maximum": 0.529,
+              "timeStamp": "2026-09-27T09:00:00Z",
+              "total": 17.826
+            },
+            {
+              "average": 0.3230166666666667,
+              "maximum": 0.512,
+              "timeStamp": "2026-09-27T10:00:00Z",
+              "total": 19.381
+            },
+            {
+              "average": 0.3281864406779661,
+              "maximum": 0.519,
+              "timeStamp": "2026-09-27T11:00:00Z",
+              "total": 19.363
+            },
+            {
+              "average": 0.33013333333333333,
+              "maximum": 0.549,
+              "timeStamp": "2026-09-27T12:00:00Z",
+              "total": 19.808
+            },
+            {
+              "average": 0.3339166666666667,
+              "maximum": 0.553,
+              "timeStamp": "2026-09-27T13:00:00Z",
+              "total": 20.035
+            },
+            {
+              "average": 0.33015,
+              "maximum": 0.553,
+              "timeStamp": "2026-09-27T14:00:00Z",
+              "total": 19.809
+            }
+          ],
+          "metadatavalues": []
+        }
+      ],
+      "type": "Microsoft.Insights/metrics",
+      "unit": "Seconds"
+    },
+    {
+      "displayDescription": "The total number of requests regardless of their resulting HTTP status code. For WebApps and FunctionApps.",
+      "errorCode": "Success",
+      "id": "/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/providers/Microsoft.Insights/metrics/Requests",
+      "name": {
+        "localizedValue": "Requests",
+        "value": "Requests"
+      },
+      "resourceGroup": "rg-vsf-dev",
+      "timeseries": [
+        {
+          "data": [
+            {
+              "average": 5.055555555555555,
+              "maximum": 14.0,
+              "timeStamp": "2026-09-26T15:00:00Z",
+              "total": 91.0
+            },
+            {
+              "average": 4.3076923076923075,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-26T16:00:00Z",
+              "total": 56.0
+            },
+            {
+              "average": 2.5,
+              "maximum": 4.0,
+              "timeStamp": "2026-09-26T17:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 2.5416666666666665,
+              "maximum": 4.0,
+              "timeStamp": "2026-09-26T18:00:00Z",
+              "total": 61.0
+            },
+            {
+              "average": 4.916666666666667,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-26T19:00:00Z",
+              "total": 59.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-26T20:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-26T21:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-26T22:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-26T23:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T00:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T01:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 4.615384615384615,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T02:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 2.5,
+              "maximum": 4.0,
+              "timeStamp": "2026-09-27T03:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 8.0,
+              "maximum": 31.0,
+              "timeStamp": "2026-09-27T04:00:00Z",
+              "total": 392.0
+            },
+            {
+              "average": 6.0,
+              "maximum": 22.0,
+              "timeStamp": "2026-09-27T05:00:00Z",
+              "total": 138.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T06:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 125.88135593220339,
+              "maximum": 180.0,
+              "timeStamp": "2026-09-27T07:00:00Z",
+              "total": 7427.0
+            },
+            {
+              "average": 5.555555555555555,
+              "maximum": 29.0,
+              "timeStamp": "2026-09-27T08:00:00Z",
+              "total": 150.0
+            },
+            {
+              "average": 3.111111111111111,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T09:00:00Z",
+              "total": 56.0
+            },
+            {
+              "average": 2.5,
+              "maximum": 4.0,
+              "timeStamp": "2026-09-27T10:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 3.933333333333333,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T11:00:00Z",
+              "total": 59.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T12:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T13:00:00Z",
+              "total": 60.0
+            },
+            {
+              "average": 5.0,
+              "maximum": 5.0,
+              "timeStamp": "2026-09-27T14:00:00Z",
+              "total": 60.0
+            }
+          ],
+          "metadatavalues": []
+        }
+      ],
+      "type": "Microsoft.Insights/metrics",
+      "unit": "Count"
+    }
+  ]
+}

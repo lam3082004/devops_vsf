@@ -121,8 +121,11 @@ next=$EPOCHSECONDS
 while ((STOP == 0)); do
 	sample
 	next=$((next + INTERVAL))
-	# `sleep & wait` để Ctrl+C cắt ngang ngay. Nếu một lượt az chậm quá INTERVAL thì
-	# lượt sau chạy liền, không cộng dồn lệch nhịp.
+	# Một lượt az chậm quá INTERVAL (mạng đứt): chạy lượt sau liền MỘT lần rồi neo lại
+	# nhịp từ bây giờ, bỏ các mốc đã lỡ. Không bỏ thì sau một lần az treo vài phút,
+	# vòng lặp bắn dồn mỗi ~8s để "đuổi" các mốc cũ (đã gặp ở Pha C, notes/d19.md).
+	((next > EPOCHSECONDS)) || next=$EPOCHSECONDS
+	# `sleep & wait` để Ctrl+C cắt ngang ngay.
 	while ((STOP == 0 && EPOCHSECONDS < next)); do
 		sleep 1 &
 		wait $! 2>/dev/null

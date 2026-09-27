@@ -1,0 +1,86 @@
+[
+  {
+    "caller": "Microsoft.Insights/autoscaleSettings",
+    "desc": "The autoscale operation to scale resource '/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev' from 2 instances count to 1 instances count completed successfully.",
+    "op": "Microsoft.Insights/AutoscaleSettings/ScaledownResult/Action",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:32:37.3070472Z"
+  },
+  {
+    "caller": "Microsoft.Insights/autoscaleSettings",
+    "desc": "The autoscale engine attempting to scale resource '/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev' from 2 instances count to 1 instances count.",
+    "op": "Microsoft.Insights/AutoscaleSettings/Scaledown/Action",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:32:37.3070472Z"
+  },
+  {
+    "caller": "Microsoft.Insights/autoscaleSettings",
+    "desc": "The autoscale engine attempting to scale resource '/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev' from 2 instances count to 1 instances count.",
+    "op": "Microsoft.Insights/AutoscaleSettings/Scaledown/Action",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:32:37.3070472Z"
+  },
+  {
+    "caller": "cd242adf-1498-49c8-b8cc-d397de6d8e4e",
+    "desc": "",
+    "op": "Microsoft.Web/serverFarms/write",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:32:37.2884899Z"
+  },
+  {
+    "caller": "cd242adf-1498-49c8-b8cc-d397de6d8e4e",
+    "desc": "",
+    "op": "Microsoft.Web/serverFarms/write",
+    "st": "Started",
+    "t": "2026-09-27T16:32:35.8822262Z"
+  },
+  {
+    "caller": "cd242adf-1498-49c8-b8cc-d397de6d8e4e",
+    "desc": "",
+    "op": "Microsoft.Web/serverFarms/write",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:30:36.8028125Z"
+  },
+  {
+    "caller": "Microsoft.Insights/autoscaleSettings",
+    "desc": "The autoscale engine attempting to scale resource '/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev' from 1 instances count to 2 instances count.",
+    "op": "Microsoft.Insights/AutoscaleSettings/Scaleup/Action",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:20:42.3096899Z"
+  },
+  {
+    "caller": "Microsoft.Insights/autoscaleSettings",
+    "desc": "The autoscale engine attempting to scale resource '/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev' from 1 instances count to 2 instances count.",
+    "op": "Microsoft.Insights/AutoscaleSettings/Scaleup/Action",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:20:42.3096899Z"
+  },
+  {
+    "caller": "Microsoft.Insights/autoscaleSettings",
+    "desc": "The autoscale operation to scale resource '/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/serverFarms/asp-vsf-dev' from 1 instances count to 2 instances count completed successfully.",
+    "op": "Microsoft.Insights/AutoscaleSettings/ScaleupResult/Action",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:20:42.3096899Z"
+  },
+  {
+    "caller": "cd242adf-1498-49c8-b8cc-d397de6d8e4e",
+    "desc": "",
+    "op": "Microsoft.Web/serverFarms/write",
+    "st": "Succeeded",
+    "t": "2026-09-27T16:20:42.3033299Z"
+  },
+  {
+    "caller": "cd242adf-1498-49c8-b8cc-d397de6d8e4e",
+    "desc": "",
+    "op": "Microsoft.Web/serverFarms/write",
+    "st": "Started",
+    "t": "2026-09-27T16:20:35.240721Z"
+  },
+  {
+    "caller": "<user-redacted>",
+    "desc": "",
+    "op": "Microsoft.Insights/autoscalesettings/write",
+    "st": "Succeeded",
+    "t": "2026-09-27T15:58:31.518691Z"
+  }
+]
