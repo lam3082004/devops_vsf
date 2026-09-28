@@ -1,0 +1,44 @@
+Acquiring state lock. This may take a few moments...
+azurerm_log_analytics_workspace.main: Creating...
+azurerm_log_analytics_workspace.main: Still creating... [00m10s elapsed]
+azurerm_log_analytics_workspace.main: Still creating... [00m20s elapsed]
+azurerm_log_analytics_workspace.main: Still creating... [00m30s elapsed]
+azurerm_log_analytics_workspace.main: Still creating... [00m40s elapsed]
+azurerm_log_analytics_workspace.main: Creation complete after 49s [id=/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.OperationalInsights/workspaces/log-vsf-jcip0s]
+azurerm_application_insights.be[0]: Creating...
+azurerm_application_insights.be[0]: Creation complete after 8s [id=/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.Insights/components/appi-vsf-jcip0s]
+azurerm_key_vault_secret.appinsights_connection_string[0]: Creating...
+azurerm_key_vault_secret.appinsights_connection_string[0]: Creation complete after 8s [id=https://kv-vsf-jcip0s.vault.azure.net/secrets/appinsights-connection-string/35eaa28989a34b6c9ed99fa96ea0b895]
+azurerm_linux_web_app.app: Modifying... [id=/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s]
+azurerm_linux_web_app.app: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...ers/Microsoft.Web/sites/app-vsf-jcip0s, 00m10s elapsed]
+azurerm_linux_web_app.app: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...ers/Microsoft.Web/sites/app-vsf-jcip0s, 00m20s elapsed]
+azurerm_linux_web_app.app: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...ers/Microsoft.Web/sites/app-vsf-jcip0s, 00m30s elapsed]
+azurerm_linux_web_app.app: Modifications complete after 39s [id=/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s]
+azurerm_linux_web_app_slot.staging: Modifying... [id=/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/slots/staging]
+azurerm_linux_web_app_slot.staging: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...Web/sites/app-vsf-jcip0s/slots/staging, 00m10s elapsed]
+azurerm_linux_web_app_slot.staging: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...Web/sites/app-vsf-jcip0s/slots/staging, 00m20s elapsed]
+azurerm_linux_web_app_slot.staging: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...Web/sites/app-vsf-jcip0s/slots/staging, 00m30s elapsed]
+azurerm_linux_web_app_slot.staging: Still modifying... [id=/subscriptions/9880aa34-1fb4-4402-b692-...Web/sites/app-vsf-jcip0s/slots/staging, 00m40s elapsed]
+azurerm_linux_web_app_slot.staging: Modifications complete after 40s [id=/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.Web/sites/app-vsf-jcip0s/slots/staging]
+Releasing state lock. This may take a few moments...
+Apply complete! Resources: 3 added, 2 changed, 0 destroyed.
+Outputs:
+acr_login_server = "acrvsfjcip0s.azurecr.io"
+acr_name = "acrvsfjcip0s"
+app_identity_client_id = "3c5ef8c8-4bf4-4af6-9a6b-2d265885422b"
+app_identity_id = "/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-app-jcip0s"
+app_identity_principal_id = "65de1f93-7130-457c-9604-7c76146f7634"
+app_insights_name = "appi-vsf-jcip0s"
+app_possible_outbound_ip_count = 31
+app_url = "https://app-vsf-jcip0s.azurewebsites.net"
+fe_staging_url = "https://fe-vsf-jcip0s-staging.azurewebsites.net"
+fe_url = "https://fe-vsf-jcip0s.azurewebsites.net"
+key_vault_name = "kv-vsf-jcip0s"
+key_vault_uri = "https://kv-vsf-jcip0s.vault.azure.net/"
+location = "centralindia"
+log_analytics_workspace_name = "log-vsf-jcip0s"
+mysql_database_name = "appdb"
+mysql_fqdn = "mysql-vsf-jcip0s-sea.mysql.database.azure.com"
+name_suffix = "jcip0s"
+resource_group_name = "rg-vsf-dev"
+staging_url = "https://app-vsf-jcip0s-staging.azurewebsites.net"

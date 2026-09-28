@@ -90,6 +90,11 @@ async function parseErrorBody(res: Response): Promise<Partial<ErrorResponse>> {
   return {};
 }
 
+// 10s (người dùng duyệt 2026-09-28, review D1–D20): dài hơn nhiều mọi request bình thường
+// (p95 ~1–2s qua mạng đo, ConnectionTimeout MySQL của be là 5s) nhưng ngắn hơn hẳn ~230s của
+// front-end App Service. Khác 3s của /api/health: đó là probe cho CD, đây là request thật.
+const BACKEND_TIMEOUT_MS = 10_000;
+
 interface RequestOptions {
   method?: string;
   body?: unknown;
@@ -123,6 +128,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       headers,
       body,
       cache: "no-store",
+      // Không có timeout thì be treo (DB treo, instance kẹt) làm trang treo theo tới ~230s của
+      // front-end Azure thay vì hiện banner lỗi (US-08). Hết giờ → AbortError → ApiError(0) bên dưới.
+      signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
     });
   } catch {
     throw new ApiError(0, {});

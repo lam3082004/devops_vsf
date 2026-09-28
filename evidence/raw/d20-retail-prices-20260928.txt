@@ -1,0 +1,70 @@
+# Azure Retail Prices API (https://prices.azure.com/api/retail/prices), tra 2026-09-28, type=Consumption, USD. Cột: product | sku | meter | region | unit | price | effectiveStartDate
+## App Service P0v3/P1v3/B1/S1 Linux centralindia
+Azure App Service Basic Plan - Linux | B1 | B1 | centralindia | 1 Hour | 0.018 | 2019-06-01
+Azure App Service Standard Plan - Linux | S1 | S1 App | centralindia | 1 Hour | 0.088 | 2018-05-11
+Azure App Service Premium v3 Plan - Linux | P1 v3 | P1 v3 App | centralindia | 1 Hour | 0.164 | 2021-05-01
+## MySQL flexible B1ms + storage + backup southeastasia
+Azure Database for MySQL Flexible Server Storage | Paid IO ZRS | Paid IO ZRS IO Rate Operations | southeastasia | 1M | 0.325 | 2022-10-01
+Azure Database for MySQL Flexible Server Storage | Storage | Storage Data Stored | southeastasia | 1 GB/Month | 0.138 | 2021-06-01
+Azure Database for MySQL Single Server - Backup Storage | Backup LRS | Backup LRS Data Stored | southeastasia | 1 GB/Month | 0.12 | 2018-05-01
+Azure Database for MySQL Single Server - Backup Storage | Backup GRS | Backup GRS Data Stored | southeastasia | 1 GB/Month | 0.24 | 2018-05-01
+Azure Database for MySQL Flexible Server Storage | PMD LRS | PMD LRS Data Stored | southeastasia | 1 GB/Month | 78.0 | 2023-03-01
+Azure Database for MySQL Flexible Server Storage | SSD v2 Throughput | SSD v2 Throughput Prov Throughput (MBps) | southeastasia | 1/Month | 0.104 | 2026-02-01
+Azure Database for MySQL Flexible Server Backup Storage | Backup Storage LRS | Backup Storage LRS Data Stored | southeastasia | 1 GB/Month | 0.095 | 2021-06-01
+Azure Database for MySQL Flexible Server Storage | Additional IOPS ZRS | ZRS Additional IOPS | southeastasia | 1 IOPS/Month | 0.1265 | 2025-01-01
+Azure Database for MySQL Flexible Server Backup Storage | Backup Storage ZRS | Backup Storage ZRS Data Stored | southeastasia | 1 GB/Month | 0.095 | 2025-01-01
+Azure Database for MySQL Flexible Server Storage | Storage GP Accelerated Logs | Storage GP Accelerated Logs | southeastasia | 1 Hour | 0.06681 | 2025-07-01
+Azure Database for MySQL Flexible Server Storage | SSD v2 | SSD v2 Data Stored | southeastasia | 1 GiB/Month | 0.138 | 2026-02-01
+Azure Database for MySQL Flexible Server Storage | Paid IO LRS | Paid IO LRS IO Rate Operations | southeastasia | 1M | 0.26 | 2022-10-01
+Azure Database for MySQL Flexible Server Storage | SSD v2 IOPS | SSD v2 IOPS Provisioned IOPS | southeastasia | 1/Month | 0.026 | 2026-02-01
+Azure Database for MySQL Flexible Server Burstable BS Series Compute | B1MS | B1MS | southeastasia | 1 Hour | 0.026 | 2021-12-01
+Azure Database for MySQL Flexible Server Storage | Storage ZRS | Storage ZRS Data Stored | southeastasia | 1 GB/Month | 0.137 | 2025-01-01
+Azure Database for MySQL Flexible Server Storage | Additional IOPS | Additional IOPS | southeastasia | 1 IOPS/Month | 0.06 | 2021-06-01
+## ACR centralindia
+Container Registry | Standard | Standard Registry Unit | centralindia | 1/Day | 0.6666 | 2018-01-01
+Container Registry | Premium | Premium Connected registry | centralindia | 1/Day | 0.33333 | 2025-08-01
+Container Registry | Standard | Data Stored | centralindia | 1 GB/Month | 0.1 | 2018-02-20
+Container Registry | Basic | Basic Registry Unit | centralindia | 1/Day | 0.1666 | 2018-01-01
+Container Registry | Standard | Task vCPU Duration | centralindia | 1 Second | 0.0 | 2019-04-01
+Container Registry | Standard | Task vCPU Duration | centralindia | 1 Second | 0.0001 | 2019-04-01
+Container Registry | Premium | Task vCPU Duration | centralindia | 1 Second | 0.0 | 2019-04-01
+Container Registry | Premium | Task vCPU Duration | centralindia | 1 Second | 0.0001 | 2019-04-01
+Container Registry | Basic | Data Stored | centralindia | 1 GB/Month | 0.1 | 2018-02-20
+Container Registry | Premium | Premium Registry Unit | centralindia | 1/Day | 1.6666 | 2018-01-01
+Container Registry | Premium | Premium GB Registry Replication Data Stored | centralindia | 1 GB/Month | 0.1 | 2023-05-01
+Container Registry | Premium | Data Stored | centralindia | 1 GB/Month | 0.1 | 2018-02-20
+Container Registry | Premium | Premium Registry Replication Unit | centralindia | 1/Day | 1.6666 | 2023-05-01
+Container Registry | Basic | Task vCPU Duration | centralindia | 1 Second | 0.0 | 2019-04-01
+Container Registry | Basic | Task vCPU Duration | centralindia | 1 Second | 0.0001 | 2019-04-01
+## Key Vault centralindia
+Key Vault | Standard | Operations | centralindia | 10K | 0.03 | 2015-08-01
+Key Vault | Standard | Secret Renewal | centralindia | 1 | 1.0 | 2017-06-01
+Key Vault | Standard | Automated Key Rotation | centralindia | 1 Rotation | 1.0 | 2022-03-01
+Azure Dedicated HSM | Standard | Standard Instance | centralindia | 1 Hour | 4.85 | 2020-09-01
+Key Vault HSM Pool | Standard B1 | Standard B1 Instance | centralindia | 1 Hour | 3.2 | 2022-08-01
+Key Vault | Standard | Certificate Renewal Request | centralindia | 1 | 3.0 | 2016-12-01
+Key Vault | Standard | Advanced Key Operations | centralindia | 10K | 0.15 | 2017-07-01
+## Log Analytics centralindia
+Log Analytics | Analytics Logs | Analytics Logs Data Analyzed | centralindia | 1 GB | 2.3 | 2016-10-01
+Log Analytics | Analytics Logs | Analytics Logs Data Retention | centralindia | 1 GB/Month | 0.14 | 2018-02-01
+Log Analytics | Analytics Logs | Analytics Logs Data Ingestion | centralindia | 1 GB | 0.0 | 2018-02-01
+Log Analytics | Analytics Logs | Analytics Logs Data Ingestion | centralindia | 1 GB | 3.22 | 2018-02-01
+## Bandwidth (inter-region) — tham khảo
+Rtn Preference: MGN | Standard | Standard Inter-Availability Zone Data Transfer In | centralindia | 1 GB | 0.01 | 2021-01-01
+Rtn Preference: MGN | Standard | Standard Data Transfer Out | centralindia | 1 GB | 0.0 | 2022-05-01
+Rtn Preference: MGN | Standard | Standard Data Transfer Out | centralindia | 1 GB | 0.12 | 2022-05-01
+Rtn Preference: MGN | Standard | Standard Data Transfer Out | centralindia | 1 GB | 0.085 | 2022-05-01
+Rtn Preference: MGN | Standard | Standard Data Transfer Out | centralindia | 1 GB | 0.08 | 2022-05-01
+Rtn Preference: MGN | Standard | Standard Data Transfer Out | centralindia | 1 GB | 0.08 | 2022-05-01
+Rtn Preference: MGN | Standard | Standard Data Transfer Out | centralindia | 1 GB | 0.082 | 2022-05-01
+Rtn Preference: MGN | Standard | Standard Inter-Region Data Transfer | centralindia | 1 GB | 0.08 | 2018-02-01
+## App Service P0v3/P0v4 centralindia
+Azure App Service Premium v3 Plan | P0v3 | P0v3 App | centralindia | 1 Hour | 0.162 | 2024-08-01
+Azure App Service Premium v4 Plan | P0v4 | P0v4 | centralindia | 1 Hour | 0.149 | 2025-09-01
+Azure App Service Premium v4 Plan - Linux | P0v4 | P0v4 | centralindia | 1 Hour | 0.102 | 2025-09-01
+Azure App Service Premium v3 Plan - Linux | P0v3 | P0v3 App | centralindia | 1 Hour | 0.082 | 2024-08-01
+## MySQL General Purpose (so sánh với B1ms) southeastasia — giá theo vCore, cỡ nhỏ nhất 2 vCore
+Azure Database for MySQL Flexible Server General Purpose Dsv6 Series Compute | 1 vCore | 1 vCore | southeastasia | 1 Hour | 0.116 | 2026-02-01
+Azure Database for MySQL Flexible Server General Purpose Dadsv5 Series Compute | 1 vCore | 1 vCore | southeastasia | 1 Hour | 0.1175 | 2025-07-01
+Azure Database for MySQL Flexible Server General Purpose Dsv6 Series Compute | vCore | vCore | southeastasia | 1 Hour | 0.116 | 2026-02-01
+Azure Database for MySQL Flexible Server General Purpose Dadsv5 Series Compute | vCore | vCore | southeastasia | 1 Hour | 0.1175 | 2025-07-01

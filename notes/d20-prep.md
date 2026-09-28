@@ -1,5 +1,10 @@
 # D20 — Kế hoạch chi tiết: Cost report + App Insights + tracing (M7 phần cost, nền cho M11/tracing)
 
+> **ĐÃ THỰC HIỆN 2026-09-28 — xem `notes/d20.md`.** Hai chỗ kế hoạch này sai, phát hiện lúc làm:
+> quyết định F ("`throw` → 500 body rỗng" — thật ra 503, `ai-failure-log.md` #36) và E/C1 (sampling mặc định
+> của distro đã đổi; workspace không được gắn vào cờ App Insights — #37). Không sửa nội dung bên dưới để giữ
+> nguyên bản kế hoạch gốc.
+
 Guide gốc: `docs/guides/d20-cost-report-appinsights.md` · Nhật ký: `notes/d20.md` (tạo khi làm) ·
 Bằng chứng: `cost-report.md` (mới, 1 trang) + `evidence/M7.md` (thêm phần cost) · Phiên trước: `notes/d19.md`
 

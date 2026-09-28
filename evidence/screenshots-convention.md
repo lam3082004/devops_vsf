@@ -1,22 +1,21 @@
 # Ảnh chụp màn hình
 
-Nơi lưu ảnh dùng làm bằng chứng. File `evidence/M*.md` trỏ tới ảnh trong thư mục này.
+Quy ước lưu ảnh dùng làm bằng chứng. File `evidence/M*.md` trỏ tới ảnh trong `evidence/dXX/screenshots/`.
 
 ## Cấu trúc
 
-Mỗi bài một thư mục:
+Mỗi bài một thư mục, ảnh nằm trong `screenshots/` của bài đó (log/JSON thô để ở `evidence/raw/`):
 
 ```
-evidence/screenshots/
-  d02/  ảnh của bài D2
-  d06/  ảnh của bài D6
-  m06/  ảnh dùng làm bằng chứng nộp cho M6
+evidence/
+  d02/screenshots/   ảnh của bài D2
+  d19/screenshots/   ảnh của bài D19
   ...
+  raw/               log, JSON, TSV thô (mọi bài)
 ```
 
-Tên file trong thư mục: `<nội dung>-<YYYYMMDD-HHMM>.png`, ví dụ `403-from-lte-20260916-1052.png`.
-
-Thư mục `d01`…`d25` cho ảnh học theo bài; `m01`…`m11` cho ảnh chốt làm bằng chứng nộp (có thể là bản copy của ảnh trong `dXX`).
+Tên file: `<nội dung>-<YYYYMMDD-HHMM>.png`, ví dụ `403-from-lte-20260916-1052.png`. Ảnh dùng làm
+bằng chứng must-have thì `evidence/MXX.md` trỏ thẳng tới file trong `dXX/screenshots/`, không copy.
 
 ## Trước khi lưu ảnh
 - Che hoặc cắt: email cá nhân, mật khẩu, token, connection string.

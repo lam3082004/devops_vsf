@@ -4,9 +4,9 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-28 (hết D19 · D20 đã có kế hoạch, B/F đã chốt)
+## Tiến độ — cập nhật 2026-09-28 (hết D20 · review D1–D20 · D21 đã có kế hoạch)
 
-**D1–D14, D16, D17, D18 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
+**D1–D14, D16–D20 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
 **D16 XONG — M10 ĐẠT.** Nhật ký: `notes/d16.md` · bằng chứng: `evidence/M10.md`.
 Kế hoạch gốc `notes/d16-prep.md` có một chỗ **kê sai thuốc** (mục "vấp #1": cả hai cách nó đề
@@ -43,7 +43,17 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 - Tải thật 3 × `/load?seconds=55` (người dùng chạy — classifier chặn AI): **1→2 sau 6m35s, 2→1 sau 10m43s** dừng tải.
 - Right sizing: **giữ P0v3** (CPU bình thường 10,5%, memory đỉnh 65%).
 - M2 lần 3 (merge #56): 0 non-200; cụm timeout to hơn trong lúc swap `fe`, nhưng có ca đối chứng không swap cùng kiểu → #21 vẫn chưa quy được. Scale in 0 timeout.
-- `evidence/M7.md`, `notes/d19.md`. **Bài tiếp: D20 — kế hoạch ở `notes/d20-prep.md`.**
+- `evidence/M7.md`, `notes/d19.md`.
+
+**D20 XONG (2026-09-28) — đủ 3 ô "Xong khi" của guide.**
+- `cost-report.md` 1 trang: Actual cost từ Cost analysis (2 ảnh) — bài thực tập ≈ **$12,5** tới 28/09 (`rg-vsf-dev` $12,15: App Service $11,27, ACR $0,88, MySQL $0,00); 3 biện pháp đã làm, nói thật "tắt theo ca" chỉ đúng tới 24/09 (bật liên tục từ đó ≈ $8,7).
+- PR #59: OpenTelemetry cho `be` (distro Azure Monitor 1.6.0) + Log Analytics workspace (30 ngày, cap 0,2 GB/ngày) + App Insights workspace-based (**tạm**, Q1) + connection string qua Key Vault. Apply 3 added / 2 changed, `plan` No changes.
+- Trace thật: `X-Trace-Id` = `trace_id` (log) = `OperationId` (App Insights), span MySQL con; `/boom` → `BoomException` trong Failures (ảnh). `evidence/tracing.md`.
+- Phát hiện: subscription có **một PoC khác** chạy chung plan (`known-issues.md` #21, #23 — `make down` sẽ gãy khi PoC còn chạy). `notes/d20.md`.
+
+**Review D1–D20 (2026-09-28, người dùng yêu cầu):** chạy lại toàn bộ hợp đồng CI ở máy (be test/lint, fe lint/test/build, terraform fmt/validate/plan, shellcheck — xanh; actionlint không có trên máy, workflow không đổi từ lần kiểm D16) + kiểm Azure chỉ đọc (health, SHA, KV reference, 4 bề mặt Deny, TLS MySQL, ACR admin tắt, plan No changes) + quét link tài liệu. **Sửa:** `fe` gọi `be` không có timeout (#22, thêm 10s — người dùng duyệt); README bảng thư mục lỗi thời + link gãy tới `evidence/screenshots/README.md`; 12 link ảnh gãy trong `notes/d2.md`; `evidence/README.md` M6/M9/M10 còn ghi "chờ"; `screenshots-convention.md` sai cấu trúc thư mục. **Ghi lại, không sửa:** #23 (`make down` vs PoC), plan dùng chung với PoC (M7 mục 4, #21).
+
+**Bài tiếp: D21 — kế hoạch từng bước ở `notes/d21-prep.md`** (7 quyết định A–G cần chốt đầu phiên).
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -57,8 +67,8 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 | M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — đủ, kể cả lớp 3 (run `35925778364`) |
 | M10 — mở rộng D17: swap an toàn | **ĐẠT (D17)** | `evidence/M10.md` mục D17 — 4 tình huống có run link |
 | M2 — zero-downtime khi swap | **Chờ mentor (D18)** — 0 response non-200 (đạt theo `topic.md`); 10 timeout, 6 quanh swap (chưa đạt theo guide) | `evidence/M2.md` — 3 lần swap (lần 3 ở D19: 0 non-200, 21 timeout trong swap `fe`) + đo lúc scale, log thô `evidence/raw/m2-*.log` |
-| M7 — autoscale + right sizing + cost report | **Phần autoscale ĐẠT (D19)** — log thô + 2 ảnh Portal (Run history 1→2→1, CPU); cost report là D20 | `evidence/M7.md` |
-| M11 | chưa tới lịch | D22 |
+| M7 — autoscale + right sizing + cost report | **ĐẠT (D19 + D20)** — autoscale 1→2→1 + right sizing; cost report số thật từ Cost analysis | `evidence/M7.md`, `cost-report.md` |
+| M11 | nền đã có (D20: workspace + trace `be` + `/boom` trong Failures) — dashboard D21, alert D22 | `evidence/tracing.md` |
 
 **Còn nợ, không chặn D17:**
 - **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
@@ -79,7 +89,9 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
   về **gốc repo** (`topic.md` mục deliverables đòi `architecture.md` ở đó) · test cho `app/fe`
   (`known-issues.md` #16 — D17 quyết định B có thể mở màn) · dựng lại state `infra/bootstrap`
   bằng `terraform import` (#17, **nên làm trước M8 lần 2**).
-**Sổ lỗi:** `ai-failure-log.md` 31 case (đề cần 6–8) · `known-issues.md` 20 mục.
+- **Ảnh còn nợ của D20:** (6) App Insights → end-to-end transaction của một `GET /items` (thấy 3 span MySQL) — blade không nhận click qua extension; bảng KQL trong `evidence/tracing.md` là cùng dữ liệu. (7) Cost analysis "Group by Resource" + lọc tag `project = vsf` riêng — thay bằng ảnh scope `rg-vsf-dev` (`evidence/M7.md` mục 7).
+- **Trước mọi `make down`:** gỡ PoC khỏi `rg-vsf-dev`/plan (`known-issues.md` #23).
+**Sổ lỗi:** `ai-failure-log.md` 37 case (đề cần 6–8) · `known-issues.md` 23 mục.
 
 ## Authority
 
@@ -296,19 +308,19 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] Test tải ngắn bằng `/load` (vài phút) → thấy 1→2→1 instance — *proof: screenshot metric instance count + run history* — log thô (watch + Activity Log Scaleup 16:20:42Z / Scaledown 16:32:37Z, `evidence/M7.md` mục 2) + **2 ảnh Portal** `evidence/d19/screenshots/m7-*.png` (chụp 2026-09-28)
 - [x] Right sizing: xem CPU/memory thực tế, quyết định tier — *proof: Decision* — giữ P0v3, `evidence/M7.md` mục 4
 
-### D20 — Cost report + App Insights (theo Q1) + tracing
-- [ ] App: thêm OpenTelemetry (ASP.NET Core + MySqlConnector), sampling 100% (lưu lượng thấp) **nhưng bỏ `/health`, `/version` khỏi trace** (`notes/d20-prep.md` quyết định E: probe + poll ~260 000 request/ngày) — *proof: PR có `## AI usage`; `/items` sinh trace có span DB*
-- [ ] Log Analytics workspace: retention 30 ngày + daily cap 0,2 GB/ngày (**quyết định B, người dùng duyệt 2026-09-28**) · `/boom` `throw` exception thật (**quyết định F, người dùng duyệt 2026-09-28**; theo `docs/docs_app/brief.md` R6)
-- [ ] Log JSON thêm `trace_id`/`span_id` (lấy từ `Activity.Current`) — *proof: 1 dòng log khớp trace-id trong response header `traceparent`*
-- [ ] Không đưa connection string App Insights plaintext: lưu Key Vault, tham chiếu `@Microsoft.KeyVault(...)` — *proof: app settings*
-- [ ] `cost-report.md` 1 trang: tier + lý do · autoscale rule · 3 biện pháp đã áp dụng · chi phí thật từ Cost Analysis (screenshot) → `evidence/M7.md`
-- [ ] App Insights nếu Q1 cho phép: exception từ `/boom` hiện trong Failures — *proof: screenshot*
+### D20 — Cost report + App Insights (theo Q1) + tracing ✅ **XONG 2026-09-28** (PR #59, `notes/d20.md`)
+- [x] App: thêm OpenTelemetry (ASP.NET Core + MySqlConnector), sampling 100% (lưu lượng thấp) **nhưng bỏ `/health`, `/version` khỏi trace** (`notes/d20-prep.md` quyết định E: probe + poll ~260 000 request/ngày) — *proof: PR có `## AI usage`; `/items` sinh trace có span DB* → PR #59; `evidence/tracing.md` mục 2 (3 span MySQL/`GET /items`, 0 request `/health`/`/version`)
+- [x] Log Analytics workspace: retention 30 ngày + daily cap 0,2 GB/ngày (**quyết định B, người dùng duyệt 2026-09-28**) · `/boom` `throw` exception thật (**quyết định F, người dùng duyệt 2026-09-28**; theo `docs/docs_app/brief.md` R6) → `log-vsf-jcip0s`; `BoomException` + `BoomExceptionFilter` giữ `500 boom`
+- [x] Log JSON thêm `trace_id`/`span_id` (lấy từ `Activity.Current`) — *proof: 1 dòng log khớp trace-id trong response header `traceparent`* → `evidence/raw/d20-be-log-trace-20260928.jsonl`
+- [x] Không đưa connection string App Insights plaintext: lưu Key Vault, tham chiếu `@Microsoft.KeyVault(...)` — *proof: app settings* → Resolved cả 2 slot (`evidence/tracing.md` mục 1)
+- [x] `cost-report.md` 1 trang: tier + lý do · autoscale rule · 3 biện pháp đã áp dụng · chi phí thật từ Cost Analysis (screenshot) → `evidence/M7.md` mục 7
+- [x] App Insights nếu Q1 cho phép: exception từ `/boom` hiện trong Failures — *proof: screenshot* → dựng **tạm** (Q1 chưa trả lời); `evidence/d20/screenshots/d20-appinsights-failures-boom-20260928-0755.png`
 
 ---
 
 ## Tuần 5 — D21–D25 · Logging, alert, drill, demo
 
-### D21 — Logging
+### D21 — Logging — kế hoạch từng bước: **`notes/d21-prep.md`** (workspace đã có từ D20)
 - [ ] Log Analytics workspace + diagnostic settings: AppServiceHTTPLogs, ConsoleLogs, PlatformLogs; MySQL logs/metrics — *proof: plan*
 - [ ] KQL: parse log JSON, lỗi theo path, p95 latency, request rate — *proof: query + kết quả*
 - [ ] Nghiên cứu giải pháp logging: Log Analytics+Workbook vs Managed Grafana vs tự dựng Loki/Grafana (chi phí, vận hành, query) — *proof: mục trong `architecture.md` hoặc `docs/logging.md`*
@@ -437,6 +449,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-28 ~08:15Z: **D20 XONG + review D1–D20.** PR #59 merge 07:34Z → CD `36392414787` success, production `be` + `fe` = `5a8d982`; apply 07:44–07:47Z từ `main` (3 added, 2 changed), `plan` No changes, `APPLICATIONINSIGHTS_CONNECTION_STRING` Resolved 2 slot, `/health` `db: ok`. Cost report + tracing + review ghi trên nhánh `docs/d20-cost-report-a` (kèm sửa `fe` timeout 10s). Capacity 1, không script nào chạy. **Môi trường `jcip0s` VẪN BẬT** — chi phí nay ~$0,089/giờ (P0v3 + ACR; MySQL đang $0) + ingest workspace (~34 MB/ngày lúc yên, dưới 5 GB/tháng miễn phí). **`make down` sẽ gãy khi PoC còn chạy trên plan (#23).** Bài tiếp: D21 (`notes/d21-prep.md`).
 - 2026-09-28 ~03:40Z: **Rà D1–D19 + đồng bộ `main`.** Người dùng: không `make down` (môi trường `jcip0s` VẪN BẬT, capacity 1). Chụp bằng Claude in Chrome: 2 ảnh M7 (Run history 1→2→1, CPU) + 1 ảnh M6 → `evidence/d19/screenshots/`; **D19 đủ 3 ô "Xong khi"**. `notes/screenshot-debt.md` xoá theo yêu cầu, 5 ảnh cũ chưa chụp được (Portal iframe) chuyển vào mục "Còn nợ". D20 quyết định **B** (retention 30 ngày + cap 0,2 GB/ngày) và **F** (`/boom` `throw`) đã chốt. Rà mọi nhánh/worktree: không PR nào mở; 3 nhánh local không PR (`chore/d17-plan`, `docs/d10-close-d11-plan-local`, `docs/d17-pr48-update`) + phần dở của worktree `d12` đều là **bản cũ** của nội dung đã vào `main` — không đưa vào; slide CI/CD D16 (chưa từng commit) đưa vào `docs/guides/`. Tất cả đi qua PR từ nhánh `docs/d20-cost-report`. Bài tiếp: D20 Pha A (cost report).
 - 2026-09-27 18:21Z: **PR #57 (chốt D19 + kế hoạch D20) đã merge** → CD `36339629729` success, production be+fe = `13ae34b`, `/health` `db: ok` (18:21Z), plan P0v3 capacity 1. M2 lần 4 ghi trên nhánh `docs/d20-cost-report` (**chưa PR** — vào `main` cùng cost report D20). Cuối phiên: capacity 1, không script nào chạy. **Môi trường `jcip0s` VẪN BẬT.** Bước tiếp: D20 theo `notes/d20-prep.md` — chốt quyết định A–H (B và F cần người dùng), chụp 2 ảnh M7 trước mọi `make down`.
 - 2026-09-27 16:45Z: **D19 XONG phần việc.** Apply autoscale từ `main` `1b420a8` (1 added); tải 16:14–16:22Z (người dùng chạy) → Scaleup 16:20:42Z, Scaledown 16:32:37Z; `plan` No changes lúc 2 instance. Cuối phiên: capacity 1, không script nào chạy. Ghi chép trên nhánh `docs/d19-phase-b` (worktree `.claude/worktrees/d19-autoscale`). **Còn nợ:** 2 ảnh Portal M7 — chụp TRƯỚC `make down` (xoá plan là mất metric + Run history). **Môi trường `jcip0s` VẪN BẬT theo quyết định người dùng.** Bài tiếp: D20 (`notes/d20-prep.md`).

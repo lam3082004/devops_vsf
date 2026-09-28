@@ -25,6 +25,9 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | [d10](d10/) | GATE: destroy → apply lại từ rỗng | cặp log apply/destroy + verify, ảnh Portal → `M8.md` |
 | [d11](d11/) | Container pull ACR bằng Managed Identity | 9 ảnh (ACR admin disabled, IAM AcrPull, Deployment Center, env vars 2 slot) → `M1.md` |
 | [d12](d12/) | Key Vault reference · MySQL · gỡ quyền → app gãy | log thô trong `raw/d12-*` (apply, verify, M5 gỡ/trả role, JSON tham chiếu hỏng, AcrPull bị từ chối, plan No changes, destroy) |
+| d13–d18 | IP whitelist · CI mở rộng · CD · swap an toàn · zero-downtime | log thô `raw/d13-*`, `raw/d14-*`, `raw/m2-*`; run link CI/CD trong `M9.md`, `M10.md` → `M6.md`, `M9.md`, `M10.md`, `M2.md` |
+| [d19](d19/) | Autoscale + right sizing | 3 ảnh Portal (Run history 1→2→1, CPU, M6 site chính) + `raw/d19-*` → `M7.md` |
+| [d20](d20/) | Cost report · App Insights · tracing | 2 ảnh Cost analysis, 1 ảnh Failures + `raw/d20-*` → `M7.md` mục 7, `tracing.md` |
 
 ## Must-have (điền dần)
 
@@ -35,11 +38,11 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | M3 | MySQL + firewall theo outbound IP | **`M3.md` — ĐẠT** (31 rule = 31 outbound IP); thiếu ảnh Log stream |
 | M4 | Managed Identity, không secret plaintext | **`M4.md` — ĐẠT**; thiếu ảnh Portal và API configreferences cho slot |
 | M5 | Key Vault + chứng minh ngược | **`M5.md` — ĐẠT** (`AccessToKeyVaultDenied`, container exit 1 sau 0.2s, hồi phục, plan No changes) |
-| M6 | IP whitelist 200/403 | chờ D13 (bản làm tay đã có ở d02) |
-| M7 | Chiến lược tiết kiệm chi phí | **`M7.md` — phần autoscale + right sizing ĐẠT (D19)**; cost report D20 |
+| M6 | IP whitelist 200/403 | **`M6.md` — ĐẠT** (D13; đo lại 8 bề mặt be+fe ở D16); thiếu 2 ảnh Portal (plan "Còn nợ") |
+| M7 | Chiến lược tiết kiệm chi phí | **`M7.md` — ĐẠT**: autoscale + right sizing (D19), cost report [`../cost-report.md`](../cost-report.md) (D20) |
 | M8 | Terraform toàn bộ hạ tầng | `M8.md` — đạt ở D10 |
-| M9 | CI chặn được cái sai | chờ D14 (Trivy baseline đã có ở d05) |
-| M10 | CD deploy từ main | chờ D16 |
-| M11 | Monitoring | chờ D21–D22 |
+| M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check, 6 PR cố tình sai đều đỏ đúng job) |
+| M10 | CD deploy từ main | **`M10.md` — ĐẠT** (D16; swap an toàn D17) |
+| M11 | Monitoring | chờ D21–D22. Nền đã có từ D20: workspace Log Analytics + tracing `be` → App Insights, exception `/boom` trong Failures — [`tracing.md`](tracing.md) |
 
 Quy ước đặt tên ảnh: xem `screenshots-convention.md`.
