@@ -33,6 +33,9 @@ public sealed record Config(
     string DbPassword,
     bool DbTls,
     long LoadMaxSeconds,
+    // Số request /load chạy đồng thời tối đa trên MỘT instance (LoadLimiter). Mặc định 4:
+    // D19 dùng 3 luồng và đã đẩy CPU 1 vCPU lên ~100%.
+    int LoadMaxConcurrent = 4,
     // Tuỳ chọn: vắng → không bật telemetry (test, CI, chạy local). Xem Infrastructure/Telemetry.cs.
     string? AppInsightsConnectionString = null)
 {
@@ -54,6 +57,12 @@ public sealed record Config(
             throw ConfigException.Invalid("LOAD_MAX_SECONDS", "phai nam trong khoang 1..=300");
         }
 
+        var loadMaxConcurrent = NumberInt64("LOAD_MAX_CONCURRENT", 4);
+        if (loadMaxConcurrent is < 1 or > 16)
+        {
+            throw ConfigException.Invalid("LOAD_MAX_CONCURRENT", "phai nam trong khoang 1..=16");
+        }
+
         return new Config(
             Port: NumberInt32("PORT", 8080),
             DbHost: Required("DB_HOST"),
@@ -63,6 +72,7 @@ public sealed record Config(
             DbPassword: dbPassword,
             DbTls: Boolean("DB_TLS", true),
             LoadMaxSeconds: loadMaxSeconds,
+            LoadMaxConcurrent: (int)loadMaxConcurrent,
             AppInsightsConnectionString: Optional("APPLICATIONINSIGHTS_CONNECTION_STRING"));
     }
 

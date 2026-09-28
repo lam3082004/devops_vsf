@@ -12,6 +12,9 @@ public enum ErrorKind
 
     /// Thao tác hợp lệ về cú pháp nhưng trái luật nghiệp vụ → 409 invalid_transition.
     Conflict,
+
+    /// Hết chỗ chạy đồng thời (hiện chỉ /load) → 429 too_many_requests.
+    TooManyRequests,
 }
 
 /// Kết quả có thể thất bại "dự kiến" (validate sai, không tìm thấy, xung đột trạng thái),
@@ -45,4 +48,6 @@ public sealed class Result<T>
     public static Result<T> NotFound(string error) => new(false, default, error, ErrorKind.NotFound);
 
     public static Result<T> Conflict(string error) => new(false, default, error, ErrorKind.Conflict);
+
+    public static Result<T> TooManyRequests(string error) => new(false, default, error, ErrorKind.TooManyRequests);
 }

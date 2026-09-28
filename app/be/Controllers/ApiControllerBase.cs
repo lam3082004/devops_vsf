@@ -19,6 +19,8 @@ public abstract class ApiControllerBase : ControllerBase
         // phải phân biệt "route không có" với "id không có".
         ErrorKind.NotFound => NotFound(new ErrorResponse("not_found")),
         ErrorKind.Conflict => Conflict(new ErrorResponse("invalid_transition", Reason: result.Error)),
+        ErrorKind.TooManyRequests => StatusCode(
+            StatusCodes.Status429TooManyRequests, new ErrorResponse("too_many_requests", Reason: result.Error)),
         _ => BadRequest(new ErrorResponse("bad_request", Reason: result.Error)),
     };
 }

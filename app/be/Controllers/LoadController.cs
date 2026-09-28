@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using OpsBoard.Common;
 using OpsBoard.Contracts;
 using OpsBoard.Services;
 
@@ -18,14 +19,17 @@ public sealed class LoadController : ControllerBase
     // không liệt kê 503 cho endpoint này.
     [ProducesResponseType(typeof(LoadResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status429TooManyRequests)]
     public async Task<IActionResult> Get([FromQuery] string? seconds)
     {
         var result = await _loadService.RunAsync(seconds);
-        if (!result.IsSuccess)
+        if (result.IsSuccess)
         {
-            return BadRequest(new ErrorResponse("bad_request", Reason: result.Error));
+            return Ok(result.Value);
         }
 
-        return Ok(result.Value);
+        return result.Kind == ErrorKind.TooManyRequests
+            ? StatusCode(StatusCodes.Status429TooManyRequests, new ErrorResponse("too_many_requests", Reason: result.Error))
+            : BadRequest(new ErrorResponse("bad_request", Reason: result.Error));
     }
 }

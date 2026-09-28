@@ -18,9 +18,9 @@ public sealed class DatabaseRepository : IDatabaseRepository
     /// trong một CommandText nên mỗi CREATE TABLE một ExecuteNonQueryAsync
     /// riêng, tuần tự trên cùng connection — không bọc transaction vì DDL MySQL
     /// tự implicit-commit, bọc chỉ tạo ảo giác nguyên tử.
-    public async Task EnsureSchemaAsync()
+    public async Task EnsureSchemaAsync(CancellationToken cancellationToken = default)
     {
-        await using var connection = await _dataSource.OpenConnectionAsync();
+        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
 
         await using (var tickets = connection.CreateCommand())
         {
@@ -44,7 +44,7 @@ public sealed class DatabaseRepository : IDatabaseRepository
                     KEY ix_tickets_updated        (updated_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
                 """;
-            await tickets.ExecuteNonQueryAsync();
+            await tickets.ExecuteNonQueryAsync(cancellationToken);
         }
 
         await using (var comments = connection.CreateCommand())
@@ -61,7 +61,7 @@ public sealed class DatabaseRepository : IDatabaseRepository
                     CONSTRAINT fk_comments_ticket FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
                 """;
-            await comments.ExecuteNonQueryAsync();
+            await comments.ExecuteNonQueryAsync(cancellationToken);
         }
 
         await using (var activities = connection.CreateCommand())
@@ -80,7 +80,7 @@ public sealed class DatabaseRepository : IDatabaseRepository
                     CONSTRAINT fk_activities_ticket FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
                 """;
-            await activities.ExecuteNonQueryAsync();
+            await activities.ExecuteNonQueryAsync(cancellationToken);
         }
     }
 

@@ -4,7 +4,7 @@ namespace OpsBoard.Repositories;
 /// khởi động, ping cho health check.
 public interface IDatabaseRepository
 {
-    Task EnsureSchemaAsync();
+    Task EnsureSchemaAsync(CancellationToken cancellationToken = default);
 
     Task PingAsync(CancellationToken cancellationToken);
 }

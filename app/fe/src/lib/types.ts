@@ -86,6 +86,7 @@ export type ApiErrorCode =
   | "bad_request"
   | "not_found"
   | "invalid_transition"
+  | "too_many_requests"
   | "boom"
   | "database_unavailable";
 
