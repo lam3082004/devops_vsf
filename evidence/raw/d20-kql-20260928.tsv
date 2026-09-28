@@ -1,0 +1,37 @@
+# D20 D5 — KQL trên workspace log-vsf-jcip0s (App Insights workspace-based), chạy 2026-09-28T07:53:52Z. Request gửi: evidence/raw/d20-trace-requests.log
+## AppRequests
+TimeGenerated	Name	ResultCode	Success	OperationId	Id	DurationMs
+2026-09-28T07:49:25.950829Z	GET items	200	true	6fc2396d4d0423d1b1f841b45623e25a	c59a5d828425b844	164.1
+2026-09-28T07:49:28.1308605Z	GET items	200	true	444a342b58203ac4b7656117c49cb9f5	c6123c05ea896c10	164.6
+2026-09-28T07:49:30.0289756Z	POST items	201	true	94a60ece181b231101da3b2f38e5e6e1	2c60fbcf92f08987	380.2
+2026-09-28T07:49:32.2097014Z	GET boom	500	false	91efddedb7fddf7cca38ed3a16ac7d24	86591f7e372de4a5	17.9
+2026-09-28T07:49:34.2178868Z	GET boom	500	false	541914764683ed6c8ccc8cd05ddf61cb	027db9813e6b880b	1.6
+2026-09-28T07:51:04.6721264Z	GET {*path:nonfile}	404	false	bc9d46736aa0c29547824c4222a85f27	36435e3d5cf98f43	6.6
+2026-09-28T07:51:12.617178Z	GET items	200	true	57af4aa5653143ded103cc257bf5938e	e5e1c17ac991a9b5	147
+2026-09-28T07:51:24.2799278Z	GET {*path:nonfile}	404	false	efb29e7502a2699636fe43588f3f8c3f	aa39123789631d24	2
+## AppDependencies (của các request trên)
+TimeGenerated	OperationId	ParentId	Name	Target	Success	DurationMs
+2026-09-28T07:49:25.951721Z	6fc2396d4d0423d1b1f841b45623e25a	c59a5d828425b844	Open	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54
+2026-09-28T07:49:26.0058884Z	6fc2396d4d0423d1b1f841b45623e25a	c59a5d828425b844	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	53.8
+2026-09-28T07:49:26.0598992Z	6fc2396d4d0423d1b1f841b45623e25a	c59a5d828425b844	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54.5
+2026-09-28T07:49:28.1314477Z	444a342b58203ac4b7656117c49cb9f5	c6123c05ea896c10	Open	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54.7
+2026-09-28T07:49:28.1862048Z	444a342b58203ac4b7656117c49cb9f5	c6123c05ea896c10	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54
+2026-09-28T07:49:28.2403414Z	444a342b58203ac4b7656117c49cb9f5	c6123c05ea896c10	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54.5
+2026-09-28T07:49:30.0677264Z	94a60ece181b231101da3b2f38e5e6e1	2c60fbcf92f08987	Open	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	53.9
+2026-09-28T07:49:30.179132Z	94a60ece181b231101da3b2f38e5e6e1	2c60fbcf92f08987	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	55.7
+2026-09-28T07:49:30.2353249Z	94a60ece181b231101da3b2f38e5e6e1	2c60fbcf92f08987	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54.8
+2026-09-28T07:49:30.2903329Z	94a60ece181b231101da3b2f38e5e6e1	2c60fbcf92f08987	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	54.2
+2026-09-28T07:49:30.345819Z	94a60ece181b231101da3b2f38e5e6e1	2c60fbcf92f08987	Commit	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	61.7
+2026-09-28T07:51:12.6180846Z	57af4aa5653143ded103cc257bf5938e	e5e1c17ac991a9b5	Open	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	48.3
+2026-09-28T07:51:12.666563Z	57af4aa5653143ded103cc257bf5938e	e5e1c17ac991a9b5	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	48.4
+2026-09-28T07:51:12.7150102Z	57af4aa5653143ded103cc257bf5938e	e5e1c17ac991a9b5	Execute	mysql-vsf-jcip0s-sea.mysql.database.azure.com | appdb	true	48.7
+## AppExceptions
+TimeGenerated	OperationId	ParentId	ExceptionType	OuterMessage
+2026-09-28T07:49:32.2250594Z	91efddedb7fddf7cca38ed3a16ac7d24	86591f7e372de4a5	OpsBoard.Common.BoomException	loi co y tu /boom de kiem thu alert va logging
+2026-09-28T07:49:34.2192419Z	541914764683ed6c8ccc8cd05ddf61cb	027db9813e6b880b	OpsBoard.Common.BoomException	loi co y tu /boom de kiem thu alert va logging
+## AppTraces theo Message (span event của MySqlConnector, không phải log app)
+Message	n
+read-result-set-header	23
+## /health, /version trong AppRequests từ lúc bật telemetry (mong đợi 0)
+Count
+0

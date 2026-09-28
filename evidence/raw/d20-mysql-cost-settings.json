@@ -1,0 +1,27 @@
+{
+  "backup": {
+    "backupIntervalHours": 24,
+    "backupRetentionDays": 1,
+    "earliestRestoreDate": "2026-09-27T05:17:13.860036+00:00",
+    "geoRedundantBackup": "Disabled"
+  },
+  "highAvailability": {
+    "mode": "Disabled"
+  },
+  "location": "Southeast Asia",
+  "name": "mysql-vsf-jcip0s-sea",
+  "sku": {
+    "name": "Standard_B1ms",
+    "tier": "Burstable"
+  },
+  "storage": {
+    "autoGrow": "Disabled",
+    "autoIoScaling": "Disabled",
+    "iops": 360,
+    "logOnDisk": "Disabled",
+    "storageRedundancy": "LocalRedundancy",
+    "storageSizeGb": 20,
+    "storageSku": "Premium_LRS"
+  },
+  "version": "8.4"
+}
