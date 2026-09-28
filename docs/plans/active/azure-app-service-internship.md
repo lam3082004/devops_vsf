@@ -4,7 +4,7 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-27 (hết D19 · D20 đã có kế hoạch)
+## Tiến độ — cập nhật 2026-09-28 (hết D19 · D20 đã có kế hoạch, B/F đã chốt)
 
 **D1–D14, D16, D17, D18 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
@@ -37,7 +37,7 @@ A→B đủ, be≠fe 94–105s (đúng thiết kế be trước fe). Nhưng có 
 guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính lại số liệu, sửa theo.
 `evidence/M2.md`, `notes/d18.md`. **Bài tiếp: D19 — kế hoạch từng bước ở `notes/d19-prep.md`.**
 
-**D19 XONG phần việc (2026-09-27) — còn nợ 2 ảnh Portal (chụp TRƯỚC `make down`).**
+**D19 XONG (2026-09-27; ảnh Portal M7 chụp 2026-09-28) — đủ 3 ô "Xong khi" của guide.**
 - Autoscale Terraform (PR #56): Plan, `CpuPercentage`, 1/1/**2**, out >70% 5 phút, in <30% 10 phút, `ignore_changes = [worker_count]`.
 - Apply 1 added. `plan` ra No changes cả lúc **2 instance**.
 - Tải thật 3 × `/load?seconds=55` (người dùng chạy — classifier chặn AI): **1→2 sau 6m35s, 2→1 sau 10m43s** dừng tải.
@@ -57,13 +57,24 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 | M10 — CD deploy từ `main` | **ĐẠT (D16)** | `evidence/M10.md` — đủ, kể cả lớp 3 (run `35925778364`) |
 | M10 — mở rộng D17: swap an toàn | **ĐẠT (D17)** | `evidence/M10.md` mục D17 — 4 tình huống có run link |
 | M2 — zero-downtime khi swap | **Chờ mentor (D18)** — 0 response non-200 (đạt theo `topic.md`); 10 timeout, 6 quanh swap (chưa đạt theo guide) | `evidence/M2.md` — 3 lần swap (lần 3 ở D19: 0 non-200, 21 timeout trong swap `fe`) + đo lúc scale, log thô `evidence/raw/m2-*.log` |
-| M7 — autoscale + right sizing + cost report | **Phần autoscale: đạt về log thô (D19), chưa đủ "Xong khi" — thiếu 2 ảnh Portal**; cost report là D20 | `evidence/M7.md` |
+| M7 — autoscale + right sizing + cost report | **Phần autoscale ĐẠT (D19)** — log thô + 2 ảnh Portal (Run history 1→2→1, CPU); cost report là D20 | `evidence/M7.md` |
 | M11 | chưa tới lịch | D22 |
 
 **Còn nợ, không chặn D17:**
 - **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
-- **6 ảnh Portal** — `notes/screenshot-debt.md`. **Cửa sổ D16 không chụp được** → dời sang
-  cửa sổ `make up` của D17 (`notes/d17-prep.md` Pha D).
+- **Ảnh Portal còn thiếu (5 ảnh cũ, không chặn mốc nào — M3/M4/M6 đã ĐẠT bằng log thô + JSON).**
+  `notes/screenshot-debt.md` đã xoá 2026-09-28 theo yêu cầu người dùng, sau khi chụp xong 2 ảnh M7
+  (D19) + 1 ảnh M6 (site chính `be`, Unmatched = Deny) bằng Claude in Chrome →
+  `evidence/d19/screenshots/`. Còn lại, chụp tay trên Portal (trang Access Restrictions nằm trong
+  iframe, extension không cuộn và không bấm được tab ở đó):
+  1. M6 — Access restrictions của **slot staging** `be` (danh sách luật + Unmatched = Deny).
+  2. M6 — tab **Advanced tool site** của site + slot: tick *Use main site rules* **và** Unmatched = Deny
+     (ảnh quan trọng nhất của M6 — `evidence/M6.md` mục "Cái bẫy thật").
+  3. M4 — Environment variables site + staging: `DB_PASSWORD` = Key Vault reference, **Resolved**.
+  4. M3 — Log stream của đúng 2 request `POST`/`GET /items` (mở Log stream **trước** rồi mới gọi).
+  5. M3 — MySQL `mysql-vsf-<suffix>-sea` → Networking: firewall rule + "Allow Azure services" **tắt**.
+  Ảnh M5: **bỏ** (lý do ở `evidence/M5.md`). Suffix hiện tại `jcip0s` khác suffix trong bảng M3–M6
+  (`j124ze`, `p0hef1`) — ghi một dòng dưới ảnh khi dán. Che email ở header Portal.
 - **Ba việc vặt, không tốn tiền, chen được bất cứ lúc nào:** chuyển `docs/docs_app/architecture.md`
   về **gốc repo** (`topic.md` mục deliverables đòi `architecture.md` ở đó) · test cho `app/fe`
   (`known-issues.md` #16 — D17 quyết định B có thể mở màn) · dựng lại state `infra/bootstrap`
@@ -234,7 +245,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [ ] Tự review repo mình trước bằng chính checklist của guide (3 điểm ⚠️ đã biết, xem prep)
 - [ ] Cập nhật `README.md` bản nháp (prereq, biến cần set, up/down, teardown)
 - [ ] `destroy` → `apply` lại lần 2 sau khi thêm ACR/KV/whitelist — *proof: log* (cập nhật M8)
-- [ ] **6 ảnh Portal còn nợ** (M6 ×3, D12 ×3) — `notes/screenshot-debt.md`. D16 không kịp chụp → **dời sang cửa sổ `make up` của D17** (`notes/d17-prep.md` Pha D)
+- [~] **Ảnh Portal còn nợ** — 2026-09-28: chụp được 1/3 ảnh M6 (site chính, Deny) cùng 2 ảnh M7; `notes/screenshot-debt.md` đã xoá, 5 ảnh còn lại liệt kê ở mục "Còn nợ" đầu file. *(Bản cũ: "6 ảnh … dời sang cửa sổ `make up` của D17".)*
 
 ---
 
@@ -282,11 +293,12 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ### D19 — Autoscale + right sizing
 > Kế hoạch làm từng bước: **`notes/d19-prep.md`**.
 - [x] Autoscale setting: min 1, **max 2**, scale out CPU > ~70% trong 5 phút, scale in CPU < ~30% — *proof: plan* — `infra/app/autoscale.tf` (#56), apply 1 added, `az monitor autoscale show` → `evidence/raw/d19-autoscale-show-20260927.json`, `plan` No changes lúc 1 và 2 instance
-- [~] Test tải ngắn bằng `/load` (vài phút) → thấy 1→2→1 instance — *proof: screenshot metric instance count + run history* — log thô ĐỦ (watch + Activity Log Scaleup 16:20:42Z / Scaledown 16:32:37Z, `evidence/M7.md` mục 2); **ảnh Portal còn nợ** (`notes/screenshot-debt.md` M7)
+- [x] Test tải ngắn bằng `/load` (vài phút) → thấy 1→2→1 instance — *proof: screenshot metric instance count + run history* — log thô (watch + Activity Log Scaleup 16:20:42Z / Scaledown 16:32:37Z, `evidence/M7.md` mục 2) + **2 ảnh Portal** `evidence/d19/screenshots/m7-*.png` (chụp 2026-09-28)
 - [x] Right sizing: xem CPU/memory thực tế, quyết định tier — *proof: Decision* — giữ P0v3, `evidence/M7.md` mục 4
 
 ### D20 — Cost report + App Insights (theo Q1) + tracing
-- [ ] App: thêm OpenTelemetry (ASP.NET Core + MySqlConnector), sampling 100% (lưu lượng thấp) — *proof: PR có `## AI usage`; `/items` sinh trace có span DB*
+- [ ] App: thêm OpenTelemetry (ASP.NET Core + MySqlConnector), sampling 100% (lưu lượng thấp) **nhưng bỏ `/health`, `/version` khỏi trace** (`notes/d20-prep.md` quyết định E: probe + poll ~260 000 request/ngày) — *proof: PR có `## AI usage`; `/items` sinh trace có span DB*
+- [ ] Log Analytics workspace: retention 30 ngày + daily cap 0,2 GB/ngày (**quyết định B, người dùng duyệt 2026-09-28**) · `/boom` `throw` exception thật (**quyết định F, người dùng duyệt 2026-09-28**; theo `docs/docs_app/brief.md` R6)
 - [ ] Log JSON thêm `trace_id`/`span_id` (lấy từ `Activity.Current`) — *proof: 1 dòng log khớp trace-id trong response header `traceparent`*
 - [ ] Không đưa connection string App Insights plaintext: lưu Key Vault, tham chiếu `@Microsoft.KeyVault(...)` — *proof: app settings*
 - [ ] `cost-report.md` 1 trang: tier + lý do · autoscale rule · 3 biện pháp đã áp dụng · chi phí thật từ Cost Analysis (screenshot) → `evidence/M7.md`
@@ -416,12 +428,16 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
   **ĐÃ THAY 2026-09-23 (D16): không thực hiện được — GitHub chặn required reviewer với repo private
   (`known-issues.md` #14); CD chạy tự động hoàn toàn.** Giữ nguyên phần thân bên dưới làm lịch sử.
   Guide D16 mục "Xong khi" đòi *"merge → production đổi SHA **không thao tác tay**"*, trong khi nút duyệt là đúng một thao tác tay. Chọn bật vì không muốn có gì vào production mà không ai nhìn (guide mục 2 cho phép: *"tuỳ chọn: required reviewers"*). `evidence/M10.md` **phải nói rõ**: build → push ACR → deploy slot staging là hoàn toàn tự động, người chỉ duyệt đúng bước swap cuối. Đường lui nếu người chấm không chấp nhận: tắt reviewer, merge thêm một PR, chụp lần chạy không có bước duyệt — ~10 phút, không phải sửa code.
+- 2026-09-27 — **D19: autoscale gắn Plan, `ignore_changes = [worker_count]`, 70/30, cửa sổ in 10 > out 5 phút, không email** (quyết định A–F `notes/d19.md`). Kiểm hợp đồng `ignore_changes` bằng `plan` No changes **lúc đang 2 instance** — đã đạt. Right sizing: giữ **P0v3** (`evidence/M7.md` mục 4).
+- 2026-09-28 — **D20 quyết định B và F (người dùng duyệt):** Log Analytics retention 30 ngày + daily cap **0,2 GB/ngày** (chạm cap → mất telemetry tới hết ngày, không mất tiền; 5 GB/tháng đầu miễn phí, sau đó $3,22/GB Central India); `/boom` **`throw` exception thật** theo `topic.md` §2 và `docs/docs_app/brief.md` R6 — phải kèm exception handler nếu `api-spec.md` coi body `ErrorResponse` là hợp đồng.
 
 ## Rủi ro đã biết
 - Máy làm việc dùng hotspot điện thoại → IP công khai động: ảnh hưởng firewall MySQL, access restriction (D13) và **cách lấy bằng chứng M6** (hotspot + điện thoại đó dùng chung IP → phải mượn mạng khác). Chi tiết: `notes/d2.md`.
 - **D13 đo ra cụ thể hơn (2026-09-23):** không phải "IP đổi theo thời gian" mà là **hai IP dùng song song** — CGNAT nhà mạng NAT mỗi kết nối qua một trong hai địa chỉ thoát (70 mẫu `curl -4`, ~50/50, không có cái thứ ba). Mọi whitelist phải khai cả hai, nếu không thì cứ hai request có một cái bị chặn. Cloudflare WARP nếu bật còn làm hỏng phép đo nặng hơn (dải anycast dùng chung + ép đi IPv6) → **tắt WARP trước khi đo IP**. `known-issues.md` #11.
 
 ## Recovery
+- 2026-09-28 ~03:40Z: **Rà D1–D19 + đồng bộ `main`.** Người dùng: không `make down` (môi trường `jcip0s` VẪN BẬT, capacity 1). Chụp bằng Claude in Chrome: 2 ảnh M7 (Run history 1→2→1, CPU) + 1 ảnh M6 → `evidence/d19/screenshots/`; **D19 đủ 3 ô "Xong khi"**. `notes/screenshot-debt.md` xoá theo yêu cầu, 5 ảnh cũ chưa chụp được (Portal iframe) chuyển vào mục "Còn nợ". D20 quyết định **B** (retention 30 ngày + cap 0,2 GB/ngày) và **F** (`/boom` `throw`) đã chốt. Rà mọi nhánh/worktree: không PR nào mở; 3 nhánh local không PR (`chore/d17-plan`, `docs/d10-close-d11-plan-local`, `docs/d17-pr48-update`) + phần dở của worktree `d12` đều là **bản cũ** của nội dung đã vào `main` — không đưa vào; slide CI/CD D16 (chưa từng commit) đưa vào `docs/guides/`. Tất cả đi qua PR từ nhánh `docs/d20-cost-report`. Bài tiếp: D20 Pha A (cost report).
+- 2026-09-27 18:21Z: **PR #57 (chốt D19 + kế hoạch D20) đã merge** → CD `36339629729` success, production be+fe = `13ae34b`, `/health` `db: ok` (18:21Z), plan P0v3 capacity 1. M2 lần 4 ghi trên nhánh `docs/d20-cost-report` (**chưa PR** — vào `main` cùng cost report D20). Cuối phiên: capacity 1, không script nào chạy. **Môi trường `jcip0s` VẪN BẬT.** Bước tiếp: D20 theo `notes/d20-prep.md` — chốt quyết định A–H (B và F cần người dùng), chụp 2 ảnh M7 trước mọi `make down`.
 - 2026-09-27 16:45Z: **D19 XONG phần việc.** Apply autoscale từ `main` `1b420a8` (1 added); tải 16:14–16:22Z (người dùng chạy) → Scaleup 16:20:42Z, Scaledown 16:32:37Z; `plan` No changes lúc 2 instance. Cuối phiên: capacity 1, không script nào chạy. Ghi chép trên nhánh `docs/d19-phase-b` (worktree `.claude/worktrees/d19-autoscale`). **Còn nợ:** 2 ảnh Portal M7 — chụp TRƯỚC `make down` (xoá plan là mất metric + Run history). **Môi trường `jcip0s` VẪN BẬT theo quyết định người dùng.** Bài tiếp: D20 (`notes/d20-prep.md`).
 - 2026-09-27 14:35Z: **D19 Pha A xong** trên nhánh `feat/d19-autoscale` (worktree `.claude/worktrees/d19-autoscale`): autoscale Terraform + `ignore_changes` (`plan` 1 to add, 0 change), `scripts/load.sh` + `scripts/d19-watch.sh` kiểm khô đạt, `notes/d19.md`, `ai-failure-log.md` #34. Chưa `apply`, chưa tải. **Merge PR này = một lần CD swap thật** (không path filter) — hỏi người dùng. Sau merge: Pha B (`terraform apply` từ `main`, hỏi trước) → Pha C (tải 8 phút, hỏi trước). Môi trường `jcip0s` VẪN BẬT theo quyết định người dùng.
 - 2026-09-27 08:20Z: **D18 xong phần việc, M2 chờ mentor.** Lần 2 = merge #54 (07:47Z) → CD `36304209433` success, production be+fe = `410c5ef` (PR chốt D18 merge sau đó sẽ đổi SHA lần nữa). M2: 0 response non-200 × 2 lần; 10 timeout (6 quanh swap) đã phân loại, chưa đạt tiêu chí chặt của guide (`evidence/M2.md`). **Môi trường `jcip0s` VẪN BẬT theo quyết định người dùng.** **Bước tiếp: D19** theo `notes/d19-prep.md` — chốt quyết định trước, Pha A (Terraform autoscale) không tốn tiền, `terraform apply` + test tải phải hỏi trước.

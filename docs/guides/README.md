@@ -47,6 +47,10 @@ Vì vậy các file hướng dẫn **không chứa code Terraform, lệnh `az`, 
 | [D24](d24-drill-finalize.md) | Incident drill · hoàn thiện tài liệu | D22 | có | M8 cập nhật |
 | [D25](d25-demo.md) | Demo 45 phút | tất cả | có | demo |
 
+## Tài liệu thuyết trình
+
+- [`slides-cicd-d16.html`](slides-cicd-d16.html) (15 slide) + kịch bản nói/giải thích [`slides-cicd-d16-script.md`](slides-cicd-d16-script.md) — CI/CD của OpsBoard tới D16 (trunk-based, 8 job CI, OIDC, CD 3 job, swap). Soạn 25/09, đưa vào `main` 28/09; nội dung dừng ở D16 (chưa có D17 swap an toàn, D18 M2, D19 autoscale).
+
 ## Tiến độ
 
 Không ấn định thời lượng hay ngày cho từng bài — làm xong bài nào đánh dấu bài đó trong `notes/dXX.md` và plan. Chỉ giữ thứ tự bài (cột "Cần xong trước") và các mốc mentor cố định: GATE (D10), cross-review lần 1 và 2, demo, và **hạn credit Free Trial 15/10/2026**.
