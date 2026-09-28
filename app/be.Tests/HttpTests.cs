@@ -89,6 +89,11 @@ public class HttpTests : IAsyncLifetime
     {
         var boom = await _client.GetAsync("/boom");
         Assert.Equal(HttpStatusCode.InternalServerError, boom.StatusCode);
+        // /boom ném exception thật (D20) — hợp đồng api-spec.md vẫn phải giữ: 500
+        // `boom`, KHÔNG phải 503 database_unavailable của DatabaseExceptionFilter.
+        var body = await boom.Content.ReadAsStringAsync();
+        Assert.Contains("\"error\":\"boom\"", body);
+        Assert.Contains("\"detail\":", body);
 
         var sau = await _client.GetAsync("/version");
         Assert.Equal(HttpStatusCode.OK, sau.StatusCode);

@@ -73,3 +73,13 @@ output "key_vault_uri" {
 output "key_vault_name" {
   value = azurerm_key_vault.kv.name
 }
+
+output "log_analytics_workspace_name" {
+  description = "Workspace của D20/D21 (App Insights + diagnostic settings)."
+  value       = azurerm_log_analytics_workspace.main.name
+}
+
+output "app_insights_name" {
+  description = "Rỗng khi enable_app_insights = false."
+  value       = one(azurerm_application_insights.be[*].name)
+}

@@ -20,4 +20,10 @@ public class ConfigTests
         Assert.Contains("DB_PORT", ex.Message);
         Assert.DoesNotContain("3306", ex.Message);
     }
+
+    [Theory]
+    [InlineData("@Microsoft.KeyVault(SecretUri=https://kv/secrets/x)", true)]
+    [InlineData("InstrumentationKey=00000000-0000-0000-0000-000000000000", false)]
+    public void NhanRaThamChieuKeyVaultChuaResolve(string value, bool expected) =>
+        Assert.Equal(expected, Config.IsUnresolvedKeyVault(value));
 }

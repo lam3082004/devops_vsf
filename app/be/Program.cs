@@ -42,6 +42,10 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{config.Port}");
 // JsonConsoleLogger thay hoàn toàn logging framework mặc định (nó ghi
 // multi-line, không phải 1 dòng JSON/record như yêu cầu).
 builder.Logging.ClearProviders();
+// Distributed tracing → Application Insights, chỉ khi có connection string (D20).
+// Distro thêm logging provider của OpenTelemetry SAU dòng ClearProviders ở trên;
+// Telemetry tự lọc provider đó về None (log vẫn chỉ đi JSON ra stdout).
+builder.AddOpsBoardTelemetry(config, logger);
 // Kestrel (khác axum) có timeout chờ shutdown mặc định — kéo dài nó ra để một
 // request /load đang đốt CPU tới LoadMaxSeconds vẫn kịp trả lời trước khi bị cắt.
 builder.Services.Configure<HostOptions>(o =>
