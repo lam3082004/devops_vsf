@@ -32,7 +32,9 @@ public sealed record Config(
     string DbUser,
     string DbPassword,
     bool DbTls,
-    long LoadMaxSeconds)
+    long LoadMaxSeconds,
+    // Tuỳ chọn: vắng → không bật telemetry (test, CI, chạy local). Xem Infrastructure/Telemetry.cs.
+    string? AppInsightsConnectionString = null)
 {
     /// Tiền tố mà App Service để nguyên trong biến môi trường khi nó KHÔNG
     /// resolve được tham chiếu Key Vault (mất quyền, sai URI, secret bị xoá...).
@@ -41,7 +43,7 @@ public sealed record Config(
     public static Config FromEnvironment()
     {
         var dbPassword = Required("DB_PASSWORD");
-        if (dbPassword.StartsWith(KeyVaultPrefix, StringComparison.Ordinal))
+        if (IsUnresolvedKeyVault(dbPassword))
         {
             throw ConfigException.UnresolvedKeyVault("DB_PASSWORD");
         }
@@ -60,7 +62,19 @@ public sealed record Config(
             DbUser: Required("DB_USER"),
             DbPassword: dbPassword,
             DbTls: Boolean("DB_TLS", true),
-            LoadMaxSeconds: loadMaxSeconds);
+            LoadMaxSeconds: loadMaxSeconds,
+            AppInsightsConnectionString: Optional("APPLICATIONINSIGHTS_CONNECTION_STRING"));
+    }
+
+    /// Tiền tố tham chiếu Key Vault chưa resolve — Telemetry dùng để phân biệt
+    /// "không cấu hình" với "cấu hình nhưng App Service không đọc được secret".
+    public static bool IsUnresolvedKeyVault(string value) =>
+        value.StartsWith(KeyVaultPrefix, StringComparison.Ordinal);
+
+    private static string? Optional(string var)
+    {
+        var value = Environment.GetEnvironmentVariable(var);
+        return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
     private static string Required(string var)

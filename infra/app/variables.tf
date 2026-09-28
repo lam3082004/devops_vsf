@@ -114,3 +114,9 @@ variable "grant_app_acr_pull" {
   type        = bool
   default     = true
 }
+
+variable "enable_app_insights" {
+  description = "Dựng Application Insights + secret connection string + app setting cho `be` (D20). TẠM theo mặc định Q1 — mentor nói không thì đặt false (workspace Log Analytics vẫn giữ cho D21)."
+  type        = bool
+  default     = true
+}

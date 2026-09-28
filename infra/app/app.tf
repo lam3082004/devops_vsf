@@ -23,7 +23,7 @@ resource "azurerm_service_plan" "app" {
 locals {
   # Dùng chung cho production và staging: slot phải giống hệt site để swap
   # không mang cấu hình lạ lên production.
-  app_settings = {
+  app_settings = merge({
     # App Service chuyển traffic vào cổng này của container.
     WEBSITES_PORT = tostring(var.container_port)
     # Không mount /home dùng chung vào container: app không ghi file, tắt đi
@@ -48,7 +48,15 @@ locals {
     # sai cũng qua — bẫy thứ 3 của guide.
     WEBSITE_SWAP_WARMUP_PING_PATH     = "/health"
     WEBSITE_SWAP_WARMUP_PING_STATUSES = "200"
-  }
+    }, var.enable_app_insights ? {
+    # D20: tracing → Application Insights (monitoring.tf). Key Vault reference như
+    # DB_PASSWORD; app bỏ qua (tắt telemetry, không thoát) nếu tham chiếu chưa resolve.
+    # URI dựng từ vault_uri + tên secret thay vì đọc versionless_id: secret là resource
+    # MỚI nên versionless_id "known after apply" → cả map app_settings thành "known after
+    # apply" trong plan, không đọc được diff. Thứ tự (secret có trước app setting) giữ bằng
+    # depends_on trên site và slot bên dưới.
+    APPLICATIONINSIGHTS_CONNECTION_STRING = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.kv.vault_uri}secrets/${local.appinsights_secret_name})"
+  } : {})
 
   # Luật truy cập theo IP (M6), dùng chung cho production và slot staging —
   # slot mà quên khai thì staging vẫn mở ra Internet, một nửa bài coi như hỏng.
@@ -89,9 +97,12 @@ resource "azurerm_linux_web_app" "app" {
   # dùng system-assigned (không tồn tại) → reference không resolve (D12).
   key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
 
-  # Role Secrets User phải có trước khi app resolve reference, nếu không
-  # reference đỏ cho tới khi restart.
-  depends_on = [azurerm_role_assignment.kv_secrets_user_app]
+  # Role Secrets User và secret App Insights (D20) phải có trước khi app resolve
+  # reference, nếu không reference đỏ cho tới khi restart.
+  depends_on = [
+    azurerm_role_assignment.kv_secrets_user_app,
+    azurerm_key_vault_secret.appinsights_connection_string,
+  ]
 
   site_config {
     always_on           = true # không cold start; slot/swap warm-up cần app luôn chạy
@@ -210,9 +221,12 @@ resource "azurerm_linux_web_app_slot" "staging" {
   # dùng system-assigned (không tồn tại) → reference không resolve (D12).
   key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
 
-  # Role Secrets User phải có trước khi app resolve reference, nếu không
-  # reference đỏ cho tới khi restart.
-  depends_on = [azurerm_role_assignment.kv_secrets_user_app]
+  # Role Secrets User và secret App Insights (D20) phải có trước khi app resolve
+  # reference, nếu không reference đỏ cho tới khi restart.
+  depends_on = [
+    azurerm_role_assignment.kv_secrets_user_app,
+    azurerm_key_vault_secret.appinsights_connection_string,
+  ]
 
   site_config {
     always_on           = true

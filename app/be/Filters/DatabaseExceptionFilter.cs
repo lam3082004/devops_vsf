@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using OpsBoard.Common;
 using OpsBoard.Contracts;
 using OpsBoard.Infrastructure;
 
 namespace OpsBoard.Filters;
 
-/// Bắt MỌI exception chưa xử lý từ action của controller và biến nó thành
-/// 503 database_unavailable — tương đương hàm db_error() dùng lặp lại ở bản
+/// Bắt MỌI exception chưa xử lý từ action của controller (trừ BoomException của
+/// /boom — xem BoomExceptionFilter) và biến nó thành 503 database_unavailable — tương đương hàm db_error() dùng lặp lại ở bản
 /// Rust, nhưng gom về một chỗ thay vì try/catch trong từng action. Trong app
 /// này, mọi lỗi không mong đợi từ action đều là lỗi chạm DB (repository là
 /// nơi duy nhất có thể throw), nên bắt rộng là hợp lý — nếu app phình to hơn,
@@ -19,6 +20,12 @@ public sealed class DatabaseExceptionFilter : IExceptionFilter
 
     public void OnException(ExceptionContext context)
     {
+        // /boom có hợp đồng riêng (500 `boom`) — BoomExceptionFilter lo.
+        if (context.Exception is BoomException)
+        {
+            return;
+        }
+
         var path = context.HttpContext.Request.Path.Value ?? "unknown";
         _logger.Error(
             "thao tac DB that bai",

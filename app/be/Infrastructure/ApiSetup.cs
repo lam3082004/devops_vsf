@@ -50,6 +50,7 @@ public static class ApiSetup
         var mvc = services
             .AddControllers(options =>
             {
+                options.Filters.Add<BoomExceptionFilter>();
                 options.Filters.Add<DatabaseExceptionFilter>();
                 options.Filters.Add<UserNameFilter>();
             })

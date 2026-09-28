@@ -58,7 +58,7 @@ Managed Identity · Terraform · GitHub Actions · Log Analytics (+ tracing, ch�
 | R3 | Giao diện làm trễ M1–M11 | Điểm chính nằm ở hạ tầng; chỉ làm UI sau D10 |
 | R4 | Jev là dịch vụ ngoài: giá, điều khoản, dữ liệu gửi đi chưa rõ | Chỉ thiết kế điểm cắm, chưa làm |
 | R5 (**chấp nhận, không xử lý**) | `be` hiện chỉ chặn bằng access restriction (IP whitelist) trỏ outbound IP của `fe` + IP quản trị — **chưa có cơ chế xác nhận request thực sự đến từ `fe`** (không token, không mTLS); ai/thứ gì gọi được từ cùng dải IP công ty vẫn qua được vì access restriction chỉ lọc theo IP nguồn. Cách khác (header bí mật giữa `fe`↔`be`, Easy Auth, VNet integration…) **không làm lần này** — người dùng chấp nhận rủi ro 2026-09-21: công cụ nội bộ, mạng công ty là biên tin cậy, M6 chỉ yêu cầu chặn theo IP. | Kiến trúc, M6 — đã chấp nhận |
-| R6 | `/boom` hiện trả `500` trực tiếp trong code (`return StatusCode(500, ...)`), **không ném exception thật**, trong khi `topic.md` mục 2 viết "ném exception". Nếu Q1 cho bật App Insights, cần đổi `/boom` sang ném exception thật (`throw`) để Failures blade ghi nhận được — chưa sửa code, chờ quyết định Q1. | App Insights Failures (M11) |
+| R6 | ~~`/boom` trả `500` trực tiếp, không ném exception thật~~ — **Đã sửa D20 (2026-09-28):** `/boom` `throw BoomException`; `BoomExceptionFilter` giữ đúng hợp đồng `500 {"error":"boom",…}` + log error một event, và gắn exception vào span của request để App Insights → Failures → Exceptions thấy được. Không thêm filter riêng thì exception rơi vào `DatabaseExceptionFilter` → `503 database_unavailable`. | App Insights Failures (M11) |
 
 ## 9. Mốc
 Xem `docs/plans/active/azure-app-service-internship.md`. Giao diện chỉ bắt đầu sau GATE D10.
