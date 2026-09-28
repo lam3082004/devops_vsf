@@ -49,7 +49,7 @@ Vì vậy các file hướng dẫn **không chứa code Terraform, lệnh `az`, 
 
 ## Tài liệu thuyết trình
 
-- [`slides-cicd-d16.html`](slides-cicd-d16.html) (15 slide) + kịch bản nói/giải thích [`slides-cicd-d16-script.md`](slides-cicd-d16-script.md) — CI/CD của OpsBoard tới D16 (trunk-based, 8 job CI, OIDC, CD 3 job, swap). Soạn 25/09, đưa vào `main` 28/09; nội dung dừng ở D16 (chưa có D17 swap an toàn, D18 M2, D19 autoscale).
+- [`slides-cicd-d16.html`](slides-cicd-d16.html) (15 slide) + kịch bản nói/giải thích [`slides-cicd-d16-script.md`](slides-cicd-d16-script.md) — CI/CD của OpsBoard tới D16 (trunk-based, 8 job CI, OIDC, CD 3 job, swap). Soạn 25/09, đưa vào `main` 28/09; nội dung dừng ở D16 (chưa có D17 swap an toàn, D18 M2, D19 autoscale). **Bản chép** đang phục vụ trên `fe` ở `/a.html` (`app/fe/public/a.html`, 28/09, người dùng yêu cầu) — sửa slide thì chép lại cả hai chỗ.
 
 ## Tiến độ
 
