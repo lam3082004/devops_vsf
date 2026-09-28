@@ -315,6 +315,10 @@ div.gate { display: grid; grid-template-columns: 1fr 34px 1.2fr 34px 1fr; align-
 .eq { display: grid; grid-template-rows: 20px repeat(3, 1fr); align-items: center; justify-items: center; color: var(--green); font-weight: 800; font-size: 18px; padding: 8px 0; }
 .eq::before { content: ""; }
 
+/* ===== số trang: luôn hiện trên từng slide, kể cả khi in/xuất PDF ===== */
+.pagenum { position: absolute; right: 24px; bottom: 10px; font-family: var(--mono); font-size: 13px;
+  font-weight: 600; color: var(--muted); letter-spacing: .02em; pointer-events: none; }
+
 /* ===== nav ẩn ===== */
 #nav { position: fixed; right: 16px; bottom: 12px; display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted);
   opacity: 0; transition: opacity .3s; }
@@ -1035,6 +1039,13 @@ flowchart LR
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide:not(.hide)'));
   var nav = document.getElementById('nav');
   var i = 0, hideTimer;
+  // Số trang in thẳng lên từng slide đang dùng (bỏ qua slide .hide) — cùng cách đếm với #count.
+  slides.forEach(function (el, k) {
+    var num = document.createElement('div');
+    num.className = 'pagenum';
+    num.textContent = (k + 1) + ' / ' + slides.length;
+    el.appendChild(num);
+  });
   function fit() {
     var s = Math.min(window.innerWidth / 1300, window.innerHeight / 740);
     slides.forEach(function (el) { el.style.transform = 'scale(' + s + ')'; });
