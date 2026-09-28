@@ -4,8 +4,7 @@ Guide gốc: `docs/guides/d20-cost-report-appinsights.md` · Nhật ký: `notes/
 Bằng chứng: `cost-report.md` (mới, 1 trang) + `evidence/M7.md` (thêm phần cost) · Phiên trước: `notes/d19.md`
 
 > **Điều kiện vào D20 — ĐÃ ĐẠT phần việc (2026-09-27):** D19 xong (`evidence/M7.md` phần autoscale +
-> right sizing, giữ **P0v3**). Còn nợ 2 ảnh Portal M7 (`notes/screenshot-debt.md`) — **chụp trước bất
-> kỳ `make down` nào**, vì xoá plan là mất metric + Run history. Môi trường `jcip0s` **đang bật** theo
+> right sizing, giữ **P0v3**; 2 ảnh Portal M7 đã chụp 28/09). Môi trường `jcip0s` **đang bật** theo
 > quyết định người dùng. **Q1 (App Insights) mentor chưa trả lời** (`known-issues.md` #5) — plan đang
 > "mặc định hướng (a) workspace-based, đánh dấu tạm".
 
@@ -36,6 +35,7 @@ Bằng chứng: `cost-report.md` (mới, 1 trang) + `evidence/M7.md` (thêm ph�
 | ACR **Basic**, Key Vault **standard**, Defender: mọi plan trả phí **Free** (D1) | `infra/app/acr.tf:11`, `keyvault.tf:17`, plan mục Validation 15/09 | Ứng viên biện pháp #3 |
 | `make down` theo ca: **đúng cho D8–D16**, nhưng **từ 24/09 14:50 môi trường bật liên tục** theo quyết định người dùng (suffix `jcip0s`) | plan Recovery 24/09 → 27/09 | Biện pháp "không chạy qua đêm" **không còn đúng cho 3+ ngày gần nhất** — cost report phải nói thật (bẫy "biện pháp sẽ làm → không tính") |
 | `az consumption usage list` (Free Trial) trả 330 dòng nhưng **`pretaxCost` = "None"** mọi dòng | chạy thử 2026-09-27 (chỉ đọc) | **CLI không cho số tiền** với subscription này → số thật lấy từ **Cost Analysis trên Portal** (👤 chụp). Có thể thử Cost Management Query API ở Pha A (chỉ đọc), không trông vào nó |
+| Portal hiện **credit còn lại $181,86** (03:21Z 2026-09-28) — Free Trial $200 | popup Portal, ghi ở `notes/d19.md` mục "Ảnh Portal" | Đối chiếu nhanh với tổng actual cost của Cost Analysis (≈ $18 đã dùng từ 15/09 nếu không có phí khác trừ vào credit) — không thay được số Cost Analysis |
 | Tag `project = vsf` gắn cho mọi resource từ D7 | `infra/app/locals.tf` `tags` | Lọc Cost Analysis theo tag được (guide bước 5) |
 | Giá plan Central India: P0v3 $0,082/giờ (bảng D19) | `notes/d19-prep.md`, `evidence/M7.md` mục 4 | Tra lại lúc viết cost report (guide: giá có thể đổi) |
 
@@ -43,14 +43,18 @@ Bằng chứng: `cost-report.md` (mới, 1 trang) + `evidence/M7.md` (thêm ph�
 
 Ghi câu trả lời vào `notes/d20.md` mục Decisions.
 
+> **Đã chốt 2026-09-28 (người dùng: "theo đề xuất của bạn"):** **B = (a)** retention 30 ngày + daily cap
+> 0,2 GB/ngày · **F = (a)** `/boom` `throw` exception thật. A, C, D, E, G, H chưa được hỏi riêng — mặc định
+> theo đề xuất trong bảng, xác nhận lại đầu phiên D20.
+
 | # | Câu hỏi | Lựa chọn | Đề xuất |
 |---|---|---|---|
 | A | Q1 chưa trả lời — có dựng App Insights không? | (a) dựng workspace-based App Insights, ghi "tạm theo mặc định Q1", gỡ được bằng một biến · (b) chờ mentor, D20 chỉ làm cost report + `span_id` · (c) OTel → backend tự dựng (Jaeger/Tempo) | **(a)**, nhưng làm **sau** cost report. Plan đã chọn mặc định (a); brief đòi distributed tracing, không có backend thì không chứng minh được. (c) thêm hạ tầng tự vận hành, trái tinh thần tiết kiệm M7. Thêm biến Terraform `enable_app_insights` (mặc định `true`) để mentor nói "không" thì tắt bằng một dòng |
-| B | Log Analytics workspace: retention + daily cap | (a) retention **30 ngày** + `daily_quota_gb` **0,2** · (b) retention 30, không cap · (c) cap 1 GB | **(a)** — đề xuất, **cần người dùng duyệt** (giới hạn mới, luật harness). 0,2 GB/ngày × 31 ngày ≈ 6 GB/tháng, sát mức 5 GB miễn phí; chạm cap thì ngừng thu tới hết ngày (mất telemetry, **không** mất tiền). Retention 30 ngày đủ tới demo D25 |
+| B | Log Analytics workspace: retention + daily cap — **ĐÃ CHỐT (a)** | (a) retention **30 ngày** + `daily_quota_gb` **0,2** · (b) retention 30, không cap · (c) cap 1 GB | **(a)** — đề xuất, **cần người dùng duyệt** (giới hạn mới, luật harness). 0,2 GB/ngày × 31 ngày ≈ 6 GB/tháng, sát mức 5 GB miễn phí; chạm cap thì ngừng thu tới hết ngày (mất telemetry, **không** mất tiền). Retention 30 ngày đủ tới demo D25 |
 | C | Connection string App Insights để đâu | (a) Key Vault secret + `@Microsoft.KeyVault(...)` như `DB_PASSWORD` · (b) app setting trực tiếp từ attribute Terraform | **(a)** — checkbox plan D20 ghi rõ "lưu Key Vault, tham chiếu". Guide nói connection string "không phải secret", nhưng (a) không tốn thêm (MI đã có quyền đọc secret từ D12) và giữ một quy tắc duy nhất: app settings không có giá trị nhạy cảm. Ghi rõ lý do để không ai "sửa" ngược lại |
 | D | Thư viện OTel cho `be` | (a) `Azure.Monitor.OpenTelemetry.AspNetCore` (distro: ASP.NET Core + HttpClient + exporter) + `AddSource("MySqlConnector")` · (b) OpenTelemetry SDK + OTLP exporter + collector | **(a)**: một package, exporter có sẵn, MySqlConnector tự phát `ActivitySource` tên `MySqlConnector` (đã kiểm trong DLL 2.4.0 ở cache NuGet máy, 2026-09-27) — chỉ cần đăng ký source là có span DB. (b) cần collector — thêm hạ tầng. **Dependency mới** → Decision trong plan + Trivy `be` phải vẫn 0 CRITICAL/HIGH |
 | E | Sampling + lọc telemetry | (a) 100% nhưng **bỏ** `/health` và `/version` khỏi trace · (b) 100% mọi thứ · (c) sampling cố định 10% | **(a)**. Plan ghi "sampling 100% (lưu lượng thấp)" — đúng với người dùng thật, **sai** với lưu lượng máy: health check + `m2-poll.sh` (3 req/s) ≈ 260 000 request/ngày, đủ ăn hết 5 GB miễn phí trong vài tuần. Probe không mang thông tin trace. (c) làm mất trace của `/boom`/`/items` hiếm → không chứng minh được gì |
-| F | `/boom` phải có **exception** trong Failures — **cần người dùng chốt** | (a) `throw` thật (đúng chữ `topic.md` §2 "ném exception" và hướng đã ghi ở `docs/docs_app/brief.md` R6: "nếu Q1 cho bật App Insights, đổi `/boom` sang ném exception thật") · (b) giữ `return StatusCode(500, …)`, chỉ gắn `Activity.Current?.AddException(ex)` | **(a)** — repo đã ghi hướng này từ trước (R6), và `topic.md` nói "ném exception". Hệ quả phải xử lý: app **chưa có** exception handler (`grep UseExceptionHandler app/be` rỗng) → exception không bắt sẽ trả 500 body rỗng; test `HttpTests.cs:90-91` chỉ kiểm mã 500 nên vẫn xanh, nhưng phải đối chiếu `docs/docs_app/api-spec.md` xem body `ErrorResponse` "boom" có là hợp đồng không — nếu có, thêm exception handler trả `ErrorResponse` 500 + log JSON một dòng (giữ `trace_id`). (b) rẻ hơn nhưng lệch chữ đề bài và lệch R6. Kiểm: Failures → Exceptions thấy loại exception + `operation_Id` = `X-Trace-Id`; tiến trình sống tiếp sau `/boom` |
+| F | `/boom` phải có **exception** trong Failures — **ĐÃ CHỐT (a) `throw`** | (a) `throw` thật (đúng chữ `topic.md` §2 "ném exception" và hướng đã ghi ở `docs/docs_app/brief.md` R6: "nếu Q1 cho bật App Insights, đổi `/boom` sang ném exception thật") · (b) giữ `return StatusCode(500, …)`, chỉ gắn `Activity.Current?.AddException(ex)` | **(a)** — repo đã ghi hướng này từ trước (R6), và `topic.md` nói "ném exception". Hệ quả phải xử lý: app **chưa có** exception handler (`grep UseExceptionHandler app/be` rỗng) → exception không bắt sẽ trả 500 body rỗng; test `HttpTests.cs:90-91` chỉ kiểm mã 500 nên vẫn xanh, nhưng phải đối chiếu `docs/docs_app/api-spec.md` xem body `ErrorResponse` "boom" có là hợp đồng không — nếu có, thêm exception handler trả `ErrorResponse` 500 + log JSON một dòng (giữ `trace_id`). (b) rẻ hơn nhưng lệch chữ đề bài và lệch R6. Kiểm: Failures → Exceptions thấy loại exception + `operation_Id` = `X-Trace-Id`; tiến trình sống tiếp sau `/boom` |
 | G | Chặng `fe → be` trong trace | (a) D20 chỉ `be`; `fe` để D21 (checkbox "end-to-end transaction" nằm ở D21) · (b) D20 làm cả `fe` (`@azure/monitor-opentelemetry` + `instrumentation.ts` của Next.js) | **(a)**. D20 đã có 2 khối việc; `fe` là runtime khác (Node, standalone build, Trivy riêng). Ghi rõ trong `evidence`/notes: D20 trace chỉ phủ `be` + MySQL |
 | H | Số chi phí thật lấy thế nào | (a) 👤 Portal Cost Analysis (4 ảnh theo guide) + ghi số tay vào `cost-report.md` · (b) thử Cost Management Query API bằng CLI, rơi về (a) | **(b) → (a)**: thử API chỉ đọc một lần (không cài thêm extension nếu không có sẵn); Consumption API đã chứng minh không cho số. Ảnh Portal guide **bắt buộc** nên (a) đằng nào cũng làm |
 
@@ -76,9 +80,9 @@ Ghi câu trả lời vào `notes/d20.md` mục Decisions.
 
 ## Pha A — Cost report (KHÔNG tốn tiền) · ~1.5 giờ
 
-Nhánh: `git fetch && git switch -c docs/d20-cost-report origin/main`
+Nhánh: `git fetch && git switch -c docs/d20-cost-report-a origin/main` (tên `docs/d20-cost-report` đã dùng ngày 28/09 để đưa M2 lần 4 + ảnh M7 + dọn nợ ảnh vào `main` — PR #58)
 
-- [ ] A0. 👤 **Nếu 2 ảnh M7 (D19) chưa chụp: chụp trước** (`notes/screenshot-debt.md` mục M7)
+- [x] A0. 2 ảnh M7 (D19) — đã chụp 2026-09-28 (`evidence/d19/screenshots/`)
 - [ ] A1. Thử Cost Management Query API **một lần**, chỉ đọc (quyết định H): actual cost theo ngày +
       theo service từ 2026-09-15. Không có số → ghi "API không cho số với Free Trial" vào `notes/d20.md`, dùng A2
 - [ ] A2. 👤 Portal → Cost Management → **Cost analysis**, scope subscription, 15/09 → hôm nay, **Actual
@@ -146,7 +150,7 @@ Nhánh: `feat/d20-otel-be` (sau khi Pha A merge, hoặc song song nếu người
       `requests | where operation_Id == "<trace id>"` · `dependencies` có span MySQL cùng `operation_Id` ·
       `exceptions` có exception của `/boom`. Lưu kết quả thô
 - [ ] D6. 👤 Ảnh: App Insights → **Transaction search/end-to-end** của một `/items` (thấy span DB) ·
-      **Failures → Exceptions** của `/boom`. Chưa chụp → `notes/screenshot-debt.md`
+      **Failures → Exceptions** của `/boom`. Chưa chụp → thêm vào `docs/plans/active/azure-app-service-internship.md` mục "Còn nợ"
 - [ ] D7. Đối chiếu một request: `X-Trace-Id` (header) = `trace_id` (log JSON, Log stream hoặc
       `az webapp log tail`) = `operation_Id` (App Insights) → ghi bảng trong evidence
 - [ ] D8. Kiểm ingest sau 1 giờ: `Usage and estimated costs` của workspace hoặc KQL `Usage` →

@@ -31,12 +31,12 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | Mã | Yêu cầu | Trạng thái |
 |---|---|---|
 | M1 | Deploy bằng Docker image, ACR admin disabled, pull bằng MI | **`M1.md` — ĐẠT**, gồm cả chứng minh ngược (gỡ AcrPull → `ACRTokenRetrievalFailure`, D12) |
-| M2 | Zero downtime khi deploy | chờ D18 |
+| M2 | Zero downtime khi deploy | **`M2.md` — chờ mentor** (4 lần swap, 0 response non-200; timeout #21 chưa quy được) |
 | M3 | MySQL + firewall theo outbound IP | **`M3.md` — ĐẠT** (31 rule = 31 outbound IP); thiếu ảnh Log stream |
 | M4 | Managed Identity, không secret plaintext | **`M4.md` — ĐẠT**; thiếu ảnh Portal và API configreferences cho slot |
 | M5 | Key Vault + chứng minh ngược | **`M5.md` — ĐẠT** (`AccessToKeyVaultDenied`, container exit 1 sau 0.2s, hồi phục, plan No changes) |
 | M6 | IP whitelist 200/403 | chờ D13 (bản làm tay đã có ở d02) |
-| M7 | Chiến lược tiết kiệm chi phí | chờ D19–D20 |
+| M7 | Chiến lược tiết kiệm chi phí | **`M7.md` — phần autoscale + right sizing ĐẠT (D19)**; cost report D20 |
 | M8 | Terraform toàn bộ hạ tầng | `M8.md` — đạt ở D10 |
 | M9 | CI chặn được cái sai | chờ D14 (Trivy baseline đã có ở d05) |
 | M10 | CD deploy từ main | chờ D16 |
