@@ -50,9 +50,11 @@ tải). KQL chạy trên workspace (`evidence/raw/d20-kql-20260928.tsv`). Log co
   (Server, 24 giờ): `GET boom` 2/2 failed, **Top 3 exception types = `BoomException`**, response code 500.
   Hai dòng 404 còn lại là request vào `/` và `/robots933456.txt` (probe khởi động container của App Service →
   `MapFallback` 404).
-- **Chưa có:** ảnh "end-to-end transaction" của một `/items` (thấy span DB) — tab và danh sách trong blade
-  App Insights không nhận click qua Claude in Chrome (28/09). Bảng KQL ở mục 2 là cùng dữ liệu đó.
-  Chuyển vào plan mục "Còn nợ".
+- `evidence/d20/screenshots/d20-appinsights-e2e-items-20260928-0903.png` — **End-to-end transaction** của
+  đúng `Operation ID 6fc2396d4d0423d1b1f841b45623e25a` (dòng đầu bảng mục 2): `GET items` 164,1 ms → Open 54,0 ms
+  → Execute `SELECT COUNT(*)` 53,8 ms → Execute `SELECT … FROM tickets` 54,5 ms, xen 2 dòng trace
+  `read-result-set-header`. Người dùng chụp tay 28/09 (blade không nhận click qua extension); header có email
+  đã cắt, ô *Compute Resource Id* (chứa subscription id) đã che.
 
 ## 4. Hạn chế
 

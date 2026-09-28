@@ -44,7 +44,7 @@ Ghi câu trả lời vào `notes/d21.md` mục Decisions.
 | B | Metric nền tảng có đẩy vào workspace (`AllMetrics`) không | (a) **không** — Workbook đọc metric trực tiếp từ Azure Monitor · (b) có, cho mọi resource | **(a)**. Metric đã có sẵn 93 ngày miễn phí; đẩy `AllMetrics` của 6 resource (4 web app + plan + MySQL) vào workspace ≈ hàng chục MB/ngày chỉ để nhân đôi dữ liệu → ăn cap 0,2 GB. Workbook có nguồn "Azure Monitor metrics" riêng |
 | C | MySQL: log `MySqlSlowLogs` | (a) không — chỉ metric (CPU, active connections, storage %) · (b) bật slow log (phải đổi server parameter `slow_query_log` + `long_query_time`) | **(a)**. M11 chỉ đòi metric MySQL; bật slow log là đổi cấu hình server (Terraform `azurerm_mysql_flexible_server_configuration`) + ingest mới. Ghi vào "làm thêm nếu còn giờ" |
 | D | Vòng đời workspace khi `make down` | (a) chấp nhận mất log mỗi lần destroy (workspace nằm trong `rg-vsf-dev`) · (b) dời workspace sang stack sống lâu | **(a)**. (b) cần tầng bootstrap — mà bootstrap **không còn state** (`known-issues.md` #17), không apply được. Bằng chứng chụp/lưu KQL trong ngày. Lưu ý: workspace xoá vào soft-delete 14 ngày; tên có suffix ngẫu nhiên nên dựng lại không đụng tên cũ |
-| E | Kiểm "Workbook sống lại sau destroy/apply" | (a) ghép vào **M8 lần 2** (destroy → apply toàn bộ, đang nợ từ D15) — một lần `make down`/`make up` ~45 phút, **sau khi PoC đã gỡ** (#23) · (b) chỉ destroy/apply riêng Workbook (`-target`) · (c) bỏ | **(a)** nếu người dùng muốn tắt môi trường cuối D21/D22; nếu chưa thì **(b)** làm bằng chứng tạm (`terraform apply -replace`), ghi rõ không thay được (a) |
+| E | Kiểm "Workbook sống lại sau destroy/apply" | (a) ghép vào **M8 lần 2** (destroy → apply toàn bộ, đang nợ từ D15) — một lần `make down`/`make up` ~45 phút, **sau khi PoC đã gỡ** (#23) · (b) chỉ tạo lại riêng Workbook (`terraform apply -replace=…`) · (c) bỏ | **(b)** — người dùng 28/09: **tạm thời không `make down`** cho tới khi có yêu cầu mới, nên (a) không làm được lúc này. Ghi rõ (b) chỉ chứng minh Workbook dựng lại được từ code, chưa thay (a); (a) để lúc người dùng cho tắt môi trường |
 | F | Tracing chặng `fe → be` (hoãn từ D20 quyết định G) | (a) D21 thêm `@azure/monitor-opentelemetry` vào `fe` (Next.js `instrumentation.ts`) + app setting KV reference cho `fe` · (b) để D22 · (c) không làm, ghi known-issue | **(b)**. D21 đã đủ 4 khối việc; `fe` là runtime khác (dependency npm mới + Trivy `fe` + standalone build). Checkbox plan "dashboard 5 mảng … trace (end-to-end)" hiện đạt được với trace của `be`; chặng `fe` là phần tăng thêm |
 | G | Workbook: nguồn cho ô "failure rate" | (a) metric `Http5xx` / `Requests` của Web App · (b) KQL trên `AppServiceHTTPLogs` (Q2) | **(a)** cho ô chính (không phụ thuộc ingest/cap), **(b)** làm ô phụ trong hàng log — chứng minh "không cần App Insights" (câu tự kiểm tra 2 của guide) |
 
@@ -116,7 +116,7 @@ vấn vào `docs/logging.md`: câu hỏi · truy vấn · kết quả (bảng th
       `data_json = templatefile(...)`, tags. `plan` → 1 to add
 - [ ] C4. PR → CI → ⚠️ merge → ⚠️ apply → mở Workbook, mọi ô có dữ liệu → ảnh (Claude in Chrome; không được thì 👤)
 - [ ] C5. Quyết định E: (b) `terraform apply -replace=azurerm_application_insights_workbook.m11` → Workbook tạo
-      lại y nguyên; (a) để lúc `make down`/`make up`
+      lại y nguyên; (a) để lúc người dùng cho `make down`/`make up`
 
 ## Pha D — `docs/logging.md` (không tốn tiền) · ~1 giờ
 
@@ -130,7 +130,7 @@ vấn vào `docs/logging.md`: câu hỏi · truy vấn · kết quả (bảng th
 
 - [ ] `evidence/M11.md` (mới): phần dashboard + log (3 dòng đầu của M11); ô cảnh báo ghi "D22"
 - [ ] `notes/d21.md` (quyết định, số đo, kế hoạch nói sai) · plan: tick D21 + Recovery + Tiến độ · `known-issues.md`
-- [ ] Cuối phiên: capacity 1, không script nào chạy; nhắc chi phí (ingest mới) + **#23 trước mọi `make down`**
+- [ ] Cuối phiên: capacity 1, không script nào chạy; nhắc chi phí (ingest mới). **Không** đề xuất `make down` (người dùng 28/09: tạm thời không tắt môi trường)
 
 ---
 
