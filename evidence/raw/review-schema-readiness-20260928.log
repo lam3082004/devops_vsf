@@ -1,0 +1,16 @@
+# Nghiệm thu review ngoài 26/09 (schema/readiness), docker local 2026-09-28 ~10:20Z. be-old = image opsboard-be:d20 (code 5a8d982, trước sửa); be-new = code nhánh fix/pre-d21-review. Mỗi bản một MySQL 8.4 RỖNG riêng, khởi động SAU be. Phân tích: notes/review-2026-09-26.md
+== DB chua co: old /health=503 new /health=503
+== DB rong da len:
+  lan 1: old /health=200 new /health=200
+  lan 2: old /health=200 new /health=200
+  lan 3: old /health=200 new /health=200
+== POST /items: old=503 new=201
+== log be-new:
+  10:19:42 schema_failed Unable to connect to any of the specified MySQL hosts.
+  10:19:49 health_degraded Unable to connect to any of the specified MySQL hosts.
+  10:20:03 schema_ready 
+== log be-old:
+  10:19:42 schema_failed Unable to connect to any of the specified MySQL hosts.
+  10:19:48 health_degraded Unable to connect to any of the specified MySQL hosts.
+  10:20:11 db_error Table 'opsboard.tickets' doesn't exist
+cleaned

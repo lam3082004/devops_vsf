@@ -8,6 +8,7 @@ using OpsBoard;
 using OpsBoard.Contracts;
 using OpsBoard.Infrastructure;
 using OpsBoard.Repositories;
+using OpsBoard.Services;
 
 // SHA của commit, nhúng lúc build qua MSBuild property GitSha (xem OpsBoard.csproj,
 // Target EmbedGitSha). Build local không truyền gì thì là "dev".
@@ -35,7 +36,7 @@ logger.Info(
     "app khoi dong",
     ("event", "startup"), ("sha", gitSha), ("port", config.Port),
     ("db_host", config.DbHost), ("db_name", config.DbName), ("db_tls", config.DbTls),
-    ("load_max_seconds", config.LoadMaxSeconds));
+    ("load_max_seconds", config.LoadMaxSeconds), ("load_max_concurrent", config.LoadMaxConcurrent));
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls($"http://0.0.0.0:{config.Port}");
@@ -83,21 +84,13 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<UserNameHeaderOperationFilter>();
 });
 
-// Tạo bảng nếu chưa có, trước khi app nhận request. DB chưa sẵn sàng thì chỉ
-// cảnh báo: app vẫn chạy, /health trả 503 cho tới khi DB lên.
-try
-{
-    await new DatabaseRepository(dataSource).EnsureSchemaAsync();
-    logger.Info("schema san sang", ("event", "schema_ready"));
-}
-catch (Exception ex)
-{
-    logger.Warn(
-        "chua tao duoc bang, se thu lai khi co request",
-        ("event", "schema_failed"), ("error", ex.Message));
-}
-
 var app = builder.Build();
+
+// Tạo bảng nếu chưa có, trước khi app nhận request. Thất bại (DB chưa lên) thì chỉ
+// cảnh báo: app vẫn chạy, /health trả 503 và tự thử tạo lại mỗi lần được gọi cho tới
+// khi xong (SchemaInitializer) — health check của App Service gọi mỗi phút.
+await app.Services.GetRequiredService<SchemaInitializer>()
+    .TryEnsureAsync(new DatabaseRepository(dataSource), CancellationToken.None);
 
 // Chỉ bật ở Development (ASPNETCORE_ENVIRONMENT=Development, đặt trong
 // app/.env.example và docker-compose.yml). Terraform (D8/D9) không set biến

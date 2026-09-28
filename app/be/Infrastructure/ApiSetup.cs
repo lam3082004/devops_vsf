@@ -34,6 +34,8 @@ public static class ApiSetup
         services.AddSingleton(logger);
         services.AddSingleton(metadata);
         services.AddSingleton(dataSource);
+        services.AddSingleton<SchemaInitializer>();
+        services.AddSingleton<LoadLimiter>();
 
         services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<IDatabaseRepository, DatabaseRepository>();

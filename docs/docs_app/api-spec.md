@@ -34,9 +34,10 @@ lệch thì sửa file này cùng PR.
 | 400 | `bad_request` | Input sai/thiếu; `reason` nói rõ |
 | 404 | `not_found` | Không có ticket / route |
 | 409 | `invalid_transition` | Chuyển trạng thái không hợp lệ (PRD mục 2) |
+| 429 | `too_many_requests` | Chỉ `/load`: đang có đủ `LOAD_MAX_CONCURRENT` request `/load` chạy trên instance này (mặc định 4) — trả ngay, không xếp hàng |
 | 500 | `boom` | Chỉ `/boom` (lỗi cố ý, xem bảng endpoint hạ tầng) |
 | 503 | `database_unavailable` | Mọi exception chưa xử lý từ action của `/items*`, `/stats` — xem giải thích dưới |
-| 503 | — (`HealthResponse`, không phải `ErrorResponse`) | `/health` khi DB lỗi |
+| 503 | — (`HealthResponse`, không phải `ErrorResponse`) | `/health` khi DB lỗi **hoặc schema chưa tạo xong** |
 
 Vì sao **503** chứ không phải **500** cho lỗi không lường trước: `DatabaseExceptionFilter` bắt mọi exception
 chưa xử lý từ action controller. Trong app này, repository (chạm MySQL) là nơi duy nhất có thể ném lỗi ngoài
@@ -57,9 +58,9 @@ chủ chung chung" (500) — không có mã lỗi `internal`; `500` chỉ còn d
 ## Endpoint hạ tầng (hợp đồng theo topic.md — không đổi)
 | Method | Path | Response |
 |---|---|---|
-| GET | `/health` | `200 {"status":"ok","db":"ok"}` · `503 {"status":"degraded","db":"error"}` |
+| GET | `/health` | `200 {"status":"ok","db":"ok"}` · `503 {"status":"degraded","db":"error"}`. **Sẵn sàng = ping được DB *và* đã tạo xong bảng**; chưa xong thì mỗi lần gọi thử tạo lại (review ngoài 26/09) |
 | GET | `/version` | `200 {"sha":"<git sha>"}` |
-| GET | `/load?seconds=n` | `200 {"burned_seconds":n,"iterations":…}` · `400` nếu n ngoài `1..LOAD_MAX_SECONDS` |
+| GET | `/load?seconds=n` | `200 {"burned_seconds":n,"iterations":…}` · `400` nếu n ngoài `1..LOAD_MAX_SECONDS` · `429 too_many_requests` nếu đã có `LOAD_MAX_CONCURRENT` (mặc định 4, 1..16) request `/load` đang chạy trên instance |
 | GET | `/boom` | `500 {"error":"boom","detail":"…"}`, log level error, tiến trình sống tiếp |
 
 ## Ticket — `/items`
@@ -105,6 +106,12 @@ Trang chi tiết ticket (S5, `wire-frame.md`) cần **hai lời gọi riêng**, 
 ### `PATCH /items/{id}`
 Sửa một phần: `title`, `description`, `severity`, `category`, `assignee` (`null` = bỏ phân công).
 Không sửa được `status` ở đây. Ghi lịch sử cho trường nào đổi. `200 Ticket` · `400` · `404`.
+
+**Sửa đồng thời: last-write-wins, có chủ đích** (chốt 2026-09-28 sau review ngoài 26/09). Đường này không có
+điều kiện trước: hai người sửa cùng một ticket gần như cùng lúc thì bản ghi sau đè bản trước, không báo lỗi.
+Chấp nhận vì OpsBoard là công cụ nội bộ ít người dùng, và mỗi thay đổi đều có dòng `activities` (ai, lúc nào,
+giá trị cũ → mới) để truy lại. Chỉ đường đổi **trạng thái** có điều kiện trước (`PATCH …/status`, 409 khi trạng
+thái vừa bị người khác đổi). Nếu cần chặt hơn: nhận `updated_at` mong đợi, lệch thì 409 — `known-issues.md` #26.
 
 Body có field `status` (dù giá trị gì, kể cả `null`) → `400 bad_request` với `reason` gợi ý dùng
 `PATCH /items/{id}/status` — tránh im lặng bỏ qua khiến client tưởng đổi được status trong khi thực

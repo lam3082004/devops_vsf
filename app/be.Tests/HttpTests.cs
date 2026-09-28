@@ -29,7 +29,7 @@ public class HttpTests : IAsyncLifetime
     {
         var config = new Config(
             Port: 0, DbHost: "127.0.0.1", DbPort: 3306, DbName: "test",
-            DbUser: "test", DbPassword: "test", DbTls: false, LoadMaxSeconds: 60);
+            DbUser: "test", DbPassword: "test", DbTls: false, LoadMaxSeconds: 60, LoadMaxConcurrent: 1);
         _dataSource = MySqlDataSourceFactory.Create(config);
 
         var builder = WebApplication.CreateBuilder();
@@ -82,6 +82,18 @@ public class HttpTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var body = await response.Content.ReadAsStringAsync();
         Assert.Contains("bad_request", body);
+    }
+
+    [Fact]
+    public async Task Load_VuotGioiHanDongThoi_Tra429TooManyRequests()
+    {
+        // LoadMaxConcurrent = 1 ở InitializeAsync: hai request cùng lúc → đúng một 200, một 429.
+        var responses = await Task.WhenAll(_client.GetAsync("/load?seconds=1"), _client.GetAsync("/load?seconds=1"));
+        var codes = responses.Select(r => (int)r.StatusCode).OrderBy(c => c).ToArray();
+        Assert.Equal(new[] { 200, 429 }, codes);
+
+        var body = await responses.Single(r => (int)r.StatusCode == 429).Content.ReadAsStringAsync();
+        Assert.Contains("too_many_requests", body);
     }
 
     [Fact]
