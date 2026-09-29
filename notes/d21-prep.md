@@ -38,6 +38,10 @@ Guide gốc: `docs/guides/d21-logging.md` · Nhật ký: `notes/d21.md` (tạo k
 
 Ghi câu trả lời vào `notes/d21.md` mục Decisions.
 
+> **Chốt 2026-09-29 (người dùng: "đầy đủ"):** A, B, D, E, G theo đề xuất; **C = (b)** bật MySQL slow log;
+> **F = (a)** tracing `fe` ngay trong D21 (không đợi D22). Thực tế khác kế hoạch ở F: không dùng distro
+> `@azure/monitor-opentelemetry` mà exporter + SDK trace — lý do ở `notes/d21.md` mục Pha F.
+
 | # | Câu hỏi | Lựa chọn | Đề xuất |
 |---|---|---|---|
 | A | Category log cho 4 bề mặt web app (`be`, `be`-staging, `fe`, `fe`-staging) | (a) `HTTPLogs` + `ConsoleLogs` + `PlatformLogs` + `IPSecAuditLogs` · (b) như (a) bỏ `IPSecAuditLogs` · (c) mọi category | **(a)**. 3 category đầu là thứ guide đòi (Q1–Q6). `IPSecAuditLogs` cho Q7 (IP bị 403) — chính là bằng chứng M6 dạng log. Bỏ `AppLogs` (app không ghi qua logging của App Service, chỉ stdout = `ConsoleLogs`), bỏ các loại audit file/antivirus/auth (không dùng, tốn ingest). Nếu bot quét làm `IPSecAuditLogs` phình → tắt riêng nó |

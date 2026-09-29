@@ -116,7 +116,17 @@ variable "grant_app_acr_pull" {
 }
 
 variable "enable_app_insights" {
-  description = "Dựng Application Insights + secret connection string + app setting cho `be` (D20). TẠM theo mặc định Q1 — mentor nói không thì đặt false (workspace Log Analytics vẫn giữ cho D21)."
+  description = "Dựng Application Insights + secret connection string + app setting cho `be` và `fe` (D20, D21). TẠM theo mặc định Q1 — mentor nói không thì đặt false (workspace Log Analytics vẫn giữ cho D21)."
   type        = bool
   default     = true
+}
+
+variable "alert_email" {
+  description = "Email nhận alert (action group ag-vsf-oncall, D22). Giá trị cá nhân — khai trong infra/app/terraform.tfvars (KHÔNG commit), như allowed_ips."
+  type        = string
+  # Rỗng = action group không có người nhận: alert vẫn bắn (thấy trên Portal/Workbook) nhưng
+  # không ai nhận email. CI chạy plan KHÔNG có tfvars nên luôn thấy rỗng → plan của CI báo
+  # "xoá email_receiver" khi môi trường thật đang bật — diff giả đã biết, cùng loại với
+  # ip_restriction (xem allowed_ips ở trên).
+  default = ""
 }

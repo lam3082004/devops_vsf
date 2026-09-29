@@ -103,16 +103,18 @@ resource "azurerm_monitor_diagnostic_setting" "web" {
 
 # MySQL slow log — quyết định C (b), người dùng chốt 2026-09-29 ("làm đầy đủ").
 # Server parameter dynamic (không restart). long_query_time = 1 giây: ngưỡng thật cho một
-# app CRUD nhỏ (mặc định 10 giây thì gần như không bao giờ có dòng nào). Thêm
-# log_queries_not_using_indexes để thấy query quét toàn bảng — với vài chục bản ghi thì
-# chưa chậm, nhưng là dấu hiệu sớm khi dữ liệu lớn lên; throttle 10 dòng/phút chặn trên
-# ingest (≤ 14 400 dòng/ngày) để không ăn cap của workspace.
+# app CRUD nhỏ (mặc định 10 giây thì gần như không bao giờ có dòng nào).
+#
+# log_queries_not_using_indexes TẮT tường minh. PR #64 bật nó (throttle 10 dòng/phút) để thấy
+# query quét toàn bảng; đo 29/09 sau apply: 24/26 dòng là query giám sát nội bộ của Azure
+# (azure_superuser, INFORMATION_SCHEMA, ~30 giây/lần) — nhiễu ~14 000 dòng/ngày, lại tiêu
+# hết hạn mức throttle nên có thể đè mất đúng dòng của app. Bằng chứng nó đã bắt được query
+# của app (`/items` quét toàn bảng tickets): evidence/raw/d21-mysql-slowlog-20260929.tsv.
 locals {
   mysql_slow_log_parameters = {
-    slow_query_log                         = "ON"
-    long_query_time                        = "1"
-    log_queries_not_using_indexes          = "ON"
-    log_throttle_queries_not_using_indexes = "10"
+    slow_query_log                = "ON"
+    long_query_time               = "1"
+    log_queries_not_using_indexes = "OFF"
   }
 }
 
@@ -135,4 +137,42 @@ resource "azurerm_monitor_diagnostic_setting" "mysql" {
   enabled_log {
     category = "MySqlSlowLogs"
   }
+}
+
+# ---------- D21: Workbook M11 (dashboard) ----------
+#
+# Dashboard KHÔNG dùng App Insights cho metric/log (topic.md M11, bẫy T7): `source_id =
+# "azure monitor"` — Workbook đứng riêng dưới Azure Monitor, metric đọc thẳng từ resource,
+# log từ workspace ở trên. App Insights chỉ xuất hiện ở ô "Trace" (bảng AppRequests trong
+# cùng workspace).
+#
+# JSON trong file template (dựng theo schema Notebook/1.0 của Workbook), mọi resource ID
+# truyền vào qua templatefile() — không ID/subscription cứng trong repo, và Workbook dựng
+# lại đúng sau `make up` với suffix mới (bẫy T6).
+#
+# name phải là UUID: uuidv5 từ chuỗi cố định → ổn định giữa các lần plan (uuid() thì mỗi
+# plan đòi thay Workbook — bẫy T5). Suffix nằm trong chuỗi nên môi trường mới có ID mới.
+resource "azurerm_application_insights_workbook" "m11" {
+  name                = uuidv5("url", "https://github.com/lam3082004/devops_vsf/workbooks/m11/${local.name_suffix}")
+  resource_group_name = azurerm_resource_group.app.name
+  location            = azurerm_resource_group.app.location
+  display_name        = "OpsBoard — M11 (${local.name_suffix})"
+  source_id           = "azure monitor"
+  category            = "workbook"
+
+  data_json = templatefile("${path.module}/workbooks/m11.workbook.json.tftpl", {
+    env                 = local.name_suffix
+    subscription_id     = data.azurerm_client_config.current.subscription_id
+    resource_group_name = azurerm_resource_group.app.name
+    workspace_id        = azurerm_log_analytics_workspace.main.id
+    workspace_name      = azurerm_log_analytics_workspace.main.name
+    be_id               = azurerm_linux_web_app.app.id
+    fe_id               = azurerm_linux_web_app.fe.id
+    plan_id             = azurerm_service_plan.app.id
+    plan_name           = azurerm_service_plan.app.name
+    mysql_id            = azurerm_mysql_flexible_server.db.id
+    mysql_name          = azurerm_mysql_flexible_server.db.name
+  })
+
+  tags = local.tags
 }

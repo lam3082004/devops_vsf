@@ -1,0 +1,24 @@
+# Azure Retail Prices API, tra 2026-09-29, type=Consumption, USD. Cột: product | sku | meter | region | unit | price | effectiveStartDate
+## Azure Managed Grafana centralindia
+Azure Managed Grafana | Essential | Essential User | centralindia | 1/Month | 6.0 | 2023-12-01
+Azure Managed Grafana | Standard | Standard Node | centralindia | 1/Hour | 0.04788 | 2023-06-01
+Azure Managed Grafana | Standard | Standard User | centralindia | 1/Month | 6.0 | 2023-06-01
+Azure Managed Grafana | Standard | Standard Zone Redundancy | centralindia | 1/Hour | 0.05754 | 2023-06-01
+## VM B2s Linux centralindia (tự dựng Loki + Grafana)
+Virtual Machines BS Series | B2s | B2s | centralindia | 1 Hour | 0.0448 | 2025-10-01
+## Managed disk P6/E6 (64 GiB) centralindia
+Premium Page Blob | P6 LRS | P6 LRS Disk | centralindia | 1/Month | 10.207 | 2018-10-01
+Premium SSD Managed Disks | P6 LRS | P6 LRS Disk | centralindia | 1/Month | 10.207 | 2018-05-01
+Premium SSD Managed Disks | P6 LRS | P6 LRS Disk Mount | centralindia | 1/Month | 0.658 | 2021-07-01
+Standard SSD Managed Disks | E6 LRS | E6 LRS Disk | centralindia | 1/Month | 5.28 | 2019-01-01
+Standard SSD Managed Disks | E6 LRS | E6 LRS Disk Mount | centralindia | 1/Month | 0.658 | 2021-07-01
+Standard SSD Managed Disks | E6 LRS | E6 LRS Disk Operations | centralindia | 10K | 0.002 | 2018-11-01
+## Log Analytics centralindia
+Log Analytics | Analytics Logs | Analytics Logs Data Analyzed | centralindia | 1 GB | 2.3 | 2016-10-01
+Log Analytics | Analytics Logs | Analytics Logs Data Ingestion | centralindia | 1 GB | 0.0 | 2018-02-01
+Log Analytics | Analytics Logs | Analytics Logs Data Ingestion | centralindia | 1 GB | 3.22 | 2018-02-01
+Log Analytics | Analytics Logs | Analytics Logs Data Retention | centralindia | 1 GB/Month | 0.14 | 2018-02-01
+## Azure Monitor alerts centralindia
+Azure Monitor | Alerts | Alerts Metric Monitored | centralindia | 1/Month | 0.0 | 2018-02-01
+Azure Monitor | Alerts | Alerts Metric Monitored | centralindia | 1/Month | 0.1 | 2018-02-01
+Azure Monitor | Alerts | Alerts System Log Monitored at 5 Minute Frequency | centralindia | 1/Month | 1.5 | 2018-02-01

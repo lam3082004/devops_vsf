@@ -1,0 +1,7 @@
+who	rows	max_query_s
+azure-internal	24	0.003
+app	2	0
+
+TimeGenerated	query_time_d	rows_examined_d	sql_text_s
+2026-09-29T05:49:47Z	0	8	SELECT id, title, description, severity, category, status, reporter, assignee,\n       created_at, updated_at, resolved_at\nFROM tickets\n\nORDER BY updat
+2026-09-29T05:49:51Z	0	4	SELECT AVG(TIMESTAMPDIFF(MINUTE, created_at, resolved_at)) FROM tickets WHERE resolved_at IS NOT NULL
