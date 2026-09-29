@@ -1,0 +1,4 @@
+# Resource Graph alertsmanagementresources, rg-vsf-dev, chạy 2026-09-29T06:49:17Z (chỉ đọc)
+rule	sev	condition	state	fired_utc	resolved_utc	target	signal
+failure anomalies - appi-vsf-jcip0s	Sev3	Fired	New	2026-09-29T06:47:05.342814Z		appi-vsf-jcip0s	Log
+alert-vsf-5xx-rate	Sev1	Fired	New	2026-09-29T06:47:39.5177833Z		log-vsf-jcip0s	Log

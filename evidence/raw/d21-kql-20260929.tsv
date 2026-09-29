@@ -1,0 +1,126 @@
+# D21 Q1–Q8 trên log-vsf-jcip0s, cửa sổ 3h, chạy qua Log Analytics query API (chỉ đọc)
+
+## Q1 request rate / 5 phút (không tính probe)
+TimeGenerated	app	requests
+2026-09-29T06:50:00Z	app-vsf-jcip0s	30
+2026-09-29T06:50:00Z	fe-vsf-jcip0s	1
+2026-09-29T06:45:00Z	app-vsf-jcip0s	127
+2026-09-29T06:45:00Z	fe-vsf-jcip0s	1
+2026-09-29T06:40:00Z	app-vsf-jcip0s	61
+2026-09-29T06:40:00Z	fe-vsf-jcip0s	4
+2026-09-29T06:35:00Z	app-vsf-jcip0s	5
+2026-09-29T06:35:00Z	fe-vsf-jcip0s	2
+2026-09-29T06:30:00Z	app-vsf-jcip0s	5
+2026-09-29T06:30:00Z	fe-vsf-jcip0s	1
+2026-09-29T06:25:00Z	app-vsf-jcip0s	5
+2026-09-29T06:25:00Z	fe-vsf-jcip0s	1
+2026-09-29T06:20:00Z	app-vsf-jcip0s	5
+2026-09-29T06:20:00Z	fe-vsf-jcip0s	1
+2026-09-29T06:15:00Z	app-vsf-jcip0s	13
+2026-09-29T06:15:00Z	fe-vsf-jcip0s	3
+2026-09-29T06:10:00Z	app-vsf-jcip0s	59
+2026-09-29T06:10:00Z	fe-vsf-jcip0s	13
+2026-09-29T06:05:00Z	app-vsf-jcip0s	25
+2026-09-29T06:05:00Z	fe-vsf-jcip0s	5
+2026-09-29T06:00:00Z	fe-vsf-jcip0s	4
+
+## Q2 failure rate % 5xx / 5 phút
+TimeGenerated	app	total	errors_5xx	fail_pct
+2026-09-29T06:50:00Z	app-vsf-jcip0s	30	25	83.33
+2026-09-29T06:50:00Z	fe-vsf-jcip0s	1	0	0
+2026-09-29T06:45:00Z	app-vsf-jcip0s	127	122	96.06
+2026-09-29T06:45:00Z	fe-vsf-jcip0s	1	0	0
+2026-09-29T06:40:00Z	app-vsf-jcip0s	61	50	81.97
+2026-09-29T06:40:00Z	fe-vsf-jcip0s	4	0	0
+2026-09-29T06:35:00Z	app-vsf-jcip0s	5	0	0
+2026-09-29T06:35:00Z	fe-vsf-jcip0s	2	0	0
+2026-09-29T06:30:00Z	app-vsf-jcip0s	5	0	0
+2026-09-29T06:30:00Z	fe-vsf-jcip0s	1	0	0
+2026-09-29T06:25:00Z	app-vsf-jcip0s	5	0	0
+2026-09-29T06:25:00Z	fe-vsf-jcip0s	1	0	0
+2026-09-29T06:20:00Z	app-vsf-jcip0s	5	0	0
+2026-09-29T06:20:00Z	fe-vsf-jcip0s	1	0	0
+2026-09-29T06:15:00Z	app-vsf-jcip0s	13	0	0
+2026-09-29T06:15:00Z	fe-vsf-jcip0s	3	0	0
+2026-09-29T06:10:00Z	app-vsf-jcip0s	59	0	0
+2026-09-29T06:10:00Z	fe-vsf-jcip0s	13	0	0
+2026-09-29T06:05:00Z	app-vsf-jcip0s	25	0	0
+2026-09-29T06:05:00Z	fe-vsf-jcip0s	5	0	0
+2026-09-29T06:00:00Z	fe-vsf-jcip0s	4	0	0
+
+## Q3 p50/p95 TimeTaken (ms) theo path
+app	CsUriStem	requests	p50_ms	p95_ms
+fe-vsf-jcip0s	/	25	234	581
+app-vsf-jcip0s	/items	117	156	520
+fe-vsf-jcip0s	/stats	2	324	371
+app-vsf-jcip0s	/stats	1	342	342
+fe-vsf-jcip0s	/tickets	3	171	216
+fe-vsf-jcip0s	/api/health	5	124	141
+app-vsf-jcip0s	/health	13	102	136
+fe-vsf-jcip0s	/a.html	1	24	24
+fe-vsf-jcip0s	/api/version	7	4	9
+app-vsf-jcip0s	/version	6	1	4
+app-vsf-jcip0s	/	20	1	4
+app-vsf-jcip0s	/boom	197	1	3
+
+## Q4 parse log JSON (ConsoleLogs)
+TimeGenerated	app	level	event	path	status	duration_ms	trace_id
+2026-09-29T06:53:15.5889433Z	app-vsf-jcip0s	info	request	/	404	0	c04193613c416a69f8617e6fabfefaa3
+2026-09-29T06:53:15.3326288Z	app-vsf-jcip0s	info	request	/	404	0	f4cc971a844796d55b63ab9c9700c0be
+2026-09-29T06:53:13.1617094Z	app-vsf-jcip0s	info	request	/health	200	101	bcf3a639af8b7352dfa41391d95a2fe5
+2026-09-29T06:53:05.3588108Z	app-vsf-jcip0s	info	request	/health	200	107	619bab36962ebcf551d7cc62eb22ee02
+2026-09-29T06:52:35.6771952Z	app-vsf-jcip0s	info	request	/items	200	506	4715f6590b617a0c175278096fcf1cf6
+2026-09-29T06:52:35.6746265Z	app-vsf-jcip0s	info	request	/items	200	512	42fccef738b9d2009d63367b4e57fbf1
+2026-09-29T06:52:35.6541328Z	app-vsf-jcip0s	info	request	/items	200	474	c89ff340ffece79d0d37cde52b264267
+2026-09-29T06:52:35.3116651Z	app-vsf-jcip0s	info	request	/items	200	155	3231b129b1b0152ab219ef62ef0a107d
+2026-09-29T06:52:13.1598098Z	app-vsf-jcip0s	info	request	/health	200	100	bae9b05fc1eebbb00b9df0d7e3b4fd7c
+2026-09-29T06:52:05.3506699Z	app-vsf-jcip0s	info	request	/health	200	99	619bab36962ebcf551d7cc62eb22ee02
+2026-09-29T06:51:47.5596015Z	app-vsf-jcip0s	info	request	/items	200	500	aef58f3642d2d8e4ee8bae05d25298fc
+2026-09-29T06:51:47.5428743Z	app-vsf-jcip0s	info	request	/items	200	472	aef58f3642d2d8e4ee8bae05d25298fc
+
+## Q5 top lỗi (level=error hoặc request ≥500)
+app	level	event	path	error	count_	last_seen	sample_trace_id
+app-vsf-jcip0s	error	boom		intentional_failure	197	2026-09-29T06:50:59.3612459Z	
+app-vsf-jcip0s	info	request	/boom		197	2026-09-29T06:50:59.3617186Z	9b49acc540980eeac9787e97ea1279f6
+
+## Q6 container start/stop (PlatformLogs)
+TimeGenerated	app	slot	Level	Message
+2026-09-29T06:18:03.7628144Z	fe-vsf-jcip0s	staging	Informational	Site: fe-vsf-jcip0s__5e7b stopped.
+2026-09-29T06:18:03.762792Z	fe-vsf-jcip0s	staging	Informational	Container is terminated. Total time elapsed: 158 ms.
+2026-09-29T06:18:03.6055961Z	fe-vsf-jcip0s	staging	Informational	Stopping container: dde003b55695_fe-vsf-jcip0s_5e7b_msi_ccae4.
+2026-09-29T06:18:03.6036898Z	fe-vsf-jcip0s	staging	Informational	Container is terminated. Total time elapsed: 105 ms.
+2026-09-29T06:18:03.501051Z	fe-vsf-jcip0s	staging	Informational	Stopping container: d9ad039889e7_fe-vsf-jcip0s_5e7b.
+2026-09-29T06:18:03.4979151Z	fe-vsf-jcip0s	staging	Informational	State: Stopping, Action: StoppingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site sta
+2026-09-29T06:18:03.497741Z	fe-vsf-jcip0s	staging	Informational	State: Stopping, Action: StoppingSite, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09
+2026-09-29T06:17:43.3864014Z	fe-vsf-jcip0s	staging	Informational	State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 09/29/2026 
+2026-09-29T06:17:43.3862761Z	fe-vsf-jcip0s	staging	Informational	Site started.
+2026-09-29T06:17:42.1949026Z	fe-vsf-jcip0s	staging	Informational	Container start method finished after 1291 ms.
+2026-09-29T06:17:42.142773Z	fe-vsf-jcip0s	staging	Informational	Starting container: 8f1e1fc83467_fe-vsf-jcip0s_5e7b.
+2026-09-29T06:17:40.9031087Z	fe-vsf-jcip0s	staging	Informational	Pulling image: acrvsfjcip0s.azurecr.io/vsf-fe:e382a4bf14cebc2c081c807e40ece39924321bdf.
+2026-09-29T06:17:40.9029322Z	fe-vsf-jcip0s	staging	Informational	State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image acrv
+2026-09-29T06:17:40.902878Z	fe-vsf-jcip0s	staging	Informational	Container start method called.
+2026-09-29T06:17:37.7016953Z	fe-vsf-jcip0s	staging	Informational	Container start method finished after 614 ms.
+
+## Q7 IP bị chặn (IPSecAuditLogs, che 2 octet cuối)
+app	slot	ip_masked	Result	requests	first_seen	last_seen
+app-vsf-jcip0s	production	104.30.x.x	Allowed	201	2026-09-29T06:07:03.7756483Z	2026-09-29T06:50:59.3568846Z
+app-vsf-jcip0s	production	20.219.x.x	Allowed	123	2026-09-29T06:07:22.7320548Z	2026-09-29T06:51:47.0680509Z
+app-vsf-jcip0s	staging	20.219.x.x	Allowed	93	2026-09-29T05:57:34.448039Z	2026-09-29T06:52:35.1752552Z
+fe-vsf-jcip0s	production	104.30.x.x	Allowed	10	2026-09-29T06:03:42.3684457Z	2026-09-29T06:42:05.2529825Z
+fe-vsf-jcip0s	production	20.109.x.x	Allowed	10	2026-09-29T06:12:07.8544707Z	2026-09-29T06:12:43.2640611Z
+app-vsf-jcip0s	production	20.109.x.x	Allowed	10	2026-09-29T06:12:06.063298Z	2026-09-29T06:12:41.4137631Z
+app-vsf-jcip0s	staging	20.109.x.x	Allowed	2	2026-09-29T06:09:19.5388152Z	2026-09-29T06:09:20.3283983Z
+fe-vsf-jcip0s	staging	20.109.x.x	Allowed	2	2026-09-29T06:09:21.2936725Z	2026-09-29T06:09:22.1444549Z
+
+## Q8 trace ↔ log: request lỗi (App Insights) nối log cùng trace_id
+TimeGenerated	role	request	ResultCode	OperationId	log_event	log_path	log_status	log_duration_ms
+2026-09-29T06:53:15.5885454Z	app-vsf-jcip0s	GET {*path:nonfile}	404	c04193613c416a69f8617e6fabfefaa3	request	/	404	0
+2026-09-29T06:53:15.33185Z	app-vsf-jcip0s	GET {*path:nonfile}	404	f4cc971a844796d55b63ab9c9700c0be	request	/	404	0
+2026-09-29T06:50:59.3608278Z	app-vsf-jcip0s	GET boom	500	7e8e96e9a295aa819c4488968b955e4f	request	/boom	500	0
+2026-09-29T06:50:57.014477Z	app-vsf-jcip0s	GET boom	500	b0cbaa814c2f5b99e20ece5f9a2a7996	request	/boom	500	0
+2026-09-29T06:50:54.409996Z	app-vsf-jcip0s	GET boom	500	719e4def6d66e0fc2015d1978bc8d7e2	request	/boom	500	0
+2026-09-29T06:50:51.9477527Z	app-vsf-jcip0s	GET boom	500	892414fe31fa3653a451201bb6b87d37	request	/boom	500	0
+2026-09-29T06:50:49.6807809Z	app-vsf-jcip0s	GET boom	500	6112fb40378bbc967dc534c3e675d790	request	/boom	500	0
+2026-09-29T06:50:47.2834542Z	app-vsf-jcip0s	GET boom	500	1338d6d418685a57992722b9b81f2095	request	/boom	500	0
+2026-09-29T06:50:44.759713Z	app-vsf-jcip0s	GET boom	500	660b7ca077d0941cbcb188929869cce5	request	/boom	500	0
+2026-09-29T06:50:42.2421677Z	app-vsf-jcip0s	GET boom	500	9b889db319dee2c44def6686b39f5509	request	/boom	500	0

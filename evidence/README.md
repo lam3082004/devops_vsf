@@ -28,6 +28,8 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | d13–d18 | IP whitelist · CI mở rộng · CD · swap an toàn · zero-downtime | log thô `raw/d13-*`, `raw/d14-*`, `raw/m2-*`; run link CI/CD trong `M9.md`, `M10.md` → `M6.md`, `M9.md`, `M10.md`, `M2.md` |
 | [d19](d19/) | Autoscale + right sizing | 3 ảnh Portal (Run history 1→2→1, CPU, M6 site chính) + `raw/d19-*` → `M7.md` |
 | [d20](d20/) | Cost report · App Insights · tracing | 2 ảnh Cost analysis, 1 ảnh Failures + `raw/d20-*` → `M7.md` mục 7, `tracing.md` |
+| [d21](d21/) | Log Analytics · KQL · Workbook · tracing `fe` | 4 ảnh Workbook (hàng 1–3) + `raw/d21-*` (KQL Q1–Q8, slow log, trace fe→be, giá) → `M11.md`, `docs/logging.md` |
+| [d22](d22/) | 3 alert · trigger thật · runbook | 3 ảnh Workbook (health + alert Fired/Resolved, log + trace lúc drill) + `raw/d22-*` (boom, trạng thái alert) → `M11.md` |
 
 ## Must-have (điền dần)
 
@@ -43,6 +45,6 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | M8 | Terraform toàn bộ hạ tầng | `M8.md` — đạt ở D10 |
 | M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check, 6 PR cố tình sai đều đỏ đúng job) |
 | M10 | CD deploy từ main | **`M10.md` — ĐẠT** (D16; swap an toàn D17) |
-| M11 | Monitoring | chờ D21–D22. Nền đã có từ D20: workspace Log Analytics + tracing `be` → App Insights, exception `/boom` trong Failures — [`tracing.md`](tracing.md) |
+| M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; chờ xác nhận email) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
 
 Quy ước đặt tên ảnh: xem `screenshots-convention.md`.

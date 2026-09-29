@@ -1,0 +1,26 @@
+TimeGenerated	OperationId	Type	AppRoleName	Name	ParentId	Id	DurationMs
+2026-09-29T06:42:03.472Z	ff376130ca777365d23101cf5daa0e8b	AppRequests	fe-vsf-jcip0s	GET /stats	ff376130ca777365d23101cf5daa0e8b	e96d6ef18e0df198	369.5
+2026-09-29T06:42:03.473Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	resolve page components	e96d6ef18e0df198	3aa3d36afbe7e539	0.2
+2026-09-29T06:42:03.477Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	render route (app) /stats	e96d6ef18e0df198	49b64911b9a6ac17	363.3
+2026-09-29T06:42:03.478Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	build component tree	49b64911b9a6ac17	c923467293a9fdc6	0.5
+2026-09-29T06:42:03.478Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	resolve segment modules	c923467293a9fdc6	1f62a88bae265c45	0
+2026-09-29T06:42:03.478Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	resolve segment modules	c923467293a9fdc6	367fc70e1703111e	0
+2026-09-29T06:42:03.48Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	GET /stats	49b64911b9a6ac17	97d9a36d1c93eb38	350.9
+2026-09-29T06:42:03.482Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	NextNodeServer.clientComponentLoading	49b64911b9a6ac17	1139170254096f17	84.4
+2026-09-29T06:42:03.4884034Z	ff376130ca777365d23101cf5daa0e8b	AppRequests	app-vsf-jcip0s	GET stats	49b64911b9a6ac17	068536d119d286ba	340.9
+2026-09-29T06:42:03.489Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	fe-vsf-jcip0s	start response	49b64911b9a6ac17	5e8571abce9e5319	0
+2026-09-29T06:42:03.5092942Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	app-vsf-jcip0s	Open	068536d119d286ba	5bce6ec615691532	50.5
+2026-09-29T06:42:03.5608641Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	app-vsf-jcip0s	Execute	068536d119d286ba	6e340df350ba292c	51.7
+2026-09-29T06:42:03.6127746Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	app-vsf-jcip0s	Execute	068536d119d286ba	7e9c11b7649d8e8e	51.2
+2026-09-29T06:42:03.6640012Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	app-vsf-jcip0s	Execute	068536d119d286ba	d81c492d7930b171	50.2
+2026-09-29T06:42:03.7142332Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	app-vsf-jcip0s	Execute	068536d119d286ba	50ec345d081bcb41	50.7
+2026-09-29T06:42:03.7649354Z	ff376130ca777365d23101cf5daa0e8b	AppDependencies	app-vsf-jcip0s	Execute	068536d119d286ba	bccc9ed46541b140	51.2
+2026-09-29T06:42:01.543Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	resolve page components	a9d0e385c99c5af2	5ad901533f28dfcc	0.1
+2026-09-29T06:42:01.543Z	eb123d1681a1e74670df7c3483e77ae5	AppRequests	fe-vsf-jcip0s	GET /tickets	eb123d1681a1e74670df7c3483e77ae5	a9d0e385c99c5af2	213.2
+2026-09-29T06:42:01.56Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	render route (app) /tickets	a9d0e385c99c5af2	d1f0db68d2f3e878	189
+2026-09-29T06:42:01.563Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	build component tree	d1f0db68d2f3e878	3a560a721950e1e3	0.5
+2026-09-29T06:42:01.563Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	resolve segment modules	3a560a721950e1e3	6e51b042f8504da4	0
+2026-09-29T06:42:01.563Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	resolve segment modules	3a560a721950e1e3	0b70ec504431d0ac	0
+2026-09-29T06:42:01.565Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	GET /items	d1f0db68d2f3e878	869a1a21c8b88f6c	163.7
+2026-09-29T06:42:01.566Z	eb123d1681a1e74670df7c3483e77ae5	AppDependencies	fe-vsf-jcip0s	NextNodeServer.clientComponentLoading	d1f0db68d2f3e878	3add9534ab71bd80	63.5
+2026-09-29T06:42:01.5716521Z	eb123d1681a1e74670df7c3483e77ae5	AppRequests	app-vsf-jcip0s	GET items	d1f0db68d2f3e878	0b1f5df3033db307	154.6
