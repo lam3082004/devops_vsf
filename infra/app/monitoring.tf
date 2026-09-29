@@ -53,3 +53,86 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   # Cùng lý do với mysql_admin_password (keyvault.tf): ghi secret cần role đã lan truyền.
   depends_on = [azurerm_role_assignment.kv_secrets_officer_operator]
 }
+
+# ---------- D21: diagnostic settings → workspace ở trên ----------
+#
+# Gắn vào TỪNG resource — slot staging là resource riêng (…/sites/<app>/slots/staging),
+# quên nó thì staging câm (notes/d21-prep.md bẫy T1). Setting gắn vào slot, không đi
+# theo code khi swap.
+#
+# Category — quyết định A (người dùng chốt 2026-09-29): HTTP (Q1–Q3), Console = log JSON
+# của app trên stdout (Q4–Q5), Platform = container start/stop (Q6), IPSecAudit = request
+# bị 403 bởi ip_restriction, tức M6 dạng log (Q7). Bỏ AppLogs (app không ghi qua logging
+# của App Service) và các loại audit file/antivirus/auth (không dùng, tốn ingest).
+#
+# Không đẩy AllMetrics — quyết định B: Workbook đọc metric thẳng từ Azure Monitor (miễn
+# phí, giữ 93 ngày), đẩy vào workspace chỉ nhân đôi dữ liệu và ăn cap 0,2 GB/ngày.
+#
+# Tên "diag-vsf" khác "obs-poc" (setting của PoC khác đã có trên 2 site chính, ngoài repo
+# này) — không import, không đụng tới (bẫy T4). Mỗi resource cho tối đa 5 setting.
+locals {
+  diag_web_targets = {
+    "be"         = azurerm_linux_web_app.app.id
+    "be-staging" = azurerm_linux_web_app_slot.staging.id
+    "fe"         = azurerm_linux_web_app.fe.id
+    "fe-staging" = azurerm_linux_web_app_slot.fe_staging.id
+  }
+
+  diag_web_log_categories = [
+    "AppServiceHTTPLogs",
+    "AppServiceConsoleLogs",
+    "AppServicePlatformLogs",
+    "AppServiceIPSecAuditLogs",
+  ]
+}
+
+resource "azurerm_monitor_diagnostic_setting" "web" {
+  for_each = local.diag_web_targets
+
+  name                       = "diag-${var.project}"
+  target_resource_id         = each.value
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+
+  dynamic "enabled_log" {
+    for_each = toset(local.diag_web_log_categories)
+    content {
+      category = enabled_log.value
+    }
+  }
+}
+
+# MySQL slow log — quyết định C (b), người dùng chốt 2026-09-29 ("làm đầy đủ").
+# Server parameter dynamic (không restart). long_query_time = 1 giây: ngưỡng thật cho một
+# app CRUD nhỏ (mặc định 10 giây thì gần như không bao giờ có dòng nào). Thêm
+# log_queries_not_using_indexes để thấy query quét toàn bảng — với vài chục bản ghi thì
+# chưa chậm, nhưng là dấu hiệu sớm khi dữ liệu lớn lên; throttle 10 dòng/phút chặn trên
+# ingest (≤ 14 400 dòng/ngày) để không ăn cap của workspace.
+locals {
+  mysql_slow_log_parameters = {
+    slow_query_log                         = "ON"
+    long_query_time                        = "1"
+    log_queries_not_using_indexes          = "ON"
+    log_throttle_queries_not_using_indexes = "10"
+  }
+}
+
+resource "azurerm_mysql_flexible_server_configuration" "slow_log" {
+  for_each = local.mysql_slow_log_parameters
+
+  name                = each.key
+  resource_group_name = azurerm_resource_group.app.name
+  server_name         = azurerm_mysql_flexible_server.db.name
+  value               = each.value
+}
+
+# Chỉ MySqlSlowLogs: MySqlAuditLogs cần bật audit_log_enabled và ghi mọi kết nối/query →
+# ingest lớn, M11 không đòi. Metric MySQL không đẩy vào workspace — cùng lý do quyết định B.
+resource "azurerm_monitor_diagnostic_setting" "mysql" {
+  name                       = "diag-${var.project}"
+  target_resource_id         = azurerm_mysql_flexible_server.db.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+
+  enabled_log {
+    category = "MySqlSlowLogs"
+  }
+}
