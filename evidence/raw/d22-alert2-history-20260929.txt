@@ -1,0 +1,4 @@
+Action group ag-vsf-oncall executed (Configured on alert rule)
+Monitor Condition changed from 'Fired' to 'Resolved'
+Action group ag-vsf-oncall executed (Configured on alert rule)
+Alert fired

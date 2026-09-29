@@ -60,7 +60,7 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
   Apply 5 added / 3 changed / 1 destroyed. Trace trình duyệt → `fe` → `be` → MySQL thật trên App Insights.
 - Drill 06:42:59–06:51:00Z: 197 × 500 → `alert-vsf-5xx-rate` **Fired 06:47:39Z → Resolved 07:13:44Z**; runbook đi thử 6/6 bước.
 - Tự review/sửa trong phiên: #39–#42 `ai-failure-log.md`; `known-issues.md` #27–#30. `notes/d21.md`, `notes/d22.md`, `docs/logging.md`, `evidence/M11.md`.
-- **Còn mở:** (1) email alert: drill không có email vì địa chỉ **chưa xác minh OTP** (`known-issues.md` #28) — đã xác minh 29/09 chiều, cần trigger lại một lần để có email thật; (2) PR ghi chép (Workbook: join `trace_id + span_id`, tắt số "Sum";
+- **Còn mở:** (1) email alert: 2 drill Fired → Resolved, action group executed nhưng **không có email** — lần 1 chưa xác minh OTP, lần 2 đã xác minh vẫn không tới, nghi Free Trial (`known-issues.md` #28; người dùng chấp nhận ghi lại, kiểm lại khi có subscription trả phí — Q5); (2) PR ghi chép (Workbook: join `trace_id + span_id`, tắt số "Sum";
   `boom.sh` nhịp 1 s) — merge = CD swap lần 3, cần duyệt; sau merge `apply -replace` Workbook = kiểm "sống lại từ code" (quyết định E);
   (3) Test action group không làm được trên Free Trial (#28).
 
@@ -343,7 +343,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 ### D22 — Alert + runbook + trigger thật ✅ **XONG 2026-09-29** (còn xác nhận email) — kế hoạch `notes/d22-prep.md` · nhật ký `notes/d22.md`
 - [ ] **Chốt Q5 trước hôm nay** (credit hết hạn D23) — *vẫn mở 29/09: mentor chưa trả lời; không chặn D22 (làm xong trước 15/10)*
 - [x] Action group email; 3 alert: 5xx (theo Q3) · CPU cao · MySQL active connections — *proof: plan* — PR #65 `alerts.tf`; Q3 chưa có mentor → người dùng chốt **rate**
-- [~] Trigger thật ≥ 1 alert (`/boom` hoặc `/load`) → email đến — *proof: screenshot email + alert history* → `evidence/M11.md` — Fired 06:47:39Z → Resolved 07:13:44Z (ảnh + Resource Graph); **email: không tới (chưa xác minh OTP, #28) — đã xác minh, chờ trigger lại**
+- [~] Trigger thật ≥ 1 alert (`/boom` hoặc `/load`) → email đến — *proof: screenshot email + alert history* → `evidence/M11.md` — Fired 06:47:39Z → Resolved 07:13:44Z (ảnh + Resource Graph); **email: không tới cả 2 drill (#28 — lần 2 đã xác minh, nghi Free Trial; người dùng chấp nhận ghi lại)**
 - [x] **Truy vết alert → request:** từ email alert → mở query KQL → lấy `trace_id` → xem end-to-end transaction và log cùng trace — *proof: quay/ảnh từng bước từ 1 alert thật* → `evidence/M11.md` — bằng KQL + kết quả từng bước (mục 6), chưa quay màn hình
 - [x] `runbook.md` cho alert nghiêm trọng nhất: triệu chứng · xác nhận (query nào) · xử lý · rollback (swap ngược) · escalate — đi thử 6/6 bước lúc drill 29/09
 

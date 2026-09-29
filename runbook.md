@@ -12,7 +12,8 @@ Alert nghiêm trọng nhất của hệ thống (Sev 1, `topic.md` deliverable 6
 
 > **Điều kiện để có email:** địa chỉ trong `ag-vsf-oncall` phải được **xác minh OTP** (Azure gửi mã khi lưu action group,
 > hạn 30 phút; hết hạn → Portal → Monitor → Alerts → Action groups → `ag-vsf-oncall` → Resend). Chưa xác minh thì alert
-> vẫn Fired trên Portal/Workbook nhưng **không có email** (`known-issues.md` #28).
+> vẫn Fired trên Portal/Workbook nhưng **không có email** (`known-issues.md` #28). Trên subscription Free Trial hiện tại,
+> email **không tới kể cả khi đã xác minh** (drill 2, 29/09) → người trực theo dõi Workbook ô "Alert 7 ngày qua" / Portal Alerts.
 
 ## Triệu chứng
 
