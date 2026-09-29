@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# D22 — trigger THẬT alert "5xx rate": gọi `/boom` của be production 1 lần/giây trong
-# DURATION giây rồi TỰ DỪNG. Kế hoạch: notes/d22-prep.md Pha B.
+# D22 — trigger THẬT alert "5xx rate": gọi `/boom` của be production tối đa 1 lần/giây
+# (tuần tự — request chậm hơn 1 giây thì lần sau đi ngay, không dồn) trong DURATION giây
+# rồi TỰ DỪNG. Kế hoạch: notes/d22-prep.md Pha B. Lần chạy 29/09 (bản cũ, curl + nghỉ 1 s):
+# 197 request / 480 s.
 #
 # Tác động môi trường thật (sinh 5xx trên production, bắn alert Sev1 + email) → chỉ chạy
 # khi người dùng đã duyệt trong phiên (CLAUDE.md "Tốn tiền = hỏi trước"). Máy chạy phải
@@ -77,6 +79,7 @@ trap 'summary; exit 130' INT TERM
 echo "# $(date -u +%FT%TZ) bắt đầu — $BE_URL/boom mỗi giây trong ${DURATION}s → $OUT" | tee -a "$OUT"
 end=$((SECONDS + DURATION))
 while ((SECONDS < end)); do
+	tick=$((SECONDS + 1))
 	# -4: whitelist chỉ có IPv4 (M6). -D -: lấy header X-Trace-Id cùng lượt.
 	resp=$(curl -4 -s -o /dev/null -D - --max-time 5 -w '%{http_code}' "$BE_URL/boom" 2>/dev/null)
 	code="${resp: -3}"
@@ -85,6 +88,7 @@ while ((SECONDS < end)); do
 	total=$((total + 1))
 	[[ "$code" =~ ^5 ]] && errors=$((errors + 1))
 	((total % 30 == 0)) && echo "  … $total request, $errors 5xx (mã gần nhất $code)"
-	sleep 1
+	# Chỉ nghỉ phần còn lại của giây này: curl ~1,5 s (đo 29/09) thì đi tiếp ngay.
+	while ((SECONDS < tick)); do sleep 0.2; done
 done
 summary

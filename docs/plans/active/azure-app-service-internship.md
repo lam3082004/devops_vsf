@@ -4,9 +4,9 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-28 (hết D20 · review D1–D20 · D21 đã có kế hoạch)
+## Tiến độ — cập nhật 2026-09-29 (hết D22 · M11 đạt, còn chờ xác nhận email + apply PR ghi chép)
 
-**D1–D14, D16–D20 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
+**D1–D14, D16–D22 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
 **D16 XONG — M10 ĐẠT.** Nhật ký: `notes/d16.md` · bằng chứng: `evidence/M10.md`.
 Kế hoạch gốc `notes/d16-prep.md` có một chỗ **kê sai thuốc** (mục "vấp #1": cả hai cách nó đề
@@ -53,7 +53,18 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 
 **Review D1–D20 (2026-09-28, người dùng yêu cầu):** chạy lại toàn bộ hợp đồng CI ở máy (be test/lint, fe lint/test/build, terraform fmt/validate/plan, shellcheck — xanh; actionlint không có trên máy, workflow không đổi từ lần kiểm D16) + kiểm Azure chỉ đọc (health, SHA, KV reference, 4 bề mặt Deny, TLS MySQL, ACR admin tắt, plan No changes) + quét link tài liệu. **Sửa:** `fe` gọi `be` không có timeout (#22, thêm 10s — người dùng duyệt); README bảng thư mục lỗi thời + link gãy tới `evidence/screenshots/README.md`; 12 link ảnh gãy trong `notes/d2.md`; `evidence/README.md` M6/M9/M10 còn ghi "chờ"; `screenshots-convention.md` sai cấu trúc thư mục. **Ghi lại, không sửa:** #23 (`make down` vs PoC), plan dùng chung với PoC (M7 mục 4, #21).
 
-**Bài tiếp: D21 — kế hoạch từng bước ở `notes/d21-prep.md`** (7 quyết định A–G cần chốt đầu phiên).
+**D21 + D22 XONG (2026-09-29, cùng phiên, người dùng: "lên kế hoạch chi tiết D21, D22, làm luôn, tự review, tự fix").**
+- PR #64: diagnostic settings `diag-vsf` × 4 bề mặt web app + MySQL slow log → apply 9 added, plan sau No changes.
+- PR #65: Workbook M11 (Terraform, 5 mảng), tracing `fe` (exporter + SDK trace — **không** dùng distro, `ai-failure-log.md` #39),
+  action group + 3 alert (5xx rate log alert · CPU Plan > 80%/**15** phút · MySQL connections > 128), `runbook.md`, `scripts/boom.sh`.
+  Apply 5 added / 3 changed / 1 destroyed. Trace trình duyệt → `fe` → `be` → MySQL thật trên App Insights.
+- Drill 06:42:59–06:51:00Z: 197 × 500 → `alert-vsf-5xx-rate` **Fired 06:47:39Z → Resolved 07:13:44Z**; runbook đi thử 6/6 bước.
+- Tự review/sửa trong phiên: #39–#42 `ai-failure-log.md`; `known-issues.md` #27–#30. `notes/d21.md`, `notes/d22.md`, `docs/logging.md`, `evidence/M11.md`.
+- **Còn mở:** (1) người dùng xác nhận email Fired/Resolved; (2) PR ghi chép (Workbook: join `trace_id + span_id`, tắt số "Sum";
+  `boom.sh` nhịp 1 s) — merge = CD swap lần 3, cần duyệt; sau merge `apply -replace` Workbook = kiểm "sống lại từ code" (quyết định E);
+  (3) Test action group không làm được trên Free Trial (#28).
+
+**Bài tiếp: D23** (agent giới hạn quyền + cross-review 2). ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -68,7 +79,7 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 | M10 — mở rộng D17: swap an toàn | **ĐẠT (D17)** | `evidence/M10.md` mục D17 — 4 tình huống có run link |
 | M2 — zero-downtime khi swap | **Chờ mentor (D18)** — 0 response non-200 (đạt theo `topic.md`); 10 timeout, 6 quanh swap (chưa đạt theo guide) | `evidence/M2.md` — 3 lần swap (lần 3 ở D19: 0 non-200, 21 timeout trong swap `fe`) + đo lúc scale, log thô `evidence/raw/m2-*.log` |
 | M7 — autoscale + right sizing + cost report | **ĐẠT (D19 + D20)** — autoscale 1→2→1 + right sizing; cost report số thật từ Cost analysis | `evidence/M7.md`, `cost-report.md` |
-| M11 | nền đã có (D20: workspace + trace `be` + `/boom` trong Failures) — dashboard D21, alert D22 | `evidence/tracing.md` |
+| M11 — monitoring (dashboard · log · tracing · 3 alert · trigger thật) | **ĐẠT (D20–D22)** — chờ xác nhận email + apply PR ghi chép | `evidence/M11.md`, `docs/logging.md`, `runbook.md`, `evidence/tracing.md` |
 
 **Còn nợ, không chặn D17:**
 - **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
@@ -320,21 +331,21 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 
 ## Tuần 5 — D21–D25 · Logging, alert, drill, demo
 
-### D21 — Logging — kế hoạch từng bước: **`notes/d21-prep.md`** (workspace đã có từ D20)
-- [ ] Log Analytics workspace + diagnostic settings: AppServiceHTTPLogs, ConsoleLogs, PlatformLogs; MySQL logs/metrics — *proof: plan*
-- [ ] KQL: parse log JSON, lỗi theo path, p95 latency, request rate — *proof: query + kết quả*
-- [ ] Nghiên cứu giải pháp logging: Log Analytics+Workbook vs Managed Grafana vs tự dựng Loki/Grafana (chi phí, vận hành, query) — *proof: mục trong `architecture.md` hoặc `docs/logging.md`*
-- [ ] Workbook/dashboard: response time · request rate · failure rate; CPU/memory/HTTP queue; MySQL CPU/connections/storage; panel xem log — *proof: screenshot* → `evidence/M11.md`
-- [ ] Giới hạn retention workspace để tiết kiệm
-- [ ] Trace về cùng Log Analytics (App Insights workspace-based): xem được `requests`/`dependencies`/`traces` cạnh log — *proof: KQL join theo `operation_Id` = `trace_id`*
-- [ ] Dashboard có đủ 5 mảng: metric · log · trace (end-to-end transaction) · alert đang bắn · health — *proof: screenshot*
+### D21 — Logging ✅ **XONG 2026-09-29** — kế hoạch `notes/d21-prep.md` · nhật ký `notes/d21.md`
+- [x] Log Analytics workspace + diagnostic settings: AppServiceHTTPLogs, ConsoleLogs, PlatformLogs; MySQL logs/metrics — *proof: plan* — PR #64 (9 add, plan sau No changes); MySQL: slow log, metric đọc thẳng (quyết định B)
+- [x] KQL: parse log JSON, lỗi theo path, p95 latency, request rate — *proof: query + kết quả* — Q1–Q8 `docs/logging.md` mục 3, `evidence/raw/d21-kql-20260929.tsv`
+- [x] Nghiên cứu giải pháp logging: Log Analytics+Workbook vs Managed Grafana vs tự dựng Loki/Grafana (chi phí, vận hành, query) — *proof: mục trong `architecture.md` hoặc `docs/logging.md`* — `docs/logging.md` mục 2 (giá tra 29/09)
+- [x] Workbook/dashboard: response time · request rate · failure rate; CPU/memory/HTTP queue; MySQL CPU/connections/storage; panel xem log — *proof: screenshot* → `evidence/M11.md` — 7 ảnh `evidence/d21|d22/screenshots/`
+- [x] Giới hạn retention workspace để tiết kiệm — 30 ngày + cap 0,2 GB/ngày (D20); ingest đo ~0,1 GB/ngày
+- [x] Trace về cùng Log Analytics (App Insights workspace-based): xem được `requests`/`dependencies`/`traces` cạnh log — *proof: KQL join theo `operation_Id` = `trace_id`* — Q8, khoá `trace_id` **+ `span_id`** (`known-issues.md` #29); `fe` cũng trace (PR #65)
+- [x] Dashboard có đủ 5 mảng: metric · log · trace (end-to-end transaction) · alert đang bắn · health — *proof: screenshot* — hàng 1–5 Workbook; ô Trace/failure % có sửa nhỏ ở PR ghi chép
 
-### D22 — Alert + runbook + trigger thật
-- [ ] **Chốt Q5 trước hôm nay** (credit hết hạn D23)
-- [ ] Action group email; 3 alert: 5xx (theo Q3) · CPU cao · MySQL active connections — *proof: plan*
-- [ ] Trigger thật ≥ 1 alert (`/boom` hoặc `/load`) → email đến — *proof: screenshot email + alert history* → `evidence/M11.md`
-- [ ] **Truy vết alert → request:** từ email alert → mở query KQL → lấy `trace_id` → xem end-to-end transaction và log cùng trace — *proof: quay/ảnh từng bước từ 1 alert thật* → `evidence/M11.md`
-- [ ] `runbook.md` cho alert nghiêm trọng nhất: triệu chứng · xác nhận (query nào) · xử lý · rollback (swap ngược) · escalate
+### D22 — Alert + runbook + trigger thật ✅ **XONG 2026-09-29** (còn xác nhận email) — kế hoạch `notes/d22-prep.md` · nhật ký `notes/d22.md`
+- [ ] **Chốt Q5 trước hôm nay** (credit hết hạn D23) — *vẫn mở 29/09: mentor chưa trả lời; không chặn D22 (làm xong trước 15/10)*
+- [x] Action group email; 3 alert: 5xx (theo Q3) · CPU cao · MySQL active connections — *proof: plan* — PR #65 `alerts.tf`; Q3 chưa có mentor → người dùng chốt **rate**
+- [~] Trigger thật ≥ 1 alert (`/boom` hoặc `/load`) → email đến — *proof: screenshot email + alert history* → `evidence/M11.md` — Fired 06:47:39Z → Resolved 07:13:44Z (ảnh + Resource Graph); **email: chờ người dùng xác nhận**
+- [x] **Truy vết alert → request:** từ email alert → mở query KQL → lấy `trace_id` → xem end-to-end transaction và log cùng trace — *proof: quay/ảnh từng bước từ 1 alert thật* → `evidence/M11.md` — bằng KQL + kết quả từng bước (mục 6), chưa quay màn hình
+- [x] `runbook.md` cho alert nghiêm trọng nhất: triệu chứng · xác nhận (query nào) · xử lý · rollback (swap ngược) · escalate — đi thử 6/6 bước lúc drill 29/09
 
 ### D23 — Agent giới hạn quyền + cross-review 2
 - [ ] Bài agent giới hạn quyền (theo hướng dẫn mentor) — *proof: theo yêu cầu bài*

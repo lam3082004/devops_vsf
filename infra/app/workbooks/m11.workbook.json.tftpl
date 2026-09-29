@@ -119,7 +119,8 @@
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": ["${workspace_id}"],
-        "visualization": "timechart"
+        "visualization": "timechart",
+        "chartSettings": { "showMetrics": false, "showLegend": true }
       },
       "customWidth": "50",
       "name": "app-fail-pct"
@@ -341,7 +342,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "// Q8: request lỗi trong trace (App Insights, cùng workspace) nối với log JSON cùng trace_id\nAppRequests\n| where Success == false\n| project TimeGenerated, role = AppRoleName, request = Name, ResultCode, DurationMs = round(DurationMs, 1), OperationId\n| join kind=leftouter (\n    AppServiceConsoleLogs\n    | extend log = parse_json(ResultDescription)\n    | where isnotempty(log.trace_id)\n    | summarize log_events = make_set(tostring(log.event), 5) by trace_id = tostring(log.trace_id)\n  ) on $left.OperationId == $right.trace_id\n| project-away trace_id\n| order by TimeGenerated desc\n| take 50",
+        "query": "// Q8: request lỗi trong trace (App Insights, cùng workspace) nối đúng dòng log của CHÍNH request đó.\n// Khoá = trace_id + span_id: health checker của App Service gửi traceparent CỐ ĐỊNH (đo 29/09) nên\n// chỉ trace_id thì một request ghép nhầm với mọi dòng /health cùng trace.\nAppRequests\n| where Success == false\n| project TimeGenerated, role = AppRoleName, request = Name, ResultCode, DurationMs = round(DurationMs, 1), OperationId, Id\n| join kind=leftouter (\n    AppServiceConsoleLogs\n    | extend log = parse_json(ResultDescription)\n    | where isnotempty(log.span_id)\n    | project trace_id = tostring(log.trace_id), span_id = tostring(log.span_id), log_status = toint(log.status), log_duration_ms = tolong(log.duration_ms)\n  ) on $left.OperationId == $right.trace_id, $left.Id == $right.span_id\n| project-away trace_id, span_id\n| order by TimeGenerated desc\n| take 50",
         "size": 0,
         "title": "Trace — request lỗi ↔ log cùng trace_id (mở end-to-end transaction trong App Insights bằng OperationId)",
         "timeContextFromParameter": "TimeRange",

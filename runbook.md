@@ -112,6 +112,19 @@ M8). Sửa tạm trên Portal thì ghi lại ngay và mở PR cùng ngày.
   `known-issues.md` (một dòng mới).
 - Bước nào của runbook làm không được / chậm → sửa file này cùng PR.
 
+## Mốc thời gian đo thật (drill 29/09)
+
+| Mốc | Thời gian |
+|---|---|
+| Lỗi bắt đầu → alert **Fired** | 4 phút 40 giây (06:42:59 → 06:47:39Z) |
+| Lỗi cuối cùng → alert **Resolved** | ~23 phút (06:51:00 → 07:13:44Z) — alert đóng sau vài lượt đánh giá (5 phút/lần) không đạt điều kiện, **không** phải ngay khi hết lỗi |
+| Log request về workspace | 2–5 phút |
+
+→ Đã rollback/sửa xong mà alert còn Fired thì **đừng** kết luận "chưa hết lỗi": nhìn bước 1 (lỗi mới nhất theo
+giờ) — không còn dòng 5xx mới là đã xong; chờ email Resolved trong ~25 phút.
+
 ## Đã đi thử
 
-Xem `evidence/M11.md` mục "Trigger thật" — lần đi thử đầu tiên dùng `scripts/boom.sh` (D22).
+2026-09-29, drill bằng `scripts/boom.sh` (197 request `/boom`, 06:42:59–06:51:00Z): đi đủ 6 bước **Xác nhận**,
+bảng nguyên nhân dẫn đúng tới dòng "Endpoint lỗi cố ý". Kết quả từng bước: `notes/d22.md` mục "Đi thử runbook";
+bằng chứng: `evidence/M11.md` mục 6.
