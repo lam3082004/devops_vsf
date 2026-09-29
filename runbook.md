@@ -10,6 +10,10 @@ Alert nghiêm trọng nhất của hệ thống (Sev 1, `topic.md` deliverable 6
 > Ký hiệu: `<suffix>` = hậu tố môi trường (`terraform -chdir=infra/app output -raw name_suffix`).
 > Mọi lệnh `curl` chạy từ máy trong whitelist (M6) và ép `-4`. Không có quyền Azure → nhảy thẳng tới **Escalate**.
 
+> **Điều kiện để có email:** địa chỉ trong `ag-vsf-oncall` phải được **xác minh OTP** (Azure gửi mã khi lưu action group,
+> hạn 30 phút; hết hạn → Portal → Monitor → Alerts → Action groups → `ag-vsf-oncall` → Resend). Chưa xác minh thì alert
+> vẫn Fired trên Portal/Workbook nhưng **không có email** (`known-issues.md` #28).
+
 ## Triệu chứng
 
 - Email `Fired:Sev1 … 5xx rate > 5% (be/fe production)` gửi tới action group `ag-vsf-oncall`.
