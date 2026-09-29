@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OpsBoard CI/CD</title>
+<title>OpsBoard 25 ngày</title>
 <style>
 :root {
   --bg: #ffffff;
@@ -29,31 +29,40 @@ html, body { margin: 0; height: 100%; background: var(--page); color: var(--ink)
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
 #deck { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .slide { position: absolute; width: 1280px; height: 720px; background: var(--bg); border-radius: 6px;
-  box-shadow: 0 4px 24px rgba(0,0,0,.06); padding: 48px 60px; display: none; flex-direction: column; }
+  box-shadow: 0 4px 24px rgba(0,0,0,.06); padding: 40px 60px 44px; display: none; flex-direction: column; }
 .slide.active { display: flex; }
 
 .kicker { font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
 .future .kicker { color: var(--violet); }
-h1 { font-size: 52px; line-height: 1.15; margin: 0; font-weight: 800; }
-h2 { font-size: 34px; line-height: 1.2; margin: 0 0 26px; font-weight: 750; }
+h1 { font-size: 50px; line-height: 1.15; margin: 0; font-weight: 800; }
+h2 { font-size: 32px; line-height: 1.2; margin: 0 0 22px; font-weight: 750; }
 h3 { font-size: 19px; margin: 0 0 8px; font-weight: 700; }
 p { font-size: 17px; line-height: 1.5; margin: 0; }
 code { font-family: var(--mono); font-size: .88em; background: var(--gray-bg); padding: 1px 6px; border-radius: 4px; }
 .muted { color: var(--muted); }
-.center { text-align: center; }
 .fill { flex: 1; }
-div.row { display: flex; gap: 20px; }
 .col { display: flex; flex-direction: column; gap: 14px; }
-.grow { flex: 1; min-width: 0; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+ul.tight { margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.5; }
+ul.tight li { margin-bottom: 3px; }
 
-/* thanh bước (chỉ ở slide từng bước) */
-.steps { display: flex; gap: 5px; margin-bottom: 22px; }
-.steps span { flex: 1; font-size: 12px; text-align: center; padding: 6px 2px; border-radius: 20px; background: var(--gray-bg); color: #9ca3af; }
-.steps span.done { background: #dbeafe; color: #1e40af; }
-.steps span.on { background: var(--blue); color: #fff; font-weight: 700; }
+/* dải 25 ngày ở đầu mỗi slide theo ngày */
+.days { display: grid; grid-template-columns: repeat(25, 1fr); gap: 3px; margin-bottom: 18px; }
+.days span { font-size: 11px; font-weight: 700; text-align: center; padding: 3px 0; border-radius: 4px;
+  background: var(--gray-bg); color: #9ca3af; }
+.days span.done { background: #dbeafe; color: #1e40af; }
+.days span.hold { background: #fde68a; color: #92400e; }
+.days span.todo { background: #fff; color: #a78bfa; box-shadow: inset 0 0 0 1.5px #c4b5fd; }
+.days span.on { background: var(--blue); color: #fff; }
+.days span.on.todo { background: var(--violet); color: #fff; box-shadow: none; }
+.days span.on.hold { background: #f59e0b; color: #fff; }
+.days span.wk { margin-left: 6px; }
 
 /* ghi chú */
-.note { border-radius: 10px; padding: 14px 18px; font-size: 17px; line-height: 1.5; }
+.note { border-radius: 10px; padding: 12px 16px; font-size: 16.5px; line-height: 1.5; }
 .note.warn { background: var(--amber-bg); border-left: 5px solid #f59e0b; }
 .note.bad { background: var(--red-bg); border-left: 5px solid #ef4444; }
 .note.ok { background: var(--green-bg); border-left: 5px solid #22c55e; }
@@ -61,265 +70,140 @@ div.row { display: flex; gap: 20px; }
 .note.fu { background: var(--violet-bg); border-left: 5px solid #8b5cf6; }
 
 /* thẻ */
-.card { border: 1.5px solid var(--line); border-radius: 12px; padding: 16px 18px; background: #fff; }
-.card .lbl { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.card { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fff; }
+.card p { font-size: 15.5px; }
+.card .lbl { font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
 .card.blue { border-color: #93c5fd; background: var(--blue-bg); }
 .card.green { border-color: #86efac; background: var(--green-bg); }
 .card.red { border-color: #fca5a5; background: var(--red-bg); }
 .card.amber { border-color: #fcd34d; background: var(--amber-bg); }
 .card.violet { border-color: #c4b5fd; background: var(--violet-bg); }
 .card.gray { background: var(--gray-bg); }
-.big { font-size: 46px; font-weight: 800; line-height: 1; }
-.arrow { display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 26px; flex: 0 0 34px; }
-.darrow { text-align: center; color: #9ca3af; font-size: 22px; line-height: 1; margin: 4px 0; }
-
-/* ===== S1 bìa ===== */
-.cover-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 56px; }
-.cover-stats .card { padding: 22px; }
-.cover-stats p { margin-top: 10px; }
-
-/* ===== S2 bản đồ tuyến ===== */
-.metro { position: relative; margin: 50px 0 0; height: 240px; }
-.metro .rail { position: absolute; left: 6%; right: 6%; top: 44px; height: 8px; border-radius: 4px;
-  background: linear-gradient(90deg, #9ca3af 0 75%, #2563eb 75% 100%); }
-.metro .st small { display: block; font-size: 15px; color: var(--muted); margin-top: 4px; }
-.metro .st { position: absolute; top: 0; width: 140px; margin-left: -70px; text-align: center; }
-.metro .dot { width: 96px; height: 96px; border-radius: 50%; margin: 0 auto; background: #fff; border: 6px solid #9ca3af;
-  display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #374151; }
-.metro .st.az .dot { border-color: var(--blue); color: var(--blue); }
-.metro .st p { font-size: 18px; font-weight: 700; margin-top: 14px; line-height: 1.3; }
-.zone { display: grid; grid-template-columns: 72% 28%; font-size: 14px; font-weight: 700; color: var(--muted); text-align: center; }
-.zone span { border-bottom: 3px solid #d1d5db; padding-bottom: 6px; margin: 0 8px; }
-.zone span + span { border-color: #93c5fd; }
-.base { border-radius: 10px; padding: 14px 20px; font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 14px; }
-.base b { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
-
-/* ===== S3 ba chốt ===== */
-.shield { flex: 1; border: 2px solid var(--line); border-radius: 18px 18px 50% 50% / 18px 18px 22% 22%;
-  padding: 30px 24px 50px; text-align: center; background: #fff; }
-.shield .num { width: 52px; height: 52px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 24px; font-weight: 800;
-  display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-.shield h3 { font-size: 22px; }
-
-/* ===== S4 cổng ===== */
-div.gate { display: grid; grid-template-columns: 1fr 34px 1.2fr 34px 1fr; align-items: center; }
-.gate .rules { border: 3px solid var(--ink); border-radius: 14px; padding: 18px 22px; }
-.gate .rules div { font-size: 19px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
-.gate .rules div:last-child { border: 0; }
-.ba { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-/* ===== S5 lưới 8 bài kiểm tra ===== */
-.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.test { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-.test .n { font-size: 13px; font-weight: 800; color: var(--blue); }
-.test h3 { font-size: 17px; margin: 4px 0 6px; }
-.test p { font-size: 15px; color: #374151; }
-.test.az { background: var(--blue-bg); border-color: #bfdbfe; }
-.test.img { background: var(--amber-bg); border-color: #fde68a; }
-
-/* ===== S6 bảng điểm ===== */
-.score { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.score .card { padding: 14px 16px; }
-.score .pr { font-family: var(--mono); font-size: 14px; color: var(--muted); }
-.score .what { font-size: 17px; font-weight: 650; margin: 6px 0 10px; min-height: 48px; }
-.pill { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+.big { font-size: 44px; font-weight: 800; line-height: 1; }
+.arrow { display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 24px; }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12.5px; font-weight: 800; }
 .pill.red { background: #fee2e2; color: var(--red); }
 .pill.green { background: #dcfce7; color: var(--green); }
-.term { background: #111827; color: #e5e7eb; font-family: var(--mono); font-size: 15px; border-radius: 10px; padding: 16px 20px; line-height: 1.6; }
-.term .p { color: #93c5fd; }
-.term .e { color: #fca5a5; }
-.term .g { color: #86efac; }
+.pill.amber { background: #fef3c7; color: var(--amber); }
+.pill.violet { background: #ede9fe; color: var(--violet); }
+.term { background: #111827; color: #e5e7eb; font-family: var(--mono); font-size: 14.5px; border-radius: 10px; padding: 14px 18px; line-height: 1.6; }
+.term .p { color: #93c5fd; } .term .e { color: #fca5a5; } .term .g { color: #86efac; } .term .cm { color: #9ca3af; }
+.term { white-space: pre-wrap; }
 
-/* ===== S7 sơ đồ làn ===== */
-.lanes { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 0; }
-.lanes .hd { text-align: center; font-weight: 800; font-size: 17px; padding: 10px; border-radius: 10px 10px 0 0; }
-.lanes .body { position: relative; border-left: 2px dashed var(--line); }
-.lanes .body:first-of-type { border-left: 0; }
-.seqrow { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; min-height: 58px; position: relative; }
-.seqrow .msg { font-size: 15.5px; padding: 8px 14px; border-radius: 8px; line-height: 1.35; }
-.seqrow .msg b { color: var(--blue); margin-right: 6px; }
-.seqrow .bar { position: relative; text-align: center; font-size: 15.5px; padding: 6px 10px 12px; }
-.seqrow .bar::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: 2px; height: 3px; background: #9ca3af; }
-.seqrow .bar.r::before { content: "▶"; position: absolute; right: calc(10% - 8px); bottom: -6px; color: #9ca3af; font-size: 14px; }
-.seqrow .bar.l::before { content: "◀"; position: absolute; left: calc(10% - 8px); bottom: -6px; color: #9ca3af; font-size: 14px; }
-.seqrow .bar b { color: var(--blue); margin-right: 6px; }
-.lanebg { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); pointer-events: none; }
-.lanebg div { border-left: 2px dashed var(--line); }
-.lanebg div:first-child { border-left: 0; }
+/* bìa */
+.cover-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px; }
+.cover-stats .card { padding: 20px; }
+.cover-stats p { margin-top: 10px; font-size: 16px; }
 
-/* ===== S8 chìa khoá + lớp chặn ===== */
-.key { border-radius: 14px; padding: 18px; border: 2px solid; }
-.key .who { font-family: var(--mono); font-size: 17px; font-weight: 700; }
-.key .when { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin: 6px 0 8px; }
-.rings { position: relative; width: 420px; height: 300px; }
-.rings div { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 50%; display: flex; justify-content: center; font-size: 15px; font-weight: 650; text-align: center; }
-.rings .r1 { width: 420px; height: 300px; top: 0; background: #f3f4f6; padding-top: 16px; }
-.rings .r2 { width: 320px; height: 220px; top: 50px; background: #dbeafe; padding-top: 16px; }
-.rings .r3 { width: 210px; height: 130px; top: 110px; background: #2563eb; color: #fff; align-items: center; padding: 0 20px; }
+/* lộ trình 5 tuần */
+.weeks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; flex: 1; }
+.week { border-radius: 12px; border: 1.5px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
+.week .wh { padding: 10px 14px; font-weight: 800; font-size: 15px; background: var(--gray-bg); }
+.week .wh small { display: block; font-weight: 600; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.week .d { padding: 7px 14px; font-size: 14.5px; line-height: 1.35; border-top: 1px solid var(--line); display: grid; grid-template-columns: 36px 1fr; }
+.week .d b { font-family: var(--mono); font-size: 13px; color: var(--blue); }
+.week .d.hold { background: var(--amber-bg); } .week .d.hold b { color: var(--amber); }
+.week .d.todo { background: var(--violet-bg); color: #5b21b6; } .week .d.todo b { color: var(--violet); }
+.week .d.gate { background: #dbeafe; font-weight: 700; }
+.week .res { margin-top: auto; padding: 10px 14px; font-size: 13.5px; line-height: 1.4; border-top: 1.5px dashed var(--line); color: #374151; }
+.week .res b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 2px; }
+.legend { display: flex; gap: 22px; font-size: 14px; color: var(--muted); margin-top: 14px; }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
 
-/* ===== S9 cây quyết định ===== */
-.tree { display: flex; flex-direction: column; align-items: center; }
-.diamond { width: 250px; height: 130px; background: var(--amber-bg); border: 2px solid #fcd34d; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 17px; padding: 0 44px; }
-.branches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; margin-top: 8px; position: relative; padding-top: 28px; }
-.branches::before { content: ""; position: absolute; top: 0; left: 16.6%; right: 16.6%; height: 24px; border: 3px solid #d1d5db; border-bottom: 0; border-radius: 10px 10px 0 0; }
-.branches::after { content: ""; position: absolute; top: -12px; left: 50%; width: 3px; height: 14px; background: #d1d5db; }
+/* kiến trúc */
+.arch { display: grid; grid-template-columns: 150px 1fr; row-gap: 14px; column-gap: 16px; }
+.arch .lane { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; border-right: 4px solid; padding-right: 10px; }
+.arch .flow { display: flex; align-items: stretch; gap: 0; }
+.arch .box { flex: 1; border-radius: 10px; border: 1.5px solid; padding: 10px 12px; font-size: 14.5px; line-height: 1.35; background: #fff; }
+.arch .box > b:first-child { display: block; font-size: 15.5px; }
+.arch .box small { color: var(--muted); font-size: 13px; }
+.arch .ar { flex: 0 0 30px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 20px; }
+.arch .t .lane { color: var(--blue); border-color: #93c5fd; } .arch .t .box { border-color: #bfdbfe; background: var(--blue-bg); }
+.arch .a .lane { color: var(--amber); border-color: #fcd34d; } .arch .a .box { border-color: #fde68a; background: var(--amber-bg); }
+.arch .o .lane { color: var(--green); border-color: #86efac; } .arch .o .box { border-color: #bbf7d0; background: var(--green-bg); }
+.arch .d .lane { color: var(--violet); border-color: #c4b5fd; } .arch .d .box { border-color: #ddd6fe; background: var(--violet-bg); }
+.arch > div { display: contents; }
 
-/* ===== S10 băng chuyền ===== */
-.belt { display: flex; align-items: stretch; }
-.belt .stop { flex: 1; text-align: center; padding: 22px 12px; border-radius: 14px; border: 2px solid var(--line); }
-.belt .stop .big { font-size: 40px; }
-.belt .stop p { margin-top: 8px; }
-.conveyor { height: 14px; border-radius: 7px; margin: 14px 0 0; background: repeating-linear-gradient(90deg, #d1d5db 0 18px, #e5e7eb 18px 36px); }
-.tagbox { display: inline-block; border: 2px dashed #9ca3af; border-radius: 8px; padding: 10px 16px; font-family: var(--mono); font-size: 18px; }
+/* bảng so sánh */
+table.cmp { border-collapse: collapse; width: 100%; font-size: 15px; }
+table.cmp th { text-align: left; font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 6px 10px; border-bottom: 2px solid var(--line); }
+table.cmp td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
 
-/* ===== S11 chia đôi ===== */
-.split { display: grid; grid-template-columns: 1fr 1.4fr; gap: 28px; }
-.vstep { border-radius: 10px; padding: 12px 16px; font-size: 17px; border: 1.5px solid #bfdbfe; background: var(--blue-bg); }
-.vstep small { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+/* trunk */
+.trunk { width: 100%; height: 190px; }
 
-/* ===== S12 swap ===== */
-.swapviz { display: grid; grid-template-columns: 1fr 120px 1fr; align-items: center; }
-.slotpair { display: flex; flex-direction: column; gap: 14px; }
-.slot { border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border: 2px solid; }
-.slot .nm { font-weight: 800; font-size: 19px; }
-.slot .ver { font-family: var(--mono); font-size: 22px; font-weight: 800; padding: 6px 14px; border-radius: 8px; background: #fff; }
+/* chuỗi bước ngang */
+.chain { display: flex; align-items: stretch; }
+.chain .st { flex: 1; border-radius: 12px; border: 1.5px solid var(--line); padding: 12px 14px; font-size: 15px; line-height: 1.4; }
+.chain .st > b:first-child { display: block; font-size: 16px; margin-bottom: 4px; }
+.chain .ar { flex: 0 0 28px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 20px; }
+
+/* thẻ số lớn */
+.stat .big { font-size: 40px; }
+.stat p { margin-top: 8px; font-size: 15px; }
+
+/* job CI */
+.job { border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 12px; background: #fff; font-size: 14px; line-height: 1.4; }
+.job b { display: block; font-size: 15px; }
+.job b::before { content: "✓"; color: #fff; background: var(--green); border-radius: 50%; width: 17px; height: 17px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; margin-right: 7px; vertical-align: 1px; }
+
+/* bảng điểm PR */
+.score .card { padding: 11px 13px; }
+.score .pr { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.score .what { font-size: 15px; font-weight: 650; margin: 4px 0 8px; min-height: 42px; line-height: 1.35; }
+
+/* swap */
+.slot { border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border: 2px solid; font-weight: 800; }
+.slot .ver { font-family: var(--mono); font-size: 18px; padding: 4px 12px; border-radius: 8px; background: #fff; }
 .slot.prod { border-color: #86efac; background: var(--green-bg); }
 .slot.stg { border-color: #d1d5db; background: var(--gray-bg); }
-.vA { color: #6b7280; } .vB { color: var(--blue); }
-.swapicon { text-align: center; font-size: 44px; color: var(--blue); font-weight: 800; }
-.swapicon small { display: block; font-size: 15px; color: var(--muted); font-weight: 600; }
-.tl { display: flex; height: 38px; border-radius: 8px; overflow: hidden; font-size: 13px; }
-.tl div { display: flex; align-items: center; justify-content: center; color: #fff; white-space: nowrap; overflow: hidden; }
 
-/* ===== S13 toà nhà ===== */
-.house { display: flex; flex-direction: column; gap: 0; width: 520px; }
-.roof { width: 0; height: 0; border-left: 260px solid transparent; border-right: 260px solid transparent; border-bottom: 60px solid #bfdbfe; }
-.floor { padding: 18px 22px; }
-.floor.top { background: var(--blue-bg); border: 2px solid #bfdbfe; border-top: 0; }
-.floor.ground { background: #e5e7eb; border: 2px solid #9ca3af; }
-.stairs { display: flex; align-items: flex-end; gap: 8px; height: 190px; }
-.stairs div { flex: 1; border-radius: 10px 10px 0 0; padding: 12px; font-size: 15px; color: #fff; font-weight: 650; }
-.gloss { display: grid; grid-template-columns: 110px 1fr; row-gap: 8px; font-size: 16px; }
-.gloss b { color: var(--blue); }
+/* tình huống D17 */
+.case { border-radius: 12px; border: 1.5px solid var(--line); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.case .n { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.case h3 { font-size: 17px; margin: 0; }
+.case p { font-size: 15px; }
 
-/* ===== S14 trạm gác ===== */
-.path { display: flex; align-items: center; }
-.path .ep { flex: 1; text-align: center; border-radius: 12px; padding: 16px 10px; font-weight: 700; font-size: 17px; border: 2px solid var(--line); }
-.path .guard { flex: 0 0 120px; text-align: center; font-size: 14px; font-weight: 700; color: var(--amber); }
-.path .guard .g { width: 54px; height: 54px; margin: 0 auto 6px; border-radius: 12px; background: var(--amber-bg); border: 2px solid #fcd34d; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+/* biểu đồ bậc thang autoscale */
+.steps-chart { position: relative; height: 170px; border-left: 2px solid #d1d5db; border-bottom: 2px solid #d1d5db; margin: 8px 0 26px 40px; }
+.steps-chart .lvl { position: absolute; left: -40px; font-size: 13px; color: var(--muted); width: 34px; text-align: right; }
+.steps-chart .seg { position: absolute; height: 0; border-top: 4px solid var(--blue); }
+.steps-chart .vseg { position: absolute; width: 0; border-left: 4px solid var(--blue); }
+.steps-chart .tag { position: absolute; font-size: 13px; font-weight: 700; color: var(--ink); background: #fff; padding: 0 4px; white-space: nowrap; }
+.steps-chart .load { position: absolute; bottom: 0; height: 100%; background: repeating-linear-gradient(135deg, #fef3c7 0 8px, #fffbeb 8px 16px); }
+.steps-chart .x { position: absolute; bottom: -24px; font-size: 13px; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
 
-/* ===== S15 truyện tranh ===== */
-.strip4 { display: grid; grid-template-columns: 170px repeat(4, 1fr); gap: 12px; align-items: stretch; }
-.strip4 .who { display: flex; align-items: center; font-weight: 800; font-size: 18px; }
-.panel { border: 2px solid var(--line); border-radius: 12px; padding: 22px 14px; text-align: center; min-height: 170px; }
-.panel .ic { font-size: 40px; margin-bottom: 10px; }
-.panel p { font-size: 17px; }
+/* bảng M1–M11 */
+.mgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.m { border-radius: 12px; border: 1.5px solid #86efac; background: var(--green-bg); padding: 11px 14px; }
+.m .id { font-family: var(--mono); font-weight: 800; font-size: 15px; color: var(--green); }
+.m .id span { float: right; font-family: inherit; font-size: 12.5px; color: var(--muted); font-weight: 700; }
+.m p { font-size: 14.5px; line-height: 1.35; margin-top: 4px; }
+.m.wait { border-color: #fcd34d; background: var(--amber-bg); }
+.m.wait .id { color: var(--amber); }
 
-/* ===== S16 tưởng / thực ra ===== */
-.flips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; flex: 1; margin-bottom: 22px; }
+/* tưởng / thực ra */
+.flips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; flex: 1; }
 .flip { border-radius: 12px; overflow: hidden; border: 1.5px solid var(--line); display: flex; flex-direction: column; }
-.flip .top { background: var(--green-bg); padding: 18px 16px; font-size: 18px; flex: 1; }
-.flip .bot { background: var(--red-bg); padding: 18px 16px; font-size: 18px; flex: 1; font-weight: 600; }
-.flip .tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-.flip .top .tag { color: var(--green); }
-.flip .bot .tag { color: var(--red); }
-.flip .where { font-size: 15px; font-weight: 800; color: var(--ink); padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.flip .where { font-size: 13.5px; font-weight: 800; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.flip .top { background: var(--green-bg); padding: 12px 14px; font-size: 15.5px; flex: 1; line-height: 1.4; }
+.flip .bot { background: var(--red-bg); padding: 12px 14px; font-size: 15.5px; flex: 1.2; font-weight: 600; line-height: 1.4; }
+.flip .tag { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.flip .top .tag { color: var(--green); } .flip .bot .tag { color: var(--red); }
 
-/* ===== S17 lộ trình ===== */
-.road { display: grid; grid-template-columns: repeat(9, 1fr); gap: 0; position: relative; margin-top: 20px; }
-.road::before { content: ""; position: absolute; left: 5%; right: 5%; top: 30px; height: 6px; background: #ddd6fe; border-radius: 3px; }
-.road .m { text-align: center; position: relative; }
-.road .d { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto; background: #fff; border: 5px solid var(--violet); color: var(--violet);
-  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; }
-.road p { font-size: 15px; font-weight: 650; margin-top: 10px; padding: 0 4px; line-height: 1.3; }
-
-/* ===== S18 vòng kiểm ===== */
-.loop { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; align-items: stretch; }
-.loop .s { border-radius: 12px; padding: 20px 16px; border: 2px solid #c4b5fd; background: var(--violet-bg); font-size: 17px; margin: 0 8px; position: relative; }
-.loop .s::after { content: "→"; position: absolute; right: -18px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 20px; }
-.loop .s:last-child::after { content: ""; }
-.loop .s b { display: block; font-size: 19px; margin-bottom: 6px; }
-.check { list-style: none; padding: 0; margin: 0; }
-.check li { font-size: 19px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.check li::before { content: "☐"; color: var(--violet); margin-right: 10px; font-size: 18px; }
-
-
-/* ===== trunk-based ===== */
-.trunk { width: 100%; height: 230px; }
-.tcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.tcards .card h3 { font-size: 20px; }
-.tcards .card p { font-size: 16.5px; }
-/* ===== ruleset ===== */
-.gate .rules .rs { font-family: var(--mono); font-size: 13px; color: var(--muted); text-align: center; margin: -4px 0 6px; border: 0; padding: 0; }
-.gate .rules div.en { font-size: 17.5px; }
-.gate .rules div.en small { display: block; color: var(--muted); font-size: 14px; }
-/* ===== danh tính ===== */
-.roles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.role { font-size: 14px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; line-height: 1.3; }
-.role b { font-weight: 700; }
-.role span { color: var(--muted); }
-.role.dim { opacity: .65; }
-.idgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.idgrid .key p { font-size: 14.5px; }
-.idgrid .roles { flex-direction: column; flex-wrap: nowrap; }
-.idgrid .role span { display: block; font-size: 13px; }
-.layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.layers p { font-size: 15.5px; margin-top: 4px; }
-/* ===== mermaid ===== */
-.mmd { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; margin: 0 -30px; }
-.mmd svg { width: 100%; height: 100%; }
-
-
-/* ===== job CI/CD ===== */
-.runbar { display: flex; gap: 22px; align-items: center; background: var(--gray-bg); border-radius: 10px; padding: 10px 18px; font-size: 15px; margin-bottom: 16px; }
-.runbar b { font-size: 16px; }
-.runbar .ok { color: var(--green); font-weight: 800; }
-.job { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; background: #fff; }
-.job .jh { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-.job .jn { font-weight: 750; font-size: 16px; }
-.job .jn::before { content: "✓"; color: #fff; background: var(--green); border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-right: 8px; vertical-align: 1px; }
-.job .jt { font-family: var(--mono); font-size: 14px; color: var(--muted); white-space: nowrap; }
-.job .js { font-size: 14px; color: #374151; margin-top: 4px; line-height: 1.45; }
-.job.big { padding: 16px 18px; display: flex; flex-direction: column; }
-.job.big .jt { font-size: 30px; font-weight: 800; color: var(--ink); font-family: inherit; }
-.job.big ol { margin: 12px 0 0; padding-left: 22px; font-size: 16.5px; line-height: 1.5; font-weight: 400; }
-.job.big ol li { margin-bottom: 2px; }
-.envtag { align-self: flex-start; display: inline-block; font-size: 12.5px; font-weight: 700; padding: 2px 9px; border-radius: 10px; background: var(--blue-bg); color: var(--blue); margin-top: 6px; }
-.cigrid { display: flex; flex-direction: column; gap: 10px; }
-.parallel { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 10px 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.parallel .pl, .tfrow .pl { grid-column: 1 / -1; font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-.tfrow { display: flex; flex-direction: column; gap: 6px; }
-.tfchain { display: grid; grid-template-columns: 1fr 50px 1fr; align-items: stretch; }
-.chain { display: flex; flex-direction: column; gap: 0; }
-.cdgrid { display: grid; grid-template-columns: 1fr 40px 1.35fr 40px 1fr; align-items: stretch; }
-.cdgrid .arrow { align-self: center; }
-/* ===== slide kết ===== */
+/* kết */
 .endwrap { flex: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
-.thanks { font-size: 76px; font-weight: 800; line-height: 1.05; margin: 0; }
+.thanks { font-size: 72px; font-weight: 800; line-height: 1.05; margin: 0; }
 .stat4 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .stat4 .card { padding: 18px; }
 .stat4 .big { font-size: 40px; }
-.slide.hide { display: none !important; }
+.stat4 p { margin-top: 8px; }
 
-
-/* ===== OIDC ===== */
-.oidc svg { display: block; width: 100%; height: auto; }
-.match { display: grid; grid-template-columns: 1fr 34px 1fr; gap: 0; align-items: stretch; margin-top: 6px; }
-.mcard { border: 1.5px solid #d1d5db; border-radius: 10px; padding: 8px 12px; background: var(--gray-bg); }
-.mcard.reg { background: var(--amber-bg); border-color: #fcd34d; }
-.mcard .lbl { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
-.mcard .kv { display: grid; grid-template-columns: 62px 1fr; font-size: 13px; line-height: 1.75; }
-.mcard .kv span { font-weight: 700; color: #374151; }
-.mcard .kv code { font-size: 12px; background: #fff; }
-.eq { display: grid; grid-template-rows: 20px repeat(3, 1fr); align-items: center; justify-items: center; color: var(--green); font-weight: 800; font-size: 18px; padding: 8px 0; }
-.eq::before { content: ""; }
-
-/* ===== số trang: luôn hiện trên từng slide, kể cả khi in/xuất PDF ===== */
+/* số trang: luôn hiện trên từng slide, kể cả khi in/xuất PDF */
 .pagenum { position: absolute; right: 24px; bottom: 10px; font-family: var(--mono); font-size: 13px;
   font-weight: 600; color: var(--muted); letter-spacing: .02em; pointer-events: none; }
 
-/* ===== nav ẩn ===== */
+/* nav ẩn */
 #nav { position: fixed; right: 16px; bottom: 12px; display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted);
   opacity: 0; transition: opacity .3s; }
 #nav.show { opacity: 1; }
@@ -329,7 +213,6 @@ div.gate { display: grid; grid-template-columns: 1fr 34px 1.2fr 34px 1fr; align-
   html, body { background: #fff; height: auto; }
   #deck { position: static; display: block; }
   .slide { display: flex !important; position: relative; transform: none !important; box-shadow: none; border-radius: 0; page-break-after: always; }
-  .slide.hide { display: none !important; }
   #deck > .slide:last-of-type { page-break-after: auto; }
   #nav { display: none; }
 }
@@ -341,705 +224,699 @@ div.gate { display: grid; grid-template-columns: 1fr 34px 1.2fr 34px 1fr; align-
 <!-- ========== 1. BÌA ========== -->
 <section class="slide">
   <div class="fill"></div>
-  <div class="kicker">Thực tập DevOps · Azure App Service</div>
-  <h1>OpsBoard: từ một dòng code<br>tới người dùng thật</h1>
+  <div class="kicker">Thực tập DevOps · Azure App Service · 25 ngày</div>
+  <h1>OpsBoard: từ deploy bằng tay<br>tới tự động, có kiểm tra, có theo dõi</h1>
   <p class="muted" style="font-size:22px;margin-top:18px">Bùi Tùng Lâm</p>
   <div class="cover-stats">
-    <div class="card blue"><div class="big" style="color:var(--blue)">8/11</div><p>yêu cầu bắt buộc đã đạt</p></div>
-    <div class="card green"><div class="big" style="color:var(--green)">~7′</div><p>từ lúc merge tới lúc người dùng thấy bản mới</p></div>
-    <div class="card amber"><div class="big" style="color:var(--amber)">0</div><p>mật khẩu Azure cất trên GitHub</p></div>
-    <div class="card gray"><div class="big">D16</div><p>đang ở ngày 16 trên 25</p></div>
+    <div class="card blue"><div class="big" style="color:var(--blue)">10/11</div><p>yêu cầu bắt buộc đã đạt · M2 chờ mentor chốt</p></div>
+    <div class="card green"><div class="big" style="color:var(--green)">21/25</div><p>bài đã xong · D15 hoãn, còn D23–D25</p></div>
+    <div class="card amber"><div class="big" style="color:var(--amber)">57</div><p>Pull Request đã merge vào <code>main</code></p></div>
+    <div class="card gray"><div class="big">≈$12,5</div><p>tiền Azure thật tới 28/09 (Cost Analysis)</p></div>
   </div>
   <div class="fill"></div>
 </section>
 
-<!-- ========== 2. BẢN ĐỒ ========== -->
+<!-- ========== 2. ĐỀ BÀI + APP ========== -->
+<section class="slide">
+  <div class="kicker">Đề bài</div>
+  <h2>Một app nhỏ, và mỗi endpoint để chứng minh một yêu cầu hạ tầng</h2>
+  <div class="g2" style="grid-template-columns:1.15fr 1fr;gap:28px">
+    <div class="col">
+      <p>App web nhỏ → Docker → Azure App Service, CI/CD trunk-based, monitoring. <b>Toàn bộ hạ tầng bằng Terraform.</b></p>
+      <table class="cmp">
+        <tr><th>Endpoint</th><th>Chứng minh</th></tr>
+        <tr><td><code>GET /health</code></td><td>warm-up slot, health check khi swap</td></tr>
+        <tr><td><code>GET /version</code> → SHA</td><td>zero-downtime: bản A đổi sang B</td></tr>
+        <tr><td><code>GET /load?seconds=n</code></td><td>đốt CPU để autoscale</td></tr>
+        <tr><td><code>GET|POST /items</code></td><td>MySQL + Managed Identity + Key Vault</td></tr>
+        <tr><td><code>GET /boom</code></td><td>exception thật → alert, trace</td></tr>
+        <tr><td>log JSON 1 dòng</td><td>Log Analytics + KQL</td></tr>
+      </table>
+    </div>
+    <div class="col">
+      <div class="card blue">
+        <div class="lbl">App tự chọn · OpsBoard</div>
+        <h3 style="font-size:22px">Ticket lỗi + bảng kanban cho team vận hành</h3>
+        <p>Tạo ticket, kéo thả giữa 4 cột trạng thái, bình luận, thống kê. <code>/items</code> chính là danh sách ticket.</p>
+      </div>
+      <div class="g2" style="gap:12px">
+        <div class="card"><div class="lbl">fe</div><p><b>Next.js</b> · port 3000 · gọi <code>be</code> từ phía server</p></div>
+        <div class="card"><div class="lbl">be</div><p><b>.NET 10</b> · MySqlConnector · Controller → Service → Repository</p></div>
+      </div>
+      <div class="card gray"><div class="lbl">Database</div><p><b>MySQL 8.4</b> Flexible Server B1ms · 3 bảng <code>tickets</code> · <code>comments</code> · <code>activities</code></p></div>
+      <div class="note info" style="font-size:15px">Hai Web App chạy chung <b>một</b> App Service Plan: không tốn thêm tiền plan, đổi lại có chặng <code>fe → be</code> thật để làm distributed tracing.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 3. LỘ TRÌNH ========== -->
 <section class="slide">
   <div class="kicker">Toàn cảnh</div>
-  <h2>Hành trình của một thay đổi</h2>
-  <div class="zone"><span>Trên GitHub</span><span style="color:var(--blue)">Trên Azure</span></div>
-  <div class="metro">
-    <div class="rail"></div>
-    <div class="st" style="left:6%"><div class="dot">1</div><p>Viết code</p><small>trunk-based</small></div>
-    <div class="st" style="left:20.67%"><div class="dot">2</div><p>Pull Request</p><small>Ruleset protect-main</small></div>
-    <div class="st" style="left:35.33%"><div class="dot">3</div><p>CI</p><small>8 required checks</small></div>
-    <div class="st" style="left:50%"><div class="dot">4</div><p>Đăng nhập Azure</p><small>OIDC, không mật khẩu</small></div>
-    <div class="st" style="left:64.67%"><div class="dot">5</div><p>Merge → CD</p><small>preflight</small></div>
-    <div class="st az" style="left:79.33%"><div class="dot">6</div><p>Staging</p><small>build, push, chạy thử</small></div>
-    <div class="st az" style="left:94%"><div class="dot">7</div><p>Production</p><small>swap, ~7 phút</small></div>
+  <h2 style="margin-bottom:16px">Lộ trình 25 ngày, 5 tuần</h2>
+  <div class="weeks">
+    <div class="week">
+      <div class="wh">Tuần 1 · Nền tảng<small>AI-OFF: tự tay làm hết</small></div>
+      <div class="d"><b>D1</b>Azure 101, RBAC, budget</div>
+      <div class="d"><b>D2</b>Deploy tay bằng Portal</div>
+      <div class="d"><b>D3</b>Làm lại bằng Azure CLI</div>
+      <div class="d"><b>D4</b>Viết app, 6 endpoint</div>
+      <div class="d"><b>D5</b>Docker, Trivy, Cost Analysis</div>
+      <div class="res"><b>Kết quả</b>Làm tay được hết thứ sẽ tự động hoá · app chạy trong Docker, 0 CVE</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 2 · Terraform<small>AI bật, khai báo trong PR</small></div>
+      <div class="d"><b>D6</b>Repo, ruleset, CI v1</div>
+      <div class="d"><b>D7</b>Remote state, lock, OIDC</div>
+      <div class="d"><b>D8</b>Compute + MySQL</div>
+      <div class="d"><b>D9</b>ACR, Key Vault, Makefile</div>
+      <div class="d gate"><b>D10</b>GATE: destroy → apply</div>
+      <div class="res"><b>Kết quả</b>Dựng lại từ rỗng trong 24 phút, không thao tác tay · M8</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 3 · Bảo mật<small>container, danh tính, mạng</small></div>
+      <div class="d"><b>D11</b>Container, pull ACR bằng MI</div>
+      <div class="d"><b>D12</b>Key Vault ref + MySQL TLS</div>
+      <div class="d"><b>D13</b>IP whitelist 8 bề mặt</div>
+      <div class="d"><b>D14</b>CI 8 job, chặn cái sai</div>
+      <div class="d hold"><b>D15</b>Cross-review 1 · hoãn</div>
+      <div class="res"><b>Kết quả</b>M1 · M3 · M4 · M5 · M6 · M9</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 4 · Deploy<small>CD, swap, scale, chi phí</small></div>
+      <div class="d"><b>D16</b>CD: build → staging → swap</div>
+      <div class="d"><b>D17</b>Swap an toàn, tự rollback</div>
+      <div class="d"><b>D18</b>Đo zero-downtime</div>
+      <div class="d"><b>D19</b>Autoscale 1→2→1</div>
+      <div class="d"><b>D20</b>Cost report + tracing</div>
+      <div class="res"><b>Kết quả</b>M10 · M7 · M2 (chờ mentor)</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 5 · Vận hành<small>log, alert, drill, demo</small></div>
+      <div class="d"><b>D21</b>Log tập trung, Workbook</div>
+      <div class="d"><b>D22</b>3 alert, drill, runbook</div>
+      <div class="d todo"><b>D23</b>Agent giới hạn quyền + review 2</div>
+      <div class="d todo"><b>D24</b>Incident drill, hoàn thiện</div>
+      <div class="d todo"><b>D25</b>Demo live 45 phút</div>
+      <div class="res"><b>Kết quả</b>M11 · còn: drill, tài liệu, demo</div>
+    </div>
   </div>
-  <div class="fill"></div>
-  <div class="col">
-    <div class="base" style="background:var(--blue-bg)"><b style="color:var(--blue)">Trunk-based</b> Chỉ <code>main</code> sống lâu, mọi thay đổi đi qua Pull Request</div>
-    <div class="base" style="background:var(--amber-bg)"><b style="color:var(--amber)">Deploy</b> Chỉ <code>main</code> mới được deploy lên Azure</div>
+  <div class="legend">
+    <span><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--line)"></i>đã xong</span>
+    <span><i style="background:#dbeafe"></i>cổng kiểm tra</span>
+    <span><i style="background:#fde68a"></i>hoãn: cần repo của intern kia</span>
+    <span><i style="background:#ede9fe"></i>còn lại</span>
   </div>
 </section>
 
-<!-- ========== 3. BƯỚC 1 ========== -->
+<!-- ========== 4. KIẾN TRÚC ========== -->
 <section class="slide">
-  <div class="steps"><span class="on">1 Viết code</span><span>2 PR</span><span>3 CI</span><span>4 Đăng nhập</span><span>5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2 style="margin-bottom:6px">Trunk-based: một nhánh main, nhánh phụ thật ngắn</h2>
-  <svg class="trunk" viewBox="0 0 1160 230" role="img" aria-label="Nhánh main dài, các nhánh ngắn tách ra rồi squash merge vào lại">
+  <div class="kicker">Kết quả sau 22 ngày</div>
+  <h2 style="margin-bottom:18px">Kiến trúc đang chạy trên Azure</h2>
+  <div class="arch">
+    <div class="t">
+      <div class="lane">Luồng traffic</div>
+      <div class="flow">
+        <div class="box"><b>Người dùng</b><small>chỉ IP trong whitelist, còn lại 403</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>fe · Web App</b>Next.js · slot <code>staging</code></div>
+        <div class="ar">→</div>
+        <div class="box"><b>be · Web App</b>.NET 10 · slot <code>staging</code></div>
+        <div class="ar">→</div>
+        <div class="box"><b>MySQL 8.4</b>B1ms · TLS · firewall theo outbound IP</div>
+      </div>
+    </div>
+    <div class="a">
+      <div class="lane">Luồng auth</div>
+      <div class="flow">
+        <div class="box"><b>GitHub Actions</b><small>OIDC, không cất mật khẩu Azure</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b><code>id-gh-plan</code> · <code>id-gh-deploy</code></b><small>plan trên PR · deploy từ <code>main</code></small></div>
+        <div class="ar" style="flex-basis:50px"></div>
+        <div class="box"><b><code>id-vsf-app</code></b><small>danh tính của app, chung cho 2 slot</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>ACR · Key Vault</b><small><code>AcrPull</code> · <code>Secrets User</code></small></div>
+      </div>
+    </div>
+    <div class="d">
+      <div class="lane">Luồng deploy</div>
+      <div class="flow">
+        <div class="box"><b>Pull Request</b><small>CI 8 check, đỏ là không merge được</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Merge <code>main</code> → CD</b><small>build <code>be</code> + <code>fe</code>, Trivy</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>ACR</b><small>image tag = commit SHA</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Slot staging → swap</b><small>kiểm trước và sau, lỗi thì swap ngược</small></div>
+      </div>
+    </div>
+    <div class="o">
+      <div class="lane">Quan sát</div>
+      <div class="flow">
+        <div class="box"><b>Diagnostic settings</b><small>HTTP · Console · Platform log, MySQL slow log</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Log Analytics</b><small>30 ngày · cap 0,2 GB/ngày</small></div>
+        <div class="ar">+</div>
+        <div class="box"><b>App Insights</b><small>trace OpenTelemetry <code>fe → be → MySQL</code></small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Workbook · 3 alert</b><small>action group gửi email</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="fill"></div>
+  <div class="g2" style="gap:14px">
+    <div class="note info" style="font-size:15px"><b>Terraform 2 tầng:</b> <code>infra/bootstrap</code> giữ state (không bao giờ destroy) · <code>infra/app</code> dựng/xoá bằng <code>make up</code> / <code>make down</code>.</div>
+    <div class="note warn" style="font-size:15px"><b>Hai region:</b> app ở <b>Central India</b>, MySQL ở <b>Southeast Asia</b>, vì subscription bị giới hạn ở mỗi nơi một kiểu (D9).</div>
+  </div>
+</section>
+
+<!-- ========== 5. D1–D3 ========== -->
+<section class="slide" data-days="1-3">
+  <div class="kicker">Tuần 1 · D1–D3 · AI-OFF</div>
+  <h2>Làm bằng tay trước, để hiểu thứ sẽ tự động hoá</h2>
+  <div class="g3">
+    <div class="card"><div class="lbl">D1 · Azure 101</div><p>Cây Tenant → Subscription → Resource group → Resource. RBAC = role · assignment · scope. Budget + cảnh báo 50/80/100%. Chọn region.</p></div>
+    <div class="card"><div class="lbl">D2 · Portal</div><p>Plan + Web App + MySQL B1ms bằng chuột. Thử slot, swap, access restriction. <b>Xoá sạch resource group cuối ngày.</b></p></div>
+    <div class="card"><div class="lbl">D3 · Azure CLI</div><p>Dựng lại đúng D2 bằng lệnh, tự đọc docs. So từng thuộc tính: Portal đã tự làm gì mà mình không thấy?</p></div>
+  </div>
+  <h3 style="margin-top:22px">Portal làm ngầm → Terraform sau này phải khai rõ</h3>
+  <table class="cmp">
+    <tr><th>Portal</th><th>CLI</th><th>Bài học</th></tr>
+    <tr><td><code>httpsOnly = true</code></td><td><code>httpsOnly = false</code></td><td>CLI mặc định kém an toàn hơn Portal: phải bật tường minh</td></tr>
+    <tr><td>Clone slot copy settings, <b>không copy image</b></td><td>khai image riêng</td><td>Swap vào một slot rỗng → 503</td></tr>
+    <tr><td>Tự chọn tier <b>B1</b> nếu không sửa</td><td>phải ghi <code>--sku P0V3</code></td><td>B1 không có slot, không autoscale</td></tr>
+    <tr><td>SCM tick sẵn "Use main site rules"</td><td>danh sách SCM riêng, mặc định Deny</td><td>Quên là Kudu hở, hoặc tự khoá mình ngoài</td></tr>
+  </table>
+</section>
+
+<!-- ========== 6. D4–D5 ========== -->
+<section class="slide" data-days="4-5">
+  <div class="kicker">Tuần 1 · D4–D5</div>
+  <h2>Viết app, đóng Docker, quét lỗ hổng</h2>
+  <div class="g2" style="grid-template-columns:1fr 1.1fr;gap:28px">
+    <div class="col">
+      <div class="card"><div class="lbl">App phải "biết hỏng đúng cách"</div>
+        <ul class="tight">
+          <li>Config đọc từ biến môi trường. Thiếu, hoặc còn nguyên chuỗi <code>@Microsoft.KeyVault(</code> → <b>thoát ngay, báo lỗi rõ</b> (dùng cho M5)</li>
+          <li>Log JSON 1 dòng: time · level · method · path · status · duration_ms</li>
+          <li>Tắt êm khi nhận SIGTERM, tạo bảng idempotent lúc khởi động</li>
+          <li><code>/version</code> trả SHA nhúng lúc build</li>
+        </ul>
+      </div>
+      <div class="card"><div class="lbl">Dockerfile</div><p>Multi-stage · chạy non-root · build-arg <code>GIT_SHA</code> · <code>docker compose</code> app + MySQL để chạy local.</p></div>
+      <div class="note info" style="font-size:15px">D5 mở Cost Analysis: D2–D3 tốn <b>$0,51</b> thật. Trả lời trước 3 câu cho GATE: state · lock · dependency.</div>
+    </div>
+    <div class="col">
+      <h3>App đổi hai lần, hạ tầng thì không</h3>
+      <div class="chain" style="flex-direction:column;gap:0">
+        <div class="st"><b>Rust · D4</b>Image <code>scratch</code> + musl: <b>5,2 MB, 0 CVE</b> mọi mức.</div>
+        <div class="arrow" style="height:26px">↓ 18/09</div>
+        <div class="st"><b>C# / .NET 10</b>Controller → Service → Repository, giữ nguyên endpoint và log. Image <code>aspnet:10.0-noble-chiseled</code>: <b>0 CRITICAL / 0 HIGH</b>.</div>
+        <div class="arrow" style="height:26px">↓ 21/09</div>
+        <div class="st" style="background:var(--blue-bg);border-color:#93c5fd"><b>OpsBoard · be + fe</b>Thêm Next.js. Backend 139 test, có test chạy trên MySQL thật trong CI.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 7. D6 ========== -->
+<section class="slide" data-days="6">
+  <div class="kicker">Tuần 2 · D6</div>
+  <h2 style="margin-bottom:6px">Trunk-based: một nhánh <code style="font-size:.85em">main</code>, nhánh phụ thật ngắn</h2>
+  <svg class="trunk" viewBox="0 0 1160 210" role="img" aria-label="Nhánh main dài, các nhánh ngắn tách ra rồi squash merge vào lại">
     <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker></defs>
-    <!-- nhánh ngắn -->
-    <path d="M150 120 C 190 120, 190 45, 240 45 L 330 45 C 380 45, 380 120, 420 120" fill="none" stroke="#2563eb" stroke-width="4"/>
-    <circle cx="265" cy="45" r="8" fill="#fff" stroke="#2563eb" stroke-width="4"/><circle cx="310" cy="45" r="8" fill="#fff" stroke="#2563eb" stroke-width="4"/>
-    <text x="285" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="#2563eb">feat/ticket-filter</text>
-
-    <path d="M440 120 C 480 120, 480 195, 530 195 L 590 195 C 640 195, 640 120, 680 120" fill="none" stroke="#b45309" stroke-width="4"/>
-    <circle cx="560" cy="195" r="8" fill="#fff" stroke="#b45309" stroke-width="4"/>
-    <text x="560" y="225" text-anchor="middle" font-size="17" font-weight="700" fill="#b45309">fix/fe-dynamic-render</text>
-
-    <path d="M700 120 C 740 120, 740 45, 790 45 L 880 45 C 930 45, 930 120, 970 120" fill="none" stroke="#7c3aed" stroke-width="4"/>
-    <circle cx="815" cy="45" r="8" fill="#fff" stroke="#7c3aed" stroke-width="4"/><circle cx="860" cy="45" r="8" fill="#fff" stroke="#7c3aed" stroke-width="4"/>
-    <text x="835" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="#7c3aed">chore/d17-plan</text>
-
-    <!-- main -->
-    <line x1="30" y1="120" x2="1125" y2="120" stroke="#1f2937" stroke-width="7" marker-end="url(#tip)"/>
-    <circle cx="90" cy="120" r="12" fill="#1f2937"/>
-    <circle cx="420" cy="120" r="12" fill="#1f2937"/><circle cx="680" cy="120" r="12" fill="#1f2937"/><circle cx="970" cy="120" r="12" fill="#1f2937"/>
-    <text x="420" y="152" text-anchor="middle" font-size="15" fill="#374151">squash</text>
-    <text x="680" y="100" text-anchor="middle" font-size="15" fill="#374151">squash</text>
-    <text x="970" y="152" text-anchor="middle" font-size="15" fill="#374151">squash</text>
-    <text x="30" y="160" font-size="20" font-weight="800" fill="#1f2937">main</text>
-    <text x="1125" y="160" text-anchor="end" font-size="15" fill="#6b7280">luôn deploy được</text>
+    <path d="M150 110 C 190 110, 190 40, 240 40 L 330 40 C 380 40, 380 110, 420 110" fill="none" stroke="#2563eb" stroke-width="4"/>
+    <circle cx="265" cy="40" r="8" fill="#fff" stroke="#2563eb" stroke-width="4"/><circle cx="310" cy="40" r="8" fill="#fff" stroke="#2563eb" stroke-width="4"/>
+    <text x="285" y="22" text-anchor="middle" font-size="17" font-weight="700" fill="#2563eb">feat/d21-diagnostics</text>
+    <path d="M440 110 C 480 110, 480 180, 530 180 L 590 180 C 640 180, 640 110, 680 110" fill="none" stroke="#b45309" stroke-width="4"/>
+    <circle cx="560" cy="180" r="8" fill="#fff" stroke="#b45309" stroke-width="4"/>
+    <text x="560" y="206" text-anchor="middle" font-size="17" font-weight="700" fill="#b45309">fix/pre-d21-review</text>
+    <path d="M700 110 C 740 110, 740 40, 790 40 L 880 40 C 930 40, 930 110, 970 110" fill="none" stroke="#7c3aed" stroke-width="4"/>
+    <circle cx="815" cy="40" r="8" fill="#fff" stroke="#7c3aed" stroke-width="4"/><circle cx="860" cy="40" r="8" fill="#fff" stroke="#7c3aed" stroke-width="4"/>
+    <text x="835" y="22" text-anchor="middle" font-size="17" font-weight="700" fill="#7c3aed">chore/d21-d22-evidence</text>
+    <line x1="30" y1="110" x2="1125" y2="110" stroke="#1f2937" stroke-width="7" marker-end="url(#tip)"/>
+    <circle cx="90" cy="110" r="12" fill="#1f2937"/>
+    <circle cx="420" cy="110" r="12" fill="#1f2937"/><circle cx="680" cy="110" r="12" fill="#1f2937"/><circle cx="970" cy="110" r="12" fill="#1f2937"/>
+    <text x="420" y="142" text-anchor="middle" font-size="15" fill="#374151">squash</text>
+    <text x="680" y="92" text-anchor="middle" font-size="15" fill="#374151">squash</text>
+    <text x="970" y="142" text-anchor="middle" font-size="15" fill="#374151">squash</text>
+    <text x="30" y="150" font-size="20" font-weight="800" fill="#1f2937">main</text>
+    <text x="1125" y="150" text-anchor="end" font-size="15" fill="#6b7280">luôn deploy được</text>
   </svg>
-  <div class="tcards" style="margin-top:14px">
-    <div class="card"><h3>Chỉ <code>main</code> sống lâu</h3><p>Không có <code>develop</code> hay <code>release</code>. <code>main</code> luôn ở trạng thái deploy được, và chỉ <code>main</code> mới được deploy.</p></div>
-    <div class="card blue"><h3>Nhánh ngắn ≤ 2 ngày</h3><p>Đặt tên <code>feat/</code> · <code>fix/</code> · <code>chore/</code>. Mỗi nhánh một việc nhỏ nên PR nhỏ, review nhanh, ít xung đột.</p></div>
-    <div class="card violet"><h3>Squash merge</h3><p>Mỗi PR thành đúng <b>một commit</b> trên <code>main</code>. Lịch sử gọn, lỗi thì revert một commit là xong.</p></div>
+  <div class="g4" style="margin-top:10px">
+    <div class="card"><div class="lbl">Ruleset protect-main</div><p>Bắt buộc PR · bắt buộc check xanh · chỉ squash · chặn force push · bypass list rỗng.</p></div>
+    <div class="card"><div class="lbl">pre-commit gitleaks</div><p>Commit có mật khẩu giả bị chặn ngay ở máy, trước khi lên GitHub.</p></div>
+    <div class="card"><div class="lbl">Template PR</div><p>Mọi PR có mục <code>## AI usage</code>: phần nào AI viết, phần nào tự viết.</p></div>
+    <div class="card blue"><div class="lbl">CI v1</div><p><code>gitleaks</code> + <code>terraform fmt -check</code> + <code>validate</code>. D14 mở rộng thành 8 job.</p></div>
   </div>
   <div class="fill"></div>
-  <div class="note info">Trước khi push: <code>make check</code> chạy lại phần lint · test · build của CI · <b>pre-commit hook gitleaks</b> chặn commit có mật khẩu hay token.</div>
+  <div class="note warn" style="font-size:15px">Repo <b>private</b> trên gói Free: branch protection cũ không dùng được, nhưng <b>ruleset</b> vẫn chặn merge thật (đã chứng minh ở D14).</div>
 </section>
 
-<!-- ========== 4. BƯỚC 2 ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="on">2 PR</span><span>3 CI</span><span>4 Đăng nhập</span><span>5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2>Merge gate: Ruleset <code style="font-size:.85em">protect-main</code></h2>
-  <div class="gate">
-    <div class="card gray center"><div class="big" style="font-size:40px">Pull Request</div><p style="margin-top:10px">feat/… → <code>main</code><br>kèm mục <code>## AI usage</code></p></div>
-    <div class="arrow">→</div>
-    <div class="rules">
-      <h3 style="text-align:center;margin-bottom:2px">Ruleset · protect-main</h3>
-      <div class="rs">target: default branch · active</div>
-      <div class="en">✓ Require a pull request before merging</div>
-      <div class="en">✓ Require status checks to pass<small>8/8 required checks · Require branches to be up to date</small></div>
-      <div class="en">✓ Bypass list: empty<small>admin cũng không merge được khi đỏ</small></div>
-      <div class="en">✓ Allowed merge methods: Squash<small>Require linear history · Block force pushes · Restrict deletions</small></div>
-    </div>
-    <div class="arrow">→</div>
+<!-- ========== 8. D7–D9 ========== -->
+<section class="slide" data-days="7-9">
+  <div class="kicker">Tuần 2 · D7–D9 · Terraform</div>
+  <h2>Terraform hoá toàn bộ hạ tầng, và ba chỗ vấp</h2>
+  <div class="g2" style="grid-template-columns:1fr 1.25fr;gap:26px">
     <div class="col">
-      <div class="card green"><b style="color:var(--green)">mergeable_state: clean</b><p>8/8 xanh → nút Merge mở</p></div>
-      <div class="card red"><b style="color:var(--red)">mergeable_state: blocked</b><p>1 check đỏ → Merge bị khoá</p></div>
+      <div class="card gray"><div class="lbl">infra/bootstrap · dựng một lần</div><p>Resource group + Storage Account chứa state, khoá public access. Nằm <b>ngoài</b> vòng destroy.</p></div>
+      <div class="card blue"><div class="lbl">infra/app · bật sáng, tắt chiều</div><p>Plan P0v3 · 2 Web App + slot · MySQL B1ms · ACR (admin tắt) · Key Vault (RBAC) · 3 danh tính. Mật khẩu MySQL do <code>random_password</code> sinh, cất vào Key Vault.</p></div>
+      <div class="card"><div class="lbl">Lock = blob lease</div><p>Hai terminal <code>plan</code> cùng lúc: một cái bị khoá, chờ. Đã chụp lại lỗi để chứng minh.</p></div>
+      <div class="card"><div class="lbl">OIDC từ ngày 7</div><p>Tenant cấm tạo app registration → dùng <b>user-assigned MI + federated credential</b>.</p></div>
     </div>
+    <div class="col">
+      <div class="card red"><div class="lbl">Vấp 1 · Azure từ chối tạo plan</div><p>Lỗi 429 <b>7 lần trong 26 tiếng</b> ở Southeast Asia, gọi thẳng <code>az</code> cũng vậy (không phải lỗi Terraform). → Chuyển app sang <b>Central India</b>, MySQL ở lại (subscription không được tạo MySQL ở India).</p></div>
+      <div class="card amber"><div class="lbl">Vấp 2 · Con gà và quả trứng</div><p>Lúc apply lần đầu ACR còn trống, Web App không có image để chạy. → Image giữ chỗ + <code>ignore_changes</code> phần image; từ đó CD mới là bên đổi image.</p></div>
+      <div class="card amber"><div class="lbl">Vấp 3 · Firewall theo outbound IP</div><p><code>for_each</code> trên outbound IP của Web App, mà IP chỉ biết sau khi Web App tồn tại. → <code>make up</code> chạy <b>2 pha</b> (D16 thành 3 pha khi thêm <code>fe</code>).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 9. D10 GATE ========== -->
+<section class="slide" data-days="10">
+  <div class="kicker">Tuần 2 · D10 · GATE</div>
+  <h2>Xoá sạch rồi dựng lại, không một thao tác tay</h2>
+  <div class="g4 stat">
+    <div class="card blue"><div class="big" style="color:var(--blue)">24′27″</div><p><code>make up</code> từ rỗng tới môi trường chạy được</p></div>
+    <div class="card green"><div class="big" style="color:var(--green)">6/6</div><p>kiểm tra đạt: 200/200 · ACR admin tắt · KV RBAC · firewall 18=18 · slot MI · <code>plan</code> No changes</p></div>
+    <div class="card gray"><div class="big">19′21″</div><p><code>make down</code>: 36 resource, state về 0, không Key Vault nào kẹt soft-delete</p></div>
+    <div class="card amber"><div class="big" style="color:var(--amber)">6</div><p>lần chạy hỏng trước đó cùng ngày: mạng, stdin <code>yes</code>, state dở dang</p></div>
+  </div>
+  <div class="g3" style="margin-top:24px">
+    <div class="card"><div class="lbl">State là gì</div><p>Bản đồ giữa code và resource thật. Mất state thì Terraform tưởng chưa có gì, tạo trùng. State chứa mật khẩu → storage phải khoá quyền.</p></div>
+    <div class="card"><div class="lbl">Lock chống gì</div><p>Hai người cùng apply, ghi đè state của nhau. Azure hiện thực bằng lease trên blob.</p></div>
+    <div class="card"><div class="lbl">Dependency</div><p>Ngầm: tham chiếu thuộc tính của resource khác. Tường minh: <code>depends_on</code>, chỉ khi không có tham chiếu nào nói lên thứ tự.</p></div>
   </div>
   <div class="fill"></div>
-  <div class="ba">
-    <div class="note bad"><b>Phát hiện ở D14:</b> ruleset chỉ có 4/6 required checks → PR hỏng <code>frontend</code> ở trạng thái <code>unstable</code>, vẫn merge được.</div>
-    <div class="note ok"><b>Sau khi sửa:</b> thêm đủ 8 required checks → cùng PR đó chuyển sang <code>blocked</code>, không đổi dòng code nào.</div>
+  <div class="note info" style="font-size:15px">Log thô của cả hai lệnh nằm trong <code>evidence/raw/</code> → <code>evidence/M8.md</code>. M8 lần 2 (sau khi thêm ACR/KV/whitelist) nằm trong D15, đang hoãn.</div>
+</section>
+
+<!-- ========== 10. D11–D12 ========== -->
+<section class="slide" data-days="11-12">
+  <div class="kicker">Tuần 3 · D11–D12 · M1 M3 M4 M5</div>
+  <h2>App tự lấy image và mật khẩu bằng danh tính của nó</h2>
+  <div class="chain">
+    <div class="st"><b>① Push image</b>tag = git SHA, không dùng <code>latest</code>. Đăng nhập ACR bằng token Entra.</div>
+    <div class="ar">→</div>
+    <div class="st"><b>② Kéo image</b><code>id-vsf-app</code> có <code>AcrPull</code>. ACR <b>tắt admin user</b>.</div>
+    <div class="ar">→</div>
+    <div class="st"><b>③ Lấy mật khẩu</b>App setting chỉ là <code>@Microsoft.KeyVault(…)</code>, trạng thái <b>Resolved</b>.</div>
+    <div class="ar">→</div>
+    <div class="st"><b>④ Nối MySQL</b>qua TLS · <code>POST /items</code> 201, <code>GET</code> 200 trên production.</div>
+  </div>
+  <div class="g2" style="margin-top:22px;grid-template-columns:1.2fr 1fr">
+    <div class="col">
+      <h3>M5: chứng minh ngược, gỡ quyền thì app phải gãy</h3>
+      <div class="term"><span class="p">1</span> gỡ role Secrets User của MI khỏi Key Vault
+<span class="p">2</span> refresh reference → <span class="e">AccessToKeyVaultDenied</span>
+<span class="p">3</span> app thấy chuỗi <code style="background:none;color:inherit">@Microsoft.KeyVault(</code> → <span class="e">thoát, báo lỗi rõ</span>
+<span class="p">4</span> trả role → reference <span class="g">Resolved</span> → app <span class="g">sống lại</span>
+<span class="cm"># 12/12 ô đo đạt · terraform plan cuối: No changes</span>
+</div>
+    </div>
+    <div class="col">
+      <div class="card blue"><div class="lbl">Vì sao user-assigned MI</div><p>System-assigned gắn với từng slot, <b>không đi theo code khi swap</b>. Một danh tính chung cho cả production và staging thì swap xong quyền vẫn đúng.</p></div>
+      <div class="card"><div class="lbl">Không secret plaintext</div><p>App settings không chứa mật khẩu nào. Connection string App Insights (D20) cũng đi qua Key Vault.</p></div>
+    </div>
   </div>
 </section>
 
-<!-- ========== 12c. CI JOBS ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="on">3 CI</span><span>4 Đăng nhập</span><span>5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2 style="margin-bottom:12px">CI · <code style="font-size:.8em">ci.yml</code>: 8 job trên mỗi Pull Request</h2>
-  <div class="runbar"><span>Trigger <b>pull_request → main</b></span><span>Run <b>#64</b> · PR #46</span><span class="ok">✓ Success</span><span>Tổng <b>2m 9s</b></span><span>Artifact <b>plan.txt</b></span></div>
-  <div class="cigrid">
-    <div class="parallel">
-      <div class="pl">6 job chạy song song</div>
-      <div class="job"><div class="jh"><span class="jn">gitleaks</span><span class="jt">7s</span></div><div class="js">Lấy toàn bộ lịch sử git → quét secret. <b>Bắt:</b> mật khẩu, token lọt vào code.</div></div>
-      <div class="job"><div class="jh"><span class="jn">dotnet (format, build, test)</span><span class="jt">1m 28s</span></div><div class="js">MySQL 8.4 thật → <code>dotnet format</code> → build → test. <b>Bắt:</b> backend sai format, lỗi build, test hỏng.</div></div>
-      <div class="job"><div class="jh"><span class="jn">frontend (lint, build)</span><span class="jt">48s</span></div><div class="js"><code>npm ci</code> → lint → <code>next build</code>. <b>Bắt:</b> lỗi lint, lỗi kiểu TypeScript.</div></div>
-      <div class="job"><div class="jh"><span class="jn">docker build + trivy (be)</span><span class="jt">47s</span></div><div class="js">Build image .NET, <b>không push</b> → Trivy. <b>Bắt:</b> Dockerfile hỏng, lỗ hổng CRITICAL/HIGH.</div></div>
-      <div class="job"><div class="jh"><span class="jn">docker build + trivy (fe)</span><span class="jt">1m 1s</span></div><div class="js">Build image Next.js (<code>node:24-alpine</code>), không push → Trivy. <b>Bắt:</b> lỗi riêng của image frontend. Lần đầu đo ra 1 CRITICAL + 13 HIGH, đã sửa về 0.</div></div>
-      <div class="job"><div class="jh"><span class="jn">azure login (OIDC)</span><span class="jt">14s</span></div><div class="js">Đăng nhập bằng <code>id-gh-plan</code>. <b>Bắt:</b> đăng nhập không mật khẩu (OIDC) bị hỏng.</div></div>
-    </div>
-    <div class="tfrow">
-      <div class="pl">2 job nối tiếp</div>
-      <div class="tfchain">
-        <div class="job"><div class="jh"><span class="jn">terraform (fmt, validate)</span><span class="jt">18s</span></div><div class="js"><code>fmt -check</code> → <code>validate</code>. <b>Bắt:</b> file hạ tầng sai format, cấu hình không hợp lệ.</div></div>
-        <div class="arrow" style="flex-direction:column;font-size:22px">→<span style="font-size:12px">needs</span></div>
-        <div class="job"><div class="jh"><span class="jn">terraform plan (infra/app)</span><span class="jt">1m 45s</span></div><div class="js">OIDC <code>id-gh-plan</code> → <code>init</code> → <code>plan</code> → xuất <b>plan.txt</b> làm artifact + tóm tắt vào job summary.</div></div>
+<!-- ========== 11. D13 ========== -->
+<section class="slide" data-days="13">
+  <div class="kicker">Tuần 3 · D13 · M6</div>
+  <h2>IP whitelist: khoá đủ 8 cửa, kể cả cửa sau</h2>
+  <div class="g2" style="grid-template-columns:1fr 1.1fr;gap:26px">
+    <div class="col">
+      <div class="g2" style="gap:10px">
+        <div class="card blue"><div class="lbl">be · site</div><p>trang chính</p></div>
+        <div class="card blue"><div class="lbl">be · SCM</div><p>Kudu, cửa quản trị</p></div>
+        <div class="card blue"><div class="lbl">be staging · site</div><p>slot</p></div>
+        <div class="card blue"><div class="lbl">be staging · SCM</div><p>Kudu của slot</p></div>
       </div>
+      <p class="muted" style="font-size:15px">× 2 khi thêm <code>fe</code> ở D16 = <b>8 bề mặt</b>. Đo thật: IP ngoài nhận <b>403 cả 8</b>.</p>
+      <div class="card"><div class="lbl">Bằng chứng 403 lấy từ đâu</div><p>Máy làm việc chạy bằng hotspot điện thoại, nên "đổi sang hotspot" như guide gợi ý không ra IP khác. → Workflow <code>m6-check.yml</code> gọi 8 bề mặt từ runner GitHub, đỏ nếu mã HTTP lệch.</p></div>
     </div>
-    <div class="note info" style="font-size:15px">Cả 8 job là <b>required check</b> của Ruleset <code>protect-main</code>: một job đỏ là PR không merge được. Commit mới lên cùng PR thì run cũ tự huỷ.</div>
+    <div class="col">
+      <div class="note bad"><b>Cái bẫy thật.</b> <code>scm_use_main_ip_restriction = true</code> chỉ cho Kudu mượn <i>danh sách luật</i>, không mượn hành động mặc định. Cùng IP ngoài, cùng lúc: site chính <b>403</b>, Kudu <b>200</b>.</div>
+      <div class="term">ip_restriction_default_action     = <span class="g">"Deny"</span>
+scm_use_main_ip_restriction       = <span class="g">true</span>
+scm_ip_restriction_default_action = <span class="g">"Deny"</span>  <span class="cm"># thiếu là Kudu hở</span>
+</div>
+      <div class="note warn" style="font-size:15px">Mạng nhà mạng NAT qua <b>hai IP song song</b> (70 mẫu, ~50/50). Whitelist phải khai cả hai, không thì cứ hai request bị chặn một. IP thật nằm trong <code>terraform.tfvars</code>, không commit.</div>
+    </div>
   </div>
 </section>
 
-<!-- ========== 6. BẰNG CHỨNG CI ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="on">3 CI</span><span>4 Đăng nhập</span><span>5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2>Cố tình làm sai 6 lần: lần nào cũng bị chặn</h2>
-  <div class="score">
-    <div class="card red"><div class="pr">PR #34</div><div class="what">Cài một mật khẩu giả vào code</div><span class="pill red">gitleaks · CHẶN</span></div>
-    <div class="card red"><div class="pr">PR #35</div><div class="what">Gõ sai lệnh trong Dockerfile</div><span class="pill red">build image · CHẶN</span></div>
-    <div class="card red"><div class="pr">PR #36</div><div class="what">Cho ticket đã đóng mở lại được</div><span class="pill red">test · CHẶN</span></div>
-    <div class="card red"><div class="pr">PR #37</div><div class="what">Thụt lề sai file Terraform</div><span class="pill red">terraform · CHẶN</span></div>
-    <div class="card red"><div class="pr">PR #38</div><div class="what">Dùng image nền cũ có 56 lỗ hổng</div><span class="pill red">Trivy · CHẶN</span></div>
-    <div class="card red"><div class="pr">PR #33</div><div class="what">Lỗi kiểu dữ liệu ở frontend</div><span class="pill red">2 bài · CHẶN</span></div>
+<!-- ========== 12. D14 ========== -->
+<section class="slide" data-days="14-15">
+  <div class="kicker">Tuần 3 · D14 · M9</div>
+  <h2 style="margin-bottom:14px">CI 8 job, và cố tình làm sai 6 lần</h2>
+  <div class="g4" style="gap:10px">
+    <div class="job"><b>gitleaks</b>quét secret toàn lịch sử git</div>
+    <div class="job"><b>dotnet</b>format · build · test trên MySQL 8.4 thật</div>
+    <div class="job"><b>frontend</b>lint · test · <code>next build</code></div>
+    <div class="job"><b>azure login (OIDC)</b>đăng nhập không mật khẩu còn chạy</div>
+    <div class="job"><b>terraform</b><code>fmt -check</code> · <code>validate</code></div>
+    <div class="job"><b>terraform plan</b>xuất <code>plan.txt</code> làm artifact cho reviewer</div>
+    <div class="job"><b>docker + trivy (be)</b>build không push, chặn CRITICAL/HIGH</div>
+    <div class="job"><b>docker + trivy (fe)</b>lần đầu 1 CRITICAL + 13 HIGH → sửa về 0</div>
+  </div>
+  <div class="g4 score" style="margin-top:16px;gap:10px">
+    <div class="card red"><div class="pr">PR #34</div><div class="what">Cài mật khẩu giả vào code</div><span class="pill red">gitleaks · CHẶN</span></div>
+    <div class="card red"><div class="pr">PR #35</div><div class="what">Gõ sai lệnh trong Dockerfile</div><span class="pill red">build · CHẶN</span></div>
+    <div class="card red"><div class="pr">PR #36</div><div class="what">Ticket đã đóng mở lại được</div><span class="pill red">test · CHẶN</span></div>
+    <div class="card red"><div class="pr">PR #37</div><div class="what">Thụt lề sai file Terraform</div><span class="pill red">fmt · CHẶN</span></div>
+    <div class="card red"><div class="pr">PR #38</div><div class="what">Image nền cũ, 56 lỗ hổng</div><span class="pill red">Trivy · CHẶN</span></div>
+    <div class="card red"><div class="pr">PR #33</div><div class="what">Lỗi kiểu dữ liệu ở frontend</div><span class="pill red">frontend · CHẶN</span></div>
     <div class="card green"><div class="pr">PR #39</div><div class="what">PR đúng, để đối chứng</div><span class="pill green">8/8 · MERGE ĐƯỢC</span></div>
-    <div class="card gray"><div class="pr">Trivy frontend</div><div class="what">14 lỗ hổng → 0</div><span class="muted" style="font-size:14px">bằng cách bỏ npm khỏi image</span></div>
+    <div class="card gray"><div class="pr">phát hiện</div><div class="what">Ruleset chỉ bắt 4/6 check → sửa đủ 8</div><span class="pill amber">lỗ M9 thật</span></div>
   </div>
   <div class="fill"></div>
-  <div class="term"><span class="p">$</span> gh pr merge 33 --squash<br><span class="e">X Pull request #33 is not mergeable: the base branch policy prohibits the merge.</span></div>
+  <div class="note warn" style="font-size:15px"><b>D15 hoãn:</b> cross-review lần 1 cần repo của intern kia. Nhảy sang D16 để không đứng chờ; kế hoạch D15 giữ nguyên, quay lại làm tiếp được ngay.</div>
 </section>
 
-<!-- ========== 7. OIDC ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="on">4 Đăng nhập</span><span>5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2 style="margin-bottom:8px">Đăng nhập Azure không cần mật khẩu (OIDC)</h2>
-  <p class="muted" style="font-size:15px;margin-bottom:10px">Ví dụ: job <code>preflight</code> của CD. Job phải khai <code>permissions: id-token: write</code> mới xin được JWT. <code>client_id</code> nằm trong GitHub Variables, không phải secret.</p>
-  <div class="oidc">
-    <svg viewBox="0 0 1160 338" width="1160" height="338" role="img" aria-label="Luồng OIDC 8 bước giữa job GitHub, GitHub OIDC, Entra ID và Azure">
-    <defs><marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
-    <rect x="20" y="0" width="200" height="30" rx="15" fill="#f3f4f6"/><text x="120" y="20" text-anchor="middle" font-size="15.5" font-weight="800" fill="#374151">Job GitHub Actions</text>
-    <line x1="120" y1="32" x2="120" y2="338" stroke="#d1d5db" stroke-width="2" stroke-dasharray="4 5"/>
-    <rect x="320" y="0" width="200" height="30" rx="15" fill="#f3f4f6"/><text x="420" y="20" text-anchor="middle" font-size="15.5" font-weight="800" fill="#374151">GitHub OIDC</text>
-    <line x1="420" y1="32" x2="420" y2="338" stroke="#d1d5db" stroke-width="2" stroke-dasharray="4 5"/>
-    <rect x="620" y="0" width="200" height="30" rx="15" fill="#fffbeb"/><text x="720" y="20" text-anchor="middle" font-size="15.5" font-weight="800" fill="#b45309">Microsoft Entra ID</text>
-    <line x1="720" y1="32" x2="720" y2="338" stroke="#d1d5db" stroke-width="2" stroke-dasharray="4 5"/>
-    <rect x="930" y="0" width="200" height="30" rx="15" fill="#eff6ff"/><text x="1030" y="20" text-anchor="middle" font-size="15.5" font-weight="800" fill="#2563eb">Azure</text>
-    <line x1="1030" y1="32" x2="1030" y2="338" stroke="#d1d5db" stroke-width="2" stroke-dasharray="4 5"/>
-    <line x1="120" y1="60" x2="412" y2="60" stroke="#6b7280" stroke-width="2.5" marker-end="url(#oa)"/><circle cx="120" cy="60" r="11" fill="#2563eb"/><text x="120" y="64" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">1</text><text x="140" y="52" text-anchor="start" font-size="15" fill="#1f2937">Xin JWT cho Azure</text>
-    <line x1="420" y1="96" x2="128" y2="96" stroke="#6b7280" stroke-width="2.5" marker-end="url(#oa)"/><circle cx="420" cy="96" r="11" fill="#2563eb"/><text x="420" y="100" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">2</text><text x="400" y="88" text-anchor="end" font-size="15" fill="#1f2937">Trả JWT có chữ ký: iss · aud · sub</text>
-    <line x1="120" y1="132" x2="712" y2="132" stroke="#6b7280" stroke-width="2.5" marker-end="url(#oa)"/><circle cx="120" cy="132" r="11" fill="#2563eb"/><text x="120" y="136" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">3</text><text x="140" y="124" text-anchor="start" font-size="15" fill="#1f2937">Gửi JWT + client_id của id-gh-deploy</text>
-    <line x1="720" y1="168" x2="428" y2="168" stroke="#6b7280" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#oa)"/><circle cx="720" cy="168" r="11" fill="#2563eb"/><text x="720" y="172" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">4</text><text x="700" y="160" text-anchor="end" font-size="15" fill="#1f2937">Tải khoá công khai, kiểm chữ ký</text>
-    <rect x="708" y="191" width="360" height="26" rx="6" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/><circle cx="708" cy="204" r="11" fill="#2563eb"/><text x="708" y="208" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">5</text><text x="728" y="209" font-size="15" fill="#1f2937">So iss · aud · sub với luật đã đăng ký</text>
-    <line x1="720" y1="240" x2="128" y2="240" stroke="#15803d" stroke-width="2.5" marker-end="url(#oa)"/><circle cx="720" cy="240" r="11" fill="#2563eb"/><text x="720" y="244" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">6</text><text x="700" y="232" text-anchor="end" font-size="15" fill="#1f2937">Khớp → cấp access token Azure (sống ngắn)</text>
-    <line x1="120" y1="276" x2="1022" y2="276" stroke="#6b7280" stroke-width="2.5" marker-end="url(#oa)"/><circle cx="120" cy="276" r="11" fill="#2563eb"/><text x="120" y="280" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">7</text><text x="140" y="268" text-anchor="start" font-size="15" fill="#1f2937">Gọi Azure bằng token: az acr login · push image · swap</text>
-    <rect x="790" y="299" width="360" height="26" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/><circle cx="790" cy="312" r="11" fill="#2563eb"/><text x="790" y="316" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">8</text><text x="810" y="317" font-size="15" fill="#1f2937">RBAC: có AcrPush? Website Contributor?</text>
-    </svg>
+<!-- ========== 13. D16 ========== -->
+<section class="slide" data-days="16">
+  <div class="kicker">Tuần 4 · D16 · M10</div>
+  <h2>CD: merge vào <code style="font-size:.85em">main</code> là production đổi, không thao tác tay</h2>
+  <div class="chain">
+    <div class="st"><b>preflight · 18s</b>Môi trường có đủ <code>be</code>, <code>fe</code>, ACR không? Tắt cuối ngày → dừng, <b>vẫn xanh</b>.</div>
+    <div class="ar">→</div>
+    <div class="st" style="flex:1.3;background:var(--blue-bg);border-color:#93c5fd"><b>build + push + staging · ~5′</b>Build <code>be</code> + <code>fe</code>, tag = SHA → Trivy → push ACR → đặt image cho slot staging.</div>
+    <div class="ar">→</div>
+    <div class="st" style="background:var(--green-bg);border-color:#86efac"><b>swap · ~2,5′</b><code>be</code> trước, <code>fe</code> sau: <code>fe</code> cũ gọi <code>be</code> mới ít rủi ro hơn ngược lại.</div>
   </div>
-  <div class="match">
-    <div class="mcard">
-      <div class="lbl">GitHub gửi · JWT</div>
-      <div class="kv"><span>iss</span><code>https://token.actions.githubusercontent.com</code></div>
-      <div class="kv"><span>aud</span><code>api://AzureADTokenExchange</code></div>
-      <div class="kv"><span>sub</span><code>repo:lam3082004@…/devops_vsf@…:ref:refs/heads/main</code></div>
-    </div>
-    <div class="eq"><div>=</div><div>=</div><div>=</div></div>
-    <div class="mcard reg">
-      <div class="lbl">Entra đã đăng ký · federated credential của id-gh-deploy</div>
-      <div class="kv"><span>issuer</span><code>https://token.actions.githubusercontent.com</code></div>
-      <div class="kv"><span>audience</span><code>api://AzureADTokenExchange</code></div>
-      <div class="kv"><span>subject</span><code>repo:lam3082004@…/devops_vsf@…:ref:refs/heads/main</code></div>
-    </div>
-  </div>
-  <p style="font-size:15px;margin-top:8px"><b style="color:var(--red)">Chạy từ nhánh <code>feat/…</code>:</b> sub thành <code>…:ref:refs/heads/feat/…</code>, không khớp luật nào → Entra trả <code>AADSTS700213</code>, job dừng ở bước 5.</p>
-</section>
-
-<!-- ========== 8. CHÌA KHOÁ ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="on">4 Đăng nhập</span><span>5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2>Ba danh tính, mỗi cái chỉ đủ quyền cho việc của nó</h2>
-  <div class="idgrid">
-    <div class="key" style="border-color:#d1d5db;background:var(--gray-bg)">
-      <div class="who">id-gh-plan</div><div class="when" style="color:var(--muted)">CI · trên Pull Request</div>
-      <p>Xem trước thay đổi hạ tầng bằng <code>terraform plan</code>. Không được apply.</p>
-      <div class="roles">
-        <div class="role"><b>Reader</b><span>subscription</span></div>
-        <div class="role"><b>Storage Blob Data Contributor</b><span>storage chứa state · plan phải khoá state</span></div>
-        <div class="role"><b>Key Vault Secrets User</b><span>Key Vault</span></div>
-        <div class="role"><b>vsf-gh-plan-web-config-reader</b><span>role tự tạo · đọc cấu hình web app</span></div>
-      </div>
-    </div>
-    <div class="key" style="border-color:#93c5fd;background:var(--blue-bg)">
-      <div class="who">id-gh-deploy</div><div class="when" style="color:var(--blue)">CD · trên main</div>
-      <p>Đẩy image, đặt image cho staging, swap. Chỉ quản lý web app trong <code>rg-vsf-dev</code>, không đụng DB hay Key Vault, không cấp quyền được.</p>
-      <div class="roles">
-        <div class="role"><b>AcrPush</b><span>ACR</span></div>
-        <div class="role"><b>Website Contributor</b><span>rg-vsf-dev · cả 2 app, cả 2 slot</span></div>
-        <div class="role"><b>Reader</b><span>rg-vsf-dev · cần cho az acr login</span></div>
-        <div class="role dim"><b>Storage Blob Data Contributor</b><span>storage chứa state · hiện chưa dùng</span></div>
-      </div>
-    </div>
-    <div class="key" style="border-color:#86efac;background:var(--green-bg)">
-      <div class="who">id-vsf-app</div><div class="when" style="color:var(--green)">App đang chạy · production + staging</div>
-      <p>Kéo image và đọc mật khẩu database. Chỉ vậy.</p>
-      <div class="roles">
-        <div class="role"><b>AcrPull</b><span>ACR</span></div>
-        <div class="role"><b>Key Vault Secrets User</b><span>Key Vault</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="fill"></div>
-  <h3 style="margin-top:10px">Ba lớp chặn "nhánh khác deploy"</h3>
-  <div class="layers">
-    <div class="card gray"><b>1 · Trigger</b><p>Workflow chỉ chạy khi push vào <code>main</code></p></div>
-    <div class="card blue"><b>2 · Environment</b><p>GitHub chỉ cho <code>main</code> vào <code>staging-deploy</code>, <code>production</code></p></div>
-    <div class="card" style="background:var(--blue);border-color:var(--blue);color:#fff"><b>3 · OIDC subject</b><p>Job preflight: Entra kiểm tên nhánh trong token, sai nhánh là dừng trước khi deploy</p></div>
-  </div>
-</section>
-
-<!-- ========== 9. PREFLIGHT ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="done">4 Đăng nhập</span><span class="on">5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2>Merge xong, CD hỏi trước: "có chỗ để deploy không?"</h2>
-  <div class="tree">
-    <div class="card gray center" style="width:420px"><b>Merge vào main</b> → CD tìm trên Azure: có backend, frontend và ACR không?</div>
-    <div class="darrow">↓</div>
-    <div class="diamond">Tìm thấy những gì?</div>
-    <div class="branches">
-      <div class="card green center"><h3>Không có gì</h3><p>Môi trường đã tắt cuối ngày.<br><b>Dừng lại, vẫn báo xanh.</b></p></div>
-      <div class="card amber center"><h3>Thiếu một phần</h3><p>Môi trường dựng dở.<br><b>Dừng lại, ghi rõ thiếu gì</b> (vẫn xanh), vì dở dang còn nguy hiểm hơn trống.</p></div>
-      <div class="card blue center"><h3>Đủ cả ba</h3><p>Đi tiếp sang bước Staging.</p></div>
-    </div>
-  </div>
-  <div class="fill"></div>
-  <div class="note info" style="margin-top:18px"><b>Hai lần merge sát nhau</b> thì CD xếp hàng chạy lần lượt, không huỷ nhau. Huỷ giữa lúc đang swap sẽ để production ở trạng thái không ai biết.</div>
-</section>
-
-<!-- ========== 12d. CD JOBS ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="done">4 Đăng nhập</span><span class="on">5 CD</span><span>6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2 style="margin-bottom:12px">CD · <code style="font-size:.8em">cd.yml</code>: 3 job nối tiếp sau khi merge</h2>
-  <div class="runbar"><span>Trigger <b>push → main</b> · commit <code>92b0a35</code></span><span>Run <b>#8</b></span><span class="ok">✓ Success</span><span>Tổng <b>7m 55s</b></span><span>Run xếp hàng, không huỷ nhau</span></div>
-  <div class="cdgrid">
-    <div class="job big">
-      <div class="jn">preflight</div>
-      <div class="jt">18s</div>
-      <span class="envtag" style="background:var(--gray-bg);color:var(--muted)">không environment</span>
-      <ol>
-        <li>OIDC <code>id-gh-deploy</code> (token mang nhánh <code>main</code>)</li>
-        <li>Tìm tên thật của <b>be</b>, <b>fe</b>, <b>ACR</b></li>
-        <li>Ghi <code>should_deploy</code>: thiếu thì dừng, vẫn xanh</li>
-      </ol>
-    </div>
-    <div class="arrow">→</div>
-    <div class="job big" style="border-color:#93c5fd">
-      <div class="jn">build + push ACR + set image slot staging</div>
-      <div class="jt">4m 50s</div>
-      <span class="envtag">environment: staging-deploy</span>
-      <ol>
-        <li>OIDC → <code>az acr login</code> bằng Entra</li>
-        <li>Build image <b>be</b> + <b>fe</b>, tag = commit SHA</li>
-        <li>Trivy chặn CRITICAL/HIGH</li>
-        <li>Push lên ACR</li>
-        <li>Đặt image mới cho slot <b>staging</b></li>
-        <li>Kiểm cờ pull bằng managed identity</li>
-        <li>Chờ container khởi động (75s)</li>
-      </ol>
-    </div>
-    <div class="arrow">→</div>
-    <div class="job big" style="border-color:#86efac">
-      <div class="jn">swap staging → production</div>
-      <div class="jt">2m 34s</div>
-      <span class="envtag" style="background:var(--green-bg);color:var(--green)">environment: production</span>
-      <ol>
-        <li>OIDC <code>id-gh-deploy</code></li>
-        <li>Swap <b>be</b> trước</li>
-        <li>Swap <b>fe</b> sau</li>
-        <li>Ghi summary (<code>if: always()</code>) + link fe</li>
-      </ol>
-    </div>
-  </div>
-  <div style="height:22px"></div>
-  <div class="tl" style="height:34px">
-    <div style="flex:18;background:#6b7280" title="preflight 18s"></div>
-    <div style="flex:290;background:#2563eb">build + push + set image · 4m 50s</div>
-    <div style="flex:154;background:#15803d">swap · 2m 34s</div>
-  </div>
-  <p class="muted" style="font-size:14px;margin-top:6px">▌ xám: preflight 18s · thời gian thật của run #8</p>
-  <div class="fill"></div>
-  <div class="row">
-    <div class="note ok grow" style="font-size:16px"><b>Rollback:</b> slot staging đang giữ bản cũ → swap lại là quay về, không cần build.</div>
-    <div class="note info grow" style="font-size:16px"><b>Chỉ main deploy được:</b> trigger + environment + OIDC subject chặn nhánh khác.</div>
-  </div>
-</section>
-
-<!-- ========== 11. CHẠY THỬ ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="done">4 Đăng nhập</span><span class="done">5 CD</span><span class="on">6 Staging</span><span>7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2>Staging: build, đẩy lên ACR, rồi chạy thử</h2>
-  <p class="muted" style="margin:-14px 0 22px">Slot staging là một bản sao của app, chạy song song với production nhưng người dùng chưa thấy.</p>
-  <div class="split">
+  <div class="g2" style="margin-top:20px;gap:24px">
     <div class="col">
-      <div class="card gray"><div class="lbl">CD làm (job build-deploy-staging)</div>
-        <div class="col" style="gap:6px;margin-top:10px;font-size:17px">
-          <div>① Build image <b>be</b> + <b>fe</b></div>
-          <div>② Quét Trivy · có lỗi CRITICAL/HIGH là dừng</div>
-          <div>③ Push lên ACR · tag = commit SHA</div>
-          <div>④ Nói với staging: <b>"chạy image mới này"</b></div>
-        </div></div>
-      <div class="note bad"><b>Chưa ổn:</b> CD chỉ đợi cố định 75 giây rồi coi như xong, không kiểm app đã chạy đúng chưa. D17 sẽ sửa.</div>
+      <h3>Ba danh tính, mỗi cái chỉ đủ quyền cho việc của nó</h3>
+      <div class="card"><p><code>id-gh-plan</code> · CI trên PR · được <code>plan</code> (đọc hạ tầng, khoá state), <b>không được <code>apply</code></b></p></div>
+      <div class="card"><p><code>id-gh-deploy</code> · CD trên <code>main</code> · <code>AcrPush</code> + <code>Website Contributor</code> + <code>Reader</code></p></div>
+      <div class="card"><p><code>id-vsf-app</code> · app đang chạy · <code>AcrPull</code> + <code>Key Vault Secrets User</code></p></div>
     </div>
     <div class="col">
-      <div class="lbl" style="font-size:13px;font-weight:700;color:var(--blue);letter-spacing:.05em">AZURE TỰ LÀM, BẰNG DANH TÍNH CỦA APP</div>
-      <div class="vstep">1. Kéo image từ ACR<small>có quyền AcrPull; ACR đã tắt tài khoản admin</small></div>
-      <div class="vstep">2. Lấy mật khẩu database từ Key Vault<small>trong cấu hình chỉ có địa chỉ secret, không có mật khẩu thật</small></div>
-      <div class="vstep">3. Khởi động app<small>lấy mật khẩu hỏng thì app tự tắt ngay, báo lỗi rõ ràng</small></div>
-      <div class="note ok" style="font-size:15.5px">Staging và production dùng <b>chung một danh tính</b>, nên swap xong quyền vẫn đúng.</div>
+      <h3>Ba lớp chặn nhánh khác deploy</h3>
+      <div class="card blue"><p><b>1 · Trigger</b> workflow chỉ chạy khi push vào <code>main</code></p></div>
+      <div class="card blue"><p><b>2 · Environment</b> <code>staging-deploy</code>, <code>production</code> chỉ cho <code>main</code></p></div>
+      <div class="card blue"><p><b>3 · OIDC subject</b> token mang tên nhánh; sai nhánh → Entra trả <code>AADSTS700213</code> (đã đo bằng run thật)</p></div>
     </div>
   </div>
-</section>
-
-<!-- ========== 12. SWAP ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="done">4 Đăng nhập</span><span class="done">5 CD</span><span class="done">6 Staging</span><span class="on">7 Production</span><span>8 Flow CI/CD</span></div>
-  <h2>Production: swap staging ↔ production</h2>
-  <div class="swapviz">
-    <div class="slotpair">
-      <div class="muted center" style="font-weight:700">Trước</div>
-      <div class="slot prod"><span class="nm">Production</span><span class="ver vA">bản A</span></div>
-      <div class="slot stg"><span class="nm">Staging</span><span class="ver vB">bản B</span></div>
-    </div>
-    <div class="swapicon">⇄<small>swap</small></div>
-    <div class="slotpair">
-      <div class="muted center" style="font-weight:700">Sau</div>
-      <div class="slot prod"><span class="nm">Production</span><span class="ver vB">bản B</span></div>
-      <div class="slot stg"><span class="nm">Staging</span><span class="ver vA">bản A</span></div>
-    </div>
-  </div>
-  <div class="row" style="margin-top:26px">
-    <div class="note ok grow"><b>Bản cũ vẫn nằm ở staging.</b> Bản mới lỗi thì swap lại một lần, khoảng 2–3 phút, không cần build lại.</div>
-    <div class="note info grow"><b>Đổi backend trước, frontend sau:</b> frontend cũ gọi backend mới ít rủi ro hơn frontend mới gọi API chưa có.</div>
-  </div>
   <div class="fill"></div>
-  <h3>Một lần deploy thật: khoảng 7 phút</h3>
-  <div class="tl">
-    <div style="flex:34;background:#6b7280">chuẩn bị</div>
-    <div style="flex:66;background:#2563eb">build 66s</div>
-    <div style="flex:15;background:#d97706">quét</div>
-    <div style="flex:36;background:#1d4ed8">đẩy 36s</div>
-    <div style="flex:43;background:#0891b2">đặt image</div>
-    <div style="flex:75;background:#d1d5db;color:#374151">chờ 75s</div>
-    <div style="flex:158;background:#15803d">swap 158s</div>
-  </div>
+  <div class="note ok" style="font-size:15px">Lần chạy end-to-end: merge PR #43 → 3 job tự chạy → <code>/version</code> của <b>cả hai</b> service đổi sang đúng SHA mới. Merge → production khoảng <b>7–8 phút</b>.</div>
 </section>
 
-<!-- ========== 12b. FLOW CI/CD ========== -->
-<section class="slide">
-  <div class="steps"><span class="done">1 Viết code</span><span class="done">2 PR</span><span class="done">3 CI</span><span class="done">4 Đăng nhập</span><span class="done">5 CD</span><span class="done">6 Staging</span><span class="done">7 Production</span><span class="on">8 Flow CI/CD</span></div>
-  <h2 style="margin-bottom:10px">Flow CI/CD hiện tại</h2>
-  <div class="mmd">
-<svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flowchart" style="max-width: 1882.4px; background-color: white;" viewBox="0 -2 1882.395263671875 739.7000122070312" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#my-svg{font-family:Noto Sans,sans-serif;font-size:22px;fill:#1f2937;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:hsl(33.75, 100%, 100%);}#my-svg .error-text{fill:#000000;stroke:#000000;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#9ca3af;stroke:#9ca3af;}#my-svg .marker.cross{stroke:#9ca3af;}#my-svg svg{font-family:Noto Sans,sans-serif;font-size:22px;}#my-svg p{margin:0;}#my-svg .label{font-family:Noto Sans,sans-serif;color:#1f2937;}#my-svg .cluster-label text{fill:#000000;}#my-svg .cluster-label span{color:#000000;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .label text,#my-svg span{fill:#1f2937;color:#1f2937;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#eff6ff;stroke:#93c5fd;stroke-width:1px;}#my-svg .rough-node .label text,#my-svg .node .label text,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-anchor:middle;}#my-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#my-svg .rough-node .label,#my-svg .node .label,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .root .anchor path{fill:#9ca3af!important;stroke-width:0;stroke:#9ca3af;}#my-svg .arrowheadPath{fill:#0b0b0b;}#my-svg .edgePaths .path{stroke:#9ca3af;stroke-width:1px;}#my-svg .flowchart-link{stroke:#9ca3af;fill:none;}#my-svg .edgeLabel{background-color:#ffffff;text-align:center;}#my-svg .edgeLabel p{background-color:#ffffff;}#my-svg .edgeLabel rect{opacity:0.5;background-color:#ffffff;fill:#ffffff;}#my-svg .labelBkg{background-color:rgba(255, 255, 255, 0.5);}#my-svg .cluster rect{fill:#f9fafb;stroke:#d1d5db;stroke-width:1px;}#my-svg .cluster text{fill:#000000;}#my-svg .cluster span{color:#000000;}#my-svg .node .collapsed-indicator{fill:#d1d5db;stroke:none;opacity:0.6;}#my-svg .node .collapsed-separator{stroke:#d1d5db;stroke-width:0.75px;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:Noto Sans,sans-serif;font-size:12px;background:hsl(33.75, 100%, 100%);border:1px solid hsl(33.75, 60%, 90%);border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#1f2937;}#my-svg rect.text{fill:none;stroke-width:0;}#my-svg .icon-shape,#my-svg .image-shape{background-color:#ffffff;text-align:center;}#my-svg .icon-shape p,#my-svg .image-shape p{background-color:#ffffff;padding:2px;}#my-svg .icon-shape .label rect,#my-svg .image-shape .label rect{opacity:0.5;background-color:#ffffff;fill:#ffffff;}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg .node .neo-node{stroke:#93c5fd;}#my-svg [data-look="neo"].node rect,#my-svg [data-look="neo"].cluster rect,#my-svg [data-look="neo"].node polygon{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].swimlane.cluster rect{filter:none;}#my-svg [data-look="neo"].node path{stroke:url(#my-svg-gradient);stroke-width:1px;}#my-svg [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node .neo-line path{stroke:#93c5fd;filter:none;}#my-svg [data-look="neo"].node circle{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node circle .state-start{fill:#000000;}#my-svg [data-look="neo"].icon-shape .icon{fill:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].icon-shape .icon-neo path{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg :root{--mermaid-font-family:Noto Sans,sans-serif;}#my-svg .mgate rect{stroke:rgb(124, 58, 237)!important;stroke-width:3px!important;fill:rgb(245, 243, 255)!important;}#my-svg .mgate polygon{stroke:rgb(124, 58, 237)!important;stroke-width:3px!important;fill:rgb(245, 243, 255)!important;}#my-svg .mgate ellipse{stroke:rgb(124, 58, 237)!important;stroke-width:3px!important;fill:rgb(245, 243, 255)!important;}#my-svg .mgate circle{stroke:rgb(124, 58, 237)!important;stroke-width:3px!important;fill:rgb(245, 243, 255)!important;}#my-svg .mgate path{stroke:rgb(124, 58, 237)!important;stroke-width:3px!important;fill:rgb(245, 243, 255)!important;}#my-svg .mleaf rect{stroke:rgb(156, 163, 175)!important;stroke-dasharray:4,3!important;fill:rgb(255, 255, 255)!important;}#my-svg .mleaf polygon{stroke:rgb(156, 163, 175)!important;stroke-dasharray:4,3!important;fill:rgb(255, 255, 255)!important;}#my-svg .mleaf ellipse{stroke:rgb(156, 163, 175)!important;stroke-dasharray:4,3!important;fill:rgb(255, 255, 255)!important;}#my-svg .mleaf circle{stroke:rgb(156, 163, 175)!important;stroke-dasharray:4,3!important;fill:rgb(255, 255, 255)!important;}#my-svg .mleaf path{stroke:rgb(156, 163, 175)!important;stroke-dasharray:4,3!important;fill:rgb(255, 255, 255)!important;}#my-svg .mdone rect{stroke:rgb(21, 128, 61)!important;stroke-width:3px!important;fill:rgb(240, 253, 244)!important;}#my-svg .mdone polygon{stroke:rgb(21, 128, 61)!important;stroke-width:3px!important;fill:rgb(240, 253, 244)!important;}#my-svg .mdone ellipse{stroke:rgb(21, 128, 61)!important;stroke-width:3px!important;fill:rgb(240, 253, 244)!important;}#my-svg .mdone circle{stroke:rgb(21, 128, 61)!important;stroke-width:3px!important;fill:rgb(240, 253, 244)!important;}#my-svg .mdone path{stroke:rgb(21, 128, 61)!important;stroke-width:3px!important;fill:rgb(240, 253, 244)!important;}</style><g><marker id="my-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"/></marker><marker id="my-svg_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M794.99,499.9L825.399,523.267C855.808,546.633,916.626,593.367,996.632,616.733C1076.638,640.1,1175.832,640.1,1225.429,640.1L1275.026,640.1" id="my-svg-L_RULE_FIX_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_RULE_FIX_0" data-points="W3sieCI6Nzk0Ljk4OTczNDM0Mzg0NTcsInkiOjQ5OS44OTk5OTk2MTg1MzAzfSx7IngiOjk3Ny40NDM3NTYxMDM1MTU2LCJ5Ijo2NDAuMDk5OTk4NDc0MTIxMX0seyJ4IjoxMjc5LjAyNTcxODY4ODk2NDgsInkiOjY0MC4wOTk5OTg0NzQxMjExfV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M269.563,468.3L272.563,468.3C275.563,468.3,281.563,468.3,286.896,468.3C292.229,468.3,296.896,468.3,299.229,468.3L301.563,468.3" id="my-svg-L_LOCAL_CI_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_LOCAL_CI_0" data-points="W3sieCI6MjY5LjU2MjUsInkiOjQ2OC4yOTk5OTkyMzcwNjA1NX0seyJ4IjoyODcuNTYyNSwieSI6NDY4LjI5OTk5OTIzNzA2MDU1fSx7IngiOjMwNS41NjI1LCJ5Ijo0NjguMjk5OTk5MjM3MDYwNTV9XQ==" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M590.703,468.3L593.703,468.3C596.703,468.3,602.703,468.3,608.036,468.3C613.37,468.3,618.036,468.3,620.37,468.3L622.703,468.3" id="my-svg-L_CI_RULE_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_CI_RULE_0" data-points="W3sieCI6NTkwLjcwMzEyNSwieSI6NDY4LjI5OTk5OTIzNzA2MDU1fSx7IngiOjYwOC43MDMxMjUsInkiOjQ2OC4yOTk5OTkyMzcwNjA1NX0seyJ4Ijo2MjYuNzAzMTI1LCJ5Ijo0NjguMjk5OTk5MjM3MDYwNTV9XQ==" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M794.49,437.2L824.982,413.75C855.474,390.3,916.459,343.4,962.293,319.95C1008.126,296.5,1038.808,296.5,1054.149,296.5L1069.491,296.5" id="my-svg-L_RULE_CD_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_RULE_CD_0" data-points="W3sieCI6Nzk0LjQ4OTczNDM0Mzg0NTYsInkiOjQzNy4xOTk5OTg4NTU1OTA4fSx7IngiOjk3Ny40NDM3NTYxMDM1MTU2LCJ5IjoyOTYuNX0seyJ4IjoxMDczLjQ5MDYzMTEwMzUxNTYsInkiOjI5Ni41fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M1661.889,296.5L1664.889,296.5C1667.889,296.5,1673.889,296.5,1679.222,296.5C1684.556,296.5,1689.222,296.5,1691.556,296.5L1693.889,296.5" id="my-svg-L_CD_PROD_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_CD_PROD_0" data-points="W3sieCI6MTY2MS44ODg5NDY1MzMyMDMxLCJ5IjoyOTYuNX0seyJ4IjoxNjc5Ljg4ODk0NjUzMzIwMzEsInkiOjI5Ni41fSx7IngiOjE2OTcuODg4OTQ2NTMzMjAzMSwieSI6Mjk2LjV9XQ==" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel" transform="translate(977.4437561035156, 640.0999984741211)"><g class="label" data-id="L_RULE_FIX_0" transform="translate(0, -13)"><g><rect class="background" style="" x="-19.296875" y="-4" width="38.59375" height="34"/><text y="-10.1" text-anchor="middle" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">red</tspan></tspan></text></g></g></g><g class="edgeLabel"><g class="label" data-id="L_LOCAL_CI_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel"><g class="label" data-id="L_CI_RULE_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel" transform="translate(977.4437561035156, 296.5)"><g class="label" data-id="L_RULE_CD_0" transform="translate(0, -25.100000381469727)"><g><rect class="background" style="" x="-78.046875" y="-4" width="156.09375" height="58.20000076293945"/><text y="-10.1" text-anchor="middle" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">green</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> squash</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em" text-anchor="middle"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">merge</tspan></tspan></text></g></g></g><g class="edgeLabel"><g class="label" data-id="L_CD_PROD_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g></g><g class="nodes"><g class="root" transform="translate(1065.4906311035156, 0)"><g class="clusters"><g class="cluster" id="my-svg-CD" data-look="classic"><rect style="" x="8" y="8" width="588.3983459472656" height="575"/><g class="cluster-label" transform="translate(151.7382354736328, 8)"><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">CD</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> cd.yml</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> on</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> push</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> to</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> main</tspan></tspan></text></g></g></g></g><g class="edgePaths"><path d="M301.26,108.7L301.26,113.783C301.26,118.867,301.26,129.033,301.332,138.617C301.405,148.2,301.55,157.2,301.623,161.7L301.695,166.201" id="my-svg-L_P1_P2_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_P1_P2_0" data-points="W3sieCI6MzAxLjI1OTY5Njk2MDQ0OTIsInkiOjEwOC42OTk5OTY5NDgyNDIxOX0seyJ4IjozMDEuMjU5Njk2OTYwNDQ5MiwieSI6MTM5LjE5OTk5Njk0ODI0MjJ9LHsieCI6MzAxLjc1OTY5Njk2MDQ0OTIsInkiOjE3MC4xOTk5OTY5NDgyNDIyfV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M261.16,208.2L244.16,216.033C227.16,223.867,193.16,239.533,176.16,254.617C159.16,269.7,159.16,284.2,159.16,291.45L159.16,298.7" id="my-svg-L_P2_B1_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_P2_B1_0" data-points="W3sieCI6MjYxLjE1OTgxNTEwNzA3MzE0LCJ5IjoyMDguMTk5OTk2OTQ4MjQyMn0seyJ4IjoxNTkuMTYwMTEwNDczNjMyOCwieSI6MjU1LjE5OTk5Njk0ODI0MjJ9LHsieCI6MTU5LjE2MDExMDQ3MzYzMjgsInkiOjMwMi42OTk5OTY5NDgyNDIyfV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M159.16,421.3L159.16,426.383C159.16,431.467,159.16,441.633,159.16,451.133C159.16,460.633,159.16,469.467,159.16,473.883L159.16,478.3" id="my-svg-L_B1_S1_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B1_S1_0" data-points="W3sieCI6MTU5LjE2MDExMDQ3MzYzMjgsInkiOjQyMS4zMDAwMDMwNTE3NTc4fSx7IngiOjE1OS4xNjAxMTA0NzM2MzI4LCJ5Ijo0NTEuODAwMDAzMDUxNzU3OH0seyJ4IjoxNTkuMTYwMTEwNDczNjMyOCwieSI6NDgyLjMwMDAwMzA1MTc1Nzh9XQ==" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M342.36,208.2L359.193,216.033C376.026,223.867,409.693,239.533,426.526,258.65C443.359,277.767,443.359,300.333,443.359,311.617L443.359,322.9" id="my-svg-L_P2_SKIP_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_P2_SKIP_0" data-points="W3sieCI6MzQyLjM1OTU3ODgxMzgyNTM1LCJ5IjoyMDguMTk5OTk2OTQ4MjQyMn0seyJ4Ijo0NDMuMzU5MjgzNDQ3MjY1NiwieSI6MjU1LjE5OTk5Njk0ODI0MjJ9LHsieCI6NDQzLjM1OTI4MzQ0NzI2NTYsInkiOjMyNi45MDAwMDE1MjU4Nzg5fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_P1_P2_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel" transform="translate(159.1601104736328, 255.1999969482422)"><g class="label" data-id="L_P2_B1_0" transform="translate(0, -13)"><g><rect class="background" style="" x="-19.0859375" y="-4" width="38.171875" height="34"/><text y="-10.1" text-anchor="middle" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">yes</tspan></tspan></text></g></g></g><g class="edgeLabel"><g class="label" data-id="L_B1_S1_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel" transform="translate(443.3592834472656, 255.1999969482422)"><g class="label" data-id="L_P2_SKIP_0" transform="translate(0, -13)"><g><rect class="background" style="" x="-15.453125" y="-4" width="30.90625" height="34"/><text y="-10.1" text-anchor="middle" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">no</tspan></tspan></text></g></g></g></g><g class="nodes"><g class="node default" id="my-svg-flowchart-P1-9" data-look="classic" transform="translate(301.2596969604492, 73.5999984741211)"><rect class="basic label-container" style="" x="-95.57357788085938" y="-35.10000038146973" width="191.14715576171875" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Job</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> 1</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> preflight</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">find</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> be,</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> fe,</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ACR</tspan></tspan></text></g></g></g><g class="node default mgate" id="my-svg-flowchart-P2-10" data-look="classic" transform="translate(301.2596969604492, 188.6999969482422)"><polygon points="9.5,0 119.796875,0 129.296875,-19 119.796875,-38 9.5,-38 0,-19" class="label-container" transform="translate(-64.6484375,19)" style="stroke:#7c3aed !important;stroke-width:3px !important;fill:#f5f3ff !important"/><g class="label" style="" transform="translate(0, -15)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">All</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> found?</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-B1-12" data-look="classic" transform="translate(159.1601104736328, 362)"><rect class="basic label-container" style="" x="-131.16011810302734" y="-59.30000305175781" width="262.3202362060547" height="118.60000610351562"/><g class="label" style="" transform="translate(0, -51.30000305175781)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Job</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> 2</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">build-deploy-staging</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="2.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">build</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> trivy</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> push</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ACR</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="3.2em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">set</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> staging</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> image</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-S1-14" data-look="classic" transform="translate(159.1601104736328, 517.4000015258789)"><rect class="basic label-container" style="" x="-128.15625" y="-35.10000038146973" width="256.3125" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Job</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> 3</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> swap</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">staging</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> →</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> production</tspan></tspan></text></g></g></g><g class="node default mleaf" id="my-svg-flowchart-SKIP-16" data-look="classic" transform="translate(443.3592834472656, 362)"><rect class="basic label-container" style="stroke:#9ca3af !important;stroke-dasharray:4 3 !important;fill:#ffffff !important" x="-133.0390625" y="-35.10000038146973" width="266.078125" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Skip</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> deploy</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">(env</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> off</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> or</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> incomplete)</tspan></tspan></text></g></g></g></g></g><g class="root" transform="translate(297.5625, 196.90000534057617)"><g class="clusters"><g class="cluster" id="my-svg-CI" data-look="classic"><rect style="" x="8" y="8" width="285.140625" height="524.7999877929688"/><g class="cluster-label" transform="translate(12.72723388671875, 8)"><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">CI</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ci.yml</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> on</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> pull_request</tspan></tspan></text></g></g></g></g><g class="edgePaths"><path d="M150.57,108.7L150.57,113.783C150.57,118.867,150.57,129.033,150.57,139.2C150.57,149.367,150.57,159.533,150.57,164.617L150.57,169.7" id="my-svg-L_C1_C2_0" class="edge-thickness-invisible edge-pattern-solid" style=";" data-edge="true" data-et="edge" data-id="L_C1_C2_0" data-points="W3sieCI6MTUwLjU3MDMxMjUsInkiOjEwOC42OTk5OTY5NDgyNDIxOX0seyJ4IjoxNTAuNTcwMzEyNSwieSI6MTM5LjE5OTk5Njk0ODI0MjJ9LHsieCI6MTUwLjU3MDMxMjUsInkiOjE2OS42OTk5OTY5NDgyNDIyfV0=" data-look="classic"/><path d="M150.57,239.9L150.57,244.983C150.57,250.067,150.57,260.233,150.57,270.4C150.57,280.567,150.57,290.733,150.57,295.817L150.57,300.9" id="my-svg-L_C2_C3_0" class="edge-thickness-invisible edge-pattern-solid" style=";" data-edge="true" data-et="edge" data-id="L_C2_C3_0" data-points="W3sieCI6MTUwLjU3MDMxMjUsInkiOjIzOS44OTk5OTM4OTY0ODQzOH0seyJ4IjoxNTAuNTcwMzEyNSwieSI6MjcwLjM5OTk5Mzg5NjQ4NDR9LHsieCI6MTUwLjU3MDMxMjUsInkiOjMwMC44OTk5OTM4OTY0ODQ0fV0=" data-look="classic"/><path d="M150.57,371.1L150.57,376.183C150.57,381.267,150.57,391.433,150.57,401.6C150.57,411.767,150.57,421.933,150.57,427.017L150.57,432.1" id="my-svg-L_C3_C4_0" class="edge-thickness-invisible edge-pattern-solid" style=";" data-edge="true" data-et="edge" data-id="L_C3_C4_0" data-points="W3sieCI6MTUwLjU3MDMxMjUsInkiOjM3MS4wOTk5OTA4NDQ3MjY1Nn0seyJ4IjoxNTAuNTcwMzEyNSwieSI6NDAxLjU5OTk5MDg0NDcyNjU2fSx7IngiOjE1MC41NzAzMTI1LCJ5Ijo0MzIuMDk5OTkwODQ0NzI2NTZ9XQ==" data-look="classic"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_C1_C2_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel"><g class="label" data-id="L_C2_C3_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel"><g class="label" data-id="L_C3_C4_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g></g><g class="nodes"><g class="node default" id="my-svg-flowchart-C1-3" data-look="classic" transform="translate(150.5703125, 73.5999984741211)"><rect class="basic label-container" style="" x="-103.63976287841797" y="-35.10000038146973" width="207.27952575683594" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">gitleaks</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">azure</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> login</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> OIDC</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-C2-4" data-look="classic" transform="translate(150.5703125, 204.79999542236328)"><rect class="basic label-container" style="" x="-104.34375" y="-35.10000038146973" width="208.6875" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">dotnet</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> frontend</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">lint</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> build</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> test</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-C3-5" data-look="classic" transform="translate(150.5703125, 335.99999237060547)"><rect class="basic label-container" style="" x="-122.5703125" y="-35.10000038146973" width="245.140625" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">terraform</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">fmt</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> validate</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> →</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> plan</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-C4-6" data-look="classic" transform="translate(150.5703125, 467.19998931884766)"><rect class="basic label-container" style="" x="-85.9375" y="-35.10000038146973" width="171.875" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">docker</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> build</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">+</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> trivy</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> (be,</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> fe)</tspan></tspan></text></g></g></g></g></g><g class="root" transform="translate(0, 262.5000114440918)"><g class="clusters"><g class="cluster" id="my-svg-LOCAL" data-look="classic"><rect style="" x="8" y="8" width="261.5625" height="393.59999084472656"/><g class="cluster-label" transform="translate(40.6953125, 8)"><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Local</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> trunk-based</tspan></tspan></text></g></g></g></g><g class="edgePaths"><path d="M138.781,108.7L138.781,113.783C138.781,118.867,138.781,129.033,138.781,138.533C138.781,148.033,138.781,156.867,138.781,161.283L138.781,165.7" id="my-svg-L_DEV_HOOK_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_DEV_HOOK_0" data-points="W3sieCI6MTM4Ljc4MTI1LCJ5IjoxMDguNjk5OTk2OTQ4MjQyMTl9LHsieCI6MTM4Ljc4MTI1LCJ5IjoxMzkuMTk5OTk2OTQ4MjQyMn0seyJ4IjoxMzguNzgxMjUsInkiOjE2OS42OTk5OTY5NDgyNDIyfV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M138.781,239.9L138.781,244.983C138.781,250.067,138.781,260.233,138.781,269.733C138.781,279.233,138.781,288.067,138.781,292.483L138.781,296.9" id="my-svg-L_HOOK_PR_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_HOOK_PR_0" data-points="W3sieCI6MTM4Ljc4MTI1LCJ5IjoyMzkuODk5OTkzODk2NDg0Mzh9LHsieCI6MTM4Ljc4MTI1LCJ5IjoyNzAuMzk5OTkzODk2NDg0NH0seyJ4IjoxMzguNzgxMjUsInkiOjMwMC44OTk5OTM4OTY0ODQ0fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_DEV_HOOK_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g><g class="edgeLabel"><g class="label" data-id="L_HOOK_PR_0" transform="translate(0, 0)"><text y="-10.1" text-anchor="middle"><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em" text-anchor="middle"/></text></g></g><g><rect class="background" style="stroke: none"/></g></g><g class="nodes"><g class="node default" id="my-svg-flowchart-DEV-0" data-look="classic" transform="translate(138.78125, 73.5999984741211)"><rect class="basic label-container" style="" x="-110.78125" y="-35.10000038146973" width="221.5625" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Short-lived</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> branch</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">feat/</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> fix/</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> ·</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> chore/</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-HOOK-1" data-look="classic" transform="translate(138.78125, 204.79999542236328)"><rect class="basic label-container" style="" x="-76.17719268798828" y="-35.10000038146973" width="152.35438537597656" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">pre-commit</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">gitleaks</tspan></tspan></text></g></g></g><g class="node default" id="my-svg-flowchart-PR-2" data-look="classic" transform="translate(138.78125, 335.99999237060547)"><rect class="basic label-container" style="" x="-77.5559310913086" y="-35.10000038146973" width="155.1118621826172" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Pull</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> request</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">→</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> main</tspan></tspan></text></g></g></g></g></g><g class="node default mgate" id="my-svg-flowchart-RULE-7" data-look="classic" transform="translate(754.0500030517578, 468.29999923706055)"><polygon points="15.550000190734863,0 239.14375019073486,0 254.69375038146973,-31.100000381469727 239.14375019073486,-62.20000076293945 15.550000190734863,-62.20000076293945 0,-31.100000381469727" class="label-container" transform="translate(-127.34687519073486,31.100000381469727)" style="stroke:#7c3aed !important;stroke-width:3px !important;fill:#f5f3ff !important"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Ruleset</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> protect-main</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">8/8</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> green?</tspan></tspan></text></g></g></g><g class="node default mleaf" id="my-svg-flowchart-FIX-8" data-look="classic" transform="translate(1367.6897888183594, 640.0999984741211)"><rect class="basic label-container" style="stroke:#9ca3af !important;stroke-dasharray:4 3 !important;fill:#ffffff !important" x="-88.66407012939453" y="-35.10000038146973" width="177.32814025878906" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Fix</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> &amp;</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> push</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">a</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> new</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> commit</tspan></tspan></text></g></g></g><g class="node default mdone" id="my-svg-flowchart-PROD-17" data-look="classic" transform="translate(1786.1421203613281, 296.5)"><rect class="basic label-container" style="stroke:#15803d !important;stroke-width:3px !important;fill:#f0fdf4 !important" x="-88.253173828125" y="-35.10000038146973" width="176.50634765625" height="70.20000076293945"/><g class="label" style="" transform="translate(0, -27.100000381469727)"><rect/><g><rect class="background" style="stroke: none"/><text y="-10.1" style=""><tspan class="text-outer-tspan row" x="0" y="-0.1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">Production</tspan></tspan><tspan class="text-outer-tspan row" x="0" y="1em" dy="1.1em"><tspan font-style="normal" class="text-inner-tspan" font-weight="normal">runs</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> new</tspan><tspan font-style="normal" class="text-inner-tspan" font-weight="normal"> SHA</tspan></tspan></text></g></g></g></g></g></g><defs><filter id="my-svg-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><defs><filter id="my-svg-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><linearGradient id="my-svg-gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#93c5fd" stop-opacity="1"/><stop offset="100%" stop-color="hsl(93.75, 60%, 86.862745098%)" stop-opacity="1"/></linearGradient></svg>
-  </div>
-  <!-- Mermaid source (sửa ở đây rồi render lại bằng mermaid-cli):
-%%{init: {"theme": "base", "fontFamily": "Noto Sans, sans-serif", "htmlLabels": false, "flowchart": {"htmlLabels": false, "wrappingWidth": 400, "nodeSpacing": 20, "rankSpacing": 36, "padding": 8}, "themeVariables": {"fontSize": "22px", "primaryColor": "#eff6ff", "primaryBorderColor": "#93c5fd", "primaryTextColor": "#1f2937", "lineColor": "#9ca3af", "clusterBkg": "#f9fafb", "clusterBorder": "#d1d5db", "edgeLabelBackground": "#ffffff"}}}%%
-flowchart LR
-    classDef mgate stroke:#7c3aed,stroke-width:3px,fill:#f5f3ff
-    classDef mleaf stroke:#9ca3af,stroke-dasharray:4 3,fill:#ffffff
-    classDef mdone stroke:#15803d,stroke-width:3px,fill:#f0fdf4
-
-    subgraph LOCAL["Local · trunk-based"]
-      direction TB
-      DEV["Short-lived branch<br/>feat/ · fix/ · chore/"] - -> HOOK["pre-commit<br/>gitleaks"] - -> PR["Pull request<br/>→ main"]
-    end
-
-    subgraph CI["CI · ci.yml · on pull_request"]
-      direction TB
-      C1["gitleaks<br/>azure login OIDC"] ~~~ C2["dotnet · frontend<br/>lint · build · test"] ~~~ C3["terraform<br/>fmt · validate → plan"] ~~~ C4["docker build<br/>+ trivy (be, fe)"]
-    end
-
-    RULE{{"Ruleset protect-main<br/>8/8 green?"}}:::mgate
-    FIX["Fix &amp; push<br/>a new commit"]:::mleaf
-
-    subgraph CD["CD · cd.yml · on push to main"]
-      direction TB
-      P1["Job 1 · preflight<br/>find be, fe, ACR"] - -> P2{{"All found?"}}:::mgate
-      P2 - ->|yes| B1["Job 2<br/>build-deploy-staging<br/>build · trivy · push ACR<br/>set staging image"]
-      B1 - -> S1["Job 3 · swap<br/>staging → production"]
-      P2 - ->|no| SKIP["Skip deploy<br/>(env off or incomplete)"]:::mleaf
-    end
-
-    PROD["Production<br/>runs new SHA"]:::mdone
-
-    LOCAL - -> CI - -> RULE
-    RULE - ->|red| FIX
-    RULE - ->|"green · squash merge"| CD
-    CD - -> PROD
-
-  -->
-</section>
-
-<!-- ========== 17. PHẦN 2 ========== -->
-<section class="slide future">
-  <div class="fill"></div>
-  <div class="kicker">Phần 2</div>
-  <h1 style="color:var(--violet)">Đang chuẩn bị làm gì</h1>
-  <div class="road">
-    <div class="m"><div class="d">D17</div><p>Safe swap</p></div>
-    <div class="m"><div class="d">D18</div><p>Zero-downtime</p></div>
-    <div class="m"><div class="d">D19</div><p>Autoscale</p></div>
-    <div class="m"><div class="d">D20</div><p>Cost report + Tracing</p></div>
-    <div class="m"><div class="d">D21</div><p>Centralized logging</p></div>
-    <div class="m"><div class="d">D22</div><p>Alerts + Runbook</p></div>
-    <div class="m"><div class="d">D23</div><p>Least-privilege agent</p></div>
-    <div class="m"><div class="d">D24</div><p>Incident drill</p></div>
-    <div class="m"><div class="d">D25</div><p>Live demo</p></div>
-  </div>
-  <div class="fill"></div>
-  <div class="note warn" style="font-size:19px">⏰ Tài khoản Azure dùng thử hết hạn <b>15/10</b>, rơi đúng D23. Đang chờ mentor chốt subscription cho D23–D25.</div>
-</section>
-
-<!-- ========== 18. D17 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D17</div>
+<!-- ========== 14. D17 ========== -->
+<section class="slide" data-days="17">
+  <div class="kicker">Tuần 4 · D17</div>
   <h2>Swap an toàn: chỉ lên production khi bản mới thật sự ổn</h2>
-  <div class="loop">
-    <div class="s"><b>Mở cửa tạm</b>cho máy chạy CD vào kiểm tra</div>
-    <div class="s"><b>Chờ staging</b>đúng phiên bản và báo "khoẻ"</div>
-    <div class="s"><b>Swap</b>staging lên production</div>
-    <div class="s"><b>Kiểm production</b>vài lần liên tiếp</div>
-    <div class="s" style="border-color:#fcd34d;background:var(--amber-bg)"><b>Đóng cửa tạm</b>luôn chạy, kể cả khi lỗi</div>
+  <div class="chain" style="margin-bottom:20px">
+    <div class="st"><b>Mở cửa tạm</b>thêm luật IP cho runner để CD tự kiểm được staging</div>
+    <div class="ar">→</div>
+    <div class="st"><b>Chờ staging</b>đúng SHA + <code>/health</code> 200 (bỏ kiểu <code>sleep 75</code>)</div>
+    <div class="ar">→</div>
+    <div class="st"><b>Swap</b>có warm-up path + health check</div>
+    <div class="ar">→</div>
+    <div class="st"><b>Kiểm production</b>lỗi → <b>tự swap ngược</b></div>
+    <div class="ar">→</div>
+    <div class="st" style="background:var(--amber-bg);border-color:#fcd34d"><b>Đóng cửa tạm</b><code>if: always()</code>, kể cả khi job chết</div>
   </div>
-  <div class="row" style="margin-top:12px">
-    <div class="note bad grow" style="margin:0 8px"><b>Staging không ổn:</b> dừng lại, không swap</div>
-    <div class="note bad grow" style="margin:0 8px"><b>Production không ổn:</b> tự đổi lại bản cũ</div>
+  <div class="g4">
+    <div class="case" style="border-color:#86efac;background:var(--green-bg)"><div class="n">C1 · bình thường</div><h3>Xanh, lên production</h3><p>Staging đúng SHA, <code>fe</code> staging gọi đúng <code>be</code> staging, production đạt.</p></div>
+    <div class="case" style="border-color:#fca5a5;background:var(--red-bg)"><div class="n">C2 · không khởi động</div><h3>Không swap</h3><p>Bản mới chết ngay khi bật. Production giữ nguyên bản cũ.</p></div>
+    <div class="case" style="border-color:#fca5a5;background:var(--red-bg)"><div class="n">C3 · /health 503</div><h3>Không swap</h3><p>Chạy được nhưng không nối database → dừng trước swap.</p></div>
+    <div class="case" style="border-color:#fcd34d;background:var(--amber-bg)"><div class="n">C4 · production lỗi</div><h3>Tự rollback</h3><p>Activity log: <code>be</code>→ <code>fe</code>→ rồi <code>fe</code>← <code>be</code>←, trong cùng run.</p></div>
   </div>
-  <div class="row fill" style="margin-top:26px">
-    <div class="grow">
-      <h3>Sẽ thử 4 tình huống</h3>
-      <ul class="check">
-        <li>Bình thường: phải xanh, ghi lại mất bao nhiêu giây</li>
-        <li>Bản mới không khởi động được: không được swap</li>
-        <li>Bản mới chạy nhưng không nối được database: không được swap</li>
-        <li>Cố tình làm bước kiểm production thất bại: phải tự đổi lại</li>
+  <div class="fill"></div>
+  <div class="g2" style="gap:14px">
+    <div class="note ok" style="font-size:15px">Sau cả 7 run: <b>0 luật tạm sót lại</b>, <code>m6-check</code> vẫn 403 × 8, <code>terraform plan</code> No changes.</div>
+    <div class="note info" style="font-size:15px">Sửa luôn một lỗi D16: <code>fe</code> staging từng gọi <code>be</code> <b>production</b>. Giờ <code>API_BASE_URL</code> dính theo slot.</div>
+  </div>
+</section>
+
+<!-- ========== 15. D18 ========== -->
+<section class="slide" data-days="18">
+  <div class="kicker">Tuần 4 · D18 · M2</div>
+  <h2>Zero-downtime: mỗi giây gọi một lần, suốt lúc swap</h2>
+  <div class="g2" style="grid-template-columns:1.15fr 1fr;gap:26px">
+    <div class="col">
+      <div class="g2" style="gap:12px">
+        <div class="col" style="gap:8px">
+          <div class="lbl muted" style="font-size:13px;font-weight:800">TRƯỚC</div>
+          <div class="slot prod">production <span class="ver" style="color:#6b7280">A</span></div>
+          <div class="slot stg">staging <span class="ver" style="color:var(--blue)">B</span></div>
+        </div>
+        <div class="col" style="gap:8px">
+          <div class="lbl muted" style="font-size:13px;font-weight:800">SAU SWAP</div>
+          <div class="slot prod">production <span class="ver" style="color:var(--blue)">B</span></div>
+          <div class="slot stg">staging <span class="ver" style="color:#6b7280">A</span></div>
+        </div>
+      </div>
+      <div class="term"><span class="cm">giờ           HTTP  version  thời gian</span>
+…:11.043      <span class="g">200</span>   A        87ms
+…:12.041      <span class="g">200</span>   A        91ms
+…:13.044      <span class="g">200</span>   <span class="p">B</span>        140ms  <span class="cm">← bản mới trả lời</span>
+</div>
+      <p class="muted" style="font-size:14px">Minh hoạ định dạng log của <code>scripts/m2-poll.sh</code>. Log thô thật: <code>evidence/raw/m2-*.log</code>.</p>
+    </div>
+    <div class="col">
+      <div class="card green stat"><div class="big" style="color:var(--green)">0</div><p>response non-200 qua <b>3 lần swap thật</b> trên cả <code>be</code> và <code>fe</code>; version đổi A→B đủ</p></div>
+      <div class="card amber stat"><div class="big" style="color:var(--amber)">10</div><p>timeout phía client ở 2 lần đầu (0,35%), <b>6 cái quanh lúc swap</b>. Đường đo có độ trễ nền 1,6s.</p></div>
+      <div class="note warn" style="font-size:15px">Theo chữ đề bài (0 non-200): <b>đạt</b>. Theo guide ("timeout = lỗi"): <b>chưa</b>. Nói thật cả hai, <b>chờ mentor chốt</b>; một ca đối chứng không swap cũng có timeout nên chưa quy được nguyên nhân.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 16. D19 ========== -->
+<section class="slide" data-days="19">
+  <div class="kicker">Tuần 4 · D19 · M7</div>
+  <h2>Tải cao thì thêm máy, tối đa 2 máy</h2>
+  <div class="g2" style="grid-template-columns:1.3fr 1fr;gap:30px">
+    <div class="col">
+      <div class="steps-chart">
+        <div class="lvl" style="bottom:36px">1</div>
+        <div class="lvl" style="bottom:116px">2</div>
+        <div class="load" style="left:4.6%;width:32.4%"></div>
+        <div class="seg" style="left:0;width:32%;bottom:40px"></div>
+        <div class="vseg" style="left:32%;bottom:40px;height:84px"></div>
+        <div class="seg" style="left:32%;width:50%;bottom:120px"></div>
+        <div class="vseg" style="left:82%;bottom:40px;height:84px"></div>
+        <div class="seg" style="left:82%;width:18%;bottom:40px"></div>
+        <div class="tag" style="left:6%;top:8px">3 × /load?seconds=55</div>
+        <div class="tag" style="left:39%;top:14px">+1 máy: 6′35″ sau khi bắt đầu tải</div>
+        <div class="tag" style="left:50%;bottom:52px">−1 máy: 10′43″ sau khi dừng tải</div>
+        <div class="x" style="left:4.6%">16:14 tải</div>
+        <div class="x" style="left:37%">16:22 dừng</div>
+        <div class="x" style="left:82%">16:32</div>
+      </div>
+      <div class="g2" style="gap:12px">
+        <div class="card blue"><div class="lbl">Luật (Terraform)</div><p>CPU &gt; 70% trong 5 phút → +1 · CPU &lt; 30% trong 10 phút → −1 · min 1, <b>max 2</b></p></div>
+        <div class="card"><div class="lbl">Vì sao bớt chậm hơn thêm</div><p>Để không thêm-bớt-thêm-bớt liên tục khi tải dao động.</p></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card"><div class="lbl">Terraform không giành với autoscale</div><p><code>ignore_changes = [worker_count]</code>. Kiểm bằng <code>plan</code> <b>lúc đang 2 máy</b>: No changes.</p></div>
+      <div class="card green"><div class="lbl">Right sizing · giữ P0v3</div><p>CPU bình thường 10,5%, memory đỉnh 65%. P0v3 là gói rẻ nhất vừa có slot vừa autoscale được.</p></div>
+      <div class="card"><div class="lbl">Người chạy tải</div><p>Chạy tay trên máy người làm: công cụ AI bị chặn gọi <code>/load</code> vào production. <code>/load</code> sau đó giới hạn 4 request đồng thời mỗi máy, vượt → 429.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 17. D20 ========== -->
+<section class="slide" data-days="20">
+  <div class="kicker">Tuần 4 · D20 · M7 + tracing</div>
+  <h2>Tiền thật đã tiêu, và dấu vết của từng request</h2>
+  <div class="g2" style="gap:26px">
+    <div class="col">
+      <div class="card gray stat"><div class="big">≈$12,5</div><p>cả bài tới 28/09. <code>rg-vsf-dev</code> $12,15: App Service $11,27 · ACR $0,88 · MySQL $0,00</p></div>
+      <h3 style="margin:4px 0 0">3 biện pháp đã làm, có bằng chứng</h3>
+      <ul class="tight">
+        <li><b>Tắt môi trường theo ca</b>: plan chỉ sống 42/163 giờ (26%) tới 24/09</li>
+        <li><b>MySQL tối giản</b>: B1ms, 20 GB, backup 1 ngày, không HA</li>
+        <li><b>Autoscale max 2</b> thay vì chạy cố định 2 máy (~$60/tháng máy thứ hai)</li>
       </ul>
+      <div class="note warn" style="font-size:15px">Nói thật trong báo cáo: từ 24/09 môi trường bật liên tục để làm tiếp, tốn thêm ≈ $8,7.</div>
     </div>
-    <div class="col grow">
-      <div class="note fu" style="font-size:19px"><b>Sửa luôn:</b> frontend staging hiện đang gọi backend <i>production</i>. Sau D17 nó sẽ gọi đúng backend staging.</div>
-      <div class="note fu" style="font-size:19px"><b>Thêm kiểm tra thật:</b> hỏi frontend "có gọi được backend không?", chứ không chỉ hỏi phiên bản.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ========== 19. D18 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D18</div>
-  <h2>Chứng minh người dùng không thấy gián đoạn</h2>
-  <p style="font-size:19px;margin-bottom:22px">Trong lúc swap, cứ mỗi giây gọi app một lần và ghi lại kết quả.</p>
-  <svg viewBox="0 0 1160 150" width="1160" height="150" role="img" aria-label="Mỗi ô là một giây: tất cả 200, phiên bản đổi từ A sang B">
-    <g id="cells"></g>
-    <line x1="560" y1="8" x2="560" y2="96" stroke="#7c3aed" stroke-width="3" stroke-dasharray="6 5"/>
-    <text x="560" y="122" text-anchor="middle" font-size="16" fill="#7c3aed" font-weight="700">lúc swap</text>
-    <text x="0" y="146" font-size="15" fill="#6b7280">mỗi ô = 1 giây · tất cả đều trả 200</text>
-  </svg>
-  <div class="row" style="margin-top:18px">
-    <div class="card gray grow"><span style="display:inline-block;width:18px;height:18px;background:#9ca3af;border-radius:3px;vertical-align:-3px"></span> <b>Bản A</b>: phiên bản cũ</div>
-    <div class="card blue grow"><span style="display:inline-block;width:18px;height:18px;background:#2563eb;border-radius:3px;vertical-align:-3px"></span> <b>Bản B</b>: phiên bản mới</div>
-    <div class="card red grow"><span style="display:inline-block;width:18px;height:18px;background:#ef4444;border-radius:3px;vertical-align:-3px"></span> <b>Lỗi</b>: mục tiêu là <b>0 ô</b></div>
-  </div>
-  <div class="term" style="margin-top:20px;white-space:pre"><span class="p">giờ           mã   phiên bản  thời gian</span><br>14:02:11.043  200  3f2a9c1   87ms<br>14:02:12.041  200  3f2a9c1   91ms<br>14:02:13.044  <span class="g">200  b71e0d4</span>  140ms   <span class="p">← bản mới bắt đầu trả lời</span></div>
-  <div class="fill"></div>
-  <div class="note fu" style="font-size:19px"><b>Đạt khi:</b> không có lần nào lỗi, và phiên bản đổi từ A sang B. Có lỗi thì tìm nguyên nhân, sửa, rồi đo lại từ đầu.</div>
-</section>
-
-<!-- ========== 20. D19 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D19</div>
-  <h2>Tải cao thì tự thêm máy, tối đa 2 máy</h2>
-  <div class="row fill">
-    <svg viewBox="0 0 700 380" width="700" height="380" role="img" aria-label="CPU vượt 70% thì từ 1 lên 2 máy, xuống dưới 30% thì về 1 máy">
-      <line x1="60" y1="20" x2="60" y2="300" stroke="#e5e7eb"/>
-      <line x1="60" y1="300" x2="690" y2="300" stroke="#e5e7eb"/>
-      <line x1="60" y1="104" x2="690" y2="104" stroke="#f59e0b" stroke-dasharray="6 5"/>
-      <text x="686" y="98" text-anchor="end" font-size="14" fill="#b45309">70%: thêm máy</text>
-      <line x1="60" y1="216" x2="690" y2="216" stroke="#22c55e" stroke-dasharray="6 5"/>
-      <text x="686" y="236" text-anchor="end" font-size="14" fill="#15803d">30%: bớt máy</text>
-      <polyline fill="none" stroke="#7c3aed" stroke-width="4" points="60,260 130,250 180,120 230,70 300,60 360,75 400,210 450,250 520,262 600,258 690,262"/>
-      <text x="20" y="30" font-size="14" fill="#6b7280">CPU</text>
-      <polyline fill="none" stroke="#2563eb" stroke-width="5" points="60,350 290,350 290,325 490,325 490,350 690,350"/>
-      <text x="170" y="343" text-anchor="middle" font-size="15" fill="#2563eb" font-weight="700">1 máy</text>
-      <text x="390" y="318" text-anchor="middle" font-size="15" fill="#2563eb" font-weight="700">2 máy</text>
-      <text x="590" y="343" text-anchor="middle" font-size="15" fill="#2563eb" font-weight="700">1 máy</text>
-      <text x="200" y="290" text-anchor="middle" font-size="14" fill="#6b7280">bắt đầu tạo tải</text>
-      <text x="400" y="290" text-anchor="middle" font-size="14" fill="#6b7280">dừng tải</text>
-    </svg>
-    <div class="col grow">
-      <div class="card violet"><h3>Luật</h3><p>CPU trên <b>70%</b> trong 5 phút → thêm 1 máy<br>CPU dưới <b>30%</b> trong 10 phút → bớt 1 máy</p></div>
-      <div class="card"><h3>Vì sao bớt chậm hơn thêm?</h3><p>Để không bị thêm, bớt, thêm, bớt liên tục khi tải dao động.</p></div>
-      <div class="card"><h3>Chọn gói máy</h3><p>Giữ <b>P0v3</b>: gói rẻ nhất vừa có slot staging vừa tự tăng máy được.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ========== 21. D20 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D20</div>
-  <h2>Báo cáo chi phí và dấu vết của từng request</h2>
-  <div class="row fill">
-    <div class="card" style="width:500px;align-self:flex-start;box-shadow:0 6px 20px rgba(0,0,0,.06)">
-      <div class="lbl">cost-report.md · 1 trang</div>
-      <div style="margin-top:14px" class="col">
-        <div><h3>Dùng gói gì, vì sao</h3><p class="muted">P0v3 cho app, B1ms cho database</p></div>
-        <div><h3>Luật tự tăng máy</h3><p class="muted">tối đa 2 máy</p></div>
-        <div><h3>3 cách đã tiết kiệm</h3><p class="muted">tắt môi trường mỗi tối · database bỏ backup dư thừa · 2 app chung 1 gói máy</p></div>
-        <div><h3>Tiền thật đã tiêu</h3><p class="muted">ảnh chụp từ Azure Cost Analysis</p></div>
+    <div class="col">
+      <h3>Một request, một mã xuyên suốt</h3>
+      <div class="chain" style="flex-direction:column">
+        <div class="st"><b>Response header</b><code>X-Trace-Id: &lt;trace_id&gt;</code></div>
+        <div class="arrow" style="height:22px">=</div>
+        <div class="st"><b>Log JSON của app</b><code>"trace_id": "&lt;trace_id&gt;"</code></div>
+        <div class="arrow" style="height:22px">=</div>
+        <div class="st" style="background:var(--green-bg);border-color:#86efac"><b>App Insights</b><code>OperationId</code>, có span MySQL con</div>
       </div>
-    </div>
-    <div class="col grow">
-      <h3>Một request, một mã theo dõi xuyên suốt</h3>
-      <div class="row" style="gap:0;align-items:center">
-        <div class="card gray center grow">Trình duyệt</div><div class="arrow">→</div>
-        <div class="card blue center grow">Frontend</div><div class="arrow">→</div>
-        <div class="card blue center grow">Backend</div><div class="arrow">→</div>
-        <div class="card blue center grow">Database</div>
-      </div>
-      <div class="center" style="margin-top:4px"><span class="tagbox" style="font-size:16px;border-color:#8b5cf6;color:var(--violet)">trace_id = 4bf92f35…</span></div>
-      <div class="note fu">Khi có lỗi, dùng mã này tìm ra đúng request đó đi qua những đâu và chậm ở chặng nào.</div>
-      <div class="note warn"><b>Đang chờ mentor:</b> có được bật App Insights để lưu dấu vết này không.</div>
+      <div class="note info" style="font-size:15px">OpenTelemetry cho <code>be</code>, bỏ <code>/health</code> và <code>/version</code> khỏi trace (probe + poll ~260 000 request/ngày). <code>/boom</code> hiện trong Failures. App Insights là <b>tạm</b>, chờ mentor (Q1).</div>
     </div>
   </div>
 </section>
 
-<!-- ========== 22. D21 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D21</div>
-  <h2>Gom log về một chỗ và dựng bảng theo dõi</h2>
-  <div class="row" style="align-items:center;gap:0">
-    <div class="col" style="width:220px">
-      <div class="card blue center">Backend</div>
-      <div class="card blue center">Frontend</div>
-      <div class="card blue center">Database</div>
-      <div class="card blue center">App Service</div>
+<!-- ========== 18. D21 ========== -->
+<section class="slide" data-days="21">
+  <div class="kicker">Tuần 5 · D21 · M11</div>
+  <h2>Gom log về một chỗ, dựng một bảng theo dõi</h2>
+  <div class="g2" style="grid-template-columns:1fr 1.15fr;gap:26px">
+    <div class="col">
+      <div class="card"><div class="lbl">Nguồn</div><p>Diagnostic settings trên 4 bề mặt web app (HTTP, Console, Platform, IP bị chặn) + MySQL slow log → <b>một</b> Log Analytics workspace.</p></div>
+      <h3 style="margin:4px 0 0">Chọn giải pháp: so 3 hướng</h3>
+      <table class="cmp">
+        <tr><th></th><th>Chi phí</th><th>Vận hành</th></tr>
+        <tr><td><b>Log Analytics + Workbook</b> ✓</td><td>$0 cố định · ingest ~0,05–0,1 GB/ngày, trong 5 GB/tháng miễn phí</td><td>không có máy nào phải vá</td></tr>
+        <tr><td>Managed Grafana</td><td>$6/user/tháng, Standard ≈ $35/tháng</td><td>vẫn đọc từ Log Analytics</td></tr>
+        <tr><td>Loki + Grafana tự dựng</td><td>VM + disk ≈ $39/tháng</td><td>tự vá, tự backup, tự trực</td></tr>
+      </table>
     </div>
-    <div class="arrow" style="flex-basis:60px;font-size:34px">⟹</div>
-    <div class="card violet center" style="width:220px;padding:28px 16px"><div class="big" style="font-size:30px;color:var(--violet)">Log Analytics</div><p style="margin-top:8px">kho log chung, giữ 30 ngày</p></div>
-    <div class="arrow" style="flex-basis:60px;font-size:34px">⟹</div>
-    <div class="card grow" style="padding:18px">
-      <div class="lbl">Bảng theo dõi</div>
-      <div class="col" style="margin-top:10px;gap:10px">
-        <div class="row" style="gap:10px"><div class="card gray grow center" style="padding:10px">Thời gian phản hồi</div><div class="card gray grow center" style="padding:10px">Số request</div><div class="card gray grow center" style="padding:10px">Tỉ lệ lỗi</div></div>
-        <div class="row" style="gap:10px"><div class="card gray grow center" style="padding:10px">CPU · RAM app</div><div class="card gray grow center" style="padding:10px">CPU · kết nối DB</div></div>
-        <div class="card gray center" style="padding:10px">Lỗi mới nhất · request chậm nhất</div>
-      </div>
+    <div class="col">
+      <h3>Workbook 5 mảng, cũng bằng Terraform</h3>
+      <div class="card blue"><p><b>App performance</b> · response time · request · failure rate % · p50/p95 theo path</p></div>
+      <div class="card blue"><p><b>Infra App Service</b> · CPU % · memory % · HTTP queue</p></div>
+      <div class="card blue"><p><b>Infra MySQL</b> · CPU % · active connections · storage %</p></div>
+      <div class="card blue"><p><b>Health + alert</b> · HealthCheckStatus · alert 7 ngày</p></div>
+      <div class="card blue"><p><b>Log ↔ trace</b> · lỗi mới nhất, nối request lỗi với log cùng <code>trace_id</code></p></div>
     </div>
   </div>
   <div class="fill"></div>
-  <div class="row">
-    <div class="note fu grow">Viết sẵn <b>7 câu hỏi</b> cho log: bao nhiêu request, bao nhiêu % lỗi, đường dẫn nào chậm, lỗi nào hay gặp…</div>
-    <div class="note fu grow">So sánh 3 cách làm log (Azure, Grafana, tự dựng) rồi chọn một, có lý do.</div>
-  </div>
+  <div class="note ok" style="font-size:15px">Failure rate lấy được <b>chỉ từ log nền tảng</b>, không cần App Insights, đúng yêu cầu M11. Trace nay đủ chặng trình duyệt → <code>fe</code> → <code>be</code> → MySQL.</div>
 </section>
 
-<!-- ========== 23. D22 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D22</div>
+<!-- ========== 19. D22 ========== -->
+<section class="slide" data-days="22">
+  <div class="kicker">Tuần 5 · D22 · M11</div>
   <h2>Cảnh báo khi có chuyện, và biết phải làm gì</h2>
-  <div class="row">
-    <div class="card red grow center"><div class="big" style="font-size:34px;color:var(--red)">5xx</div><p style="margin-top:8px">App trả lỗi nhiều bất thường</p></div>
-    <div class="card amber grow center"><div class="big" style="font-size:34px;color:var(--amber)">CPU</div><p style="margin-top:8px">Máy chạy quá tải kéo dài</p></div>
-    <div class="card blue grow center"><div class="big" style="font-size:34px;color:var(--blue)">DB</div><p style="margin-top:8px">Quá nhiều kết nối tới database</p></div>
+  <div class="g3" style="gap:12px">
+    <div class="card red"><div class="lbl">alert 1 · Sev1</div><p><b>Tỷ lệ 5xx</b> (log alert trên <code>AppServiceHTTPLogs</code>)</p></div>
+    <div class="card amber"><div class="lbl">alert 2</div><p><b>CPU của plan &gt; 80%</b> trong 15 phút</p></div>
+    <div class="card amber"><div class="lbl">alert 3</div><p><b>MySQL connections &gt; 128</b></p></div>
   </div>
-  <p class="muted" style="margin:10px 0 24px">Cả ba gửi email. Phải kích hoạt thật ít nhất một cái, ví dụ gọi <code>/boom</code> liên tục vài phút.</p>
-  <h3>Từ email cảnh báo lần ra đúng request lỗi</h3>
-  <div class="row" style="gap:0;align-items:stretch">
-    <div class="card violet grow center">📧<br>Nhận email</div><div class="arrow">→</div>
-    <div class="card violet grow center">📊<br>Mở bảng theo dõi, thấy lỗi tăng từ lúc nào</div><div class="arrow">→</div>
-    <div class="card violet grow center">🔎<br>Tìm log lỗi, lấy mã theo dõi</div><div class="arrow">→</div>
-    <div class="card violet grow center">🎯<br>Thấy đúng request hỏng</div>
+  <h3 style="margin:18px 0 10px">Drill thật 29/09: <code>scripts/boom.sh</code> bắn 197 request lỗi 500</h3>
+  <div class="chain">
+    <div class="st" style="background:var(--red-bg);border-color:#fca5a5"><b>06:42:59Z</b>lỗi đầu tiên</div>
+    <div class="ar">→</div>
+    <div class="st" style="background:var(--red-bg);border-color:#fca5a5"><b>06:47:39Z · Fired</b>sau 4′40″</div>
+    <div class="ar">→</div>
+    <div class="st"><b>Runbook</b>đi thử 6/6 bước xác nhận</div>
+    <div class="ar">→</div>
+    <div class="st"><b>06:51:00Z</b>lỗi cuối cùng</div>
+    <div class="ar">→</div>
+    <div class="st" style="background:var(--green-bg);border-color:#86efac"><b>07:13:44Z · Resolved</b>~23′ sau lỗi cuối</div>
+  </div>
+  <div class="g2" style="margin-top:18px;gap:16px">
+    <div class="card"><div class="lbl">Truy vết alert → request</div><p>Alert → query lỗi mới nhất → lấy <code>trace_id</code> → end-to-end transaction + log cùng request. <code>runbook.md</code>: triệu chứng · xác nhận · xử lý · <b>rollback = swap ngược</b> · escalate.</p></div>
+    <div class="note warn" style="font-size:15px"><b>Chưa trọn:</b> email không tới vì địa chỉ chưa xác minh OTP. Đã xác minh, cần bắn lại một lần. Nút "test action group" bị Free Trial chặn.</div>
+  </div>
+</section>
+
+<!-- ========== 20. BẢNG M1–M11 ========== -->
+<section class="slide">
+  <div class="kicker">Tới hôm nay</div>
+  <h2>11 yêu cầu bắt buộc: 10 đạt, 1 chờ mentor</h2>
+  <div class="mgrid">
+    <div class="m"><div class="id">M1 <span>D11</span></div><p>Docker image, ACR admin tắt, pull bằng MI</p></div>
+    <div class="m wait"><div class="id">M2 <span>D18</span></div><p>Zero-downtime: 0 non-200, còn timeout client</p></div>
+    <div class="m"><div class="id">M3 <span>D12</span></div><p>MySQL qua TLS, firewall chỉ outbound IP</p></div>
+    <div class="m"><div class="id">M4 <span>D12</span></div><p>MI đọc Key Vault, không secret plaintext</p></div>
+    <div class="m"><div class="id">M5 <span>D12</span></div><p>Gỡ quyền MI → app gãy → trả quyền → sống</p></div>
+    <div class="m"><div class="id">M6 <span>D13 · D16</span></div><p>IP whitelist, 8 bề mặt, 403 từ ngoài</p></div>
+    <div class="m"><div class="id">M7 <span>D19 · D20</span></div><p>Autoscale max 2, right sizing, cost report</p></div>
+    <div class="m"><div class="id">M8 <span>D10</span></div><p>destroy → apply không thao tác tay (lần 1)</p></div>
+    <div class="m"><div class="id">M9 <span>D14</span></div><p>CI chặn được 6/6 PR cố tình sai</p></div>
+    <div class="m"><div class="id">M10 <span>D16 · D17</span></div><p>CD từ <code>main</code>, swap an toàn, tự rollback</p></div>
+    <div class="m"><div class="id">M11 <span>D20–D22</span></div><p>Workbook, log, trace, 3 alert, drill thật</p></div>
+    <div class="m" style="border-color:var(--line);background:#fff"><div class="id" style="color:var(--ink)">S1 <span>D14</span></div><p>Stretch: Trivy fail khi có CVE critical, đã có sẵn</p></div>
   </div>
   <div class="fill"></div>
-  <div class="note fu"><b>Sổ tay xử lý (runbook):</b> dấu hiệu → cách xác nhận → cách sửa → nếu do bản mới thì đổi lại bản cũ → báo ai.</div>
+  <div class="note info" style="font-size:15px">Mỗi mục một file <code>evidence/M1.md</code> … <code>M11.md</code>: log thô, output lệnh, run link, ảnh Portal. Còn nợ 5 ảnh Portal cũ (M3, M4, M6), không chặn mục nào.</div>
 </section>
 
-<!-- ========== 24. D23–D24 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D23 · D24</div>
-  <h2>Thử quyền hạn chế và diễn tập sự cố</h2>
-  <div class="row fill">
-    <div class="col grow">
-      <h3>D23 · Agent chỉ được làm đúng việc của nó</h3>
-      <div class="card green"><b style="color:var(--green)">✓ Được</b><p>Đọc log, tóm tắt nguyên nhân lỗi</p></div>
-      <div class="card red"><b style="color:var(--red)">✗ Phải bị từ chối</b><p>Đọc mật khẩu · tạo hay xoá tài nguyên · tự cấp thêm quyền cho mình</p></div>
-      <p class="muted">Kèm đó là lần review chéo thứ 2 với bạn intern kia.</p>
-    </div>
-    <div class="col grow">
-      <h3>D24 · Tự gây sự cố rồi xử lý</h3>
-      <div class="col" style="gap:0">
-        <div class="card gray"><b>T0</b>: cố tình deploy bản lỗi hoặc rút quyền Key Vault</div>
-        <div class="darrow">↓</div>
-        <div class="card amber"><b>T+?</b>: cảnh báo tới, xác nhận nguyên nhân</div>
-        <div class="darrow">↓</div>
-        <div class="card blue"><b>T+?</b>: làm theo sổ tay, đổi lại bản cũ</div>
-        <div class="darrow">↓</div>
-        <div class="card green"><b>T+?</b>: app ổn lại, tính tổng thời gian khắc phục</div>
-      </div>
-      <p class="muted">Sau đó clone repo mới, làm đúng theo README để chắc người khác dựng lại được.</p>
-    </div>
+<!-- ========== 21. BÀI HỌC ========== -->
+<section class="slide">
+  <div class="kicker">Bài học</div>
+  <h2 style="margin-bottom:16px">Tưởng là xong, đo lại mới thấy chưa</h2>
+  <div class="flips">
+    <div class="flip"><div class="where">D13 · Kudu</div>
+      <div class="top"><div class="tag">Tưởng</div>"Use main site rules" là Kudu đã khoá theo site chính.</div>
+      <div class="bot"><div class="tag">Thực ra</div>Mượn luật, không mượn Deny. Kudu trả 200 cho IP ngoài.</div></div>
+    <div class="flip"><div class="where">D14 · Ruleset</div>
+      <div class="top"><div class="tag">Tưởng</div>CI đỏ là PR không merge được.</div>
+      <div class="bot"><div class="tag">Thực ra</div>Chỉ 4/6 job là required. PR hỏng <code>frontend</code> vẫn merge được.</div></div>
+    <div class="flip"><div class="where">D7 · OIDC</div>
+      <div class="top"><div class="tag">Tưởng</div>Subject là <code>repo:owner/repo:…</code> như docs phổ biến.</div>
+      <div class="bot"><div class="tag">Thực ra</div>Repo bật immutable subject: token mang cả ID số, không khớp là login fail.</div></div>
+    <div class="flip"><div class="where">D16 · Quyền</div>
+      <div class="top"><div class="tag">Tưởng</div><code>AcrPush</code> là đủ để push image.</div>
+      <div class="bot"><div class="tag">Thực ra</div>Thiếu quyền đọc registry: <code>az acr login</code> 403, phải thêm <code>Reader</code>.</div></div>
+    <div class="flip"><div class="where">D16 · Rà lại</div>
+      <div class="top"><div class="tag">Tưởng</div>Kiểm SHA đúng là CD lành.</div>
+      <div class="bot"><div class="tag">Thực ra</div>Test luồng thật trên <code>fe</code> mới lộ bug PR #46 lọt qua cả D16.</div></div>
+  </div>
+  <div class="g2" style="margin-top:16px;gap:14px">
+    <div class="card violet"><div class="big" style="color:var(--violet);font-size:34px">42</div><p style="margin-top:6px"><code>ai-failure-log.md</code>: lần AI sinh ra thứ sai, cách phát hiện, cách sửa (đề cần 6–8)</p></div>
+    <div class="card gray"><div class="big" style="font-size:34px">30</div><p style="margin-top:6px"><code>known-issues.md</code>: chưa xong · biết là sai · làm lại thì làm khác chỗ nào</p></div>
   </div>
 </section>
 
-<!-- ========== 25. D25 (ẨN) ========== -->
-<section class="slide future hide">
-  <div class="kicker">D25</div>
-  <h2>Demo 45 phút, chạy thật, và những việc phải xong trước</h2>
-  <div class="tl" style="height:72px;font-size:15px">
-    <div style="flex:3;background:#6b7280">mở đầu</div>
-    <div style="flex:5;background:#374151">CI chặn lỗi</div>
-    <div style="flex:7;background:#2563eb">deploy không gián đoạn</div>
-    <div style="flex:8;background:#0891b2">danh tính + mật khẩu</div>
-    <div style="flex:5;background:#b91c1c">rút quyền</div>
-    <div style="flex:3;background:#b45309">chặn IP</div>
-    <div style="flex:5;background:#7c3aed">tải + cảnh báo</div>
-    <div style="flex:4;background:#6d28d9">log</div>
-    <div style="flex:5;background:#15803d">hạ tầng + chi phí</div>
+<!-- ========== 22. CÒN LẠI ========== -->
+<section class="slide future" data-days="23-25">
+  <div class="kicker">Tuần 5 · D23–D25 · còn lại</div>
+  <h2>Ba ngày cuối: thử quyền hạn chế, diễn tập sự cố, demo</h2>
+  <div class="g3">
+    <div class="card violet"><div class="lbl">D23</div><h3>Agent giới hạn quyền + cross-review 2</h3><p>Bài agent theo hướng dẫn mentor. Review chéo lần 2 → <code>review-&lt;tên&gt;.md</code>.</p></div>
+    <div class="card violet"><div class="lbl">D24</div><h3>Incident drill + hoàn thiện</h3><p>Gây sự cố, làm theo runbook, đo RTO: swap ngược · cắt quyền KV · destroy → apply · restore MySQL. Hoàn thiện <code>architecture.md</code>, README, <code>test-report.md</code>.</p></div>
+    <div class="card violet"><div class="lbl">D25</div><h3>Demo live 45 phút</h3><p>Chạy thật, không slide: CI chặn secret → merge → CD + poll → whitelist → autoscale → <code>/boom</code> → alert → trace → rollback → cost.</p></div>
   </div>
-  <div class="row muted" style="justify-content:space-between;font-size:14px;margin-top:6px"><span>0′</span><span>15′</span><span>30′</span><span>45′</span></div>
-  <div class="row fill" style="margin-top:22px">
-    <div class="grow">
-      <h3>Việc còn tồn</h3>
-      <ul class="check">
-        <li>Sửa IP whitelist đang khai sai (<code>terraform.tfvars</code>)</li>
-        <li>Khôi phục Terraform state của <code>infra/bootstrap</code></li>
-        <li>Viết test cho frontend</li>
-        <li>Tắt phần ghi log đã bật tay trên Azure</li>
-        <li>Review chéo lần 1 (chờ bạn intern kia)</li>
-      </ul>
-    </div>
-    <div class="col grow">
-      <div class="note fu" style="font-size:19px">Những phần phải chờ lâu (deploy, cảnh báo, tự tăng máy) sẽ <b>kích hoạt sớm</b>, trong lúc chờ thì trình bày phần khác.</div>
-      <div class="note warn" style="font-size:19px">Trước demo: thêm IP của phòng demo vào danh sách được phép.</div>
-      <div class="note ok" style="font-size:19px">Sau demo: tắt toàn bộ môi trường, chụp chi phí cuối cùng cho báo cáo.</div>
-    </div>
+  <h3 style="margin:22px 0 10px">Nợ phải trả trước khi demo</h3>
+  <div class="g4" style="gap:12px">
+    <div class="card"><div class="lbl">D15</div><p>Cross-review 1 + <b>M8 lần 2</b> (destroy → apply sau tuần 3)</p></div>
+    <div class="card"><div class="lbl">M2</div><p>Mentor chốt: timeout client có tính là lỗi không</p></div>
+    <div class="card"><div class="lbl">M11</div><p>Bắn lại alert để có email thật</p></div>
+    <div class="card"><div class="lbl">Ảnh</div><p>5 ảnh Portal còn thiếu của M3, M4, M6</p></div>
   </div>
+  <div class="fill"></div>
+  <div class="note warn" style="font-size:15px">⏰ Subscription Free Trial hết hạn <b>15/10, đúng D23</b>. Đang chờ mentor chốt subscription cho D23–D25 (Q5).</div>
 </section>
 
-<!-- ========== 26. KẾT ========== -->
+<!-- ========== 23. KẾT ========== -->
 <section class="slide">
   <div class="endwrap">
     <div>
-      <div class="kicker">Tổng kết tới D16</div>
+      <div class="kicker">Tổng kết tới D22</div>
       <p class="thanks">Cảm ơn<br>mọi người!</p>
-      <p style="font-size:22px;margin-top:22px">Từ một commit trên nhánh ngắn tới production: có kiểm tra, không mật khẩu, không thao tác tay.</p>
-      <p class="muted" style="font-size:20px;margin-top:26px">Hỏi đáp · Q&amp;A</p>
+      <p style="font-size:21px;margin-top:22px">Từ bấm chuột trên Portal tới một repo mà <code>make up</code> + merge vào <code>main</code> là ra app chạy thật, có kiểm tra, có theo dõi, có đường lui.</p>
+      <p class="muted" style="font-size:20px;margin-top:24px">Hỏi đáp · Q&amp;A</p>
     </div>
     <div class="col">
       <div class="stat4">
-        <div class="card blue"><div class="big" style="color:var(--blue)">8/11</div><p>must-have đã đạt</p></div>
-        <div class="card green"><div class="big" style="color:var(--green)">8/8</div><p>required checks chặn merge</p></div>
-        <div class="card amber"><div class="big" style="color:var(--amber)">7–8′</div><p>merge → production</p></div>
-        <div class="card gray"><div class="big">0</div><p>secret cất trên GitHub</p></div>
+        <div class="card blue"><div class="big" style="color:var(--blue)">10/11</div><p>must-have đã đạt</p></div>
+        <div class="card green"><div class="big" style="color:var(--green)">8/8</div><p>required check chặn merge</p></div>
+        <div class="card amber"><div class="big" style="color:var(--amber)">~7′</div><p>merge → production, tự rollback khi lỗi</p></div>
+        <div class="card gray"><div class="big">0</div><p>mật khẩu Azure cất trên GitHub</p></div>
       </div>
-      <div class="note fu" style="font-size:17px"><b>Tiếp theo:</b> D17 swap an toàn → D18 zero-downtime → D19–D22 autoscale, log, alert → D25 demo.</div>
+      <div class="note fu" style="font-size:16px"><b>Tiếp theo:</b> D23 agent giới hạn quyền → D24 incident drill → D25 demo live.</div>
     </div>
   </div>
 </section>
 
 </div>
-
 <div id="nav"><span id="count"></span><button id="prev" aria-label="Slide trước">←</button><button id="next" aria-label="Slide sau">→</button></div>
-
 <script>
 (function () {
-  // Ô log D18: 56 giây bản A, 1 giây xen kẽ, còn lại bản B — minh hoạ, không phải số đo.
-  var g = document.getElementById('cells');
-  if (g) {
-    var html = '';
-    for (var k = 0; k < 58; k++) {
-      var x = k * 20, color = k < 28 ? '#9ca3af' : (k === 28 ? '#93c5fd' : '#2563eb');
-      html += '<rect x="' + x + '" y="30" width="16" height="50" rx="3" fill="' + color + '"/>';
+  // Dải 25 ngày: trạng thái thật của từng bài (cập nhật khi xong bài mới).
+  var HOLD = [15], TODO = [23, 24, 25];
+  Array.prototype.forEach.call(document.querySelectorAll('.slide[data-days]'), function (el) {
+    var r = el.getAttribute('data-days').split('-').map(Number);
+    var from = r[0], to = r[1] || r[0];
+    var bar = document.createElement('div');
+    bar.className = 'days';
+    for (var d = 1; d <= 25; d++) {
+      var s = document.createElement('span');
+      s.textContent = 'D' + d;
+      s.className = HOLD.indexOf(d) >= 0 ? 'hold' : (TODO.indexOf(d) >= 0 ? 'todo' : 'done');
+      if (d >= from && d <= to) s.className += ' on';
+      bar.appendChild(s);
     }
-    g.innerHTML = html;
-  }
-
-  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide:not(.hide)'));
+    el.insertBefore(bar, el.firstChild);
+  });
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var nav = document.getElementById('nav');
   var i = 0, hideTimer;
-  // Số trang in thẳng lên từng slide đang dùng (bỏ qua slide .hide) — cùng cách đếm với #count.
+  // Số trang in thẳng lên từng slide — cùng cách đếm với #count.
   slides.forEach(function (el, k) {
     var num = document.createElement('div');
     num.className = 'pagenum';
