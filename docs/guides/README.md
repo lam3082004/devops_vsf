@@ -49,7 +49,8 @@ Vì vậy các file hướng dẫn **không chứa code Terraform, lệnh `az`, 
 
 ## Tài liệu thuyết trình
 
-- [`slides-cicd-d16.html`](slides-cicd-d16.html) (15 slide) + kịch bản nói/giải thích [`slides-cicd-d16-script.md`](slides-cicd-d16-script.md) — CI/CD của OpsBoard tới D16 (trunk-based, 8 job CI, OIDC, CD 3 job, swap). Soạn 25/09, đưa vào `main` 28/09; nội dung dừng ở D16 (chưa có D17 swap an toàn, D18 M2, D19 autoscale). **Bản chép** đang phục vụ trên `fe` ở `/a.html` (`app/fe/public/a.html`, 28/09, người dùng yêu cầu) — sửa slide thì chép lại cả hai chỗ.
+- [`slides-project.html`](slides-project.html) (23 slide) — toàn bộ quá trình 25 ngày: đề bài, lộ trình, kiến trúc, từng chặng D1→D22 kèm số đo thật, bảng M1–M11, bài học, D23–D25 còn lại. Soạn 29/09 (dữ liệu tới hết D22). **Bản chép** đang phục vụ trên `fe` ở `/a.html` (`app/fe/public/a.html`) — sửa slide thì chép lại cả hai chỗ; xong bài mới thì sửa `HOLD`/`TODO` trong script.
+- [`slides-cicd-d16.html`](slides-cicd-d16.html) (15 slide) + kịch bản nói/giải thích [`slides-cicd-d16-script.md`](slides-cicd-d16-script.md) — CI/CD của OpsBoard tới D16 (trunk-based, 8 job CI, OIDC, CD 3 job, swap). Soạn 25/09, đưa vào `main` 28/09; nội dung dừng ở D16 (chưa có D17 swap an toàn, D18 M2, D19 autoscale). Từ 29/09 `/a.html` phục vụ `slides-project.html` thay cho deck này.
 
 ## Tiến độ
 
