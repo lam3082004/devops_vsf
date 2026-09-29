@@ -9,6 +9,8 @@ if (typeof window !== "undefined") {
 
 import { connection } from "next/server";
 
+import { currentTraceparent } from "@/lib/tracing";
+
 import type {
   AddCommentInput,
   Comment,
@@ -110,7 +112,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   await connection();
   const baseUrl = requireBaseUrl();
   const headers = new Headers({ Accept: "application/json" });
-  if (options.traceparent) headers.set("traceparent", options.traceparent);
+  const traceparent = currentTraceparent() ?? options.traceparent;
+  if (traceparent) headers.set("traceparent", traceparent);
   if (options.userName) headers.set("X-User-Name", options.userName);
 
   let body: string | undefined;

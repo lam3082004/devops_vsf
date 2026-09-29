@@ -1,0 +1,358 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# OpsBoard — M11 monitoring (`${env}`)\nDashboard **không dùng App Insights** cho metric/log (topic.md M11): metric đọc thẳng từ Azure Monitor, log từ Log Analytics `${workspace_name}`. App Insights chỉ ở ô *Trace*. Code: `infra/app/workbooks/m11.workbook.json.tftpl`."
+      },
+      "name": "header"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "b1a1f1a0-0d21-4c11-9a11-000000000001",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Khoảng thời gian",
+            "type": 4,
+            "isRequired": true,
+            "value": { "durationMs": 3600000 },
+            "typeSettings": {
+              "selectableValues": [
+                { "durationMs": 900000 },
+                { "durationMs": 3600000 },
+                { "durationMs": 14400000 },
+                { "durationMs": 43200000 },
+                { "durationMs": 86400000 },
+                { "durationMs": 604800000 }
+              ],
+              "allowCustom": true
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters"
+    },
+    {
+      "type": 1,
+      "content": { "json": "## 1 · App performance — response time · request rate · failure rate (metric Web App)" },
+      "name": "h-app"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-response-time",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/sites",
+        "metricScope": 0,
+        "resourceIds": ["${be_id}", "${fe_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--HttpResponseTime", "aggregation": 4 }
+        ],
+        "title": "Response time trung bình (giây)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "app-response-time"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-requests",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/sites",
+        "metricScope": 0,
+        "resourceIds": ["${be_id}", "${fe_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Requests", "aggregation": 1 }
+        ],
+        "title": "Request rate (Requests, tổng theo khoảng)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "app-requests"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-http5xx",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/sites",
+        "metricScope": 0,
+        "resourceIds": ["${be_id}", "${fe_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Http5xx", "aggregation": 1 }
+        ],
+        "title": "Failure — số 5xx (metric)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "app-http5xx"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// Q2: % 5xx theo 5 phút — từ log, không cần App Insights (không tính /health, /api/version)\nAppServiceHTTPLogs\n| where _ResourceId has \"/sites/\" and _ResourceId !has \"/slots/\"\n| where CsUriStem !in (\"/health\", \"/version\", \"/api/version\")\n| extend app = tostring(split(_ResourceId, \"/\")[8])\n| summarize fail_pct = round(100.0 * countif(ScStatus >= 500) / count(), 2) by bin(TimeGenerated, 5m), app\n| render timechart",
+        "size": 0,
+        "title": "Failure rate % (log, theo 5 phút)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": ["${workspace_id}"],
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "app-fail-pct"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// Q3: p50/p95 thời gian xử lý theo path (ms)\nAppServiceHTTPLogs\n| where _ResourceId has \"/sites/\" and _ResourceId !has \"/slots/\"\n| where CsUriStem !in (\"/health\", \"/version\", \"/api/version\")\n| extend app = tostring(split(_ResourceId, \"/\")[8])\n| summarize requests = count(), p50_ms = percentile(TimeTaken, 50), p95_ms = percentile(TimeTaken, 95) by app, CsUriStem\n| order by p95_ms desc\n| take 15",
+        "size": 0,
+        "title": "p50 / p95 theo path (log) — request chậm nhất lên đầu",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": ["${workspace_id}"],
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "app-latency-by-path"
+    },
+    {
+      "type": 1,
+      "content": { "json": "## 2 · Infra App Service — CPU · memory · HTTP queue (metric của Plan `${plan_name}`, chung cho be + fe)" },
+      "name": "h-plan"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-plan-cpu",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/serverfarms",
+        "metricScope": 0,
+        "resourceIds": ["${plan_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/serverfarms", "metric": "microsoft.web/serverfarms--CpuPercentage", "aggregation": 4 }
+        ],
+        "title": "CPU % (alert > 80% / 15 phút)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "plan-cpu"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-plan-memory",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/serverfarms",
+        "metricScope": 0,
+        "resourceIds": ["${plan_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/serverfarms", "metric": "microsoft.web/serverfarms--MemoryPercentage", "aggregation": 4 }
+        ],
+        "title": "Memory %",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "plan-memory"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-plan-queue",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/serverfarms",
+        "metricScope": 0,
+        "resourceIds": ["${plan_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/serverfarms", "metric": "microsoft.web/serverfarms--HttpQueueLength", "aggregation": 4 }
+        ],
+        "title": "HTTP queue length",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "plan-http-queue"
+    },
+    {
+      "type": 1,
+      "content": { "json": "## 3 · Infra MySQL — CPU · active connections · storage (metric `${mysql_name}`)" },
+      "name": "h-mysql"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-mysql-cpu",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.dbformysql/flexibleservers",
+        "metricScope": 0,
+        "resourceIds": ["${mysql_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.dbformysql/flexibleservers", "metric": "microsoft.dbformysql/flexibleservers--cpu_percent", "aggregation": 3 }
+        ],
+        "title": "CPU % (max)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "mysql-cpu"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-mysql-connections",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.dbformysql/flexibleservers",
+        "metricScope": 0,
+        "resourceIds": ["${mysql_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.dbformysql/flexibleservers", "metric": "microsoft.dbformysql/flexibleservers--active_connections", "aggregation": 3 }
+        ],
+        "title": "Active connections (max; alert > 128)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "mysql-connections"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-mysql-storage",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.dbformysql/flexibleservers",
+        "metricScope": 0,
+        "resourceIds": ["${mysql_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.dbformysql/flexibleservers", "metric": "microsoft.dbformysql/flexibleservers--storage_percent", "aggregation": 3 }
+        ],
+        "title": "Storage % (max)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "33",
+      "name": "mysql-storage"
+    },
+    {
+      "type": 1,
+      "content": { "json": "## 4 · Health · alert đang bắn" },
+      "name": "h-health"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "m11-health",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.web/sites",
+        "metricScope": 0,
+        "resourceIds": ["${be_id}", "${fe_id}"],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": { "durationMs": 3600000 },
+        "metrics": [
+          { "namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--HealthCheckStatus", "aggregation": 4 }
+        ],
+        "title": "Health check status (100 = mọi instance khoẻ)",
+        "gridSettings": { "rowLimit": 10000 }
+      },
+      "customWidth": "50",
+      "name": "health-status"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "alertsmanagementresources\n| where type =~ \"microsoft.alertsmanagement/alerts\"\n| where tostring(properties.essentials.targetResourceGroup) =~ \"${resource_group_name}\"\n| extend fired = todatetime(properties.essentials.startDateTime), rule = tostring(properties.essentials.alertRule), severity = tostring(properties.essentials.severity), condition = tostring(properties.essentials.monitorCondition), state = tostring(properties.essentials.alertState)\n| where fired > ago(7d)\n| project fired, condition, severity, rule = tostring(split(rule, \"/\")[-1]), state\n| order by fired desc",
+        "size": 0,
+        "title": "Alert 7 ngày qua (Fired = đang bắn)",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": ["/subscriptions/${subscription_id}"],
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "alerts-firing"
+    },
+    {
+      "type": 1,
+      "content": { "json": "## 5 · Log · trace — chuyện gì đã xảy ra với request này" },
+      "name": "h-logs"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// Q5: lỗi mới nhất từ log JSON của app (stdout → AppServiceConsoleLogs)\nAppServiceConsoleLogs\n| where _ResourceId has \"/sites/\"\n| extend log = parse_json(ResultDescription)\n| where tostring(log.level) == \"error\" or toint(log.status) >= 500\n| project TimeGenerated, app = tostring(split(_ResourceId, \"/\")[8]), level = tostring(log.level), event = tostring(log.event), path = tostring(log.path), status = toint(log.status), error = tostring(log.error), detail = tostring(log.detail), trace_id = tostring(log.trace_id)\n| order by TimeGenerated desc\n| take 50",
+        "size": 0,
+        "title": "Lỗi mới nhất (level = error, hoặc request ≥ 500 kèm trace_id)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": ["${workspace_id}"],
+        "visualization": "table"
+      },
+      "name": "logs-errors"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// Q8: request lỗi trong trace (App Insights, cùng workspace) nối với log JSON cùng trace_id\nAppRequests\n| where Success == false\n| project TimeGenerated, role = AppRoleName, request = Name, ResultCode, DurationMs = round(DurationMs, 1), OperationId\n| join kind=leftouter (\n    AppServiceConsoleLogs\n    | extend log = parse_json(ResultDescription)\n    | where isnotempty(log.trace_id)\n    | summarize log_events = make_set(tostring(log.event), 5) by trace_id = tostring(log.trace_id)\n  ) on $left.OperationId == $right.trace_id\n| project-away trace_id\n| order by TimeGenerated desc\n| take 50",
+        "size": 0,
+        "title": "Trace — request lỗi ↔ log cùng trace_id (mở end-to-end transaction trong App Insights bằng OperationId)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": ["${workspace_id}"],
+        "visualization": "table"
+      },
+      "name": "trace-join"
+    }
+  ],
+  "fallbackResourceIds": ["azure monitor"],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

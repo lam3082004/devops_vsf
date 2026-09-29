@@ -10,7 +10,7 @@ locals {
   # D17: mọi key ở đây dùng chung site + slot, TRỪ API_BASE_URL — key đó được
   # `merge()` riêng cho slot staging (azurerm_linux_web_app_slot.fe_staging bên
   # dưới) và khai sticky trên site chính, để đóng known-issues.md #15.
-  fe_app_settings = {
+  fe_app_settings = merge({
     # App Service chuyển traffic vào cổng này của container (cùng ý nghĩa với
     # local.app_settings.WEBSITES_PORT ở app.tf, nhưng var.fe_container_port
     # khác var.container_port — xem comment ở variables.tf).
@@ -54,7 +54,13 @@ locals {
     # oan vì lỗi của một app khác.
     WEBSITE_SWAP_WARMUP_PING_PATH     = "/api/version"
     WEBSITE_SWAP_WARMUP_PING_STATUSES = "200"
-  }
+    }, var.enable_app_insights ? {
+    # D21 (quyết định F): tracing `fe` → cùng App Insights với `be` (src/instrumentation.node.ts).
+    # Cùng secret, cùng cách dựng URI với `be` (app.tf — lý do không đọc versionless_id ở đó).
+    # Đây là secret DUY NHẤT `fe` đọc từ Key Vault; app tắt telemetry (không thoát) nếu
+    # tham chiếu chưa resolve.
+    APPLICATIONINSIGHTS_CONNECTION_STRING = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.kv.vault_uri}secrets/${local.appinsights_secret_name})"
+  } : {})
 }
 
 resource "azurerm_linux_web_app" "fe" {
@@ -76,10 +82,15 @@ resource "azurerm_linux_web_app" "fe" {
 
   app_settings = local.fe_app_settings
 
-  # KHÔNG khai key_vault_reference_identity_id: fe không đọc secret nào từ Key
-  # Vault (không có DB_PASSWORD hay tương tự trong local.fe_app_settings) —
-  # bỏ trống là cố ý, không phải quên. Vì lý do tương tự, không depends_on role
-  # Key Vault nào (khác `be`, xem app.tf).
+  # D21: `fe` đọc đúng một secret (connection string App Insights, tracing) — danh tính
+  # resolve @Microsoft.KeyVault(...) giống `be`. Trước D21 bỏ trống vì `fe` không có secret nào.
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
+
+  # Role Secrets User và secret phải có trước khi app resolve reference — cùng lý do `be`.
+  depends_on = [
+    azurerm_role_assignment.kv_secrets_user_app,
+    azurerm_key_vault_secret.appinsights_connection_string,
+  ]
 
   # D17 (#15): API_BASE_URL PHẢI sticky. Site chính và slot staging cố ý có
   # GIÁ TRỊ KHÁC NHAU cho key này (production trỏ `be` production, staging trỏ
@@ -200,8 +211,13 @@ resource "azurerm_linux_web_app_slot" "fe_staging" {
     API_BASE_URL = "https://${local.be_staging_hostname}"
   })
 
-  # Không key_vault_reference_identity_id, không depends_on role Key Vault —
-  # cùng lý do với site chính ở trên: fe không dùng secret nào từ Key Vault.
+  # Giống site chính ở trên (D21): slot cũng resolve connection string App Insights.
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
+
+  depends_on = [
+    azurerm_role_assignment.kv_secrets_user_app,
+    azurerm_key_vault_secret.appinsights_connection_string,
+  ]
 
   site_config {
     always_on           = true
