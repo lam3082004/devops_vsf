@@ -4,7 +4,7 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-29 (hết D22 · M11 đạt, còn chờ xác nhận email + apply PR ghi chép)
+## Tiến độ — cập nhật 2026-09-29 tối (hết D22 · M11 đạt · email alert không tới trên Free Trial — đã ghi)
 
 **D1–D14, D16–D22 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
@@ -60,11 +60,28 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
   Apply 5 added / 3 changed / 1 destroyed. Trace trình duyệt → `fe` → `be` → MySQL thật trên App Insights.
 - Drill 06:42:59–06:51:00Z: 197 × 500 → `alert-vsf-5xx-rate` **Fired 06:47:39Z → Resolved 07:13:44Z**; runbook đi thử 6/6 bước.
 - Tự review/sửa trong phiên: #39–#42 `ai-failure-log.md`; `known-issues.md` #27–#30. `notes/d21.md`, `notes/d22.md`, `docs/logging.md`, `evidence/M11.md`.
-- **Còn mở:** (1) email alert: 2 drill Fired → Resolved, action group executed nhưng **không có email** — lần 1 chưa xác minh OTP, lần 2 đã xác minh vẫn không tới, nghi Free Trial (`known-issues.md` #28; người dùng chấp nhận ghi lại, kiểm lại khi có subscription trả phí — Q5); (2) PR ghi chép (Workbook: join `trace_id + span_id`, tắt số "Sum";
-  `boom.sh` nhịp 1 s) — merge = CD swap lần 3, cần duyệt; sau merge `apply -replace` Workbook = kiểm "sống lại từ code" (quyết định E);
-  (3) Test action group không làm được trên Free Trial (#28).
+- **Còn mở:** (1) email alert: 2 drill Fired → Resolved, action group executed nhưng **không có email** — lần 1 chưa xác minh OTP, lần 2 đã xác minh vẫn không tới, nghi Free Trial (`known-issues.md` #28; người dùng chấp nhận ghi lại, kiểm lại khi có subscription trả phí — Q5); (2) Test action group không làm được trên Free Trial (#28).
+- ✅ PR #66 merge (CD `36540297208` success) + `terraform apply -replace=azurerm_application_insights_workbook.m11` từ `main` `7e65e5a`:
+  1 added / 1 destroyed, plan sau **No changes** → Workbook dựng lại từ code (quyết định E D21 **đạt**); 2 sửa template có trên Azure
+  (đọc `serializedData` qua API `canFetchContent=true`: `showMetrics:false`, join `$left.Id == $right.span_id`).
+- ✅ PR #67 (người dùng soạn slide, yêu cầu đẩy production): deck toàn dự án `docs/guides/slides-project.html` (23 slide) — `fe` phục vụ ở
+  `/a.html`; CD `36587663868` success, `curl -4 …/a.html` = 200, `cmp` giống hệt file nguồn, `/api/version` = `3ab953a`.
 
-**Bài tiếp: D23** (agent giới hạn quyền + cross-review 2). ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước.
+**Bàn giao 2026-09-29 tối (phiên D21–D22 + slide):**
+- `main` = `3ab953a`. Không nhánh/PR nào đang mở của phiên (trừ PR bàn giao này). Không tiến trình nền nào còn chạy.
+- Azure `jcip0s` **ĐANG BẬT** (người dùng quyết định giữ). Hôm nay 4 lần CD swap (#64, #65, #66, #67), 3 lần apply + 1 `-replace`, 2 drill `/boom`.
+- **Việc người dùng cần làm:** thêm `alert_email = "<email>"` vào `infra/app/terraform.tfvars` của **checkout chính** (gitignored). Worktree
+  phiên này có dòng đó, checkout chính thì chưa → apply từ checkout chính sẽ **xoá email receiver** (plan thấy `- email_receiver`).
+- Tool: `az` đã tự cài extension `scheduled-query` (preview) khi chạy `az monitor scheduled-query show` — chỉ đọc, gỡ nếu muốn:
+  `az extension remove -n scheduled-query`.
+- Chrome extension (Claude in Chrome) **không còn quyền** trên `portal.azure.com` (bị từ chối lúc 29/09 chiều) — ảnh Portal phiên sau cần
+  bật lại quyền hoặc người dùng tự chụp.
+- Lệnh đọc nhanh cho phiên sau: `bash`-KQL qua `az rest … api.loganalytics.io/v1/workspaces/<customerId>/query` (mẫu trong
+  `notes/d20.md`); trạng thái alert: Resource Graph `alertsmanagementresources` lọc `targetResourceGroup =~ 'rg-vsf-dev'`.
+
+**Bài tiếp: D23** (agent giới hạn quyền + cross-review 2) — guide `docs/guides/d23-limited-agent-review-2.md`, chưa có `notes/d23-prep.md`
+(bước đầu phiên sau: đọc guide, viết prep, chốt quyết định). ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước;
+Q1 (App Insights) và Q3 (5xx count/rate) vẫn chưa có trả lời mentor — M11 đang làm theo mặc định/người dùng chốt.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
