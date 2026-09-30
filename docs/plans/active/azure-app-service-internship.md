@@ -79,8 +79,10 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 - Lệnh đọc nhanh cho phiên sau: `bash`-KQL qua `az rest … api.loganalytics.io/v1/workspaces/<customerId>/query` (mẫu trong
   `notes/d20.md`); trạng thái alert: Resource Graph `alertsmanagementresources` lọc `targetResourceGroup =~ 'rg-vsf-dev'`.
 
-**Bài tiếp: D23** (agent giới hạn quyền + cross-review 2) — guide `docs/guides/d23-limited-agent-review-2.md`, chưa có `notes/d23-prep.md`
-(bước đầu phiên sau: đọc guide, viết prep, chốt quyết định). ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước;
+**Bài tiếp: D23 → D24** — kế hoạch chi tiết `notes/d23-prep.md`, `notes/d24-prep.md` (viết 30/09, người dùng duyệt). Chốt 30/09:
+agent = **"agent đọc sự cố"** (`id-agent-triage`, GitHub OIDC, chỉ đọc) kèm sửa #17 (import state bootstrap) · **bỏ cross-review 2** ·
+**giữ PoC, không `make down`** (M8 lần cuối = clone mới → plan No changes, ghi rõ giới hạn) · 2 drill Claude tự soạn/tự chạy (firewall MySQL,
+deploy lỗi → swap ngược). Bước đầu phiên sau: `notes/d23-prep.md` mục 0. ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước;
 Q1 (App Insights) và Q3 (5xx count/rate) vẫn chưa có trả lời mentor — M11 đang làm theo mặc định/người dùng chốt.
 
 | Mốc | Trạng thái | Bằng chứng |
@@ -364,11 +366,15 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 - [x] **Truy vết alert → request:** từ email alert → mở query KQL → lấy `trace_id` → xem end-to-end transaction và log cùng trace — *proof: quay/ảnh từng bước từ 1 alert thật* → `evidence/M11.md` — bằng KQL + kết quả từng bước (mục 6), chưa quay màn hình
 - [x] `runbook.md` cho alert nghiêm trọng nhất: triệu chứng · xác nhận (query nào) · xử lý · rollback (swap ngược) · escalate — đi thử 6/6 bước lúc drill 29/09
 
-### D23 — Agent giới hạn quyền + cross-review 2
-- [ ] Bài agent giới hạn quyền (theo hướng dẫn mentor) — *proof: theo yêu cầu bài*
-- [ ] Cross-review lần 2 → `review-<tên>.md`
+### D23 — Agent giới hạn quyền + cross-review 2 — kế hoạch `notes/d23-prep.md`
+- [ ] Sửa #17: import state `infra/bootstrap` (18 resource, `plan` phải 0 to add/change/destroy) — *proof: plan No changes*
+- [ ] Agent đọc sự cố `id-agent-triage` (MI ở bootstrap, quyền ở `infra/app`, workflow `agent-triage.yml`) — *proof: run triage + run prove, ≥ 7 phép bị cấm thất bại đúng mã lỗi → `evidence/agent.md`*
+- [x] ~~Cross-review lần 2 → `review-<tên>.md`~~ — **BỎ** (người dùng chốt 30/09: không có repo intern kia; ghi `known-issues.md`)
 
-### D24 — Incident drill + hoàn thiện
+### D24 — Incident drill + hoàn thiện — kế hoạch `notes/d24-prep.md`
+> **Chốt 30/09:** không `make down` (giữ PoC, #23) → mục `destroy` → `apply` dưới đây đổi thành "clone mới → plan No changes → `make up` 0 thay đổi"
+> (ghi rõ giới hạn trong `evidence/M8.md`); `docs/deploy.md` / `operations.md` / `troubleshooting.md` **không** tách file — README trỏ tới
+> README, `runbook.md` + `docs/logging.md`, `known-issues.md`; PITR restore không làm. Drill: firewall MySQL (drift → apply) + deploy lỗi → swap ngược.
 - [ ] Drill: gây sự cố (deploy bản lỗi / cắt quyền KV) → làm theo runbook → rollback — *proof: timeline ghi lại*
 - [ ] **Rollback & recovery test:** (1) swap ngược sau bản lỗi, đo thời gian (RTO) · (2) xoá quyền KV rồi khôi phục · (3) `destroy` → `apply` phục hồi từ state · (4) restore MySQL point-in-time thử 1 lần — *proof: log + thời gian từng kịch bản* → `docs/rollback.md`
 - [ ] `docs/deploy.md` (dựng từ đầu), `docs/operations.md` (vận hành hằng ngày, alert, dashboard), `docs/troubleshooting.md` (lỗi đã gặp: 429, RBAC lan truyền, KV reference, whitelist runner) — *proof: người thứ ba làm theo được*
@@ -471,6 +477,10 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 - 2026-09-27 — **D19: autoscale gắn Plan, `ignore_changes = [worker_count]`, 70/30, cửa sổ in 10 > out 5 phút, không email** (quyết định A–F `notes/d19.md`). Kiểm hợp đồng `ignore_changes` bằng `plan` No changes **lúc đang 2 instance** — đã đạt. Right sizing: giữ **P0v3** (`evidence/M7.md` mục 4).
 - 2026-09-28 — **D20 quyết định B và F (người dùng duyệt):** Log Analytics retention 30 ngày + daily cap **0,2 GB/ngày** (chạm cap → mất telemetry tới hết ngày, không mất tiền; 5 GB/tháng đầu miễn phí, sau đó $3,22/GB Central India); `/boom` **`throw` exception thật** theo `topic.md` §2 và `docs/docs_app/brief.md` R6 — phải kèm exception handler nếu `api-spec.md` coi body `ErrorResponse` là hợp đồng.
 - 2026-09-28 — **D20: dependency mới `Azure.Monitor.OpenTelemetry.AspNetCore` 1.6.0** (bản stable mới nhất trên NuGet, 27/07/2026) cho `be` — quyết định A (dựng App Insights **tạm** theo mặc định Q1, cờ `enable_app_insights`), C (connection string trong Key Vault, app setting là KV reference), D (distro + `AddSource("MySqlConnector")`, không collector), E (100%, bỏ `/health` + `/version` khỏi trace), G (chỉ `be`). Kéo theo OpenTelemetry 1.15.x + `Azure.Core`/MSAL; image `be` 184 → 190 MB; Trivy phần .NET 0 CVE, cổng CRITICAL/HIGH exit 0 (máy local 28/09). Distro từ 1.5.0 mặc định lấy mẫu **5 trace/giây** → đặt tường minh `SamplingRatio = 1`, `TracesPerSecond = null`. Log **không** export qua OpenTelemetry (lọc provider về `None`) — log đi JSON stdout → Log Analytics ở D21. Workspace Log Analytics **không** theo cờ (D21 dùng lại). Chi tiết `notes/d20.md`.
+- 2026-09-30 — **D23/D24 (người dùng chốt khi duyệt kế hoạch):** agent = "agent đọc sự cố" (`id-agent-triage`, UAMI ở bootstrap để client id
+  cố định, quyền Log Analytics Reader trên workspace + custom role đọc alert/metric trên RG — không Monitoring Reader vì `*/read` lộ IP whitelist);
+  sửa #17 bằng `import` (state local ở checkout chính, giữ quyết định D7); **bỏ cross-review 2** (không có người ghép đôi); **giữ PoC, không
+  `make down`** — M8 lần cuối không có destroy → apply; drill do Claude tự gây, báo trước. Chi tiết `notes/d23-prep.md`, `notes/d24-prep.md`.
 - 2026-09-28 — **Phản hồi review ngoài 26/09 (trước D21, `notes/review-2026-09-26.md`):** (1) readiness = ping DB **và** schema, `/health` tự thử tạo lại bảng (`SchemaInitializer`) — bug thật, tái hiện được; (2) `/load` tối đa **4** request đồng thời mỗi instance (`LOAD_MAX_CONCURRENT` 1..16, người dùng duyệt), vượt → **429 `too_many_requests`** (mã lỗi mới trong `api-spec.md`); (3) `PATCH /items/{id}` **last-write-wins có chủ đích** (người dùng chọn ghi chính sách, chưa code). Tạm thời **không `make down`** cho tới khi người dùng nói khác.
 
 ## Rủi ro đã biết
