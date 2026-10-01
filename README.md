@@ -174,7 +174,7 @@ MySQL local cho test đầy đủ: `make test-db`.
 ## 5. Deploy: PR → CI → merge → CD
 
 1. Nhánh `feat/` · `fix/` · `chore/` · `docs/` từ `main`, sống ≤ 2 ngày. Không push `main` (ruleset chặn: `GH013`).
-2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 9 check; `terraform plan` đăng nhập bằng `id-gh-plan` (không ghi được hạ tầng, nhưng có lease state và đọc được secret DB khi plan — `architecture.md` mục 4).
+2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 9 check; `terraform plan` đăng nhập bằng `id-gh-plan` (không ghi được hạ tầng hay state, nhưng đọc được secret DB khi plan — `architecture.md` mục 4).
 3. Squash merge → `cd.yml`: build `be` + `fe` (tag = git SHA), quét Trivy lại, sinh SBOM, push ACR, đặt image cho slot
    `staging`, chờ staging trả đúng SHA và `fe` staging gọi được `be` staging, **smoke test nghiệp vụ** (`GET /items`,
    `/stats`, trang `fe`), ZAP baseline (chỉ cảnh báo), swap, kiểm production; sai thì tự swap ngược.
