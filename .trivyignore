@@ -1,0 +1,13 @@
+# Ngoại lệ của cổng Trivy CRITICAL/HIGH (ci.yml, cd.yml). Mỗi dòng: mã CVE + exp:
+# (hết hạn thì Trivy tự báo lại, cổng tự đỏ lại). Thêm dòng = quyết định của
+# người dùng, ghi lý do và known-issues.
+#
+# CVE-2026-84782 — openssl/libssl3t64 3.0.13-0ubuntu3.15 trong base image
+# mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled (be). Ubuntu đã có bản vá
+# 3.0.13-0ubuntu3.16, nhưng Microsoft chưa phát hành lại image chiseled (bản mới
+# nhất build 2026-09-04, quét lại 2026-10-01 vẫn còn). Image chiseled không có
+# apt nên không tự nâng được trong Dockerfile. Lỗi nằm ở DTLS handshake; app chỉ
+# nhận HTTP sau front-end TLS của App Service và ra MySQL bằng TLS/TCP, không dùng
+# DTLS. Chặn CD từ merge #69 (run 36807348815). Xem lại: khi image mới ra, hoặc
+# chậm nhất ngày hết hạn dưới đây.
+CVE-2026-84782 exp:2026-10-15
