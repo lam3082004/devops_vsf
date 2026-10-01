@@ -46,7 +46,7 @@ dùng (để làm D16–D20 liền mạch, không dựng lại mỗi sáng). Tí
 `evidence/raw/d25-cost-api-20261001.tsv`: `rg-vsf-dev` **$19,38** (App Service $17,83 · ACR $1,44 · Azure Monitor $0,10
 · Key Vault $0,01 · MySQL $0,00) · bài thực tập tổng **≈ $19,9**. Từ 25/09 mỗi ngày **$2,13–2,18** = đúng 24 giờ P0v3
 ($1,97) + ACR Basic ($0,17): môi trường bật liên tục, Log Analytics/App Insights gần như không tốn (< 5 GB/tháng miễn phí).
-**Số chốt cho "đáng lẽ tránh được" của biện pháp 1: ≈ $16** (thay $8,7 ở trên, tính tới 28/09) (24/09 03:08Z → 01/10 17Z = 182 giờ × $0,089). PoC ngoài repo
+**Số chốt cho "đáng lẽ tránh được" của biện pháp 1: ≈ $16** (24/09 03:08Z → 01/10 17Z = 182 giờ × $0,089; thay số $8,7 ở trên vốn chỉ tính tới 28/09). PoC ngoài repo
 (`rg-obs-poc` + 1 web app chung plan) ≈ $20,5 — không tính. Ảnh Cost analysis cuối cùng: chụp sau demo (guide D25 mục 4).
 
 **MySQL $0,00:** theo giá niêm yết, ~140 giờ B1ms đáng lẽ ~$3,6. Khớp với ưu đãi 12 tháng của tài khoản
