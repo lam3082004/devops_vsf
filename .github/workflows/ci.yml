@@ -20,7 +20,7 @@ jobs:
     name: gitleaks
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # Phải lấy TOÀN BỘ lịch sử: secret nằm ở commit giữa PR vẫn phải bị bắt.
           fetch-depth: 0
@@ -58,13 +58,13 @@ jobs:
           --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -ptestpass"
           --health-interval=5s --health-timeout=3s --health-retries=20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Cài .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
@@ -84,9 +84,9 @@ jobs:
     name: frontend (lint, build)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Cài Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Ghim major: Next 16 cần Node >= 20, máy dev đang dùng 24.
           node-version: "24"
@@ -137,11 +137,11 @@ jobs:
     name: terraform (fmt, validate)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Bỏ qua nếu chưa có thư mục infra/ (sẽ có từ D7)
         id: check
         run: test -d infra && echo "exists=true" >> "$GITHUB_OUTPUT" || echo "exists=false" >> "$GITHUB_OUTPUT"
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         if: steps.check.outputs.exists == 'true'
         with:
           terraform_version: 1.15.8
@@ -177,8 +177,8 @@ jobs:
       group: terraform-plan-infra-app
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v5
-      - uses: hashicorp/setup-terraform@v3
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.15.8
       - name: terraform init
@@ -228,7 +228,7 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload plan.txt làm artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: terraform-plan-app
           path: infra/app/plan.txt
@@ -243,7 +243,7 @@ jobs:
     name: docker build + trivy (be)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # KHÔNG push. PR đến từ nhánh bất kỳ; push nghĩa là cho code chưa review
       # ghi vào registry mà production kéo từ đó. Push là việc của cd.yml (D16),
       # sau khi đã merge vào main.
@@ -257,7 +257,7 @@ jobs:
       # lần. Khoá theo NGÀY: database đổi liên tục, giữ quá lâu là quét bằng dữ
       # liệu cũ và bỏ lọt CVE mới.
       - name: Cache database Trivy
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/trivy
           key: trivy-db-${{ runner.os }}-${{ github.run_id }}
@@ -304,7 +304,7 @@ jobs:
     name: docker build + trivy (fe)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # --build-arg GIT_SHA giống hệt cd.yml: image quét ở CI phải build bằng
       # đúng lệnh mà CD sẽ dùng, nếu không thì cái được quét không phải cái được
       # deploy (bẫy "build trong CD khác bản đã test ở CI").
@@ -315,7 +315,7 @@ jobs:
             -t opsboard-fe:${{ github.sha }} \
             app/fe/
       - name: Cache database Trivy
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/trivy
           key: trivy-db-${{ runner.os }}-${{ github.run_id }}
@@ -355,7 +355,7 @@ jobs:
     name: sast + iac (semgrep, trivy config)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # Semgrep chạy bằng image chính thức ghim version (không pip install trên
       # runner). Rule pack tải từ registry công khai, --metrics=off. Chỉ ERROR là
       # cổng; WARNING (ví dụ action chưa ghim SHA) in ra để theo dõi.
@@ -404,12 +404,12 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # Không có client secret nào: GitHub cấp token ngắn hạn có chữ ký, Entra
       # chấp nhận nếu subject của token khớp federated credential đã khai
       # (repo:lam3082004/devops_vsf:pull_request cho danh tính plan).
       - name: Đăng nhập Azure bằng OIDC
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID_PLAN }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}

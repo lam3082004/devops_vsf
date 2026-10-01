@@ -99,7 +99,7 @@ jobs:
     steps:
       # Không checkout: job này chỉ hỏi Azure, không đụng tới nội dung repo.
       - name: Đăng nhập Azure OIDC (id-gh-deploy)
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID_DEPLOY }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -222,10 +222,10 @@ jobs:
     if: needs.preflight.outputs.should_deploy == 'true'
     environment: staging-deploy
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Đăng nhập Azure OIDC (id-gh-deploy)
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID_DEPLOY }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -263,7 +263,7 @@ jobs:
       # ci.yml: không tải lại ~700MB mỗi lần, nhưng không giữ quá lâu (dữ
       # liệu CVE đổi liên tục).
       - name: Cache database Trivy
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/trivy
           key: trivy-db-${{ runner.os }}-${{ github.run_id }}
@@ -326,7 +326,7 @@ jobs:
           done
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-${{ github.sha }}
           path: ${{ runner.temp }}/sbom/
@@ -511,7 +511,7 @@ jobs:
       SIMULATE_VERIFY_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.simulate_verify_failure && 'true' || 'false' }}
     steps:
       - name: Đăng nhập Azure OIDC (id-gh-deploy)
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID_DEPLOY }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -728,7 +728,7 @@ jobs:
 
       - name: Upload báo cáo ZAP
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: zap-baseline-${{ github.sha }}
           path: ${{ runner.temp }}/zap/
