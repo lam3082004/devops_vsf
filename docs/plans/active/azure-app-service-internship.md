@@ -4,9 +4,9 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-09-29 tối (hết D22 · M11 đạt · email alert không tới trên Free Trial — đã ghi)
+## Tiến độ — cập nhật 2026-10-01 (hết D24 + DevSecOps · email alert tới thật · review Sonnet D1–D24)
 
-**D1–D14, D16–D22 xong (M2 chờ mentor quyết). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
+**D1–D14, D16–D24 xong (M2 chờ mentor quyết) + bộ DevSecOps (#75). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
 **D16 XONG — M10 ĐẠT.** Nhật ký: `notes/d16.md` · bằng chứng: `evidence/M10.md`.
 Kế hoạch gốc `notes/d16-prep.md` có một chỗ **kê sai thuốc** (mục "vấp #1": cả hai cách nó đề
@@ -79,7 +79,9 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 - Lệnh đọc nhanh cho phiên sau: `bash`-KQL qua `az rest … api.loganalytics.io/v1/workspaces/<customerId>/query` (mẫu trong
   `notes/d20.md`); trạng thái alert: Resource Graph `alertsmanagementresources` lọc `targetResourceGroup =~ 'rg-vsf-dev'`.
 
-**Bài tiếp: D23 → D24** — kế hoạch chi tiết `notes/d23-prep.md`, `notes/d24-prep.md` (viết 30/09, người dùng duyệt). Chốt 30/09:
+**Bài tiếp: D25 demo** (`docs/guides/d25-demo.md`). Việc còn mở trước demo (review Sonnet 01/10, `notes/review-2026-10-01-sonnet.md`): lưu 2 ảnh email alert + 2 ảnh M9 (PR đỏ, merge bị khoá) · quyết `make down` → `make up` (M8 trên hạ tầng hiện tại, cần gỡ PoC) · mentor Q1/Q3/Q5 (Free Trial + `.trivyignore` cùng hết hạn **15/10**) · AI-OFF tuần 1 chưa ghi nhận (review P1-4) · IP công ty trong evidence (P2-8) · 5 PR Dependabot (#76–#80) chờ người duyệt.~~
+
+~~**Bài tiếp: D23 → D24** — kế hoạch chi tiết `notes/d23-prep.md`, `notes/d24-prep.md` (viết 30/09, người dùng duyệt). Chốt 30/09:
 agent = **"agent đọc sự cố"** (`id-agent-triage`, GitHub OIDC, chỉ đọc) kèm sửa #17 (import state bootstrap) · **bỏ cross-review 2** ·
 **giữ PoC, không `make down`** (M8 lần cuối = clone mới → plan No changes, ghi rõ giới hạn) · 2 drill Claude tự soạn/tự chạy (firewall MySQL,
 deploy lỗi → swap ngược). Bước đầu phiên sau: `notes/d23-prep.md` mục 0. ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước;
@@ -121,7 +123,7 @@ Q1 (App Insights) và Q3 (5xx count/rate) vẫn chưa có trả lời mentor —
   bằng `terraform import` (#17, **nên làm trước M8 lần 2**).
 - ~~Ảnh còn nợ của D20~~ — **đã có 28/09** (người dùng chụp tay): end-to-end transaction `GET /items` và Cost analysis lọc tag `project = vsf` theo Resource (`evidence/tracing.md` mục 3, `evidence/M7.md` mục 7).
 - **Không `make down` cho tới khi người dùng nói khác** (quyết định 28/09 sau D20). Khi nào cần: gỡ PoC khỏi `rg-vsf-dev`/plan trước (`known-issues.md` #23).
-**Sổ lỗi:** `ai-failure-log.md` 38 case (đề cần 6–8) · `known-issues.md` 26 mục.
+**Sổ lỗi:** `ai-failure-log.md` 45 case, bảng 8 case tiêu biểu ở đầu file (đề cần 6–8) · `known-issues.md` 32 mục + 7 "Chưa xong".
 
 ## Authority
 

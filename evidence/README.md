@@ -47,7 +47,7 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | M8 | Terraform toàn bộ hạ tầng | `M8.md` — **ĐẠT** ở D10 (destroy → apply từ rỗng); D24: clone mới theo README → plan/apply 0 thay đổi, **không destroy** (giới hạn ghi trong file) |
 | M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check, 6 PR cố tình sai đều đỏ đúng job) |
 | M10 | CD deploy từ main | **`M10.md` — ĐẠT** (D16; swap an toàn D17) |
-| M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; **email tới thật 01/10**) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
+| M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; **email tới thật 01/10** — người dùng xác nhận, ảnh chưa lưu vào repo) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
 
 Quy ước đặt tên ảnh: xem `screenshots-convention.md`.
 

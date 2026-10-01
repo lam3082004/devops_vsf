@@ -1,6 +1,6 @@
 # Dependabot (PR DevSecOps, người dùng duyệt 01/10). Lý do cụ thể: sáng 01/10 hai CVE mới
 # (openssl trong base image `be`, Next.js CRITICAL) làm đỏ CD — phát hiện được nhờ Trivy,
-# nhưng bản vá phải sửa tay. Dependabot mở PR vá; PR vẫn qua đủ 8 check + review như mọi PR.
+# nhưng bản vá phải sửa tay. Dependabot mở PR vá; PR vẫn qua đủ 9 check + review như mọi PR.
 #
 # Giữ ít PR: gom theo hệ sinh thái, tối đa 3 PR mở mỗi hệ, lịch hằng tuần (thứ Hai).
 # Không có `docker`: hai Dockerfile khai base image qua ARG (`FROM ${RUNTIME_IMAGE}`), Dependabot
@@ -25,6 +25,11 @@ updates:
     groups:
       npm-minor-patch:
         update-types: [minor, patch]
+    # Bản major (eslint 10, @types/node 26 — PR #78/#79 ngày 01/10, #79 đỏ CI) đổi API/cấu hình:
+    # là việc có chủ đích của người, không để bot mở PR hằng tuần.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     commit-message: { prefix: "chore(deps)" }
 
   - package-ecosystem: github-actions

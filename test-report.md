@@ -33,12 +33,12 @@ Tổng hợp mọi kịch bản kiểm thử của dự án: chạy gì, kết q
 | 9 | Terraform destroy → apply từ rỗng (M8) | 36 resource, apply 24 phút, plan No changes | [`M8.md`](evidence/M8.md) | 21/09 |
 | 10 | Dựng lại từ clone mới theo README (M8 lần cuối, **không** destroy) | `plan` + `make up` 0 thay đổi cả 2 root; README sửa 3 chỗ | [`M8.md`](evidence/M8.md) mục Lần cuối | 01/10 |
 | 11 | CD chỉ từ `main`, swap an toàn, rollback tự động (M10) | 3 tình huống lỗi dừng trước swap, rollback tự động chạy thật | [`M10.md`](evidence/M10.md) | 23–26/09 |
-| 12 | Alert 5xx Fired → Resolved, truy vết alert → request (M11) | Fired ~4–5 phút sau lỗi đầu, Resolved ~20–26 phút sau lỗi cuối; email không tới (Free Trial, #28) | [`M11.md`](evidence/M11.md) | 29/09 |
+| 12 | Alert 5xx Fired → Resolved, truy vết alert → request (M11) | Fired ~4–5 phút sau lỗi đầu (drill 2 D24: 2′17″), Resolved ~20–26 phút sau lỗi cuối; email không tới 29/09, **tới thật 01/10** (#28, ảnh chưa lưu) | [`M11.md`](evidence/M11.md) | 29/09 |
 | 13 | Agent giới hạn quyền: 2 phép được phép + 9 phép bị cấm | 9/9 bị chặn đúng loại lỗi | [`agent.md`](evidence/agent.md) | 01/10 |
 | 14 | **Drill 1**: mất firewall MySQL → apply | MTTR 10 phút 58 giây, alert mù với lỗi một phần | [`docs/drills/2026-10-01-firewall.md`](docs/drills/2026-10-01-firewall.md) | 01/10 |
 | 15 | **Drill 2**: deploy bản lỗi → swap ngược | CI 8/8 xanh + CD success trên bản lỗi (cổng CD không kiểm `/items`); alert 2 phút 17 giây; swap ngược 39 giây; RTO 12 phút 39 giây (7 phút chờ người chạy swap) | [`docs/drills/2026-10-01-bad-deploy.md`](docs/drills/2026-10-01-bad-deploy.md) | 01/10 |
 | 16 | Rollback / phục hồi (4 kịch bản) | xem bảng | [`docs/rollback.md`](docs/rollback.md) | 22/09 → 01/10 |
-| 17 | Smoke test staging chặn bản lỗi kiểu drill 2 · drift detection | chạy thử local: smoke 4/4 đạt trên bản tốt; bộ lọc drift ra 0 drift thật (chỉ tag image) — bằng chứng chạy thật trên CD/workflow: PR DevSecOps | `known-issues.md` #32 | 01/10 |
+| 17 | DevSecOps: smoke staging, ZAP, SBOM, SAST, IaC, drift | CD `36833482956`: smoke 4/4 → swap, ZAP 0 FAIL, SBOM 38/42 component; CI job `sast + iac` 0 ERROR; `drift.yml` run `36833646432` 0 drift. **Chưa có ca đỏ thật** cho smoke/drift | [`evidence/devsecops.md`](evidence/devsecops.md) | 01/10 |
 
 ## 3. Chưa kiểm hoặc kiểm chưa đủ
 
