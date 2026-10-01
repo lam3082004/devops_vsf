@@ -118,8 +118,7 @@ public sealed class TicketsApiTests : IAsyncLifetime
         await CreateTicketAsync("Disk almost full");
         await CreateTicketAsync("CPU spike");
 
-        // DRILL D24: thêm limit để test không bắt được regression của ItemsController (revert sau drill).
-        var response = await _client!.GetAsync("/items?limit=50&q=" + Uri.EscapeDataString("%"));
+        var response = await _client!.GetAsync("/items?q=" + Uri.EscapeDataString("%"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var list = await ReadJsonAsync<TicketListResponse>(response);
 
