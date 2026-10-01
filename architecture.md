@@ -99,7 +99,7 @@ flowchart TB
     ENTRA -- "token" --> IPLAN & IDEP & IAG
 
     IPLAN -- "Reader (subscription)<br/>+ vsf-gh-plan-web-config-reader (RG)<br/>+ KV Secrets User" --> Dev
-    IPLAN -- "Blob Data Contributor (lease state)" --> ST
+    IPLAN -- "Blob Data Reader (đọc state, plan -lock=false)" --> ST
     IDEP -- "AcrPush" --> ACR
     IDEP -- "Website Contributor + Reader (RG)" --> APPS
     IDEP -- "Blob Data Contributor" --> ST
@@ -131,7 +131,7 @@ của environment, và ruleset `protect-main` (0 bypass).
 | `id-gh-plan` | Reader | subscription | `terraform plan` trên PR + drift detection hằng ngày (`drift.yml`, environment `drift-check`) |
 | `id-gh-plan` | `vsf-gh-plan-web-config-reader` (custom: `sites/config/list/action`, `sites/slots/config/list/action`) | `rg-vsf-dev` | plan refresh auth settings của Web App |
 | `id-gh-plan` | Key Vault Secrets User | Key Vault | plan đọc secret `mysql-admin-password` |
-| `id-gh-plan` | Storage Blob Data Contributor | storage state | lease state khi plan |
+| `id-gh-plan` | Storage Blob Data **Reader** | storage state | đọc state khi plan (`-lock=false`; review 30/09 #1 — trước 01/10 là Contributor) |
 | `id-gh-deploy` | AcrPush | ACR | CD push image |
 | `id-gh-deploy` | Website Contributor | `rg-vsf-dev` | đặt image slot staging, swap, luật IP tạm |
 | `id-gh-deploy` | Reader | `rg-vsf-dev` | `az acr show` (AcrPush không có quyền control plane) |

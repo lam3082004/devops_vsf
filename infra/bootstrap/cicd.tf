@@ -166,11 +166,16 @@ resource "azurerm_role_assignment" "gh_plan_reader" {
   principal_id         = azurerm_user_assigned_identity.gh_plan.principal_id
 }
 
-# Nhưng vẫn cần quyền GHI blob: `terraform plan` cũng lấy lease trên state,
-# và lease là thao tác ghi. Chỉ cấp ở đúng storage account chứa state.
+# Đọc state. Review 30/09 #1 (người dùng duyệt 01/10): trước đây là Blob Data CONTRIBUTOR vì
+# `terraform plan` lấy lease (thao tác ghi) — nhưng danh tính này tin subject `pull_request`, tức
+# ai mở được PR là sửa workflow trong PR đó để GHI/XOÁ state. Giờ chỉ Reader; mọi plan của nó
+# chạy `-lock=false` (ci.yml job terraform-plan, drift.yml). Đánh đổi: plan có thể đọc state
+# giữa lúc một `apply` đang ghi → kết quả plan lệch một lần, không hỏng state.
+# Quyền ĐỌC secret DB thì vẫn còn (Key Vault Secrets User + state chứa secret): plan phải refresh
+# azurerm_key_vault_secret — người mở PR có cùng mức tin cậy với người đọc state (known-issues #33).
 resource "azurerm_role_assignment" "gh_plan_state_blob" {
   scope                = azurerm_storage_account.tfstate.id
-  role_definition_name = "Storage Blob Data Contributor"
+  role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_user_assigned_identity.gh_plan.principal_id
 }
 

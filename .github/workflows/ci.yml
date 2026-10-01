@@ -173,9 +173,9 @@ jobs:
       id-token: write
       contents: read
     # Nhóm RIÊNG với concurrency ở đầu file (group: ci-${{ github.ref }}):
-    # 2 PR chạy song song vẫn có thể cùng chạm state của infra/app (plan cũng
-    # lấy lease trên state, xem D7) — nhóm theo tên cố định để job sau chờ
-    # job trước thay vì tranh lock và fail.
+    # Từ 01/10 plan chạy `-lock=false` (id-gh-plan chỉ còn Blob Data Reader, review
+    # 30/09 #1) nên không còn tranh lease; vẫn xếp hàng theo tên cố định để nhiều PR
+    # không cùng lúc gọi API Azure (BlobNotFound khi 5 PR Dependabot plan đồng thời, 01/10).
     concurrency:
       group: terraform-plan-infra-app
       cancel-in-progress: false
@@ -204,11 +204,11 @@ jobs:
         run: |
           if terraform -chdir=infra/app state list 2>/dev/null | grep -qx 'azurerm_linux_web_app.app'; then
             echo "scope=full" >> "$GITHUB_OUTPUT"
-            terraform -chdir=infra/app plan -no-color -input=false -out=tfplan
+            terraform -chdir=infra/app plan -no-color -input=false -lock=false -out=tfplan
           else
             echo "scope=partial" >> "$GITHUB_OUTPUT"
             echo "::notice::rg-vsf-dev dang trong (moi truong da make down) — chi plan duoc pha 1 (Web App). Muon xem plan day du, chay 'make up' roi mo lai PR nay (hoac re-run job)."
-            terraform -chdir=infra/app plan -no-color -input=false -target=azurerm_linux_web_app.app -out=tfplan
+            terraform -chdir=infra/app plan -no-color -input=false -lock=false -target=azurerm_linux_web_app.app -out=tfplan
           fi
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PLAN }}
