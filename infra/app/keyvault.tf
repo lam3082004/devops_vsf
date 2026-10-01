@@ -50,6 +50,17 @@ resource "azurerm_role_assignment" "kv_secrets_user_app" {
   principal_id         = azurerm_user_assigned_identity.app.principal_id
 }
 
+# `fe` đọc ĐÚNG MỘT secret (connection string App Insights) — scope là chính secret đó, không phải
+# vault (Key Vault RBAC cho phép gán ở scope secret). Không có role này `fe` vẫn chạy, chỉ tắt
+# telemetry (app-fe.tf). Review 30/09 #2.
+resource "azurerm_role_assignment" "kv_secrets_user_fe_appinsights" {
+  count = var.enable_app_insights && var.grant_app_keyvault_access ? 1 : 0
+
+  scope                = azurerm_key_vault_secret.appinsights_connection_string[0].resource_versionless_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.fe.principal_id
+}
+
 # id-gh-plan cần đọc secret để `terraform plan` không báo lệch state khi có
 # secret data source khác tham chiếu tới giá trị trong vault (và để job
 # terraform-plan trong CI không bị 403 khi refresh).

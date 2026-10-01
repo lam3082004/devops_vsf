@@ -23,3 +23,12 @@ resource "azurerm_role_assignment" "acr_pull" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.app.principal_id
 }
+
+# `fe` pull bằng danh tính riêng (identity.tf, review 30/09 #2). Cùng cờ đo M1.
+resource "azurerm_role_assignment" "acr_pull_fe" {
+  count = var.grant_app_acr_pull ? 1 : 0
+
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.fe.principal_id
+}

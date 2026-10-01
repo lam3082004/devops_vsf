@@ -1,5 +1,6 @@
 # Web App `fe` (Next.js, OpsBoard) + slot staging. File RIÊNG với app.tf (đã dài) —
-# cùng service_plan_id và cùng identity với `be`, không tạo plan/identity mới
+# cùng service_plan_id với `be` (không tạo plan mới); identity RIÊNG `fe` từ 01/10 (identity.tf,
+# review 30/09 #2)
 # (D16, notes/d16-prep.md — Q10: không thêm tiền plan).
 
 locals {
@@ -77,18 +78,19 @@ resource "azurerm_linux_web_app" "fe" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.app.id]
+    identity_ids = [azurerm_user_assigned_identity.fe.id]
   }
 
   app_settings = local.fe_app_settings
 
   # D21: `fe` đọc đúng một secret (connection string App Insights, tracing) — danh tính
   # resolve @Microsoft.KeyVault(...) giống `be`. Trước D21 bỏ trống vì `fe` không có secret nào.
-  key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.fe.id
 
   # Role Secrets User và secret phải có trước khi app resolve reference — cùng lý do `be`.
   depends_on = [
-    azurerm_role_assignment.kv_secrets_user_app,
+    azurerm_role_assignment.kv_secrets_user_fe_appinsights,
+    azurerm_role_assignment.acr_pull_fe,
     azurerm_key_vault_secret.appinsights_connection_string,
   ]
 
@@ -116,7 +118,7 @@ resource "azurerm_linux_web_app" "fe" {
     # trống thì dùng system-assigned → pull lỗi). Không dùng admin/password
     # của ACR (M1) — giống `be`.
     container_registry_use_managed_identity       = true
-    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.app.client_id
+    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.fe.client_id
 
     # M6 cho fe: mặc định chặn, chỉ IP trong var.allowed_ips được vào —
     # local.ip_rules THƯỜNG, không local.be_ip_rules. `fe` là thứ người dùng
@@ -193,11 +195,11 @@ resource "azurerm_linux_web_app_slot" "fe_staging" {
   ftp_publish_basic_authentication_enabled       = false
   webdeploy_publish_basic_authentication_enabled = false
 
-  # CÙNG identity với production — thiếu khối này thì slot staging pull image
+  # CÙNG identity `fe` với production — thiếu khối này thì slot staging pull image
   # lỗi (D11, giống `be`).
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.app.id]
+    identity_ids = [azurerm_user_assigned_identity.fe.id]
   }
 
   # D17 (#15): merge() đè riêng API_BASE_URL sang local.be_staging_hostname
@@ -212,10 +214,11 @@ resource "azurerm_linux_web_app_slot" "fe_staging" {
   })
 
   # Giống site chính ở trên (D21): slot cũng resolve connection string App Insights.
-  key_vault_reference_identity_id = azurerm_user_assigned_identity.app.id
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.fe.id
 
   depends_on = [
-    azurerm_role_assignment.kv_secrets_user_app,
+    azurerm_role_assignment.kv_secrets_user_fe_appinsights,
+    azurerm_role_assignment.acr_pull_fe,
     azurerm_key_vault_secret.appinsights_connection_string,
   ]
 
@@ -226,7 +229,7 @@ resource "azurerm_linux_web_app_slot" "fe_staging" {
     ftps_state          = "Disabled"
 
     container_registry_use_managed_identity       = true
-    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.app.client_id
+    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.fe.client_id
 
     # M6 cho slot staging của fe — bốn bề mặt phải chặn: site chính, SCM của
     # site chính, slot staging, SCM của slot (giống `be`, app.tf:176-177).

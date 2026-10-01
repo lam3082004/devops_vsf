@@ -15,3 +15,15 @@ resource "azurerm_user_assigned_identity" "app" {
   location            = azurerm_resource_group.app.location
   tags                = local.tags
 }
+
+# Danh tính RIÊNG của `fe` (review 30/09 #2, người dùng duyệt 01/10). Trước đây `fe` dùng chung
+# `app` với `be` → có Key Vault Secrets User trên CẢ vault, tức một lỗ RCE/SSRF ở `fe` (Next.js)
+# lấy token IMDS là đọc được mật khẩu admin MySQL — trái với ý đồ "fe không giữ secret DB".
+# `fe` chỉ cần: AcrPull (acr.tf) + đọc ĐÚNG một secret appinsights (keyvault.tf, scope secret).
+# Chung cho site + slot staging, cùng lý do user-assigned ở trên.
+resource "azurerm_user_assigned_identity" "fe" {
+  name                = "id-${var.project}-fe-${local.name_suffix}"
+  resource_group_name = azurerm_resource_group.app.name
+  location            = azurerm_resource_group.app.location
+  tags                = local.tags
+}

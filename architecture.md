@@ -21,7 +21,7 @@ Bảng ở mục 4 lấy từ `az role assignment list` chạy thật ngày 2026
 | MySQL | `mysql-vsf-<s>-sea` | Flexible Server 8.4 B1ms, **Southeast Asia** | Dữ liệu ticket; app ở Central India (`known-issues.md` #27) |
 | ACR | `acrvsf<s>` | Basic, admin tắt | Image `vsf-be`, `vsf-fe`, tag = git SHA |
 | Key Vault | `kv-vsf-<s>` | RBAC mode | Mật khẩu MySQL, connection string App Insights |
-| MI của app | `id-vsf-app-<s>` | user-assigned | Pull ACR; đọc Key Vault |
+| MI của app | `id-vsf-app-<s>` (`be`) · `id-vsf-fe-<s>` (`fe`) | user-assigned | Pull ACR; `be` đọc Key Vault, `fe` chỉ đọc secret App Insights |
 | Log Analytics + App Insights | `log-vsf-<s>`, `appi-vsf-<s>` | workspace-based, 30 ngày, cap 0,2 GB/ngày | Log, metric, trace, alert, Workbook (M11) |
 | State Terraform | `rg-vsf-bootstrap` / `stvsftf<…>` | Storage, tắt shared key, versioning | State `infra/app` (state `infra/bootstrap` để local) |
 | Danh tính GitHub | `id-gh-plan`, `id-gh-deploy`, `id-agent-triage` | user-assigned MI + federated credential | CI plan · CD deploy · agent đọc sự cố (D23) |
@@ -124,8 +124,10 @@ của environment, và ruleset `protect-main` (0 bypass).
 
 | Danh tính | Role | Scope | Dùng cho |
 |---|---|---|---|
-| `id-vsf-app-<s>` | AcrPull | ACR | App Service kéo image |
-| `id-vsf-app-<s>` | Key Vault Secrets User | Key Vault | KV reference (mật khẩu DB, App Insights) |
+| `id-vsf-app-<s>` | AcrPull | ACR | `be` kéo image |
+| `id-vsf-app-<s>` | Key Vault Secrets User | Key Vault | `be`: KV reference (mật khẩu DB, App Insights) |
+| `id-vsf-fe-<s>` | AcrPull | ACR | `fe` kéo image (danh tính riêng từ 01/10, review 30/09 #2) |
+| `id-vsf-fe-<s>` | Key Vault Secrets User | **chỉ secret** `appinsights-connection-string` | `fe`: tracing; không đọc được mật khẩu DB |
 | `id-gh-plan` | Reader | subscription | `terraform plan` trên PR + drift detection hằng ngày (`drift.yml`, environment `drift-check`) |
 | `id-gh-plan` | `vsf-gh-plan-web-config-reader` (custom: `sites/config/list/action`, `sites/slots/config/list/action`) | `rg-vsf-dev` | plan refresh auth settings của Web App |
 | `id-gh-plan` | Key Vault Secrets User | Key Vault | plan đọc secret `mysql-admin-password` |
