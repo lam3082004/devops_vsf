@@ -8,8 +8,10 @@ name: Drift detection (infra/app)
 # `-refresh-only`: so Azure thật với STATE, không với code — đúng định nghĩa drift, và
 # không cần terraform.tfvars (chứa IP cá nhân, gitignored) nên không có diff giả
 # allowed_ips/alert_email như job plan của CI.
-# Bỏ qua đúng 2 thuộc tính CD sở hữu (tag image của Web App/slot, `ignore_changes` trong
-# infra/app): mỗi lần deploy chúng đổi ngoài Terraform là chuyện đúng thiết kế.
+# Bỏ qua thứ CD sở hữu: tag image của Web App/slot (`ignore_changes` trong infra/app) và luật IP
+# tạm `cd-<run_id>-<attempt>` CD thêm cho runner rồi tự dọn (cd.yml job swap). Dispatch đầu tiên
+# sau khi đổi quyền id-gh-plan (01/10, run 36882760730) chạy ĐÚNG lúc CD đang swap → báo 4 web app
+# lệch ip_restriction — drift giả, nên lọc luật `cd-*`.
 on:
   schedule:
     # 01:17 UTC = 08:17 giờ VN, đầu ngày làm việc. Phút lẻ để tránh giờ chẵn GitHub dồn tải.
@@ -63,7 +65,8 @@ jobs:
           jq '
             def strip_image: if type == "object" and .site_config then
                 .site_config |= map(del(.linux_fx_version)
-                  | if .application_stack then .application_stack |= map(del(.docker_image_name)) else . end)
+                  | if .application_stack then .application_stack |= map(del(.docker_image_name)) else . end
+                  | if .ip_restriction then .ip_restriction |= map(select((.name // "") | startswith("cd-") | not)) else . end)
               else . end;
             [.resource_drift[]? | {address, actions: .change.actions,
                before: (.change.before | strip_image), after: (.change.after | strip_image)}
