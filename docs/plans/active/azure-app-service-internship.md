@@ -368,7 +368,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 
 ### D23 — Agent giới hạn quyền + cross-review 2 — kế hoạch `notes/d23-prep.md`
 - [x] Sửa #17: import state `infra/bootstrap` (18 resource, `plan` phải 0 to add/change/destroy) — *proof: plan No changes* — 01/10: plan đầu đòi thay `random_string.suffix` (6 destroy) → dừng, `ignore_changes = [upper, special]` → 18 import/0/0/0 → apply → No changes (`ai-failure-log.md` #43)
-- [~] Agent đọc sự cố `id-agent-triage` (MI ở bootstrap, quyền ở `infra/app`, workflow `agent-triage.yml`) — *proof: run triage + run prove, ≥ 7 phép bị cấm thất bại đúng mã lỗi → `evidence/agent.md`* — 01/10: apply bootstrap (3 added) + app (3 added), cả 2 root No changes; environment `agent-triage` (chỉ `main`) + biến `AZURE_AGENT_CLIENT_ID`; chờ merge PR D23 để chạy workflow
+- [x] Agent đọc sự cố `id-agent-triage` (MI ở bootstrap, quyền ở `infra/app`, workflow `agent-triage.yml`) — *proof: run triage + run prove, ≥ 7 phép bị cấm thất bại đúng mã lỗi → `evidence/agent.md`* — PR #71; prove 9/9 (run `36819621406`) + environment chặn nhánh khác + GH013 khi push `main`
 - [x] ~~Cross-review lần 2 → `review-<tên>.md`~~ — **BỎ** (người dùng chốt 30/09: không có repo intern kia; ghi `known-issues.md`)
 
 ### D24 — Incident drill + hoàn thiện — kế hoạch `notes/d24-prep.md`
