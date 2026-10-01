@@ -290,7 +290,7 @@ public sealed class TicketRepository : ITicketRepository
             // MySqlConnector ném InvalidOperationException nếu command có
             // Transaction = null trong khi connection đang mở transaction.
             updateCommand.Transaction = tx;
-            // nosemgrep: csharp.lang.security.sqli.csharp-sqli.csharp-sqli -- set chỉ ghép mảnh SQL HẰNG (`where.Add("... = @x")`), mọi giá trị đi qua tham số (D24, PR DevSecOps).
+            // nosemgrep: csharp.lang.security.sqli.csharp-sqli.csharp-sqli -- set chỉ ghép mảnh SQL HẰNG (`set.Add("... = @x")`), mọi giá trị đi qua tham số (D24, PR DevSecOps).
             updateCommand.CommandText = $"""
                 UPDATE tickets SET {string.Join(", ", set)}
                 WHERE id = @id AND (@expected IS NULL OR status = @expected)

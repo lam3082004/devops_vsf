@@ -174,7 +174,7 @@ MySQL local cho test đầy đủ: `make test-db`.
 ## 5. Deploy: PR → CI → merge → CD
 
 1. Nhánh `feat/` · `fix/` · `chore/` · `docs/` từ `main`, sống ≤ 2 ngày. Không push `main` (ruleset chặn: `GH013`).
-2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 9 check; `terraform plan` đăng nhập bằng `id-gh-plan` (chỉ đọc).
+2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 9 check; `terraform plan` đăng nhập bằng `id-gh-plan` (không ghi được hạ tầng, nhưng có lease state và đọc được secret DB khi plan — `architecture.md` mục 4).
 3. Squash merge → `cd.yml`: build `be` + `fe` (tag = git SHA), quét Trivy lại, sinh SBOM, push ACR, đặt image cho slot
    `staging`, chờ staging trả đúng SHA và `fe` staging gọi được `be` staging, **smoke test nghiệp vụ** (`GET /items`,
    `/stats`, trang `fe`), ZAP baseline (chỉ cảnh báo), swap, kiểm production; sai thì tự swap ngược.
@@ -228,7 +228,7 @@ Theo thứ tự. Bước 3 trở đi **không đảo ngược được**.
 | `app/be/` · `app/be.Tests/` | Backend .NET 10 + Dockerfile (chiseled) + test xUnit |
 | `app/fe/` | Frontend Next.js + Dockerfile (alpine) + test `node:test` |
 | `infra/bootstrap/` · `infra/app/` | Terraform: state + danh tính GitHub · môi trường app |
-| `.github/workflows/` | `ci.yml` · `cd.yml` · `agent-triage.yml` · `m6-check.yml` |
+| `.github/workflows/` · `.github/dependabot.yml` | `ci.yml` · `cd.yml` · `drift.yml` · `agent-triage.yml` · `m6-check.yml` · Dependabot |
 | `scripts/` | Đo/kiểm: `m2-poll.sh` (M2), `load.sh` + `d19-watch.sh` (M7), `boom.sh` (alert), `agent-*.sh`, `install-hooks.sh` |
 | `evidence/` | Bằng chứng M1–M11 + agent; `raw/` log thô; quy ước ảnh: `evidence/screenshots-convention.md` |
 | `docs/plans/active/` | Plan đang chạy: checklist, quyết định, câu hỏi cho mentor |
