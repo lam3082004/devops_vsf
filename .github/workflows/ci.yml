@@ -4,6 +4,8 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  # Chạy tay được, nhưng 2 job cần OIDC (`terraform-plan`, `azure-oidc`) chỉ chạy trên PR: credential
+  # của id-gh-plan chỉ tin subject `pull_request`, chạy tay thì luôn đỏ oan (review 30/09 #15).
   workflow_dispatch:
 
 # Token chỉ cần đọc nội dung repo.
@@ -163,6 +165,7 @@ jobs:
   terraform-plan:
     name: terraform plan (infra/app)
     runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request'
     # Chỉ chạy khi fmt/validate đã xanh — khỏi tốn API call Azure cho code
     # còn sai cú pháp.
     needs: terraform
@@ -398,6 +401,7 @@ jobs:
   azure-oidc:
     name: azure login (OIDC)
     runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request'
     # Chỉ job này cần id-token. Khai ở CẤP JOB, không phải cấp workflow:
     # permissions cấp workflow áp cho mọi job, mà các job còn lại không cần token OIDC.
     permissions:

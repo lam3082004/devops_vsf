@@ -46,6 +46,21 @@ public sealed class UserNameFilter : IActionFilter
             value = raw;
         }
 
+        // Review 30/09 #7: kiểm "rỗng" ở trên chạy TRƯỚC decode, nên `%20` thành tên " " và
+        // `%0A`/ký tự điều khiển lọt vào reporter/actor (rồi vào activity, log). Kiểm lại SAU decode.
+        value = value.Trim();
+        if (value.Length == 0)
+        {
+            context.Result = BadRequest($"'{HeaderName}' rong sau khi giai ma");
+            return;
+        }
+
+        if (value.Any(char.IsControl))
+        {
+            context.Result = BadRequest($"'{HeaderName}' chua ky tu dieu khien");
+            return;
+        }
+
         if (value.Length > MaxLength)
         {
             context.Result = BadRequest($"'{HeaderName}' toi da {MaxLength} ky tu");

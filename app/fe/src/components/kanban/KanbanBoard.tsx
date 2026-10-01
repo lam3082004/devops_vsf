@@ -69,6 +69,15 @@ function moveTicket(
   };
 }
 
+// Review 30/09 #8: sau PATCH thành công, thay thẻ lạc quan bằng ticket server trả về (vd open →
+// in_progress tự gán assignee) và đưa lên ĐẦU cột — danh sách sắp theo updated_at DESC, thẻ vừa đổi
+// là thẻ mới nhất. Không tìm thấy (đã bị một lượt kéo khác dời đi) thì giữ nguyên state.
+function applyServerTicket(prev: TicketsByStatus, ticket: Ticket): TicketsByStatus {
+  const column = prev[ticket.status];
+  if (!column.some((t) => t.id === ticket.id)) return prev;
+  return { ...prev, [ticket.status]: [ticket, ...column.filter((t) => t.id !== ticket.id)] };
+}
+
 function shiftTotals(
   prev: TotalsByStatus,
   from: TicketStatus,
@@ -159,7 +168,13 @@ export function KanbanBoard({ columns: initialColumns }: KanbanBoardProps) {
           message: body.reason ?? body.detail ?? "Không thể đổi trạng thái, thử lại.",
         });
       }
-      // ok → giữ nguyên state lạc quan (đã đúng), không cần re-fetch toàn bộ.
+      if (res.ok) {
+        // Không re-fetch toàn bộ: chỉ thay đúng thẻ này bằng bản server. Body hỏng thì giữ bản lạc quan.
+        const updated = (await res.json().catch(() => null)) as Ticket | null;
+        if (updated && updated.id === ticketId) {
+          setColumns((prev) => applyServerTicket(prev, updated));
+        }
+      }
     } catch {
       // Lỗi mạng (không nhận được response) — xử lý như lỗi HTTP: hoàn tác + toast.
       setColumns((prev) => moveTicket(prev, ticketId, targetStatus, sourceStatus, ticket));

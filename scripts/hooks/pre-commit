@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Chặn secret TRƯỚC khi vào lịch sử git. CI cũng quét (job gitleaks trong ci.yml)
+# nhưng lúc đó secret đã nằm trong commit rồi — gỡ ra phải viết lại lịch sử.
+#
+# Chỉ quét phần ĐANG STAGED (--staged), không quét cả cây làm việc: file nháp
+# chưa add thì không phải việc của commit này.
+#
+# Hook nằm TRONG repo (review 30/09 #10): `install-hooks.sh` đặt core.hooksPath = scripts/hooks,
+# clone mới chạy một lệnh là có hook. Cài:
+#   bash scripts/install-hooks.sh
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+	echo "pre-commit: khong tim thay gitleaks — commit bi chan." >&2
+	echo "  cai lai: bash scripts/install-hooks.sh" >&2
+	exit 1
+fi
+
+if ! gitleaks protect --staged --redact -v; then
+	echo "pre-commit: gitleaks phat hien secret trong staged changes — commit bi chan." >&2
+	echo "  go secret ra roi commit lai. Dung --no-verify de bo qua la SAI." >&2
+	exit 1
+fi
