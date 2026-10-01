@@ -3,7 +3,7 @@
 Guide gốc: `docs/guides/d25-demo.md` · Nhật ký: `notes/d25.md` (tạo khi chạy thử / demo) · Phiên trước: `notes/d24.md`
 · Review trước demo: `notes/review-2026-10-01-sonnet.md`
 
-> Viết 2026-10-01 tối, sau D24 + DevSecOps + sửa review 30/09 (#86–#89). Kịch bản dưới dựa trên số đo thật của
+> Viết 2026-10-01 tối, sửa 02/10 (người dùng chốt quyết định + review Sonnet vòng 1), sau D24 + DevSecOps + sửa review 30/09 (#86–#89). Kịch bản dưới dựa trên số đo thật của
 > các bài trước (CD ~11 phút, alert 5xx Fired ~4′40″ sau lỗi đầu, scale out ~6′35″ sau khi tải), không phải ước đoán.
 
 ## Đọc 60 giây này trước
@@ -19,7 +19,7 @@ Guide gốc: `docs/guides/d25-demo.md` · Nhật ký: `notes/d25.md` (tạo khi 
 
 ## 0. Trạng thái 01/10 17:00Z (preflight lần đầu: 0 FAIL, 0 WARN)
 
-`scripts/demo-preflight.sh --suffix jcip0s` (62 giây): subscription Enabled · `be`/`fe` production = `main` = `bb55a6a`,
+`scripts/demo-preflight.sh --suffix jcip0s` (62–150 giây tuỳ mạng; mỗi request thử lại 2 lần): subscription Enabled · `be`/`fe` production = `main` = `bb55a6a`,
 staging = `bd2a4b2` · 4 bề mặt × 2 app Deny + scm dùng luật chính + 0 luật `cd-*` · IP máy trong whitelist · 3 KV reference
 Resolved · ACR admin tắt · 3 alert bật, action group có 1 email, 0 alert Fired · autoscale max 2, plan 1 instance ·
 workspace có log HTTP · CD cuối success · `.trivyignore` còn 13 ngày. INFO: PoC `app-obs-demo-jcip0s` vẫn trên plan.
@@ -46,7 +46,11 @@ truyền RBAC không đoán được — rủi ro cao nhất buổi demo cho m�
       này có `alert_email` và IP nơi demo — thiếu `alert_email` thì một lần apply bất kỳ (vd sửa IP, quyết định D) sẽ
       **xoá email receiver**).
 - [ ] Đo IP nơi demo (quyết định D).
-- [ ] Chuẩn bị PR deploy (mục 3.2) — **mở trước để CI xanh sẵn**, không merge.
+- [ ] **Merge hết PR khác vào `main` trước** (kể cả PR ghi chép này), rồi mới mở PR deploy (mục 3.2) để CI xanh sẵn, không merge.
+      Ruleset `protect-main` bật `strict` (nhánh phải mới nhất so với `main`): một commit vào `main` sau lúc này → PR deploy
+      phải "Update branch" + chạy lại CI ~2,5 phút. Từ đây tới demo **không merge gì vào `main`**.
+- [ ] Thử push nhánh secret giả (mục 3.1) một lần: GitHub push protection có thể chặn ngay ở `git push` (khác CI đỏ) —
+      nếu bị chặn, đó cũng là một lớp chặn để demo, nhưng phải biết trước cái nào sẽ xảy ra.
 - [ ] Chạy thử toàn bộ mục 3 theo giờ, ghi lệch giờ thật vs dự kiến.
 - [ ] Lúc chạy thử mục 3.1: **chụp ảnh nút merge bị khoá** → `evidence/d25/screenshots/` + link từ `evidence/M9.md` (ảnh còn nợ
       duy nhất của M9 — review Sonnet P1-1; ảnh gitleaks đỏ đã có từ #85).
@@ -54,6 +58,7 @@ truyền RBAC không đoán được — rủi ro cao nhất buổi demo cho m�
 - [ ] Bằng chứng dự phòng mở sẵn trong trình duyệt (mục 4).
 
 **T−60 phút**
+- [ ] PR deploy: `gh pr view <số> --json mergeStateStatus` = `CLEAN` (không `BEHIND`/`BLOCKED`).
 - [ ] `scripts/demo-preflight.sh --suffix jcip0s --out evidence/raw/d25-preflight-<giờ>.txt` → **0 FAIL**. WARN alert Fired
       → đợi Resolved; WARN workspace trống → mở `fe` bấm vài trang, đợi 5 phút.
 - [ ] Điện thoại: tắt Wi-Fi, 4G vào được `https://example.com` (để phần M6 ra 403 của **whitelist**, không phải lỗi mạng).
@@ -72,6 +77,10 @@ truyền RBAC không đoán được — rủi ro cao nhất buổi demo cho m�
 
 Nguyên tắc của guide: phần chờ lâu (CD ~11 phút, alert ~5 phút, scale out ~6,5 phút) **kích hoạt sớm**, nói phần khác trong
 lúc chờ. Thứ tự dưới khác bảng guide ở chỗ đó; nội dung M1–M11 đủ.
+
+**Lệch guide có chủ ý** (nói trước với mentor nếu được hỏi): M5 (gỡ quyền → gãy) và M8 (destroy → apply) **không chạy live** —
+M5 theo quyết định mục 1, M8 vì PoC chung plan (#23). Cả hai chỉ bằng evidence đã đo thật; phần live thay thế là rollback
+swap ngược và `terraform plan` No changes.
 
 | Phút | Phần | Làm gì (lệnh / màn hình) | Chứng minh | Dự phòng nếu hỏng |
 |---|---|---|---|---|

@@ -48,6 +48,9 @@ if ! [[ "$SUFFIX" =~ ^[a-z0-9]{6}$ ]]; then
 	echo "!! --suffix phải là 6 ký tự a-z0-9 (vd jcip0s)" >&2
 	usage 2
 fi
+# Đọc .trivyignore, `git ls-remote origin`, `gh` theo repo → luôn chạy từ gốc repo. --out tương đối
+# tính từ gốc repo.
+cd "$(dirname "$0")/.." || exit 2
 if [[ -n "$OUT" ]]; then
 	mkdir -p "$(dirname "$OUT")"
 	exec > >(tee "$OUT") 2>&1
@@ -69,8 +72,9 @@ fail() {
 	printf 'FAIL  %s\n' "$*"
 	FAILS=$((FAILS + 1))
 }
-get() { curl -4 -s --max-time 10 "$1" 2>/dev/null; }
-code() { curl -4 -s -o /dev/null --max-time 10 -w '%{http_code}' "$1" 2>/dev/null || echo 000; }
+# Thử lại 2 lần: một request chậm qua WARP (1,6–2 s nền, #21) không được làm đỏ cả preflight.
+get() { curl -4 -s --max-time 15 --retry 2 --retry-all-errors --retry-delay 2 "$1" 2>/dev/null; }
+code() { curl -4 -s -o /dev/null --max-time 15 --retry 2 --retry-all-errors --retry-delay 2 -w '%{http_code}' "$1" 2>/dev/null || echo 000; }
 
 echo "# $(date -u +%FT%TZ) demo-preflight suffix=$SUFFIX"
 
@@ -157,8 +161,9 @@ if [[ "$adm" == false ]]; then ok "ACR admin user = disabled"; else fail "ACR ad
 # 8. Alert: 3 rule bật, action group có email, không alert nào đang Fired.
 en=$(az resource list -g "$RG" --query "[?type=='Microsoft.Insights/metricalerts' || type=='Microsoft.Insights/scheduledqueryrules'].id" -o tsv 2>/dev/null |
 	while read -r id; do az resource show --ids "$id" --query "[name, to_string(properties.enabled)]" -o tsv 2>/dev/null | paste -sd' '; done)
-n_on=$(grep -c ' true$' <<<"$en")
-if [[ "$n_on" -ge 3 ]]; then ok "alert rule bật: $n_on ($(cut -d' ' -f1 <<<"$en" | paste -sd, -))"; else fail "alert rule bật: $n_on/3 — $(paste -sd, - <<<"$en")"; fi
+for rule in alert-vsf-5xx-rate alert-vsf-cpu-high alert-vsf-mysql-connections; do
+	if grep -qx "$rule true" <<<"$en"; then ok "alert $rule bật"; else fail "alert $rule không bật hoặc không có ($(grep "^$rule " <<<"$en" || echo thiếu))"; fi
+done
 ne=$(az monitor action-group show -g "$RG" -n ag-vsf-oncall --query "length(emailReceivers)" -o tsv 2>/dev/null)
 if [[ "${ne:-0}" -ge 1 ]]; then ok "action group ag-vsf-oncall có $ne email receiver"; else fail "action group không có email receiver (thiếu alert_email trong terraform.tfvars của checkout đã apply?)"; fi
 KQ="alertsmanagementresources | where tostring(properties.essentials.targetResourceGroup) =~ '$RG'"
@@ -196,6 +201,8 @@ if [[ -n "$exp" ]]; then
 	else
 		ok ".trivyignore còn $left ngày (hết hạn $exp)"
 	fi
+else
+	echo "INFO  .trivyignore không có ngoại lệ CVE nào có hạn (exp:)"
 fi
 
 # 13. Thông tin (không tính điểm): PR đang mở, web app lạ trên plan (PoC — known-issues #23).

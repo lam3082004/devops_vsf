@@ -387,7 +387,7 @@ Mục tiêu: tự tay làm được mọi thứ mà tuần 2–4 sẽ tự độ
 
 ### D25 — Demo 45 phút (live, không slide)
 - [x] Kịch bản demo (soạn 01/10 — `notes/d25-prep.md` mục 3; **chưa chạy thử**) theo thứ tự: repo → CI chặn secret → merge → CD + poll zero-downtime → whitelist 200/403 → `/items` → xoá quyền KV → `/load` autoscale → `/boom` alert → **alert → trace_id → log/request** → dashboard/KQL → rollback (swap ngược) → cost
-- [ ] `make up` trước demo ≥ 30 phút; `make down` sau demo — *đổi 01/10: môi trường `jcip0s` đang bật, T−60 = `scripts/demo-preflight.sh`; `make down` cần gỡ PoC trước (#23, quyết định E)*
+- [ ] `make up` trước demo ≥ 30 phút; `make down` sau demo — *đổi 01/10: môi trường `jcip0s` đang bật, T−60 = `scripts/demo-preflight.sh`; `make down` cần gỡ PoC trước (#23, quyết định B)*
 - [ ] Chạy thử đủ kịch bản trong 45 phút, bấm giờ → `notes/d25.md`
 - [ ] Demo live · cost analysis cuối → `cost-report.md` · câu hỏi mentor → `known-issues.md` · plan → `completed/`
 

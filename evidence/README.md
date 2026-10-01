@@ -45,7 +45,7 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | M6 | IP whitelist 200/403 | **`M6.md` — ĐẠT** (D13; đo lại 8 bề mặt be+fe ở D16); thiếu 2 ảnh Portal (plan "Còn nợ") |
 | M7 | Chiến lược tiết kiệm chi phí | **`M7.md` — ĐẠT**: autoscale + right sizing (D19), cost report [`../cost-report.md`](../cost-report.md) (D20) |
 | M8 | Terraform toàn bộ hạ tầng | `M8.md` — **ĐẠT** ở D10 (destroy → apply từ rỗng); D24: clone mới theo README → plan/apply 0 thay đổi, **không destroy** (giới hạn ghi trong file) |
-| M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check, 6 PR cố tình sai đều đỏ đúng job) |
+| M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check lúc đó — nay **9** sau job `sast + iac` 01/10; 6 PR cố tình sai đều đỏ đúng job) |
 | M10 | CD deploy từ main | **`M10.md` — ĐẠT** (D16; swap an toàn D17) |
 | M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; **email tới thật 01/10**, 4 ảnh `d24/screenshots/alert-email-*`) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
 

@@ -22,16 +22,16 @@ Mật khẩu MySQL: **không gõ thẳng vào dòng lệnh** (nó vào `~/.zsh_h
 - [x] 0. Azure CLI **2.90.0** (extension `scheduled-query`), đúng subscription
 - [x] 1. RG `rg-d3-cli` (southeastasia) — CLI bắt khai báo `--location`, Portal chỉ chọn dropdown
 - [x] 2. MySQL `mysql-d3-3082` — **5 phút 37 giây**, tạo lúc 13:51
-  - CLI in ra 3 thứ Portal giấu: `IOPS is 360` (miễn phí theo storage+SKU, thêm thì $0.06/IOPS-tháng) · `(Paid Tier)` · tự tạo firewall rule `FirewallIPAddress_2026-9-16_13-51-25` cho IP `113.185.49.82`
+  - CLI in ra 3 thứ Portal giấu: `IOPS is 360` (miễn phí theo storage+SKU, thêm thì $0.06/IOPS-tháng) · `(Paid Tier)` · tự tạo firewall rule `FirewallIPAddress_2026-9-16_13-51-25` cho IP `113.185.x.x`
   - `--database-name d3test` tạo sẵn database; ở D2 phải tự `CREATE DATABASE` bằng SQL
-  - IP đổi 3 lần trong ngày: 113.185.45.1 → 59.153.228.90 → 113.185.49.82
+  - IP đổi 3 lần trong ngày: 113.185.x.x → 59.153.x.x → 113.185.x.x
 - [x] 3. App Service Plan `asp-d3-cli` (Linux, P0V3) — **8.6 giây**
 - [x] 4. Web App `app-d3-3082` — **42 giây**, `HTTP 200`; tổng cả 3 resource ~6 phút (Portal D2 mất ~2 tiếng cả thao tác)
 - [x] 5. Outbound IPs: **current 7 / possible 20** (đếm bằng `-o tsv | tr ',' '\n' | wc -l`; JMESPath không có `split()`)
 - [x] 6. Vòng lặp shell tạo **20 firewall rule** (tên `app-<ip-gạch-ngang>`, vì tên rule không cho dấu chấm) → tổng **21 rule** = 20 app + 1 client IP
   - 20 lần gọi API riêng biệt; Portal phải gõ tay 20 dòng
   - Script chỉ **thêm**, không bao giờ **xoá** rule thừa khi danh sách possible đổi → rác tích tụ, không biết rule nào còn dùng
-- [x] 7. Access restriction (15:52) — `allow-my-ip 116.98.220.176/32 Allow 100` + `Deny all` mặc định
+- [x] 7. Access restriction (15:52) — `allow-my-ip 116.98.x.x/32 Allow 100` + `Deny all` mặc định
   - Main site **200** từ IP mình ✅ · **SCM/Kudu 403 kể cả với mình** ⚠️
   - Lý do: `scmIpSecurityRestrictionsUseMain = false` và danh sách SCM **chỉ có Deny all**, không có rule allow nào. Portal D2 tick sẵn *Use main site rules*; CLI thì phải khai `--use-same-restrictions-for-scm-site true`
   - → nếu CD deploy qua Kudu sẽ gãy mà không rõ lý do (bài học cho D16)

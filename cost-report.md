@@ -46,7 +46,7 @@ dùng (để làm D16–D20 liền mạch, không dựng lại mỗi sáng). Tí
 `evidence/raw/d25-cost-api-20261001.tsv`: `rg-vsf-dev` **$19,38** (App Service $17,83 · ACR $1,44 · Azure Monitor $0,10
 · Key Vault $0,01 · MySQL $0,00) · bài thực tập tổng **≈ $19,9**. Từ 25/09 mỗi ngày **$2,13–2,18** = đúng 24 giờ P0v3
 ($1,97) + ACR Basic ($0,17): môi trường bật liên tục, Log Analytics/App Insights gần như không tốn (< 5 GB/tháng miễn phí).
-Phần "đáng lẽ tránh được" của biện pháp 1 tăng từ $8,7 (28/09) lên ≈ **$16** (24/09 03:08Z → 01/10 17Z = 182 giờ × $0,089). PoC ngoài repo
+**Số chốt cho "đáng lẽ tránh được" của biện pháp 1: ≈ $16** (thay $8,7 ở trên, tính tới 28/09) (24/09 03:08Z → 01/10 17Z = 182 giờ × $0,089). PoC ngoài repo
 (`rg-obs-poc` + 1 web app chung plan) ≈ $20,5 — không tính. Ảnh Cost analysis cuối cùng: chụp sau demo (guide D25 mục 4).
 
 **MySQL $0,00:** theo giá niêm yết, ~140 giờ B1ms đáng lẽ ~$3,6. Khớp với ưu đãi 12 tháng của tài khoản
@@ -59,8 +59,9 @@ theo giá niêm yết đủ MySQL (B1ms + 20 GB storage), chưa kể Log Analyti
 ## Chưa tối ưu / lần sau
 
 - **Biện pháp tiết kiệm nhiều nhất là tắt theo ca**: P0v3 là ~93% chi phí (`$11,27 / $12,15`), mà plan
-  tính tiền theo giờ tồn tại (kể cả khi app Stop). Đã bỏ nó từ 24/09 → nên bật lại `make down` sau D20
-  khi không cần môi trường chạy liên tục.
+  tính tiền theo giờ tồn tại (kể cả khi app Stop). Đã bỏ nó từ 24/09 và **không bật lại được trước D25**: một PoC
+  khác chạy chung plan, `make down` sẽ gãy (`known-issues.md` #23) — người dùng chốt giữ môi trường tới demo. Sau demo: gỡ PoC
+  rồi `make down`.
 - Chạy cho người dùng thật 24/7: giữ P0v3 + autoscale; cân nhắc reserved instance / savings plan cho plan
   thường trực; MySQL bật HA + backup dài hơn (đổi tiền lấy độ bền); App Insights sampling < 100%.
 - Budget $50/tháng đang có (D1), alert 50/80/100% — chưa gắn action group.

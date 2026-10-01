@@ -48,3 +48,13 @@ công ty mà báo cáo gốc chép lại đã được che (chính là phát hi�
 
 Trạng thái Azure thật (cấm `az`/`plan`), nội dung ảnh, `terraform.tfvars`, email có tới không (không có ảnh),
 câu trả lời mentor Q1/Q3/Q5, 7 câu GATE D10 trả lời miệng, ảnh D1.
+
+## Vòng 2 — review sub-agent Sonnet 02/10 (nhánh `chore/d25-prep`, chuẩn bị D25)
+
+Không P0. Đã sửa: P1-1 `demo-preflight.sh` FAIL giả khi 1 request chậm (thêm thử lại 2 lần, `--max-time 15`; kiểm alert theo
+tên; tự `cd` về gốc repo; báo khi `.trivyignore` không có hạn) · P1-2 **IP nhà** đầy đủ còn trong `evidence/M6.md`,
+`notes/d2.md`, `d3-cli.md`, `d16.md` (+ 1 ảnh `d03`) → che · đường dẫn mang tên công ty (`notes/d6.md`, 4 ảnh terminal) → che ·
+P2-1 ruleset `strict` làm PR deploy "xanh sẵn" cũ đi → checklist: merge hết trước, kiểm `mergeStateStatus` · P2-2 plan trỏ
+"quyết định E" → B · P2-3 ghi "lệch guide có chủ ý" (M5, M8 không live) · P2-4 `evidence/README.md` M9 8 → 9 check ·
+P2-5 `cost-report.md` chốt một số $16, bỏ câu "bật lại `make down` sau D20" · P3 known-issues #2 đồng bộ với #35.
+Chờ CI: P2-6 cổng Semgrep mới chỉ thử bằng JSON chạy ở máy — PR của nhánh này là phép thử thật.
