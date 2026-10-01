@@ -26,3 +26,7 @@ trong pipeline". Giới hạn: `known-issues.md` #32.
   + 1 revert = 2 lần CD), chưa làm.
 - Drift workflow **đỏ** khi có drift thật: chưa gây drift lại sau drill 1. Bộ lọc giữ nguyên mọi thay đổi ngoài 2
   thuộc tính image, nên rule firewall bị xoá (drill 1) sẽ ra `actions: ["delete"]`.
+- **Drift giả do CD (01/10, sửa ngay):** dispatch `drift.yml` run `36882760730` chạy đúng lúc CD của #88 đang swap → 4 web
+  app "lệch" `ip_restriction` vì luật tạm `cd-<run_id>-<attempt>` của runner. Bộ lọc giờ bỏ qua luật `cd-*` (kiểm jq 3 ca:
+  luật `cd-*` + tag image bị bỏ qua; mất luật thật và xoá resource vẫn bị bắt). Cùng run chứng minh `id-gh-plan` plan được
+  với quyền Blob Data **Reader** (review 30/09 #1).
