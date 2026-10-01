@@ -49,6 +49,8 @@ truyền RBAC không đoán được — rủi ro cao nhất buổi demo cho m�
 - [ ] **Merge hết PR khác vào `main` trước** (kể cả PR ghi chép này), rồi mới mở PR deploy (mục 3.2) để CI xanh sẵn, không merge.
       Ruleset `protect-main` bật `strict` (nhánh phải mới nhất so với `main`): một commit vào `main` sau lúc này → PR deploy
       phải "Update branch" + chạy lại CI ~2,5 phút. Từ đây tới demo **không merge gì vào `main`**.
+- [ ] `git config core.hooksPath` = `scripts/hooks` trên máy demo (config local — clone mới phải chạy `bash scripts/install-hooks.sh`),
+      nếu không bước "hook chặn" ở mục 3.1 không xảy ra.
 - [ ] Thử push nhánh secret giả (mục 3.1) một lần: GitHub push protection có thể chặn ngay ở `git push` (khác CI đỏ) —
       nếu bị chặn, đó cũng là một lớp chặn để demo, nhưng phải biết trước cái nào sẽ xảy ra.
 - [ ] Chạy thử toàn bộ mục 3 theo giờ, ghi lệch giờ thật vs dự kiến.
@@ -97,7 +99,7 @@ swap ngược và `terraform plan` No changes.
 | 25–31 | Autoscale | Autoscale Run history: Scaleup (~phút 24–25, 1→2) · metric CPU Percentage của plan · nhắc max **2**, scale in sau 10 phút · right sizing giữ P0v3 | M7 | `evidence/M7.md` (1→2 sau 6′35″, ảnh D19) |
 | 31–36 | Quan sát | Workbook `M11`: 5 hàng (request/failure/latency · CPU/memory · MySQL · trace · alert) · 2 KQL từ `docs/logging.md` mục 3 (p95 theo path, lỗi theo path) · log JSON trong `AppServiceConsoleLogs` | M11 | `evidence/d21|d22/screenshots/` |
 | 36–41 | Terraform + M5 | Terminal (4): `cd infra/app && terraform plan` live → **No changes** (state ở storage bootstrap, Entra-only; lock = blob lease) · `drift.yml` theo lịch (run gần nhất) · `evidence/M8.md`: D10 destroy → apply, lần cuối clone mới · M5: `evidence/M5.md` bảng 11 bước + biến `grant_app_keyvault_access` | M8, M5 | plan chậm/lease kẹt: `evidence/M8.md`; **không** `force-unlock` giữa demo |
-| 41–45 | Chi phí + bài học | Cost analysis (lọc tag `project = vsf`) · `cost-report.md`: 3 biện pháp + "nói thật biện pháp 1" · `known-issues.md` (Chưa xong #5–#7, #33) · 1–2 case `ai-failure-log.md` (vd #43 import state suýt thay `random_string`) | M7 | — |
+| 41–45 | Chi phí + bài học | Cost analysis (lọc tag `project = vsf`) · `cost-report.md`: 3 biện pháp + "nói thật biện pháp 1" · `known-issues.md` ("Chưa xong" #5–#7 và mục #33) · 1–2 case `ai-failure-log.md` (vd #43 import state suýt thay `random_string`) | M7 | — |
 
 Sau giờ demo (không trước mặt mentor): production đang ở SHA cũ (sau swap ngược) → `gh workflow run cd.yml --ref main`
 hoặc merge PR ghi chép `notes/d25.md` → production = `main`; preflight lại.
@@ -119,7 +121,7 @@ gh pr create --title "test(d25): KHÔNG MERGE — secret giả cho demo M9" --bo
 gh pr close --delete-branch && git switch main && git branch -D test/d25-m9-secret
 ```
 
-Token là chuỗi ngẫu nhiên, nhưng vẫn coi như đã lộ: không tái sử dụng chuỗi đó ở đâu khác. Lịch sử nhánh xoá cùng PR.
+Token là chuỗi ngẫu nhiên, nhưng vẫn coi như đã lộ: không tái sử dụng chuỗi đó ở đâu khác. Xoá nhánh không xoá được commit: GitHub vẫn giữ nó qua PR đã đóng (`refs/pull/<số>/head`).
 
 ### 3.2 PR deploy (mở T−1 ngày, merge ở phút 3)
 

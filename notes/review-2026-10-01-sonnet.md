@@ -31,7 +31,7 @@ công ty mà báo cáo gốc chép lại đã được che (chính là phát hi�
 | P2-5 | test-report #17 vẫn ghi "chạy thử local" dù CD thật đã chạy | ✅ ghi run id + `evidence/devsecops.md` |
 | P2-6 | `DatabaseExceptionFilter` gắn `database_unavailable` cho mọi exception | action item drill 2 (chưa làm, đổi hành vi app) |
 | P2-7 | Free Trial và `.trivyignore` cùng hết hạn 15/10 | Q5 mentor; theo dõi |
-| P2-8 | IP egress công ty (`104.30.x.x`, nhãn wifi công ty) nằm trong `evidence/M2.md`, `M6.md`, `notes/d17.md` — trái luật "không dữ liệu công ty" | ✅ 02/10: che IP + nhãn wifi trong 10 file chữ và ảnh M6; quét thêm 67 ảnh → che email header Portal (26 ảnh D2/D5) và tab công cụ nội bộ (7 ảnh D11). Lịch sử git còn → `known-issues.md` #35 |
+| P2-8 | IP egress công ty (`104.30.x.x`, nhãn wifi công ty) nằm trong `evidence/M2.md`, `M6.md`, `notes/d17.md` — trái luật "không dữ liệu công ty" | ✅ 02/10: che IP + nhãn wifi trong các file chữ và ảnh M6 (danh sách ở `known-issues.md` #35); quét thêm 67 ảnh → che email header Portal (26 ảnh D2/D5) và tab công cụ nội bộ (7 ảnh D11). Lịch sử git còn → `known-issues.md` #35 |
 | P2-9 | Môi trường chạy liên tục từ 24/09, `cost-report.md` dừng ở 28/09 | ✅ 01/10: `cost-report.md` số Cost Management API ($19,38 `rg-vsf-dev`) |
 | P2-10 | App Insights bật dù M11 ghi "không enable App Insight" (Q1 chưa trả lời) | chờ mentor Q1 |
 | P2-11 | "Clone mới" D24 cùng máy, cùng `az login`, state lấy từ bản sao local | đã ghi giới hạn ở `evidence/M8.md` |
