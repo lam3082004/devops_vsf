@@ -18,7 +18,8 @@ CVE-2026-84782 exp:2026-10-15
 # (dải IP động, hàng nghìn dải). Bù lại: cả hai chỉ cho truy cập bằng Entra ID + RBAC.
 #
 # AZU-0012 — storage chứa tfstate (infra/bootstrap/main.tf) mở public network.
-# shared_access_key_enabled = false → chỉ Entra; chỉ 3 danh tính có Blob Data Contributor.
+# shared_access_key_enabled = false → chỉ Entra; 2 danh tính có Blob Data Contributor (người chạy
+# Terraform, id-gh-deploy), id-gh-plan chỉ Reader từ PR #88.
 AVD-AZU-0012
 # AZU-0013 — Key Vault (infra/app/keyvault.tf) không có network_acls. RBAC mode; App Service
 # đọc qua Key Vault reference bằng MI, CI plan đọc bằng id-gh-plan — cả hai từ IP động.

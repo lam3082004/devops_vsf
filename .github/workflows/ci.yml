@@ -370,18 +370,27 @@ jobs:
             --config p/csharp --config p/typescript --config p/nextjs \
             --config p/dockerfile --config p/github-actions \
             --metrics=off --exclude docs --severity ERROR --severity WARNING \
-            --json --output semgrep.json app .github || true
+            --json --output semgrep.json app .github
+          # Không `|| true`: Semgrep thoát 0 khi có finding (không dùng --error), mã khác 0
+          # là Semgrep chết (mạng, rule pack) → bước đỏ ngay (review Sonnet 01/10 P2-4).
           errors=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' semgrep.json)
           warnings=$(jq '[.results[] | select(.extra.severity == "WARNING")] | length' semgrep.json)
+          # .errors = file Semgrep không quét được. Chỉ chấp nhận lỗi parse đã biết của
+          # ci.yml/cd.yml (known-issues.md #32 mục 1, so theo path + type, không theo dòng);
+          # lỗi khác (file mới không parse được, timeout rule) nghĩa là cổng đang mù → đỏ.
+          unknown='[.errors[] | select((.type | tostring) != "Other syntax error"
+            or ((.path // "") | test("^\\.github/workflows/c[di]\\.yml$") | not))]'
+          scan_errors=$(jq "$unknown | length" semgrep.json)
           {
-            echo "### Semgrep: $errors ERROR (cổng) · $warnings WARNING (theo dõi)"
+            echo "### Semgrep: $errors ERROR (cổng) · $warnings WARNING (theo dõi) · $scan_errors lỗi quét mới (cổng)"
             echo
             jq -r '.results[] | "- `\(.extra.severity)` \(.check_id | split(".") | last) — \(.path):\(.start.line)"' semgrep.json
+            jq -r "$unknown | .[] | \"- lỗi quét \\(.type | tostring) — \\(.path // \"?\"): \\(.message | .[0:160])\"" semgrep.json
           } >> "$GITHUB_STEP_SUMMARY"
           jq -r '.results[] | "\(.extra.severity) \(.check_id) \(.path):\(.start.line) \(.extra.message | .[0:160])"' semgrep.json
-          # semgrep.json phải parse được: nếu Semgrep chết (mạng, rule pack) thì jq ở
-          # trên đã lỗi và set -e của bash mặc định làm bước này đỏ — đúng ý cổng.
+          jq -r "$unknown | .[] | \"SCAN-ERROR \\(.type | tostring) \\(.path // \"?\") \\(.message | .[0:160])\"" semgrep.json
           test "$errors" -eq 0
+          test "$scan_errors" -eq 0
       - name: Cài trivy ${{ env.TRIVY_VERSION }}
         env:
           TRIVY_VERSION: 0.74.0

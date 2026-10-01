@@ -1,4 +1,4 @@
-# Cost report — 2026-09-28 (M7)
+# Cost report — 2026-09-28 (M7), cập nhật số 2026-10-01
 
 Số lấy từ **Cost analysis** trên Portal, **Actual cost**, tháng 09/2026. Ảnh chụp 06:53Z (subscription) và
 07:37Z (`rg-vsf-dev`) ngày 28/09; dữ liệu Azure trễ 8–24 giờ, nên phần 28/09 chưa có đủ. Credit Free
@@ -41,6 +41,13 @@ dùng (để làm D16–D20 liền mạch, không dựng lại mỗi sáng). Tí
 
 Ảnh: `evidence/d20/screenshots/m7-cost-daily-by-rg-subscription-20260928-0653.png`,
 `m7-cost-rg-vsf-dev-by-service-20260928-0737.png`. Credit còn lại: $181,86 (03:21Z) → $180,63 (~07:30Z).
+
+**Cập nhật 01/10 (trước D25)** — Cost Management Query API, Actual cost 01/09→01/10 (01/10 mới có một phần), số thô
+`evidence/raw/d25-cost-api-20261001.tsv`: `rg-vsf-dev` **$19,38** (App Service $17,83 · ACR $1,44 · Azure Monitor $0,10
+· Key Vault $0,01 · MySQL $0,00) · bài thực tập tổng **≈ $19,9**. Từ 25/09 mỗi ngày **$2,13–2,18** = đúng 24 giờ P0v3
+($1,97) + ACR Basic ($0,17): môi trường bật liên tục, Log Analytics/App Insights gần như không tốn (< 5 GB/tháng miễn phí).
+Phần "đáng lẽ tránh được" của biện pháp 1 tăng từ $8,7 (28/09) lên ≈ **$16** (24/09 03:08Z → 01/10 17Z = 182 giờ × $0,089). PoC ngoài repo
+(`rg-obs-poc` + 1 web app chung plan) ≈ $20,5 — không tính. Ảnh Cost analysis cuối cùng: chụp sau demo (guide D25 mục 4).
 
 **MySQL $0,00:** theo giá niêm yết, ~140 giờ B1ms đáng lẽ ~$3,6. Khớp với ưu đãi 12 tháng của tài khoản
 Free (750 giờ B1ms/tháng). **Suy luận, chưa đối chiếu** trang Free services — hết ưu đãi thì cộng
