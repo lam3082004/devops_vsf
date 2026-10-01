@@ -1,0 +1,72 @@
+name: Agent đọc sự cố
+
+# D23 — agent giới hạn quyền (notes/d23-prep.md, evidence/agent.md). Chạy tay:
+#   mode=triage → scripts/agent-triage.sh: tóm tắt 5xx, alert, lỗi, exception, metric
+#   mode=prove  → scripts/agent-prove.sh: chứng minh ngược quyền của chính danh tính này
+#
+# Danh tính: id-agent-triage (infra/bootstrap/agent.tf), quyền chỉ đọc
+# (infra/app/agent-permissions.tf). Không secret: OIDC, federated credential chỉ tin
+# subject `environment:agent-triage`.
+#
+# Ba lớp chặn "chỉ main":
+#   1. environment `agent-triage` có deployment branch policy chỉ nhận `main` — chạy từ
+#      nhánh khác thì GitHub dừng job trước khi cấp token.
+#   2. federated credential chỉ có dạng `environment:agent-triage`: job không khai
+#      environment, hay PR, đều không đổi được token.
+#   3. quyền Azure chỉ đọc: kể cả khi 1 và 2 hỏng, danh tính này không ghi được gì.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: triage = tóm tắt sự cố · prove = chứng minh ngược quyền
+        type: choice
+        options: [triage, prove]
+        default: triage
+      hours:
+        description: Cửa sổ thời gian cho triage (giờ, 1–72)
+        default: "1"
+
+# Không `issues: write`/`pull-requests: write`: agent chỉ báo cáo vào job summary.
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: agent-triage
+  cancel-in-progress: false
+
+jobs:
+  agent:
+    name: agent (${{ inputs.mode }})
+    runs-on: ubuntu-24.04
+    environment: agent-triage
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Azure login (OIDC, id-agent-triage)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_AGENT_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Triage
+        if: inputs.mode == 'triage'
+        env:
+          HOURS: ${{ inputs.hours }}
+        run: scripts/agent-triage.sh --hours "$HOURS" --out "$RUNNER_TEMP/agent/triage.md"
+
+      - name: Prove
+        if: inputs.mode == 'prove'
+        run: scripts/agent-prove.sh --out "$RUNNER_TEMP/agent/prove.md"
+
+      # Lưu bản markdown để chép vào evidence/raw/ (job summary không tải về được bằng gh).
+      - name: Upload báo cáo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-${{ inputs.mode }}
+          path: ${{ runner.temp }}/agent/
+          retention-days: 14
+          if-no-files-found: ignore
