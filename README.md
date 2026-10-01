@@ -66,7 +66,7 @@ bash scripts/install-hooks.sh
 (nó tạo ra storage chứa state, không tự lưu vào đó được).
 
 > **Bootstrap đã có sẵn (máy mới, clone mới, người khác trong nhóm)?** Đừng apply. State bootstrap là file local nên clone mới
-> **không có** state: `plan` sẽ ra `21 to add` (đo 01/10), apply lúc đó tạo trùng danh tính hoặc gãy vì tên đã tồn tại.
+> **không có** state: `plan` sẽ ra `21 to add` (đo 01/10, trước khi thêm 2 credential `drift-check`), apply lúc đó tạo trùng danh tính hoặc gãy vì tên đã tồn tại.
 > Khôi phục state từ bản sao lưu (bước 3) rồi `plan` phải ra **No changes**:
 >
 > ```bash
@@ -94,7 +94,7 @@ bash scripts/install-hooks.sh
    github_repo_id  = "<số>"
    EOF
    terraform -chdir=infra/bootstrap init
-   terraform -chdir=infra/bootstrap plan      # đọc kỹ: ~21 to add, 0 to destroy
+   terraform -chdir=infra/bootstrap plan      # đọc kỹ: 23 to add, 0 to destroy
    terraform -chdir=infra/bootstrap apply
    terraform -chdir=infra/bootstrap output
    ```
@@ -119,12 +119,12 @@ bash scripts/install-hooks.sh
    gh variable set AZURE_AGENT_CLIENT_ID  --body "$($B agent_triage_client_id)"
    ```
 
-6. GitHub: 3 environment, mỗi cái chỉ nhận nhánh `main` (subject OIDC của job có environment là
-   `environment:<tên>`, federated credential khai đúng 3 tên này):
+6. GitHub: 4 environment, mỗi cái chỉ nhận nhánh `main` (subject OIDC của job có environment là
+   `environment:<tên>`, federated credential khai đúng 4 tên này):
 
    ```bash
    R=repos/<owner>/<repo>
-   for env in staging-deploy production agent-triage; do
+   for env in staging-deploy production agent-triage drift-check; do
      echo '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' \
        | gh api -X PUT "$R/environments/$env" --input -
      gh api -X POST "$R/environments/$env/deployment-branch-policies" -f name=main -f type=branch
@@ -132,9 +132,9 @@ bash scripts/install-hooks.sh
    ```
 
 7. GitHub: ruleset `protect-main` trên `main` (Settings → Rules → Rulesets, **không** bypass): cấm xoá, cấm force push,
-   lịch sử tuyến tính, bắt PR (chỉ squash), bắt 8 status check của `ci.yml`: `gitleaks` · `dotnet (format, build, test)` ·
+   lịch sử tuyến tính, bắt PR (chỉ squash), bắt 9 status check của `ci.yml`: `gitleaks` · `dotnet (format, build, test)` ·
    `frontend (lint, build)` · `terraform (fmt, validate)` · `terraform plan (infra/app)` · `azure login (OIDC)` ·
-   `docker build + trivy (be)` · `docker build + trivy (fe)`. Bật "Automatically delete head branches".
+   `docker build + trivy (be)` · `docker build + trivy (fe)` · `sast + iac (semgrep, trivy config)`. Bật "Automatically delete head branches".
 
 ## 3. Biến của `infra/app`
 
@@ -174,10 +174,26 @@ MySQL local cho test đầy đủ: `make test-db`.
 ## 5. Deploy: PR → CI → merge → CD
 
 1. Nhánh `feat/` · `fix/` · `chore/` · `docs/` từ `main`, sống ≤ 2 ngày. Không push `main` (ruleset chặn: `GH013`).
-2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 8 check; `terraform plan` đăng nhập bằng `id-gh-plan` (chỉ đọc).
-3. Squash merge → `cd.yml`: build `be` + `fe` (tag = git SHA), quét Trivy lại, push ACR, đặt image cho slot `staging`,
-   chờ staging trả đúng SHA và `fe` staging gọi được `be` staging, swap, kiểm production; sai thì tự swap ngược.
+2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 9 check; `terraform plan` đăng nhập bằng `id-gh-plan` (chỉ đọc).
+3. Squash merge → `cd.yml`: build `be` + `fe` (tag = git SHA), quét Trivy lại, sinh SBOM, push ACR, đặt image cho slot
+   `staging`, chờ staging trả đúng SHA và `fe` staging gọi được `be` staging, **smoke test nghiệp vụ** (`GET /items`,
+   `/stats`, trang `fe`), ZAP baseline (chỉ cảnh báo), swap, kiểm production; sai thì tự swap ngược.
 4. Kiểm: `curl https://app-vsf-<s>.azurewebsites.net/version` và `https://fe-vsf-<s>.azurewebsites.net/api/version` = SHA của `main`.
+
+### Các lớp bảo mật trong pipeline (DevSecOps)
+
+| Lớp | Ở đâu | Chặn? | Ngoại lệ được phép |
+|---|---|---|---|
+| Secret scanning | gitleaks: pre-commit + CI | chặn | — |
+| SAST | Semgrep 1.177.0 (`p/csharp`, `p/typescript`, `p/nextjs`, `p/dockerfile`, `p/github-actions`) — CI | chặn ở ERROR | `// nosemgrep: <rule> -- lý do` ngay tại dòng |
+| IaC / Dockerfile misconfig | `trivy config` — CI | chặn HIGH/CRITICAL | `.trivyignore` kèm lý do |
+| Lỗ hổng image (SCA) | Trivy image — CI **và** CD (quét lại trước push) | chặn HIGH/CRITICAL | `.trivyignore` có `exp:` |
+| SBOM | Trivy CycloneDX — CD, artifact 90 ngày | — | — |
+| Kiểm hành vi trước swap | smoke `GET /items`, `/stats`, `fe /` trên staging — CD | chặn swap | — |
+| DAST | OWASP ZAP baseline thụ động trên staging — CD | **chỉ cảnh báo** | — |
+| Drift hạ tầng | `drift.yml`: `plan -refresh-only` hằng ngày 08:17 VN | đỏ workflow | tag image do CD quản lý |
+| Cập nhật dependency | Dependabot hằng tuần (NuGet, npm, Actions) | PR qua đủ check | — |
+| Danh tính | OIDC + federated credential, không secret; 4 environment chỉ nhận `main`; ruleset 0 bypass | — | — |
 
 Rollback tay: [`docs/rollback.md`](docs/rollback.md). Agent đọc sự cố (chỉ đọc): `gh workflow run agent-triage.yml --ref main -f mode=triage`.
 
@@ -190,7 +206,7 @@ Theo thứ tự. Bước 3 trở đi **không đảo ngược được**.
    `az keyvault list-deleted --query "[].name" -o tsv` (rỗng, hoặc `az keyvault purge -n <tên>`).
 3. ⚠️ `terraform -chdir=infra/bootstrap destroy`: xoá storage chứa **state của `infra/app`** và 3 danh tính, kéo theo mọi
    federated credential. Chỉ làm **sau** bước 1, nếu không `infra/app` sẽ thành resource mồ côi không còn state.
-4. GitHub: `gh variable delete` 5 biến ở mục 2, xoá 3 environment (`gh api -X DELETE repos/<owner>/<repo>/environments/<tên>`).
+4. GitHub: `gh variable delete` 5 biến ở mục 2, xoá 4 environment (`gh api -X DELETE repos/<owner>/<repo>/environments/<tên>`).
 5. Custom role `vsf-gh-plan-web-config-reader`, `vsf-agent-alert-reader` nằm trong state `infra/app` nên đi theo bước 1.
 
 ## 7. Khi có sự cố
