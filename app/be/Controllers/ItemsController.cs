@@ -31,11 +31,6 @@ public sealed class ItemsController : ApiControllerBase
         [FromQuery] string? offset,
         CancellationToken ct)
     {
-        // DRILL D24 (docs/drills/2026-10-01-bad-deploy.md): LỖI CỐ Ý, PR revert ngay sau drill.
-        // Mô phỏng regression "quên giá trị mặc định": không truyền `limit` thì int.Parse(null)
-        // ném ArgumentNullException → 500. /health không đụng tới đây nên cổng CD (chỉ poll
-        // /health, /version, fe /api/health) không chặn được — đó là điều drill cần chứng minh.
-        _ = int.Parse(limit!);
         var result = await _ticketService.ListAsync(
             status, severity, category, assignee, unassigned, q, limit, offset, ct);
         return result.IsSuccess ? Ok(result.Value) : Failure(result);
