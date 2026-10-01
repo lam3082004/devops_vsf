@@ -58,3 +58,9 @@ P2-1 ruleset `strict` làm PR deploy "xanh sẵn" cũ đi → checklist: merge h
 "quyết định E" → B · P2-3 ghi "lệch guide có chủ ý" (M5, M8 không live) · P2-4 `evidence/README.md` M9 8 → 9 check ·
 P2-5 `cost-report.md` chốt một số $16, bỏ câu "bật lại `make down` sau D20" · P3 known-issues #2 đồng bộ với #35.
 Chờ CI: P2-6 cổng Semgrep mới chỉ thử bằng JSON chạy ở máy — PR của nhánh này là phép thử thật.
+
+**Vòng 3 — review sub-agent Sonnet 02/10 (kiểm lại vòng 2 + ảnh còn lại + CI PR #90).** Sửa: P1 kịch bản M9 dùng
+`demo-leak.env` — bị `.gitignore` `*.env` chặn ở `git add` → đổi `.txt`, thử gitleaks bắt được. Xác nhận: cổng Semgrep mới
+**xanh trên CI thật** (PR #90, job `sast + iac`); không còn IP nhà/công ty, email, đường dẫn công ty trong file chữ; ảnh d10,
+d11/07–08, d14, d19 m7, d20, d21, d22, d03 sạch. Giữ, không sửa: subscription id trong ảnh d03/d10 và `evidence/d01`, `d08`
+(không phải credential — cùng quyết định P3-1); thanh bookmark cá nhân trong 2 ảnh d07 (không có dữ liệu công ty).

@@ -59,7 +59,7 @@ truyền RBAC không đoán được — rủi ro cao nhất buổi demo cho m�
 
 **T−60 phút**
 - [ ] PR deploy: `gh pr view <số> --json mergeStateStatus` = `CLEAN` (không `BEHIND`/`BLOCKED`).
-- [ ] `scripts/demo-preflight.sh --suffix jcip0s --out evidence/raw/d25-preflight-<giờ>.txt` → **0 FAIL**. WARN alert Fired
+- [ ] `scripts/demo-preflight.sh --suffix jcip0s --out evidence/raw/d25-preflight-<giờ>.txt` → **0 FAIL**. Từ 13/10 sẽ có 1 WARN đúng ý: `.trivyignore` còn < 3 ngày. WARN alert Fired
       → đợi Resolved; WARN workspace trống → mở `fe` bấm vài trang, đợi 5 phút.
 - [ ] Điện thoại: tắt Wi-Fi, 4G vào được `https://example.com` (để phần M6 ra 403 của **whitelist**, không phải lỗi mạng).
 - [ ] Mở sẵn tab: repo + PR deploy · Actions · ruleset `protect-main` · Portal: `app-vsf-jcip0s` (Deployment slots, Access
@@ -104,12 +104,14 @@ hoặc merge PR ghi chép `notes/d25.md` → production = `main`; preflight lạ
 
 ### 3.1 PR secret giả (M9, tạo live)
 
-Token **sinh lúc demo**, không nằm trong repo (file này cũng bị gitleaks quét):
+Token **sinh lúc demo**, không nằm trong repo (file này cũng bị gitleaks quét). Tên file `.txt`, **không** `.env` — `.gitignore`
+(`*.env`) sẽ làm `git add` từ chối và hook không có gì để chặn (review vòng 2). Đã thử 02/10: `gitleaks` bắt chuỗi này trong `.txt`
+(`leaks found: 1`):
 
 ```bash
 git switch -c test/d25-m9-secret main
-printf 'GITHUB_TOKEN=ghp_%s\n' "$(openssl rand -hex 18)" > demo-leak.env   # 36 ký tự hex — khớp luật github-pat
-git add demo-leak.env && git commit -m "test: secret giả (D25 demo)"        # lớp 1: hook pre-commit chặn
+printf 'GITHUB_TOKEN=ghp_%s\n' "$(openssl rand -hex 18)" > demo-leak.txt   # 36 ký tự hex — khớp luật github-pat
+git add demo-leak.txt && git commit -m "test: secret giả (D25 demo)"        # lớp 1: hook pre-commit chặn
 git commit --no-verify -m "test: secret giả (D25 demo)"                    # cố tình vượt lớp 1
 git push -u origin test/d25-m9-secret
 gh pr create --title "test(d25): KHÔNG MERGE — secret giả cho demo M9" --body "Token ngẫu nhiên, không phải credential. Đóng ngay sau demo."
