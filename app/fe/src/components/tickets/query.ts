@@ -66,7 +66,9 @@ export function parseTicketListParams(raw: RawSearchParams): {
   const q = qRaw !== undefined ? qRaw.slice(0, MAX_Q_LENGTH) : undefined;
 
   const limit = parseIntInRange(raw.limit, DEFAULT_LIMIT, 1, 100);
-  const offset = parseIntInRange(raw.offset, 0, 0, Number.MAX_SAFE_INTEGER);
+  // Review 30/09 #13: be parse offset thành int32 → kẹp ở 2^31-1, URL offset lớn ra trang rỗng
+  // thay vì banner lỗi 400 từ be.
+  const offset = parseIntInRange(raw.offset, 0, 0, 2147483647);
 
   // unassigned=true và assignee cùng xuất hiện trên URL (link cũ/gõ tay) → backend từ chối cả hai cùng
   // lúc (400), nên ưu tiên unassigned và bỏ assignee ở đây thay vì để lỗi lọt tới getTickets().

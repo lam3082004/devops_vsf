@@ -64,9 +64,9 @@ public sealed record Config(
         }
 
         return new Config(
-            Port: NumberInt32("PORT", 8080),
+            Port: PortNumber("PORT", 8080),
             DbHost: Required("DB_HOST"),
-            DbPort: NumberInt32("DB_PORT", 3306),
+            DbPort: PortNumber("DB_PORT", 3306),
             DbName: Required("DB_NAME"),
             DbUser: Required("DB_USER"),
             DbPassword: dbPassword,
@@ -98,7 +98,18 @@ public sealed record Config(
         return value;
     }
 
-    private static int NumberInt32(string var, int fallback) => (int)NumberInt64(var, fallback);
+    // Review 30/09 #14: bản cũ `(int)NumberInt64(...)` tràn số lặng lẽ, rồi `(uint)` ở
+    // MySqlDataSourceFactory biến số âm thành port khổng lồ. Kiểm khoảng như LOAD_MAX_*.
+    private static int PortNumber(string var, int fallback)
+    {
+        var value = NumberInt64(var, fallback);
+        if (value < 1 || value > 65535)
+        {
+            throw ConfigException.Invalid(var, "phai nam trong khoang 1..=65535");
+        }
+
+        return (int)value;
+    }
 
     private static long NumberInt64(string var, long fallback)
     {

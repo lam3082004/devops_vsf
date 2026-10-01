@@ -213,14 +213,15 @@ public sealed class TicketService : ITicketService
             Category: null,
             AssigneeChanged: assigneeChanged, Assignee: newAssignee,
             Status: target,
-            ResolvedAtChanged: resolvedAtChanged, ResolvedAt: resolvedAt);
+            ResolvedAtChanged: resolvedAtChanged, ResolvedAt: resolvedAt,
+            RequireAssigneeNull: assigneeChanged);
 
         // expectedStatus = trạng thái HIỆN TẠI đã đọc được — chống TOCTOU
         // giữa lúc đọc current ở trên và lúc ghi.
         var updated = await _repository.UpdateAsync(id, update, activities, expectedStatus: current.Status, actor, ct);
         if (updated is null)
         {
-            return Result<TicketResponse>.Conflict("trang thai vua bi doi boi nguoi khac, thu lai");
+            return Result<TicketResponse>.Conflict("ticket vua bi doi boi nguoi khac (trang thai hoac assignee), thu lai");
         }
 
         return Result<TicketResponse>.Ok(TicketResponse.FromEntity(updated));

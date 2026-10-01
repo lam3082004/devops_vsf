@@ -77,6 +77,52 @@ public sealed class TicketRepositoryTests : IAsyncLifetime
         Assert.Equal("Ticket cho test rollback", reloaded!.Title);
     }
 
+    /// Review 30/09 #5: service đọc assignee = null rồi định tự gán actor khi
+    /// chuyển in_progress; trong lúc đó một PATCH field gán "bob". UPDATE có
+    /// RequireAssigneeNull phải KHÔNG khớp (null → service trả 409), giữ bob và
+    /// không ghi activity sai from_value = null.
+    [RequiresMySqlFact]
+    public async Task TuGanAssignee_KhiDaCoNguoiChenVao_KhongGhiDe()
+    {
+        var ticket = await _repository!.CreateAsync(
+            "Ticket cho test tu gan", description: null,
+            TicketSeverity.Medium, TicketCategory.Other,
+            reporter: "tester", assignee: null, CancellationToken.None);
+
+        // Người khác gán bob (đường PATCH field, không precondition).
+        var assignBob = new TicketUpdate(
+            Title: null, DescriptionChanged: false, Description: null,
+            Severity: null, Category: null,
+            AssigneeChanged: true, Assignee: "bob",
+            Status: null, ResolvedAtChanged: false, ResolvedAt: null);
+        Assert.NotNull(await _repository.UpdateAsync(
+            ticket.Id, assignBob, new List<ActivityWrite> { new(ActivityAction.AssigneeChanged, null, "bob") },
+            expectedStatus: null, actor: "other", CancellationToken.None));
+        var activitiesBefore = await CountActivitiesAsync(ticket.Id);
+
+        // Service đã đọc từ TRƯỚC khi bob được gán: status open, assignee null.
+        var autoAssign = new TicketUpdate(
+            Title: null, DescriptionChanged: false, Description: null,
+            Severity: null, Category: null,
+            AssigneeChanged: true, Assignee: "alice",
+            Status: TicketStatus.InProgress, ResolvedAtChanged: false, ResolvedAt: null,
+            RequireAssigneeNull: true);
+        var result = await _repository.UpdateAsync(
+            ticket.Id, autoAssign,
+            new List<ActivityWrite>
+            {
+                new(ActivityAction.StatusChanged, "open", "in_progress"),
+                new(ActivityAction.AssigneeChanged, null, "alice"),
+            },
+            expectedStatus: TicketStatus.Open, actor: "alice", CancellationToken.None);
+
+        Assert.Null(result);
+        var reloaded = await _repository.GetByIdAsync(ticket.Id, CancellationToken.None);
+        Assert.Equal("bob", reloaded!.Assignee);
+        Assert.Equal(TicketStatus.Open, reloaded.Status);
+        Assert.Equal(activitiesBefore, await CountActivitiesAsync(ticket.Id));
+    }
+
     private async Task<int> CountActivitiesAsync(long ticketId)
     {
         await using var connection = await _fixture.DataSource!.OpenConnectionAsync();

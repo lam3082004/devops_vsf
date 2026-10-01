@@ -114,17 +114,53 @@ jobs:
         run: |
           set -uo pipefail
 
-          BE_APP=$(az webapp list -g rg-vsf-dev \
-            --query "[?starts_with(name,'app-vsf-')].name" -o tsv 2>/dev/null | head -n1 || true)
-          FE_APP=$(az webapp list -g rg-vsf-dev \
-            --query "[?starts_with(name,'fe-vsf-')].name" -o tsv 2>/dev/null | head -n1 || true)
-          ACR_NAME=$(az acr list -g rg-vsf-dev \
-            --query "[?starts_with(name,'acrvsf')].name" -o tsv 2>/dev/null | head -n1 || true)
+          # Review 30/09 (notes/review-2026-09-30.md #4): bản cũ nuốt MỌI lỗi az
+          # (`2>/dev/null || true`) → throttle/mạng/mất quyền đều thành "môi trường
+          # trống" → CD XANH mà không deploy. Giờ phân loại lỗi:
+          #   - ResourceGroupNotFound              → trống thật, xanh như cũ
+          #   - AuthorizationFailed                → KHÔNG phân biệt được: role của
+          #     id-gh-deploy gán ở scope rg-vsf-dev nên `make down` xoá luôn role,
+          #     môi trường tắt cũng ra đúng lỗi này → xanh nhưng ::warning:: + summary
+          #   - lỗi khác (429, 5xx, mạng...)       → ĐỎ, vì không biết môi trường ra sao
+          AUTH_AMBIGUOUS=false
+          az_q() {
+            local out err rc
+            err=$(mktemp)
+            out=$("$@" 2>"$err")
+            rc=$?
+            if [ "$rc" -ne 0 ]; then
+              if grep -q "ResourceGroupNotFound" "$err"; then
+                out=""
+              elif grep -q "AuthorizationFailed" "$err"; then
+                AUTH_AMBIGUOUS=true
+                out=""
+              else
+                echo "::error::az loi khong phai 'RG khong ton tai' — dung CD thay vi coi la moi truong trong: $*" >&2
+                head -c 600 "$err" >&2
+                rm -f "$err"
+                exit 1
+              fi
+            fi
+            rm -f "$err"
+            printf '%s' "$out" | head -n1
+          }
+
+          # Gọi trực tiếp (không qua $(...)) để `exit 1` trong az_q dừng cả bước.
+          az_q az webapp list -g rg-vsf-dev --query "[?starts_with(name,'app-vsf-')].name" -o tsv >"$RUNNER_TEMP/be_app"
+          az_q az webapp list -g rg-vsf-dev --query "[?starts_with(name,'fe-vsf-')].name" -o tsv >"$RUNNER_TEMP/fe_app"
+          az_q az acr list -g rg-vsf-dev --query "[?starts_with(name,'acrvsf')].name" -o tsv >"$RUNNER_TEMP/acr_name"
+          BE_APP=$(cat "$RUNNER_TEMP/be_app")
+          FE_APP=$(cat "$RUNNER_TEMP/fe_app")
+          ACR_NAME=$(cat "$RUNNER_TEMP/acr_name")
 
           ACR_LOGIN_SERVER=""
           if [ -n "$ACR_NAME" ]; then
-            ACR_LOGIN_SERVER=$(az acr show -n "$ACR_NAME" -g rg-vsf-dev \
-              --query loginServer -o tsv 2>/dev/null || true)
+            az_q az acr show -n "$ACR_NAME" -g rg-vsf-dev --query loginServer -o tsv >"$RUNNER_TEMP/acr_login"
+            ACR_LOGIN_SERVER=$(cat "$RUNNER_TEMP/acr_login")
+          fi
+          if [ "$AUTH_AMBIGUOUS" = true ]; then
+            echo "::warning::az tra AuthorizationFailed tren rg-vsf-dev — hoac moi truong da make down (role mat theo RG), hoac id-gh-deploy MAT QUYEN. Neu moi truong dang bat: kiem role (architecture.md muc 4)."
+            echo "> ⚠️ Preflight: \`AuthorizationFailed\` trên \`rg-vsf-dev\` — môi trường tắt **hoặc** \`id-gh-deploy\` mất quyền. Nếu môi trường đang bật, đây là lỗi." >> "$GITHUB_STEP_SUMMARY"
           fi
 
           echo "be_app=$BE_APP" >> "$GITHUB_OUTPUT"

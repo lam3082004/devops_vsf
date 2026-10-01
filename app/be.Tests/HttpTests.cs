@@ -159,6 +159,26 @@ public class HttpTests : IAsyncLifetime
         Assert.Contains("toi da", await response.Content.ReadAsStringAsync());
     }
 
+    // Review 30/09 #7: kiểm rỗng/ký tự điều khiển phải chạy SAU khi decode.
+    [Theory]
+    [InlineData("%20", "rong sau khi giai ma")]
+    [InlineData("%20%20%09", "rong sau khi giai ma")]
+    [InlineData("Lam%0Aadmin", "ky tu dieu khien")]
+    [InlineData("Lam%00", "ky tu dieu khien")]
+    public async Task UserNameRongHoacCoKyTuDieuKhienSauDecode_ThiPostBiTuChoi(string header, string reason)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/items")
+        {
+            Content = JsonBody("""{"title":"Mot ticket"}"""),
+        };
+        request.Headers.Add(UserNameFilter.HeaderName, header);
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains(reason, await response.Content.ReadAsStringAsync());
+    }
+
     [Fact]
     public async Task GetKhongCanUserName()
     {

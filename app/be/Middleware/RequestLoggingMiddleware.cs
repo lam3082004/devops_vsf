@@ -22,15 +22,36 @@ public sealed class RequestLoggingMiddleware
     {
         var requestId = Guid.NewGuid().ToString();
         var stopwatch = Stopwatch.StartNew();
+        var failed = false;
 
-        await _next(context);
+        // Review 30/09 #11: exception thoát khỏi MVC filter (lỗi ghi response, lỗi middleware
+        // sau) từng làm MẤT dòng log request → 5xx đó không có trace_id trong KQL. finally đảm
+        // bảo luôn có một dòng; exception vẫn được ném tiếp cho host xử lý (không nuốt).
+        try
+        {
+            await _next(context);
+        }
+        catch
+        {
+            failed = true;
+            throw;
+        }
+        finally
+        {
+            Log(context, requestId, stopwatch, failed);
+        }
+    }
 
+    private void Log(HttpContext context, string requestId, Stopwatch stopwatch, bool failed)
+    {
         _logger.Info(
             "request",
             ("event", "request"),
             ("method", context.Request.Method),
             ("path", context.Request.Path.Value ?? ""),
-            ("status", context.Response.StatusCode),
+            // Response chưa kịp đặt mã khi exception thoát ra (vẫn 200 mặc định) → ghi 500,
+            // đúng mã host sẽ trả.
+            ("status", failed && !context.Response.HasStarted ? 500 : context.Response.StatusCode),
             ("duration_ms", stopwatch.ElapsedMilliseconds),
             ("request_id", requestId),
             // Đi từ alert → KQL → đúng request phải dựa vào trace_id, không phải

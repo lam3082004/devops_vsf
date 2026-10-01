@@ -294,6 +294,7 @@ public sealed class TicketRepository : ITicketRepository
             updateCommand.CommandText = $"""
                 UPDATE tickets SET {string.Join(", ", set)}
                 WHERE id = @id AND (@expected IS NULL OR status = @expected)
+                  AND (@requireAssigneeNull = 0 OR assignee IS NULL)
                 """;
             foreach (var (name, value) in parameters)
             {
@@ -302,6 +303,7 @@ public sealed class TicketRepository : ITicketRepository
 
             updateCommand.Parameters.AddWithValue("@id", id);
             updateCommand.Parameters.AddWithValue("@expected", expectedParam);
+            updateCommand.Parameters.AddWithValue("@requireAssigneeNull", update.RequireAssigneeNull ? 1 : 0);
 
             var affected = await updateCommand.ExecuteNonQueryAsync(ct);
             if (affected == 0)

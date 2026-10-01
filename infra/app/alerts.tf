@@ -115,9 +115,11 @@ resource "azurerm_monitor_metric_alert" "cpu_high" {
 
 # ---------- MySQL active connections — metric alert ----------
 #
-# B1ms: max_connections = 171 (đọc 29/09). Ngưỡng 128 ≈ 75% (guide: 70–80%). Pool mặc định
-# của MySqlConnector tối đa 100 kết nối/instance × tối đa 2 instance = 200 > 171 → pool phình
-# lúc scale out là chạm trần thật, alert này báo trước khi app nhận lỗi "Too many connections".
+# B1ms: max_connections = 171 (đọc 29/09). Ngưỡng 128 ≈ 75% (guide: 70–80%).
+# SỬA comment theo review 30/09 #6: app KHÔNG thể tự chạm ngưỡng này — `MySqlDataSourceFactory`
+# đặt MaximumPoolSize = 5, nên be tối đa 5 × 2 instance × 2 slot = 20 kết nối. Alert này bắt
+# kết nối từ NGUỒN KHÁC (công cụ quản trị, PoC dùng chung subscription, kết nối rò ngoài pool,
+# hoặc ai đó nâng MaximumPoolSize) trước khi app nhận lỗi "Too many connections".
 resource "azurerm_monitor_metric_alert" "mysql_connections" {
   name                = "alert-${var.project}-mysql-connections"
   resource_group_name = azurerm_resource_group.app.name

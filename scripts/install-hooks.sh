@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Cài gitleaks + pre-commit hook cho máy dev.
 #
-# Vì sao cần script: `.git/hooks/` KHÔNG theo repo, nên clone mới (hoặc máy mới)
-# là mất hook — đúng thứ đã xảy ra một lần trên máy này, phát hiện 2026-09-21.
+# Vì sao cần script: `.git/hooks/` KHÔNG theo repo, nên clone mới (hoặc máy mới) là mất hook —
+# đúng thứ đã xảy ra một lần trên máy này (2026-09-21). Hook nay ở scripts/hooks/ (theo repo).
 # CI vẫn quét, nhưng lúc đó secret đã nằm trong commit.
 #
 # Chạy: bash scripts/install-hooks.sh
@@ -30,13 +30,14 @@ else
 	esac
 fi
 
-hook="$REPO_ROOT/.git/hooks/pre-commit"
-if [ -f "$hook" ] && grep -q gitleaks "$hook"; then
-	echo "pre-commit hook da co: $hook"
-else
-	echo "LOI: thieu $hook — lay lai tu git history hoac viet lai (xem docs/docs_app/local-dev.md)" >&2
+# Review 30/09 #10: bản cũ đòi `.git/hooks/pre-commit` có sẵn → clone mới LUÔN exit 1, đúng lúc
+# cần hook nhất. Giờ hook nằm trong repo (scripts/hooks/) và git được trỏ tới thư mục đó.
+hook="$REPO_ROOT/scripts/hooks/pre-commit"
+if [ ! -f "$hook" ] || ! grep -q gitleaks "$hook"; then
+	echo "LOI: thieu $hook trong repo" >&2
 	exit 1
 fi
-
 chmod +x "$hook"
+git -C "$REPO_ROOT" config core.hooksPath scripts/hooks
+echo "core.hooksPath = $(git -C "$REPO_ROOT" config --get core.hooksPath)"
 echo "xong. Kiem thu: tao file chua secret gia roi 'git add' + 'git commit' — phai bi chan."
