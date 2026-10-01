@@ -1,0 +1,33 @@
+# 2026-10-01T16:53:07Z Cost Management Query API (ActualCost, USD), 2026-09-01..2026-10-01 — dữ liệu Azure trễ 8–24 giờ, ngày 01/10 chưa đủ
+# phần 1: theo RG × MeterCategory (bỏ dòng < 0,001)
+rg	meter	usd
+rg-d2-manual	Azure App Service	0.22
+rg-d2-manual	Azure Database for MySQL	0.053
+rg-d3-cli	Azure App Service	0.187
+rg-d3-cli	Azure Database for MySQL	0.047
+rg-obs-poc	Azure DNS	0.066
+rg-obs-poc	Event Hubs	3.647
+rg-obs-poc	Storage	2.25
+rg-obs-poc	Virtual Machines	13.308
+rg-obs-poc	Virtual Network	1.213
+rg-vsf-bootstrap	Storage	0.001
+rg-vsf-dev	Azure App Service	17.826
+rg-vsf-dev	Azure Monitor	0.103
+rg-vsf-dev	Container Registry	1.439
+rg-vsf-dev	Key Vault	0.007
+# phần 2: rg-vsf-dev theo ngày
+date	usd
+20260917	0.149
+20260919	0.001
+20260920	0.514
+20260921	0.69
+20260922	1.296
+20260923	0.995
+20260924	1.909
+20260925	2.135
+20260926	2.135
+20260927	2.152
+20260928	2.135
+20260929	2.17
+20260930	2.183
+20261001	0.912
