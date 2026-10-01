@@ -1,0 +1,21 @@
+2026-10-01T06:08:37Z T0 bắt đầu xoá 7 rule firewall MySQL ứng với outbound IP hiện tại của be (giữ 24 rule còn lại)
+2026-10-01T06:14:43Z xoá xong; còn 24 rule
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.192.171.20"] will be created
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.204.214.217"] will be created
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["20.219.174.118"] will be created
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["4.224.71.224"] will be created
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["4.247.214.195"] will be created
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["4.247.215.225"] will be created
+  # azurerm_mysql_flexible_server_firewall_rule.app_outbound["4.247.236.85"] will be created
+Plan: 7 to add, 0 to change, 0 to destroy.
+2026-10-01T06:17:24Z terraform plan (phát hiện drift)
+2026-10-01T06:19:35Z người dùng restart be production (az webapp restart, chạy tay vì auto mode chặn Claude)
+2026-10-01T06:29:11Z alert-vsf-5xx-rate Fired (startDateTime 06:27:39Z); dispatch agent triage
+2026-10-01T06:30:17Z agent triage xong run 36825024444
+2026-10-01T06:30:32Z runbook phân loại: so outbound IP của be với firewall MySQL
+outbound IP của be không có rule: 7/7 → nguyên nhân: firewall MySQL thiếu rule (drift)
+2026-10-01T06:30:46Z bắt đầu terraform apply (plan đã lưu: 7 to add, 0 change, 0 destroy)
+Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+2026-10-01T06:37:11Z apply xong
+2026-10-01T06:37:20Z plan sau apply: No changes. Your infrastructure matches the configuration.
+2026-10-01T06:55:26Z alert Resolved 06:53:44Z; dừng watcher drill 1

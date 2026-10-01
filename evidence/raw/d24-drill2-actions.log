@@ -1,0 +1,12 @@
+2026-10-01T06:55:36Z T0 merge PR #72 (GET /items không limit → 500, CI 8/8 xanh)
+2026-10-01T06:55:49Z merged 9f2c849fdc39a5e16ceae924c476922038aedb38
+36827413210 9f2c849fdc39a5e16ceae924c476922038aedb38
+2026-10-01T06:59:05Z CD job swap bắt đầu
+2026-10-01T07:01:17Z production be = 9f2c849 (watcher 07:00:36Z): /items 503 database_unavailable, /items?limit=5 200, /health 200 — CD không chặn
+2026-10-01T07:03:28Z alert Fired (startDateTime 07:02:37Z); dispatch agent triage
+2026-10-01T07:04:35Z agent triage xong run 36828151995
+2026-10-01T07:13:49Z người dùng swap ngược slot be xong (az webapp deployment slot swap, chạy tay vì auto mode chặn Claude)
+2026-10-01T07:14:15Z merge PR #73 (revert, CI 8/8)
+2026-10-01T07:14:31Z merged 7c4b6ed61583c8e5bc45c29c424b52e760d7c5de, CD run 36829181019
+2026-10-01T07:23:27Z CD revert 36829181019 xong
+2026-10-01T07:39:33Z alert Resolved 07:38:41Z; dừng watcher drill 2

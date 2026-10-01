@@ -12,8 +12,8 @@ Alert nghiêm trọng nhất của hệ thống (Sev 1, `topic.md` deliverable 6
 
 > **Điều kiện để có email:** địa chỉ trong `ag-vsf-oncall` phải được **xác minh OTP** (Azure gửi mã khi lưu action group,
 > hạn 30 phút; hết hạn → Portal → Monitor → Alerts → Action groups → `ag-vsf-oncall` → Resend). Chưa xác minh thì alert
-> vẫn Fired trên Portal/Workbook nhưng **không có email** (`known-issues.md` #28). Trên subscription Free Trial hiện tại,
-> email **không tới kể cả khi đã xác minh** (drill 2, 29/09) → người trực theo dõi Workbook ô "Alert 7 ngày qua" / Portal Alerts.
+> vẫn Fired trên Portal/Workbook nhưng **không có email** (`known-issues.md` #28). Ngày 29/09 email không tới dù đã xác minh;
+> **từ 01/10 email tới thật** cho cả Fired và Resolved (drill D24). Vẫn theo dõi Workbook ô "Alert 7 ngày qua" / Portal Alerts làm đường dự phòng.
 
 ## Triệu chứng
 
@@ -81,7 +81,7 @@ Alert nghiêm trọng nhất của hệ thống (Sev 1, `topic.md` deliverable 6
 | Nguyên nhân | Dấu hiệu (từ bước xác nhận) | Hành động |
 |---|---|---|
 | Bản deploy mới lỗi | Lỗi bắt đầu ngay sau swap (bước 5), SHA mới | **Rollback** (mục dưới) rồi mở issue/PR sửa |
-| DB không kết nối | `/health` 503, log `db_error`/`schema_*`, MySQL không `Ready` | Kiểm MySQL state + CPU/connections trên Workbook hàng 3; firewall MySQL so với outbound IP của app (`terraform plan` phải ra No changes); MySQL `Stopped` → `az mysql flexible-server start` (⚠️ hỏi chủ repo — tốn tiền) |
+| DB không kết nối | `/health` 503, log `db_error`/`schema_*`, MySQL không `Ready` | Kiểm MySQL state + CPU/connections trên Workbook hàng 3; firewall MySQL so với outbound IP của app (`terraform plan` phải ra No changes); MySQL `Stopped` → `az mysql flexible-server start` (⚠️ hỏi chủ repo — tốn tiền) ⚠️ `db_error`/`database_unavailable` **không chắc là DB**: `DatabaseExceptionFilter` gắn nhãn này cho mọi exception chưa xử lý. Đọc chuỗi lỗi (`Connect Timeout` = DB thật; `Value cannot be null` = lỗi code) và so mốc với SHA mới (bước 5) — drill 2, `docs/drills/2026-10-01-bad-deploy.md` |
 | Mất secret | KV reference không `Resolved` (bước 6), container restart liên tục | Kiểm role `Key Vault Secrets User` của `id-vsf-app-<suffix>` trên vault → `terraform plan`/`apply` trả lại (M5) |
 | Quá tải | CPU plan cao / HTTP queue dài (Workbook hàng 2), alert CPU cùng bắn | Xác nhận autoscale đã lên **2** (tối đa, luật project — không nâng); tìm nguồn tải (`/load`? script quên dừng?) và dừng |
 | Endpoint lỗi cố ý (`/boom`) | Chỉ path `/boom` (bước 1), `event = boom` (bước 2) | Xác nhận là test/drill (ai chạy `scripts/boom.sh`?), ghi chú vào sự cố; alert tự đóng sau ~10–15 phút khi hết lỗi |
