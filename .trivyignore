@@ -11,3 +11,15 @@
 # DTLS. Chặn CD từ merge #69 (run 36807348815). Xem lại: khi image mới ra, hoặc
 # chậm nhất ngày hết hạn dưới đây.
 CVE-2026-84782 exp:2026-10-15
+
+# --- Misconfig IaC (trivy config, job `sast + iac` của ci.yml, người dùng duyệt 01/10) ---
+# Hai mục dưới là ĐÁNH ĐỔI CÓ CHỦ ĐÍCH, không có hạn: đổi chúng cần Private Endpoint/VNet
+# (ngoài phạm vi bài, known-issues.md "Làm lại thì làm khác") hoặc whitelist IP runner GitHub
+# (dải IP động, hàng nghìn dải). Bù lại: cả hai chỉ cho truy cập bằng Entra ID + RBAC.
+#
+# AZU-0012 — storage chứa tfstate (infra/bootstrap/main.tf) mở public network.
+# shared_access_key_enabled = false → chỉ Entra; chỉ 3 danh tính có Blob Data Contributor.
+AVD-AZU-0012
+# AZU-0013 — Key Vault (infra/app/keyvault.tf) không có network_acls. RBAC mode; App Service
+# đọc qua Key Vault reference bằng MI, CI plan đọc bằng id-gh-plan — cả hai từ IP động.
+AVD-AZU-0013

@@ -346,6 +346,55 @@ jobs:
             --exit-code 1 --timeout 10m --no-progress \
             opsboard-fe:${{ github.sha }}
 
+  # DevSecOps (người dùng duyệt 01/10): hai lớp chưa có trước đó — SAST cho code
+  # và quét misconfig cho IaC/Dockerfile. Repo private không có GitHub Advanced
+  # Security nên không dùng CodeQL/code scanning; kết quả nằm ở log + summary.
+  # CỔNG giống Trivy image: không continue-on-error; ngoại lệ phải nằm trong code
+  # (`nosemgrep: <rule> -- lý do`) hoặc .trivyignore kèm lý do — có review qua PR.
+  security-scan:
+    name: sast + iac (semgrep, trivy config)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      # Semgrep chạy bằng image chính thức ghim version (không pip install trên
+      # runner). Rule pack tải từ registry công khai, --metrics=off. Chỉ ERROR là
+      # cổng; WARNING (ví dụ action chưa ghim SHA) in ra để theo dõi.
+      - name: Semgrep SAST (C#, TS/Next.js, Dockerfile, Actions)
+        env:
+          SEMGREP_IMAGE: semgrep/semgrep:1.177.0
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src "$SEMGREP_IMAGE" semgrep scan \
+            --config p/csharp --config p/typescript --config p/nextjs \
+            --config p/dockerfile --config p/github-actions \
+            --metrics=off --exclude docs --severity ERROR --severity WARNING \
+            --json --output semgrep.json app .github || true
+          errors=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' semgrep.json)
+          warnings=$(jq '[.results[] | select(.extra.severity == "WARNING")] | length' semgrep.json)
+          {
+            echo "### Semgrep: $errors ERROR (cổng) · $warnings WARNING (theo dõi)"
+            echo
+            jq -r '.results[] | "- `\(.extra.severity)` \(.check_id | split(".") | last) — \(.path):\(.start.line)"' semgrep.json
+          } >> "$GITHUB_STEP_SUMMARY"
+          jq -r '.results[] | "\(.extra.severity) \(.check_id) \(.path):\(.start.line) \(.extra.message | .[0:160])"' semgrep.json
+          # semgrep.json phải parse được: nếu Semgrep chết (mạng, rule pack) thì jq ở
+          # trên đã lỗi và set -e của bash mặc định làm bước này đỏ — đúng ý cổng.
+          test "$errors" -eq 0
+      - name: Cài trivy ${{ env.TRIVY_VERSION }}
+        env:
+          TRIVY_VERSION: 0.74.0
+        run: |
+          curl -sSL -o /tmp/trivy.tar.gz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
+          sudo install /tmp/trivy /usr/local/bin/trivy
+          trivy --version
+      # Misconfig Terraform (2 root) + 2 Dockerfile. Ngoại lệ có chủ đích: .trivyignore
+      # (AVD-AZU-0012 storage state, AVD-AZU-0013 Key Vault — cần Private Endpoint).
+      - name: Trivy config — cổng misconfig HIGH/CRITICAL (Terraform, Dockerfile)
+        run: |
+          trivy config --severity HIGH,CRITICAL --exit-code 1 \
+            --skip-dirs app/fe/node_modules .
+
   azure-oidc:
     name: azure login (OIDC)
     runs-on: ubuntu-24.04

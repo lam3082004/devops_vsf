@@ -2,7 +2,8 @@
 # Ghim tag cụ thể, không bao giờ dùng :latest — build phải tái lập được.
 ARG SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:10.0
 # "chiseled": biến thể tối giản của Microsoft — không shell, không apt, không
-# package quản lý; container chạy sẵn non-root (uid 64198, user "app").
+# package quản lý; container chạy sẵn non-root (uid 1654 = $APP_UID, user "app";
+# kiểm 01/10 bằng `docker image inspect` → Config.User = 1654).
 # Khác bản Rust (musl + scratch, static binary): app ở đây publish
 # framework-dependent nên vẫn cần runtime ASP.NET Core bên trong image, không
 # thể xuống tới scratch — 0 CVE không chắc đạt được, phải đo lại bằng Trivy.
@@ -30,7 +31,10 @@ FROM ${RUNTIME_IMAGE}
 WORKDIR /app
 COPY --from=builder /app/publish .
 
-# Image chiseled đã chạy sẵn non-root (uid 64198) — không cần khai USER.
+# Image chiseled đã chạy sẵn non-root (uid 1654), nhưng vẫn khai USER tường minh: công cụ quét
+# tĩnh (Trivy DS-0002, Semgrep missing-user-entrypoint) không đọc được user của base image, và
+# Dockerfile tự nói rõ ý định thì đổi base image sau này không lặng lẽ thành root.
+USER $APP_UID
 EXPOSE 8080
 
 # Dạng exec: process dotnet là PID 1, nhận thẳng SIGTERM từ docker stop và

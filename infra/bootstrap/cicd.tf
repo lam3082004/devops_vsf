@@ -135,6 +135,28 @@ resource "azurerm_federated_identity_credential" "gh_deploy_production_env_immut
   subject             = "repo:${local.github_repo_immutable}:environment:production"
 }
 
+# Drift detection theo lịch (.github/workflows/drift.yml, PR DevSecOps 01/10): job khai
+# `environment: drift-check` (chỉ nhận `main`) và đăng nhập bằng id-gh-plan — CHỈ ĐỌC,
+# đúng quyền cần cho `terraform plan -refresh-only`. Không dùng subject `ref:refs/heads/main`
+# cho id-gh-plan: như vậy mọi workflow trên main đều lấy được danh tính đọc secret DB.
+resource "azurerm_federated_identity_credential" "gh_plan_drift_env" {
+  name                = "github-env-drift-check"
+  resource_group_name = azurerm_resource_group.bootstrap.name
+  parent_id           = azurerm_user_assigned_identity.gh_plan.id
+  audience            = local.github_audience
+  issuer              = local.github_issuer
+  subject             = "repo:${var.github_repo}:environment:drift-check"
+}
+
+resource "azurerm_federated_identity_credential" "gh_plan_drift_env_immutable" {
+  name                = "github-env-drift-check-immutable"
+  resource_group_name = azurerm_resource_group.bootstrap.name
+  parent_id           = azurerm_user_assigned_identity.gh_plan.id
+  audience            = local.github_audience
+  issuer              = local.github_issuer
+  subject             = "repo:${local.github_repo_immutable}:environment:drift-check"
+}
+
 # ---------- Quyền tối thiểu ----------
 
 # CI chỉ cần ĐỌC trạng thái hạ tầng để chạy plan.
