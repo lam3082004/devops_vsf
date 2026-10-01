@@ -29,12 +29,10 @@ registration: mọi danh tính ngoài Azure là user-assigned MI + federated cre
 (chỉ một lần, mỗi lệnh vài phút):
 
 ```bash
-for p in Microsoft.Web Microsoft.DBforMySQL Microsoft.ContainerRegistry Microsoft.KeyVault \
-         Microsoft.ManagedIdentity Microsoft.OperationalInsights Microsoft.Insights \
-         Microsoft.Storage Microsoft.AlertsManagement; do
-  az provider register --namespace "$p"
-done
-az provider list --query "[?registrationState!='Registered'].namespace" -o tsv | grep -E 'Web|MySQL|Container|KeyVault|ManagedIdentity|Operational|Insights|Storage|Alerts'   # phải rỗng
+PROVIDERS="Microsoft.Web Microsoft.DBforMySQL Microsoft.ContainerRegistry Microsoft.KeyVault
+  Microsoft.ManagedIdentity Microsoft.OperationalInsights Microsoft.Insights Microsoft.Storage Microsoft.AlertsManagement"
+for p in $PROVIDERS; do az provider register --namespace "$p"; done
+for p in $PROVIDERS; do printf '%s\t%s\n' "$p" "$(az provider show -n "$p" --query registrationState -o tsv)"; done   # cả 9 phải Registered
 ```
 
 Region: App Service, ACR, Key Vault ở **Central India**; MySQL ở **Southeast Asia** (`infra/app/variables.tf`,
@@ -48,7 +46,7 @@ lý do ở `known-issues.md` #6, #27). Subscription khác có thể không bị 
 | Azure CLI | ≥ 2.60 (đã dùng 2.90.0) | đăng nhập, bootstrap, kiểm tra |
 | GitHub CLI `gh` | ≥ 2.40 | biến, environment, PR |
 | Docker | 24+ | build image local (không bắt buộc, CD build trên runner) |
-| .NET SDK | 10.0 | `make test` / `make lint` |
+| .NET SDK | 10.0 | `make test` / `make lint`. Nếu `dotnet` báo `[/usr/lib/dotnet/host/fxr] does not exist` (gói dotnet của distro hỏng), cài bằng `dotnet-install.sh` vào `~/.dotnet` rồi đặt `DOTNET_ROOT=~/.dotnet` và thêm vào `PATH` |
 | Node.js | 24 (Next 16 cần ≥ 20) | `make fe-*` |
 | gitleaks | 8.30.1 | pre-commit hook: `bash scripts/install-hooks.sh` |
 | Trivy | 0.74.0 | quét image local (CI/CD quét lại) |
@@ -66,6 +64,17 @@ bash scripts/install-hooks.sh
 `infra/bootstrap` tạo `rg-vsf-bootstrap`: storage chứa state Terraform của `infra/app` và 3 danh tính cho GitHub
 (`id-gh-plan` cho CI, `id-gh-deploy` cho CD, `id-agent-triage` cho agent đọc sự cố). State của **chính** bootstrap để local
 (nó tạo ra storage chứa state, không tự lưu vào đó được).
+
+> **Bootstrap đã có sẵn (máy mới, clone mới, người khác trong nhóm)?** Đừng apply. State bootstrap là file local nên clone mới
+> **không có** state: `plan` sẽ ra `21 to add` (đo 01/10), apply lúc đó tạo trùng danh tính hoặc gãy vì tên đã tồn tại.
+> Khôi phục state từ bản sao lưu (bước 3) rồi `plan` phải ra **No changes**:
+>
+> ```bash
+> install -m 600 ~/vsf-state-backup/bootstrap-<ngày mới nhất>.tfstate infra/bootstrap/terraform.tfstate
+> terraform -chdir=infra/bootstrap init && terraform -chdir=infra/bootstrap plan    # No changes
+> ```
+>
+> Mất cả bản sao lưu: dựng lại bằng `import` như D23 (`notes/d23.md`), cẩn thận `random_string.suffix`.
 
 1. Repo GitHub của bạn: fork/clone repo này về tài khoản của bạn, rồi lấy ID số (cần cho federated credential, vì repo
    GitHub mặc định gửi subject OIDC kèm ID số — `ai-failure-log.md` #4):
