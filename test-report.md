@@ -14,6 +14,8 @@ Tổng hợp mọi kịch bản kiểm thử của dự án: chạy gì, kết q
 | Terraform | `fmt -check`, `validate`, `plan` bằng `id-gh-plan` | xanh | |
 | Secret | gitleaks 8.30.1 (CI + pre-commit) | 0 leak | |
 | Image | Trivy 0.74.0, cổng CRITICAL/HIGH, không `--ignore-unfixed` | xanh, có 1 ngoại lệ có hạn tới 15/10 | `known-issues.md` #31 |
+| SAST | Semgrep 1.177.0 (C#, TS/Next.js, Dockerfile, Actions), cổng ERROR | 0 ERROR (3 SQLi dương tính giả đánh dấu `nosemgrep` kèm lý do) | PR DevSecOps 01/10 |
+| IaC / Dockerfile misconfig | `trivy config`, cổng HIGH/CRITICAL | 0 (sửa `USER` của `be`; 2 ngoại lệ Azure có lý do trong `.trivyignore`) | PR DevSecOps 01/10 |
 | **CI chặn được cái sai (M9)** | 6 PR cố tình sai | 6/6 đỏ đúng job | [`evidence/M9.md`](evidence/M9.md) |
 
 ## 2. Kịch bản trên môi trường thật
@@ -36,6 +38,7 @@ Tổng hợp mọi kịch bản kiểm thử của dự án: chạy gì, kết q
 | 14 | **Drill 1**: mất firewall MySQL → apply | MTTR 10 phút 58 giây, alert mù với lỗi một phần | [`docs/drills/2026-10-01-firewall.md`](docs/drills/2026-10-01-firewall.md) | 01/10 |
 | 15 | **Drill 2**: deploy bản lỗi → swap ngược | CI 8/8 xanh + CD success trên bản lỗi (cổng CD không kiểm `/items`); alert 2 phút 17 giây; swap ngược 39 giây; RTO 12 phút 39 giây (7 phút chờ người chạy swap) | [`docs/drills/2026-10-01-bad-deploy.md`](docs/drills/2026-10-01-bad-deploy.md) | 01/10 |
 | 16 | Rollback / phục hồi (4 kịch bản) | xem bảng | [`docs/rollback.md`](docs/rollback.md) | 22/09 → 01/10 |
+| 17 | Smoke test staging chặn bản lỗi kiểu drill 2 · drift detection | chạy thử local: smoke 4/4 đạt trên bản tốt; bộ lọc drift ra 0 drift thật (chỉ tag image) — bằng chứng chạy thật trên CD/workflow: PR DevSecOps | `known-issues.md` #32 | 01/10 |
 
 ## 3. Chưa kiểm hoặc kiểm chưa đủ
 

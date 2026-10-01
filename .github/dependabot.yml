@@ -1,0 +1,36 @@
+# Dependabot (PR DevSecOps, người dùng duyệt 01/10). Lý do cụ thể: sáng 01/10 hai CVE mới
+# (openssl trong base image `be`, Next.js CRITICAL) làm đỏ CD — phát hiện được nhờ Trivy,
+# nhưng bản vá phải sửa tay. Dependabot mở PR vá; PR vẫn qua đủ 8 check + review như mọi PR.
+#
+# Giữ ít PR: gom theo hệ sinh thái, tối đa 3 PR mở mỗi hệ, lịch hằng tuần (thứ Hai).
+# Không có `docker`: hai Dockerfile khai base image qua ARG (`FROM ${RUNTIME_IMAGE}`), Dependabot
+# không đọc được; tag là tag trôi (`10.0-noble-chiseled`, `24-alpine3.23`) nên mỗi lần CD build đã
+# kéo bản mới nhất, và Trivy chặn nếu bản đó có CVE.
+# Không có Terraform provider: lockfile + `~> 4.0` đã ghim, nâng provider là một PR có plan
+# riêng (dễ đổi hành vi hạ tầng), không để bot làm.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /app/be
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 3
+    groups:
+      nuget: { patterns: ["*"] }
+    commit-message: { prefix: "chore(deps)" }
+
+  - package-ecosystem: npm
+    directory: /app/fe
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 3
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+    commit-message: { prefix: "chore(deps)" }
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 3
+    groups:
+      actions: { patterns: ["*"] }
+    commit-message: { prefix: "chore(deps)" }

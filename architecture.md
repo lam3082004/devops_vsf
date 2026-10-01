@@ -93,7 +93,7 @@ flowchart TB
     end
     OP["Người vận hành<br/>(az login, Terraform)"]
 
-    PR -- "OIDC token, subject pull_request" --> ENTRA
+    PR -- "OIDC token, subject pull_request<br/>(+ drift.yml: environment:drift-check)" --> ENTRA
     MAIN -- "OIDC, subject ref:main / environment:*" --> ENTRA
     AG -- "OIDC, subject environment:agent-triage" --> ENTRA
     ENTRA -- "token" --> IPLAN & IDEP & IAG
@@ -126,7 +126,7 @@ của environment, và ruleset `protect-main` (0 bypass).
 |---|---|---|---|
 | `id-vsf-app-<s>` | AcrPull | ACR | App Service kéo image |
 | `id-vsf-app-<s>` | Key Vault Secrets User | Key Vault | KV reference (mật khẩu DB, App Insights) |
-| `id-gh-plan` | Reader | subscription | `terraform plan` trên PR |
+| `id-gh-plan` | Reader | subscription | `terraform plan` trên PR + drift detection hằng ngày (`drift.yml`, environment `drift-check`) |
 | `id-gh-plan` | `vsf-gh-plan-web-config-reader` (custom: `sites/config/list/action`, `sites/slots/config/list/action`) | `rg-vsf-dev` | plan refresh auth settings của Web App |
 | `id-gh-plan` | Key Vault Secrets User | Key Vault | plan đọc secret `mysql-admin-password` |
 | `id-gh-plan` | Storage Blob Data Contributor | storage state | lease state khi plan |
@@ -147,11 +147,11 @@ CI không deploy được (`evidence/M10.md`).
 
 ```mermaid
 flowchart LR
-    PR["Pull request"] --> CI["CI: gitleaks · dotnet format/test · fe lint/test/build ·<br/>terraform fmt/validate/plan · docker build + Trivy"]
+    PR["Pull request"] --> CI["CI: gitleaks · dotnet format/test · fe lint/test/build ·<br/>terraform fmt/validate/plan · docker build + Trivy ·<br/>Semgrep SAST · trivy config (IaC)"]
     CI -->|"xanh + squash merge"| M["main"]
-    M --> CD["CD: build be+fe, tag = SHA · Trivy lại"]
+    M --> CD["CD: build be+fe, tag = SHA · Trivy lại · SBOM"]
     CD --> ACR[("ACR")]
-    CD --> S["slot staging"] -->|"poll /health, /version = SHA,<br/>fe /api/health gọi be staging"| SW{"swap"}
+    CD --> S["slot staging"] -->|"poll /health, /version = SHA,<br/>fe /api/health gọi be staging ·<br/>smoke GET /items, /stats, fe / ·<br/>ZAP baseline (cảnh báo)"| SW{"swap"}
     SW --> P["production"] -->|"kiểm lại SHA;<br/>sai thì swap ngược tự động"| OK["xong"]
 ```
 

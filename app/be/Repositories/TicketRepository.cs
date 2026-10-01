@@ -65,6 +65,7 @@ public sealed class TicketRepository : ITicketRepository
         int total;
         await using (var countCommand = connection.CreateCommand())
         {
+            // nosemgrep: csharp.lang.security.sqli.csharp-sqli.csharp-sqli -- whereSql chỉ ghép mảnh SQL HẰNG (`where.Add("... = @x")`), mọi giá trị đi qua tham số (D24, PR DevSecOps).
             countCommand.CommandText = $"SELECT COUNT(*) FROM tickets {whereSql}";
             foreach (var (name, value) in parameters)
             {
@@ -77,6 +78,7 @@ public sealed class TicketRepository : ITicketRepository
         var items = new List<Ticket>();
         await using (var listCommand = connection.CreateCommand())
         {
+            // nosemgrep: csharp.lang.security.sqli.csharp-sqli.csharp-sqli -- whereSql chỉ ghép mảnh SQL HẰNG (`where.Add("... = @x")`), mọi giá trị đi qua tham số (D24, PR DevSecOps).
             listCommand.CommandText = $"""
                 SELECT id, title, description, severity, category, status, reporter, assignee,
                        created_at, updated_at, resolved_at
@@ -288,6 +290,7 @@ public sealed class TicketRepository : ITicketRepository
             // MySqlConnector ném InvalidOperationException nếu command có
             // Transaction = null trong khi connection đang mở transaction.
             updateCommand.Transaction = tx;
+            // nosemgrep: csharp.lang.security.sqli.csharp-sqli.csharp-sqli -- set chỉ ghép mảnh SQL HẰNG (`where.Add("... = @x")`), mọi giá trị đi qua tham số (D24, PR DevSecOps).
             updateCommand.CommandText = $"""
                 UPDATE tickets SET {string.Join(", ", set)}
                 WHERE id = @id AND (@expected IS NULL OR status = @expected)

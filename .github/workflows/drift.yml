@@ -1,0 +1,83 @@
+name: Drift detection (infra/app)
+
+# Drill 1 D24 (docs/drills/2026-10-01-firewall.md): 7 rule firewall MySQL bị xoá ngoài
+# Terraform, production vẫn 200 suốt 11 phút vì pool connection, alert không bắn —
+# chỉ `terraform plan` thấy. Không ai chạy plan theo lịch nên drift kiểu này nằm im tới
+# lúc restart/scale-out. Workflow này chạy plan định kỳ và ĐỎ khi có drift.
+#
+# `-refresh-only`: so Azure thật với STATE, không với code — đúng định nghĩa drift, và
+# không cần terraform.tfvars (chứa IP cá nhân, gitignored) nên không có diff giả
+# allowed_ips/alert_email như job plan của CI.
+# Bỏ qua đúng 2 thuộc tính CD sở hữu (tag image của Web App/slot, `ignore_changes` trong
+# infra/app): mỗi lần deploy chúng đổi ngoài Terraform là chuyện đúng thiết kế.
+on:
+  schedule:
+    # 01:17 UTC = 08:17 giờ VN, đầu ngày làm việc. Phút lẻ để tránh giờ chẵn GitHub dồn tải.
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-plan-infra-app
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    name: terraform plan -refresh-only (infra/app)
+    runs-on: ubuntu-24.04
+    # Federated credential của id-gh-plan cho subject `environment:drift-check`
+    # (infra/bootstrap/cicd.tf); environment chỉ nhận `main`.
+    environment: drift-check
+    timeout-minutes: 15
+    env:
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PLAN }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+      - name: terraform init
+        run: terraform -chdir=infra/app init -input=false -backend-config=backend.hcl
+      - name: Plan -refresh-only và lọc drift thật
+        run: |
+          set -euo pipefail
+          # Môi trường tắt (make down) = không có gì để trôi → xanh.
+          if ! terraform -chdir=infra/app state list 2>/dev/null | grep -qx 'azurerm_linux_web_app.app'; then
+            echo "::notice::rg-vsf-dev dang tat (state khong co Web App) — bo qua."
+            echo "### Drift: môi trường đang tắt, bỏ qua" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # -lock=false: chỉ đọc, không được chặn một `apply` đang chạy của người vận hành.
+          terraform -chdir=infra/app plan -refresh-only -lock=false -input=false -no-color \
+            -out="$RUNNER_TEMP/drift.tfplan" > "$RUNNER_TEMP/drift.txt"
+          # File plan nhị phân chứa giá trị secret → chỉ đọc JSON trong runner, không upload.
+          terraform -chdir=infra/app show -json "$RUNNER_TEMP/drift.tfplan" > "$RUNNER_TEMP/drift.json"
+          rm -f "$RUNNER_TEMP/drift.tfplan"
+          jq '
+            def strip_image: if type == "object" and .site_config then
+                .site_config |= map(del(.linux_fx_version)
+                  | if .application_stack then .application_stack |= map(del(.docker_image_name)) else . end)
+              else . end;
+            [.resource_drift[]? | {address, actions: .change.actions,
+               before: (.change.before | strip_image), after: (.change.after | strip_image)}
+             | select(.before != .after) | {address, actions}]' "$RUNNER_TEMP/drift.json" > "$RUNNER_TEMP/real-drift.json"
+          rm -f "$RUNNER_TEMP/drift.json"
+          n=$(jq length "$RUNNER_TEMP/real-drift.json")
+          {
+            echo "### Drift infra/app: $n resource lệch so với state"
+            echo
+            jq -r '.[] | "- `\(.address)` — \(.actions | join(","))"' "$RUNNER_TEMP/real-drift.json"
+            [ "$n" -eq 0 ] && echo "Không có drift (ngoài tag image do CD quản lý)."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$n" -ne 0 ]; then
+            jq -r '.[] | "::error::drift: \(.address) (\(.actions | join(",")))"' "$RUNNER_TEMP/real-drift.json"
+            echo "Xu ly: chay 'make plan' tai may, xac nhan, roi 'terraform apply' (docs/rollback.md muc 2)."
+            exit 1
+          fi

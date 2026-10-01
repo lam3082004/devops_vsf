@@ -307,6 +307,31 @@ jobs:
           echo "trivy-be: $((T1-T0))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
           echo "trivy-fe: $((T2-T1))s" >> "$GITHUB_WORKSPACE/.cd-timings.txt"
 
+      # SBOM (người dùng duyệt 01/10): danh sách mọi gói trong ĐÚNG image sắp push,
+      # dạng CycloneDX. Dùng lại trivy đã cài + database đã tải ở bước trên, không
+      # thêm công cụ. Giá trị: khi có CVE mới (như CVE-2026-84782 làm đỏ CD sáng
+      # 01/10), tra "image nào đang chạy có gói X" từ artifact mà không cần build lại.
+      - name: SBOM CycloneDX cho be + fe
+        env:
+          GIT_SHA: ${{ github.sha }}
+          ACR_LOGIN_SERVER: ${{ needs.preflight.outputs.acr_login_server }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sbom"
+          for svc in be fe; do
+            trivy image --format cyclonedx --timeout 10m --no-progress \
+              --output "$RUNNER_TEMP/sbom/sbom-$svc-$GIT_SHA.cdx.json" \
+              "$ACR_LOGIN_SERVER/vsf-$svc:$GIT_SHA"
+            echo "sbom $svc: $(jq '.components | length' "$RUNNER_TEMP/sbom/sbom-$svc-$GIT_SHA.cdx.json") components"
+          done
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ github.sha }}
+          path: ${{ runner.temp }}/sbom/
+          retention-days: 90
+
       - name: Push image lên ACR (đo thời gian)
         env:
           GIT_SHA: ${{ github.sha }}
@@ -617,6 +642,98 @@ jobs:
 
           echo "poll_ok=true" >> "$GITHUB_OUTPUT"
           echo "staging san sang sau ${WAITED}s (SHA=$GIT_SHA, be+fe health 200)"
+
+      # Drill 2 (D24, docs/drills/2026-10-01-bad-deploy.md): PR làm `GET /items` 503
+      # qua được CI 8/8 VÀ cổng poll ở trên (chỉ nhìn /health, /version, /api/health),
+      # production lỗi 12 phút. /health đúng nghĩa là readiness, không phải kiểm hành
+      # vi nghiệp vụ — nên cần thêm một lớp smoke gọi đúng các route người dùng chạm
+      # tới, trên STAGING, trước swap. Chỉ GET (không ghi dữ liệu vào DB production
+      # dùng chung giữa 2 slot). Đỏ ở đây = KHÔNG swap; luật IP tạm vẫn được dọn ở
+      # bước `if: always()` phía dưới.
+      - name: Smoke test nghiệp vụ trên staging (GET /items, trang fe) — đỏ thì KHÔNG swap
+        id: smoke
+        run: |
+          set -uo pipefail
+          BE_STAGING="https://$BE_APP-staging.azurewebsites.net"
+          FE_STAGING="https://$FE_APP-staging.azurewebsites.net"
+          fail=0
+          # tên|URL|mã mong đợi|jq kiểm body (rỗng = chỉ kiểm mã)
+          checks=(
+            "be GET /items|$BE_STAGING/items|200|.items | type == \"array\""
+            "be GET /items?limit=1|$BE_STAGING/items?limit=1|200|.items | type == \"array\""
+            "be GET /stats|$BE_STAGING/stats|200|"
+            "fe GET /|$FE_STAGING/|200|"
+          )
+          {
+            echo "### Smoke test staging ($GIT_SHA)"
+            echo
+            echo "| kiểm | mã | kết quả |"
+            echo "|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for c in "${checks[@]}"; do
+            IFS='|' read -r name url want jqexpr <<<"$c"
+            # 3 lần, cách 5s: container vừa lên có thể trả lỗi thoáng qua (#20).
+            for attempt in 1 2 3; do
+              resp=$(curl -4 -s -w $'\n%{http_code}' --max-time 15 "$url" || true)
+              code=$(printf '%s' "$resp" | tail -n1)
+              body=$(printf '%s' "$resp" | sed '$d')
+              ok=0
+              if [ "$code" = "$want" ]; then
+                if [ -z "$jqexpr" ] || printf '%s' "$body" | jq -e "$jqexpr" >/dev/null 2>&1; then ok=1; fi
+              fi
+              [ "$ok" -eq 1 ] && break
+              sleep 5
+            done
+            if [ "$ok" -eq 1 ]; then
+              verdict="đạt"
+            else
+              verdict="LỖI"
+              fail=1
+              echo "::error::smoke '$name' -> $code (mong $want): $(printf '%s' "$body" | head -c 200)"
+            fi
+            echo "$(date -Is) smoke $name -> $code ($verdict)"
+            echo "| $name | $code | $verdict |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::smoke test staging THAT BAI — KHONG swap, production giu ban cu."
+            exit 1
+          fi
+
+      # DAST nhẹ (người dùng duyệt 01/10): OWASP ZAP baseline = spider 1 phút + quét
+      # THỤ ĐỘNG (không tấn công, không gửi payload) trên staging, đúng lúc runner đã
+      # có luật IP tạm. CHỈ CẢNH BÁO: báo cáo vào artifact + summary, không chặn swap —
+      # baseline chủ yếu ra header thiếu (CSP, HSTS...), chưa có ngưỡng nào đã được
+      # thống nhất để chặn deploy. Lỗi của chính ZAP (pull image, mạng) cũng không chặn.
+      - name: DAST — ZAP baseline thụ động trên staging (chỉ cảnh báo)
+        env:
+          ZAP_IMAGE: ghcr.io/zaproxy/zaproxy:2.16.1
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/zap" && chmod 777 "$RUNNER_TEMP/zap"
+          {
+            echo "### DAST — ZAP baseline (thụ động, chỉ cảnh báo)"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          for target in "be|https://$BE_APP-staging.azurewebsites.net/items" "fe|https://$FE_APP-staging.azurewebsites.net/"; do
+            IFS='|' read -r name url <<<"$target"
+            # -I: không trả mã lỗi vì WARN; -m 1: spider 1 phút. Mã 1 = có FAIL, 2 = WARN, 3 = lỗi ZAP.
+            docker run --rm -v "$RUNNER_TEMP/zap:/zap/wrk:rw" "$ZAP_IMAGE" \
+              zap-baseline.py -t "$url" -m 1 -I -r "zap-$name.html" -J "zap-$name.json" >"$RUNNER_TEMP/zap/zap-$name.log" 2>&1
+            rc=$?
+            summary=$(grep -E '^FAIL-NEW|^WARN-NEW|^PASS' "$RUNNER_TEMP/zap/zap-$name.log" | tail -n1)
+            echo "- \`$name\` ($url): rc=$rc · ${summary:-xem log}" >> "$GITHUB_STEP_SUMMARY"
+            grep -E '^(FAIL|WARN)-NEW|^WARN|^FAIL' "$RUNNER_TEMP/zap/zap-$name.log" | head -n 20 || true
+          done
+          exit 0
+
+      - name: Upload báo cáo ZAP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-baseline-${{ github.sha }}
+          path: ${{ runner.temp }}/zap/
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Swap slot staging → production (be + fe, đo thời gian)
         id: swap
