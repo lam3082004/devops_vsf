@@ -9,7 +9,7 @@ alias `@/*` → `src/*` · `output: "standalone"` (để đóng Docker ở D16).
 
 ## Luật kiến trúc
 **Trình duyệt không bao giờ gọi `be` trực tiếp.** Mọi lời gọi đi qua server component hoặc route handler đọc
-`process.env.API_BASE_URL` (architecture.md). Lý do: `API_BASE_URL` trỏ tới địa chỉ nội bộ của backend và không
+`process.env.API_BASE_URL` (`architecture.md` ở gốc repo). Lý do: `API_BASE_URL` trỏ tới địa chỉ nội bộ của backend và không
 được lộ ra client; đây cũng là chặng `fe → be` tạo nên distributed tracing thật.
 
 > `app/fe/AGENTS.md` do Next.js sinh cảnh báo bản này có breaking change so với kiến thức cũ. Khi vướng API lạ,

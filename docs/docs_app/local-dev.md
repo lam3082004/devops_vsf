@@ -1,7 +1,7 @@
 # Local dev — OpsBoard
 
 Chạy backend và frontend cùng lúc trên máy dev, không qua Docker Compose (compose hiện chỉ dựng `db` + `be`,
-xem cuối file). Liên quan: [api-spec](api-spec.md) · [architecture](architecture.md).
+xem cuối file). Liên quan: [api-spec](api-spec.md) · [architecture](../../architecture.md).
 
 ## Chạy backend (`app/be`)
 ```

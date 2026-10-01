@@ -1,44 +1,209 @@
-# devops_vsf
+# devops_vsf — OpsBoard trên Azure App Service
 
-Repo thực tập: deploy app lên Azure App Service, CI/CD trunk-based, hạ tầng bằng Terraform, monitoring tập trung.
-Đề bài gốc và mọi yêu cầu: [`topic.md`](topic.md).
+Ứng dụng ticket hai service (`fe` Next.js + `be` .NET 10) chạy container trên Azure App Service, MySQL Flexible, ACR,
+Key Vault; hạ tầng 100% Terraform; CI/CD trunk-based trên GitHub Actions bằng OIDC, deploy qua slot `staging` rồi swap.
+Sơ đồ traffic và quyền: [`architecture.md`](architecture.md). Đề bài: [`topic.md`](topic.md).
 
-> README này hiện chỉ chú thích **repo có những gì**. Tới D25 nó phải trở thành hướng dẫn
-> để người thứ ba dựng lại hệ thống từ đầu (prereq · các bước · biến cần set · teardown) — deliverable #2 trong `topic.md`.
+README này dành cho **người thứ ba dựng lại hệ thống từ đầu**. Nó đã được kiểm bằng cách làm theo từng bước từ một
+clone mới ngày 2026-10-01 (`evidence/M8.md` mục "Lần cuối (D24)").
 
-## Thư mục hiện có
+## Tài liệu
+
+| Cần | Đọc |
+|---|---|
+| Dựng / deploy | README này |
+| Kiến trúc, danh tính → role → scope | [`architecture.md`](architecture.md) |
+| Vận hành hằng ngày, alert, dashboard, KQL | [`runbook.md`](runbook.md) · [`docs/logging.md`](docs/logging.md) |
+| Rollback / phục hồi | [`docs/rollback.md`](docs/rollback.md) · drill: [`docs/drills/`](docs/drills/) |
+| Lỗi đã gặp, việc chưa xong | [`known-issues.md`](known-issues.md) |
+| Kết quả kiểm thử | [`test-report.md`](test-report.md) · bằng chứng M1–M11: [`evidence/README.md`](evidence/README.md) |
+| Chi phí | [`cost-report.md`](cost-report.md) |
+| AI sinh sai | [`ai-failure-log.md`](ai-failure-log.md) |
+| Nhật ký từng ngày · hướng dẫn từng bài | `notes/dXX.md` · [`docs/guides/`](docs/guides/README.md) |
+| Ứng dụng (PRD, API, schema, chạy local) | [`docs/docs_app/`](docs/docs_app/README.md) |
+
+## 1. Chuẩn bị
+
+**Azure:** một subscription mà bạn là **Owner** (cần gán role cho managed identity). Tenant không cần cho tạo app
+registration: mọi danh tính ngoài Azure là user-assigned MI + federated credential. Register các resource provider
+(chỉ một lần, mỗi lệnh vài phút):
+
+```bash
+for p in Microsoft.Web Microsoft.DBforMySQL Microsoft.ContainerRegistry Microsoft.KeyVault \
+         Microsoft.ManagedIdentity Microsoft.OperationalInsights Microsoft.Insights \
+         Microsoft.Storage Microsoft.AlertsManagement; do
+  az provider register --namespace "$p"
+done
+az provider list --query "[?registrationState!='Registered'].namespace" -o tsv | grep -E 'Web|MySQL|Container|KeyVault|ManagedIdentity|Operational|Insights|Storage|Alerts'   # phải rỗng
+```
+
+Region: App Service, ACR, Key Vault ở **Central India**; MySQL ở **Southeast Asia** (`infra/app/variables.tf`,
+lý do ở `known-issues.md` #6, #27). Subscription khác có thể không bị các giới hạn này, nhưng đừng đổi nếu chưa cần.
+
+**Công cụ** (phiên bản đã dùng; CI ghim cùng số trong `.github/workflows/ci.yml`):
+
+| Công cụ | Phiên bản | Dùng cho |
+|---|---|---|
+| Terraform | 1.15.x (CI: 1.15.8; `required_version = "~> 1.15"`) | `infra/` |
+| Azure CLI | ≥ 2.60 (đã dùng 2.90.0) | đăng nhập, bootstrap, kiểm tra |
+| GitHub CLI `gh` | ≥ 2.40 | biến, environment, PR |
+| Docker | 24+ | build image local (không bắt buộc, CD build trên runner) |
+| .NET SDK | 10.0 | `make test` / `make lint` |
+| Node.js | 24 (Next 16 cần ≥ 20) | `make fe-*` |
+| gitleaks | 8.30.1 | pre-commit hook: `bash scripts/install-hooks.sh` |
+| Trivy | 0.74.0 | quét image local (CI/CD quét lại) |
+| `jq`, `curl` | bất kỳ | script trong `scripts/` |
+
+```bash
+terraform version && az version -o tsv --query '"azure-cli"' && gh --version | head -1 && dotnet --version && node --version
+az login
+export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)   # Terraform, Makefile và backend đều đọc biến này
+bash scripts/install-hooks.sh
+```
+
+## 2. Bootstrap (một lần cho mỗi subscription)
+
+`infra/bootstrap` tạo `rg-vsf-bootstrap`: storage chứa state Terraform của `infra/app` và 3 danh tính cho GitHub
+(`id-gh-plan` cho CI, `id-gh-deploy` cho CD, `id-agent-triage` cho agent đọc sự cố). State của **chính** bootstrap để local
+(nó tạo ra storage chứa state, không tự lưu vào đó được).
+
+1. Repo GitHub của bạn: fork/clone repo này về tài khoản của bạn, rồi lấy ID số (cần cho federated credential, vì repo
+   GitHub mặc định gửi subject OIDC kèm ID số — `ai-failure-log.md` #4):
+
+   ```bash
+   gh api user --jq .id                     # → github_owner_id
+   gh api repos/<owner>/<repo> --jq .id     # → github_repo_id
+   gh api repos/<owner>/<repo>/actions/oidc/customization/sub   # use_immutable_subject: true/false — code khai cả hai dạng
+   ```
+
+2. Apply bootstrap (biến trùng tên trong `infra/bootstrap/variables.tf`; mặc định là repo của tác giả):
+
+   ```bash
+   cat > infra/bootstrap/terraform.tfvars <<EOF      # gitignored
+   github_repo     = "<owner>/<repo>"
+   github_owner_id = "<số>"
+   github_repo_id  = "<số>"
+   EOF
+   terraform -chdir=infra/bootstrap init
+   terraform -chdir=infra/bootstrap plan      # đọc kỹ: ~21 to add, 0 to destroy
+   terraform -chdir=infra/bootstrap apply
+   terraform -chdir=infra/bootstrap output
+   ```
+
+3. **Sao lưu state bootstrap ra ngoài repo ngay** (state này local, mất thư mục là mất state — `known-issues.md` #17):
+
+   ```bash
+   mkdir -p -m 700 ~/vsf-state-backup && install -m 600 infra/bootstrap/terraform.tfstate ~/vsf-state-backup/bootstrap-$(date +%F).tfstate
+   ```
+
+4. Trỏ backend của `infra/app` vào storage vừa tạo: sửa `storage_account_name` trong `infra/app/backend.hcl` bằng
+   `terraform -chdir=infra/bootstrap output -raw storage_account_name` (file này commit được: không có key).
+
+5. GitHub: biến repo (không phải secret, không có giá trị nào bí mật):
+
+   ```bash
+   B="terraform -chdir=infra/bootstrap output -raw"
+   gh variable set AZURE_TENANT_ID        --body "$($B tenant_id)"
+   gh variable set AZURE_SUBSCRIPTION_ID  --body "$($B subscription_id)"
+   gh variable set AZURE_CLIENT_ID_PLAN   --body "$($B gh_plan_client_id)"
+   gh variable set AZURE_CLIENT_ID_DEPLOY --body "$($B gh_deploy_client_id)"
+   gh variable set AZURE_AGENT_CLIENT_ID  --body "$($B agent_triage_client_id)"
+   ```
+
+6. GitHub: 3 environment, mỗi cái chỉ nhận nhánh `main` (subject OIDC của job có environment là
+   `environment:<tên>`, federated credential khai đúng 3 tên này):
+
+   ```bash
+   R=repos/<owner>/<repo>
+   for env in staging-deploy production agent-triage; do
+     echo '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' \
+       | gh api -X PUT "$R/environments/$env" --input -
+     gh api -X POST "$R/environments/$env/deployment-branch-policies" -f name=main -f type=branch
+   done
+   ```
+
+7. GitHub: ruleset `protect-main` trên `main` (Settings → Rules → Rulesets, **không** bypass): cấm xoá, cấm force push,
+   lịch sử tuyến tính, bắt PR (chỉ squash), bắt 8 status check của `ci.yml`: `gitleaks` · `dotnet (format, build, test)` ·
+   `frontend (lint, build)` · `terraform (fmt, validate)` · `terraform plan (infra/app)` · `azure login (OIDC)` ·
+   `docker build + trivy (be)` · `docker build + trivy (fe)`. Bật "Automatically delete head branches".
+
+## 3. Biến của `infra/app`
+
+Chép `infra/app/terraform.tfvars.example` thành `infra/app/terraform.tfvars` (gitignored) rồi điền:
+
+| Biến | Bắt buộc | Ý nghĩa | Lấy ở đâu |
+|---|---|---|---|
+| `allowed_ips` | **có** | map tên luật → CIDR IPv4 được vào app (M6). Rỗng = khoá cả chính mình | `curl -4 -s https://ifconfig.me`, **tắt VPN/WARP** trước khi đo, đo vài lần (`known-issues.md` #11, #19) |
+| `secrets_writer_object_id` | **có nếu bạn không phải tác giả** | người được cấp Key Vault Secrets Officer để Terraform ghi secret | `az ad signed-in-user show --query id -o tsv` |
+| `alert_email` | không | người nhận email alert; thiếu thì lần apply sau xoá người nhận | email của bạn; bấm OTP xác minh trong 30 phút |
+| `enable_app_insights` | không (mặc định `true`) | dựng App Insights cho trace | — |
+| `grant_app_keyvault_access`, `grant_app_acr_pull` | không | chỉ đặt `false` bằng `-var` khi đo chứng minh ngược M5/M1 | — |
+
+Biến môi trường: `ARM_SUBSCRIPTION_ID` (bước 1). Không có secret nào phải đặt tay: mật khẩu MySQL do Terraform sinh
+và cất trong Key Vault, app đọc qua Key Vault reference bằng managed identity.
+
+## 4. Hằng ngày
+
+```bash
+make plan           # xem trước, không tốn tiền
+make up             # dựng môi trường (TỐN TIỀN): apply 3 pha fe → be → toàn bộ, đo thật ~24–25 phút (`evidence/M8.md`)
+make outputs        # URL, tên ACR, Key Vault...
+make down           # xoá rg-vsf-dev (giữ rg-vsf-bootstrap) — cuối buổi, không để chạy qua đêm
+make check-empty    # sau down: rg-vsf-dev phải rỗng/không tồn tại
+```
+
+`make up` chạy 3 pha vì firewall MySQL và access restriction của `be` dùng `for_each` trên outbound IP của Web App,
+giá trị chỉ biết sau khi Web App tồn tại (`Makefile`, `notes/d8.md`). Sau `make up`, app chạy image giữ chỗ cho tới
+lần CD đầu tiên: chạy CD tay một lần (`gh workflow run cd.yml --ref main`) hoặc merge một PR.
+
+⚠️ `make down` gãy nếu trong `rg-vsf-dev` còn resource ngoài Terraform (ví dụ PoC khác, `known-issues.md` #23): xoá
+chúng trước.
+
+Code (cùng lệnh CI chạy): `make lint && make test` (be) · `make fe-install && make fe-lint && make fe-test && make fe-build` (fe).
+MySQL local cho test đầy đủ: `make test-db`.
+
+## 5. Deploy: PR → CI → merge → CD
+
+1. Nhánh `feat/` · `fix/` · `chore/` · `docs/` từ `main`, sống ≤ 2 ngày. Không push `main` (ruleset chặn: `GH013`).
+2. Mở PR, có mục `## AI usage`. `ci.yml` chạy 8 check; `terraform plan` đăng nhập bằng `id-gh-plan` (chỉ đọc).
+3. Squash merge → `cd.yml`: build `be` + `fe` (tag = git SHA), quét Trivy lại, push ACR, đặt image cho slot `staging`,
+   chờ staging trả đúng SHA và `fe` staging gọi được `be` staging, swap, kiểm production; sai thì tự swap ngược.
+4. Kiểm: `curl https://app-vsf-<s>.azurewebsites.net/version` và `https://fe-vsf-<s>.azurewebsites.net/api/version` = SHA của `main`.
+
+Rollback tay: [`docs/rollback.md`](docs/rollback.md). Agent đọc sự cố (chỉ đọc): `gh workflow run agent-triage.yml --ref main -f mode=triage`.
+
+## 6. Teardown hoàn toàn
+
+Theo thứ tự. Bước 3 trở đi **không đảo ngược được**.
+
+1. Xoá resource ngoài Terraform trong `rg-vsf-dev` nếu có (PoC, #23), rồi `make down` → `make check-empty`.
+2. Key Vault: provider tự purge secret khi destroy và vault tắt purge protection, nên tên dùng lại được ngay. Kiểm:
+   `az keyvault list-deleted --query "[].name" -o tsv` (rỗng, hoặc `az keyvault purge -n <tên>`).
+3. ⚠️ `terraform -chdir=infra/bootstrap destroy`: xoá storage chứa **state của `infra/app`** và 3 danh tính, kéo theo mọi
+   federated credential. Chỉ làm **sau** bước 1, nếu không `infra/app` sẽ thành resource mồ côi không còn state.
+4. GitHub: `gh variable delete` 5 biến ở mục 2, xoá 3 environment (`gh api -X DELETE repos/<owner>/<repo>/environments/<tên>`).
+5. Custom role `vsf-gh-plan-web-config-reader`, `vsf-agent-alert-reader` nằm trong state `infra/app` nên đi theo bước 1.
+
+## 7. Khi có sự cố
+
+- Alert bắn: [`runbook.md`](runbook.md) (triệu chứng → xác nhận bằng KQL → xử lý → rollback → escalate).
+- Lỗi đã gặp và cách xử lý (429 khi tạo plan, RBAC lan truyền chậm, Key Vault reference, whitelist runner, cổng Trivy…):
+  [`known-issues.md`](known-issues.md).
+
+## Luật làm việc
+
+- Mọi PR có mục `## AI usage`. Thao tác tốn tiền (`apply`, `destroy`, `az … create`, test tải, swap) xác nhận trước.
+- Autoscale tối đa 2 instance. Secret chỉ sống trong Key Vault. Không đưa dữ liệu công ty vào repo.
+- Chi tiết: [`CLAUDE.md`](CLAUDE.md).
+
+## Cấu trúc repo
 
 | Đường dẫn | Là gì |
 |---|---|
-| `topic.md` | Đề bài (thay `a.md` cũ). Authority cho mọi yêu cầu M1–M11, S1–S3, deliverables, lịch 25 ngày, kèm mục bổ sung Sprint 1–3. |
-| `CLAUDE.md` | Luật làm việc của repo (AI-OFF tuần 1, không push `main`, tốn tiền phải hỏi, autoscale ≤ 2 instance…). |
-| `docs/plans/active/` | Plan đang chạy — checklist tổng, quyết định, câu hỏi mở cho mentor. Đọc trước khi làm, cập nhật cùng lượt với thay đổi. |
-| `docs/guides/` | Hướng dẫn **từng bài** D1→D25 (mục lục ở [`docs/guides/README.md`](docs/guides/README.md)): mô tả bước, cấu hình cần đạt, cách kiểm chứng, bẫy. Cố ý **không chứa code** Terraform/`az`/Dockerfile/YAML. |
-| `docs/docs_app/` | Tài liệu ứng dụng OpsBoard: brief, PRD, wire-frame, API spec, architecture, database schema, chạy local. |
-| `notes/` | Nhật ký làm thật của từng bài (`d1.md`, `d2.md`, …): mình đã bấm gì, gặp lỗi gì, kết luận gì. Khác `docs/guides/` ở chỗ guides là "phải làm gì", notes là "đã xảy ra gì". |
-| `app/be/` · `app/be.Tests/` | Backend .NET 10 (OpsBoard) + Dockerfile + test xUnit. Endpoint bắt buộc `/health` `/version` `/load` `/items` `/boom`, log JSON một dòng, tracing OpenTelemetry → App Insights (D20). |
-| `app/fe/` | Frontend Next.js (kanban, danh sách, chi tiết, thống kê) + Dockerfile, gọi `be` phía server. |
-| `infra/` | Terraform: `bootstrap/` (state storage, identity cho CI/CD) và `app/` (App Service + slot, MySQL, ACR, Key Vault, autoscale, Log Analytics + App Insights). |
-| `.github/workflows/` | `ci.yml` (gitleaks, terraform fmt/validate/plan, test, lint, docker build + Trivy), `cd.yml` (build → slot staging → swap), `m6-check.yml`. |
-| `scripts/` | Script đo/kiểm: `m2-poll.sh` (M2), `load.sh` + `d19-watch.sh` (M7), `d12-verify.sh`, `install-hooks.sh`. |
-| `evidence/` | `M1.md` … `M10.md`, `tracing.md`: bằng chứng từng must-have; `dXX/screenshots/`: ảnh theo bài; `raw/`: log/JSON thô. Quy ước đặt tên và luật che: [`evidence/screenshots-convention.md`](evidence/screenshots-convention.md). |
-| `cost-report.md` · `known-issues.md` · `ai-failure-log.md` | Deliverable: chi phí (D20), việc chưa xong / biết là sai, các case AI sinh sai. |
-| `Makefile` · `docker-compose.yml` | `make up`/`make down` (Terraform), `make test`/`lint`/`fe-*`, MySQL local. |
-
-## Thư mục sẽ thêm (theo lịch)
-
-| Đường dẫn | Là gì | Bài |
-|---|---|---|
-| `evidence/M11.md` | Bằng chứng monitoring + alert (dashboard không dùng App Insights). | D21–D22 |
-| `architecture.md` | Sơ đồ mermaid ở gốc repo, tách rõ luồng traffic và luồng auth (hiện có bản ở `docs/docs_app/architecture.md`). | cuối |
-| `runbook.md` | Runbook alert + incident drill. | D22, D24 |
-| `review-<tên bạn kia>.md` × 2 | Cross-review tuần 2 và tuần 4. | D15, D23 |
-
-## Luật nhanh
-
-- `main` là nhánh duy nhất sống lâu. Làm việc trên `feat/` · `fix/` · `chore/` → PR → squash merge. Nhánh sống ≤ 2 ngày.
-- Mọi PR có mục `## AI usage` ghi rõ phần nào AI viết.
-- Thao tác tốn tiền (`terraform apply/destroy`, `az ... create`, test tải, swap slot) phải xác nhận trước.
-- Cuối phiên: tắt môi trường Azure, đừng để chạy qua đêm.
-
-Chi tiết đầy đủ: [`CLAUDE.md`](CLAUDE.md).
+| `app/be/` · `app/be.Tests/` | Backend .NET 10 + Dockerfile (chiseled) + test xUnit |
+| `app/fe/` | Frontend Next.js + Dockerfile (alpine) + test `node:test` |
+| `infra/bootstrap/` · `infra/app/` | Terraform: state + danh tính GitHub · môi trường app |
+| `.github/workflows/` | `ci.yml` · `cd.yml` · `agent-triage.yml` · `m6-check.yml` |
+| `scripts/` | Đo/kiểm: `m2-poll.sh` (M2), `load.sh` + `d19-watch.sh` (M7), `boom.sh` (alert), `agent-*.sh`, `install-hooks.sh` |
+| `evidence/` | Bằng chứng M1–M11 + agent; `raw/` log thô; quy ước ảnh: `evidence/screenshots-convention.md` |
+| `docs/plans/active/` | Plan đang chạy: checklist, quyết định, câu hỏi cho mentor |
