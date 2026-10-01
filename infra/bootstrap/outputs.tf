@@ -42,3 +42,8 @@ output "subscription_id" {
   description = "Subscription ID → GitHub Variable AZURE_SUBSCRIPTION_ID."
   value       = data.azurerm_client_config.current.subscription_id
 }
+
+output "agent_triage_client_id" {
+  description = "Client ID của id-agent-triage → GitHub Variable AZURE_AGENT_CLIENT_ID (D23)."
+  value       = azurerm_user_assigned_identity.agent_triage.client_id
+}

@@ -16,6 +16,14 @@ resource "random_string" "suffix" {
   upper   = false
   numeric = true
   special = false
+
+  # D23 (known-issues #17): state được dựng lại bằng `import`. Import của provider
+  # random luôn ghi upper/special = true (không suy được từ "fxqfgb"), và đổi hai
+  # thuộc tính này buộc phải THAY suffix → đổi tên → xoá storage account chứa state.
+  # Bỏ qua chúng là đúng ở đây: không bao giờ được thay suffix sau khi đã có state.
+  lifecycle {
+    ignore_changes = [upper, special]
+  }
 }
 
 resource "azurerm_resource_group" "bootstrap" {
