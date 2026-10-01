@@ -30,6 +30,8 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | [d20](d20/) | Cost report · App Insights · tracing | 2 ảnh Cost analysis, 1 ảnh Failures + `raw/d20-*` → `M7.md` mục 7, `tracing.md` |
 | [d21](d21/) | Log Analytics · KQL · Workbook · tracing `fe` | 4 ảnh Workbook (hàng 1–3) + `raw/d21-*` (KQL Q1–Q8, slow log, trace fe→be, giá) → `M11.md`, `docs/logging.md` |
 | [d22](d22/) | 3 alert · trigger thật · runbook | 3 ảnh Workbook (health + alert Fired/Resolved, log + trace lúc drill) + `raw/d22-*` (boom, trạng thái alert) → `M11.md` |
+| d23 | Agent giới hạn quyền `id-agent-triage` | `agent.md` + `raw/d23-agent-*` (triage, prove 9/9) |
+| d24 | 2 drill · README từ clone mới | `raw/d24-*` (watch TSV, traffic, actions log, agent triage, fresh-clone log) → `../docs/drills/`, `M8.md` mục Lần cuối |
 
 ## Must-have (điền dần)
 
@@ -42,9 +44,13 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | M5 | Key Vault + chứng minh ngược | **`M5.md` — ĐẠT** (`AccessToKeyVaultDenied`, container exit 1 sau 0.2s, hồi phục, plan No changes) |
 | M6 | IP whitelist 200/403 | **`M6.md` — ĐẠT** (D13; đo lại 8 bề mặt be+fe ở D16); thiếu 2 ảnh Portal (plan "Còn nợ") |
 | M7 | Chiến lược tiết kiệm chi phí | **`M7.md` — ĐẠT**: autoscale + right sizing (D19), cost report [`../cost-report.md`](../cost-report.md) (D20) |
-| M8 | Terraform toàn bộ hạ tầng | `M8.md` — đạt ở D10 |
+| M8 | Terraform toàn bộ hạ tầng | `M8.md` — **ĐẠT** ở D10 (destroy → apply từ rỗng); D24: clone mới theo README → plan/apply 0 thay đổi, **không destroy** (giới hạn ghi trong file) |
 | M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check, 6 PR cố tình sai đều đỏ đúng job) |
 | M10 | CD deploy từ main | **`M10.md` — ĐẠT** (D16; swap an toàn D17) |
-| M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; chờ xác nhận email) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
+| M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; **email tới thật 01/10**) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
 
 Quy ước đặt tên ảnh: xem `screenshots-convention.md`.
+
+| Khác | Yêu cầu | Trạng thái |
+|---|---|---|
+| Agent | Agent giới hạn quyền (`topic.md`) | **`agent.md` — ĐẠT** (D23: 9/9 phép bị cấm bị chặn đúng loại lỗi) |

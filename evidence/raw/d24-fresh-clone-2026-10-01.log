@@ -1,0 +1,49 @@
+### 2026-10-01T05:51:33Z git clone (README bước 0)
+72073b7 docs(d24): README viết lại cho người thứ ba, architecture.md ra gốc (2 sơ đồ + bảng danh tính thật), tfvars.example thêm alert_email/secrets_writer_object_id
+### README §1 công cụ
+Terraform v1.15.8
+2.90.0
+gh version 2.45.0 (2025-07-18 Ubuntu 2.45.0-1ubuntu0.3)
+Error: [/usr/lib/dotnet/host/fxr] does not exist
+v24.21.0
+8.30.1
+Version: 0.74.0
+### README §1 az + provider
+Azure subscription 1	Enabled
+Dell.Storage
+Microsoft.ArcContainerStorage
+Microsoft.D365CustomerInsights
+Microsoft.HybridContainerService
+Microsoft.StorageActions
+Microsoft.StorageCache
+Microsoft.StorageDiscovery
+Microsoft.StorageMover
+Microsoft.StorageSync
+Microsoft.StorageTasks
+Qumulo.Storage
+provider-check rc=0 (1 = rỗng = đạt)
+### 2026-10-01T05:52:24Z README §2: bootstrap init + plan TRƯỚC khi khôi phục state
+Terraform has been successfully initialized!
+Plan: 21 to add, 0 to change, 0 to destroy.
+### 2026-10-01T05:53:10Z README §2 (đã sửa): khôi phục state từ ~/vsf-state-backup rồi plan
+bootstrap-2026-10-01.tfstate
+No changes. Your infrastructure matches the configuration.
+### 2026-10-01T05:53:42Z README §3: cp terraform.tfvars.example → terraform.tfvars, điền giá trị
+allowed_ips: 3 luật · alert_email: đã điền · secrets_writer_object_id: để mặc định (người dựng = tác giả)
+terraform.tfvars gitignored: OK
+### README §4: make plan
+Successfully configured the backend "azurerm"! Terraform will automatically
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
+### 2026-10-01T05:59:41Z README §4: make up (stdin = 'no': có thay đổi thì tự huỷ)
+>>> Web App fe da co trong state, bo qua pha 1
+>>> Web App be da co trong state, bo qua pha 2
+>>> pha 3/3: apply toan bo
+No changes. Your infrastructure matches the configuration.
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+make up rc=0
+### 2026-10-01T06:01:31Z xong
+### 2026-10-01T06:02:27Z m6-check từ main: run 36822644120 (be) 4/4 403 · run 36822651677 (fe) 4/4 403
+### production
+https://app-vsf-jcip0s.azurewebsites.net/version -> {"sha":"a3bccf4e17365ec292afdc24ad545057c3c34034"}
+https://fe-vsf-jcip0s.azurewebsites.net/api/version -> {"sha":"a3bccf4e17365ec292afdc24ad545057c3c34034"}

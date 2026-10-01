@@ -10,6 +10,6 @@
 | [wire-frame.md](wire-frame.md) | Khung màn hình (kanban, danh sách, tạo, chi tiết, thống kê) — chưa phải thiết kế thị giác |
 | [api-spec.md](api-spec.md) | Hợp đồng API backend (`app/be`): endpoint, request/response, mã lỗi, quy ước |
 | [database-schema.md](database-schema.md) | Schema MySQL: sơ đồ ER, DDL, quyết định thiết kế |
-| [architecture.md](architecture.md) | Thành phần hệ thống, luồng traffic/xác thực/triển khai, observability, quyết định |
+| [architecture.md](../../architecture.md) (đã chuyển ra gốc repo, D24) | Thành phần hệ thống, luồng traffic/xác thực/triển khai, observability, quyết định |
 | [local-dev.md](local-dev.md) | Chạy backend + frontend trên máy dev, dữ liệu mẫu, cổng gác trước PR |
 | [plan/](plan/README.md) | **Kế hoạch code app** — thứ tự PR cho backend ([be.md](plan/be.md)) và frontend ([fe.md](plan/fe.md)) |

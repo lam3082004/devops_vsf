@@ -167,7 +167,9 @@ errors_5xx=$(jq -r '.tables[0].rows[0][0] // 0' "$TMP/kql.out")
 	kql "AppServiceConsoleLogs | extend app = tostring(split(_ResourceId, '/')[8]) | extend log = parse_json(ResultDescription) | where tostring(log.level) == 'error' or toint(log.status) >= 500 | summarize count_ = count(), last_seen = max(TimeGenerated), sample_trace_id = take_any(tostring(log.trace_id)) by app, event = tostring(log.event), path = tostring(log.path), error = tostring(log.error) | top 8 by count_" || echo "_(query lỗi)_"
 	echo
 } | emit
-kql "AppServiceConsoleLogs | extend log = parse_json(ResultDescription) | where tostring(log.error) has 'database' or tostring(log.event) has 'database' | count" >/dev/null
+# Tên event thật của be là `db_error` / body `database_unavailable` (drill 1 D24: bản đầu chỉ dò
+# chữ 'database' nên bỏ sót 145 dòng db_error — ai-failure-log.md #44).
+kql "AppServiceConsoleLogs | extend log = parse_json(ResultDescription) | where tostring(log.event) startswith 'db_' or tostring(log.error) has_any ('database', 'Connect Timeout', 'MySql') | count" >/dev/null
 db_errors=$(jq -r '.tables[0].rows[0][0] // 0' "$TMP/kql.out")
 
 # ---------- 5. exception (App Insights, workspace-based) ----------

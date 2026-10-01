@@ -13,3 +13,12 @@ allowed_ips = {
   "nha-lam"  = "203.0.113.10/32"  # máy làm việc
   "mentor"   = "198.51.100.25/32" # mở khi cần demo, xoá sau
 }
+
+# Email nhận alert (action group ag-vsf-oncall, D22). Bỏ trống = alert vẫn bắn nhưng
+# không ai nhận email. Azure gửi mail xác minh OTP, phải bấm trong 30 phút (known-issues #28).
+alert_email = "ban@example.com"
+
+# Người dựng KHÁC chủ repo: BẮT BUỘC đặt object id của chính mình (mặc định trong
+# variables.tf là object id của chủ repo → Terraform không ghi được secret vào Key Vault).
+# Lấy bằng: az ad signed-in-user show --query id -o tsv
+# secrets_writer_object_id = "00000000-0000-0000-0000-000000000000"

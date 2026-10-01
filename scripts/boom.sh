@@ -9,8 +9,8 @@
 # nằm trong whitelist (M6) — nếu không mọi dòng là 403 và alert không bao giờ bắn.
 #
 # Dùng:
-#   scripts/boom.sh --be-url https://app-vsf-xxx.azurewebsites.net [--duration 480] [--out FILE]
-# Dừng sớm: Ctrl+C.
+#   scripts/boom.sh --be-url https://app-vsf-xxx.azurewebsites.net [--duration 480] [--out FILE] [--path /boom]
+# Dừng sớm: Ctrl+C. --path (D24): traffic nền cho drill, ví dụ `--path /items` — mặc định vẫn /boom.
 #
 # Vì sao 480 giây: alert cần > 5% 5xx VÀ ≥ 20 request trong cửa sổ 10 phút, đánh giá 5 phút/
 # lần, log về workspace trễ 2–5 phút → 8 phút gọi liên tục phủ trọn ít nhất một lần đánh giá.
@@ -23,10 +23,11 @@ export LC_ALL=C
 
 BE_URL=""
 DURATION=480
+URL_PATH="/boom"
 OUT="evidence/raw/d22-boom-$(date -u +%Y%m%d-%H%M%S).tsv"
 
 usage() {
-	sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
 	exit "${1:-0}"
 }
 
@@ -46,6 +47,10 @@ while [[ $# -gt 0 ]]; do
 		;;
 	--out)
 		OUT="$2"
+		shift 2
+		;;
+	--path)
+		URL_PATH="$2"
 		shift 2
 		;;
 	-h | --help) usage 0 ;;
@@ -76,12 +81,12 @@ summary() {
 }
 trap 'summary; exit 130' INT TERM
 
-echo "# $(date -u +%FT%TZ) bắt đầu — $BE_URL/boom mỗi giây trong ${DURATION}s → $OUT" | tee -a "$OUT"
+echo "# $(date -u +%FT%TZ) bắt đầu — $BE_URL$URL_PATH mỗi giây trong ${DURATION}s → $OUT" | tee -a "$OUT"
 end=$((SECONDS + DURATION))
 while ((SECONDS < end)); do
 	tick=$((SECONDS + 1))
 	# -4: whitelist chỉ có IPv4 (M6). -D -: lấy header X-Trace-Id cùng lượt.
-	resp=$(curl -4 -s -o /dev/null -D - --max-time 5 -w '%{http_code}' "$BE_URL/boom" 2>/dev/null)
+	resp=$(curl -4 -s -o /dev/null -D - --max-time 5 -w '%{http_code}' "$BE_URL$URL_PATH" 2>/dev/null)
 	code="${resp: -3}"
 	trace_id=$(grep -i '^x-trace-id:' <<<"$resp" | tr -d '\r' | awk '{print $2}')
 	printf '%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$code" "${trace_id:-}" >>"$OUT"
