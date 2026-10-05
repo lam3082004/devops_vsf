@@ -28,7 +28,7 @@ resource "azurerm_monitor_action_group" "oncall" {
   }
 }
 
-# ---------- 5xx rate — log alert (người dùng chốt "rate", Q3 chưa có trả lời mentor) ----------
+# ---------- 5xx rate — log alert (người dùng chốt "rate"; Q3 trả lời 05/10: tỷ lệ %) ----------
 #
 # Nguồn: AppServiceHTTPLogs (diagnostic setting D21, monitoring.tf) — không cần App Insights
 # (topic.md M11). Chỉ 2 site production (`be`, `fe`); slot staging không phục vụ người dùng.

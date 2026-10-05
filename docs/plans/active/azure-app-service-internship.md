@@ -4,7 +4,29 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
-## Tiến độ — cập nhật 2026-10-01 (hết D24 + DevSecOps · email alert tới thật · review Sonnet D1–D24)
+## Tiến độ — cập nhật 2026-10-05 (đối chiếu topic.md ngay dưới; phần còn lại là trạng thái 2026-10-01: hết D24 + DevSecOps · email alert tới thật · review Sonnet D1–D24)
+
+### Đối chiếu topic.md — 05/10 (kiểm trực tiếp; `make fe-test`/`lint`/`test` chạy lại xanh: be 146 pass + 13 skip cần MySQL, fe 14 pass; preflight 05/10 toàn OK)
+
+| Must-have | Trạng thái | Ghi chú |
+|---|---|---|
+| M1 · M3 · M4 · M5 · M6 · M7 · M10 · M11 | ĐẠT | `evidence/M*.md`; M3/M4/M6 còn thiếu ảnh Portal (không chặn) |
+| M2 | 0 non-200 theo chữ `topic.md`; chờ mentor về timeout #21 | `evidence/M2.md` |
+| M8 | ĐẠT MỘT PHẦN: đạt D10 (destroy → apply); lần 2 trên hạ tầng hiện tại **hoãn tới sau demo** | `evidence/M8.md`, `known-issues.md` #7 |
+| M9 | ĐẠT (Trivy có ngoại lệ CVE-2026-84782 tới 15/10); ảnh merge bị khoá đã có (PR #91, 05/10) | `evidence/M9.md` |
+
+| Stretch | Trạng thái |
+|---|---|
+| S1 Trivy fail CRITICAL | ĐẠT (`evidence/S1.md`), ngoại lệ CVE-2026-84782 hết hạn 15/10 |
+| S2 Entra → MySQL | Không đạt, đóng có chủ đích — không có directory role (`evidence/S2.md`) |
+| S3 Private Endpoint | Không đạt, bỏ có chủ đích (`evidence/S3.md`) |
+
+| # | Deliverable | Trạng thái |
+|---|---|---|
+| 1–7, 9 | repo · README · architecture · M1–M11 · cost-report · runbook · ai-failure-log (45 case, 8 tiêu biểu) · known-issues | Có |
+| 8 | `review-<tên>.md` × 2 | **Chưa có** — không có người ghép đôi, người dùng chốt bỏ 30/09 (#6) |
+| 10 | Demo 45 phút | Chưa diễn ra (≤ 14/10) |
+
 
 **D1–D14, D16–D24 xong (M2 chờ mentor quyết) + bộ DevSecOps (#75). D15 HOÃN** (cần repo của intern khác — xem mục D15). Azure **ĐANG BẬT**
 (`rg-vsf-dev` suffix `jcip0s`, theo quyết định người dùng 26/09 — không `make down`).
@@ -60,7 +82,7 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
   Apply 5 added / 3 changed / 1 destroyed. Trace trình duyệt → `fe` → `be` → MySQL thật trên App Insights.
 - Drill 06:42:59–06:51:00Z: 197 × 500 → `alert-vsf-5xx-rate` **Fired 06:47:39Z → Resolved 07:13:44Z**; runbook đi thử 6/6 bước.
 - Tự review/sửa trong phiên: #39–#42 `ai-failure-log.md`; `known-issues.md` #27–#30. `notes/d21.md`, `notes/d22.md`, `docs/logging.md`, `evidence/M11.md`.
-- **Còn mở:** (1) email alert: 2 drill Fired → Resolved, action group executed nhưng **không có email** — lần 1 chưa xác minh OTP, lần 2 đã xác minh vẫn không tới, nghi Free Trial (`known-issues.md` #28; người dùng chấp nhận ghi lại, kiểm lại khi có subscription trả phí — Q5); (2) Test action group không làm được trên Free Trial (#28).
+- **Còn mở:** (1) **[đã giải quyết 01/10: email tới thật, `known-issues.md` #28]** email alert: 2 drill Fired → Resolved, action group executed nhưng **không có email** — lần 1 chưa xác minh OTP, lần 2 đã xác minh vẫn không tới, nghi Free Trial (`known-issues.md` #28; người dùng chấp nhận ghi lại, kiểm lại khi có subscription trả phí — Q5); (2) Test action group không làm được trên Free Trial (#28).
 - ✅ PR #66 merge (CD `36540297208` success) + `terraform apply -replace=azurerm_application_insights_workbook.m11` từ `main` `7e65e5a`:
   1 added / 1 destroyed, plan sau **No changes** → Workbook dựng lại từ code (quyết định E D21 **đạt**); 2 sửa template có trên Azure
   (đọc `serializedData` qua API `canFetchContent=true`: `showMetrics:false`, join `$left.Id == $right.span_id`).
@@ -85,7 +107,7 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
 agent = **"agent đọc sự cố"** (`id-agent-triage`, GitHub OIDC, chỉ đọc) kèm sửa #17 (import state bootstrap) · **bỏ cross-review 2** ·
 **giữ PoC, không `make down`** (M8 lần cuối = clone mới → plan No changes, ghi rõ giới hạn) · 2 drill Claude tự soạn/tự chạy (firewall MySQL,
 deploy lỗi → swap ngược). Bước đầu phiên sau: `notes/d23-prep.md` mục 0. ⚠️ Q5: Free Trial hết hạn **15/10 = D23** — cần mentor trả lời trước;
-Q1 (App Insights) và Q3 (5xx count/rate) vẫn chưa có trả lời mentor — M11 đang làm theo mặc định/người dùng chốt.
+Q1 (App Insights) vẫn chưa có trả lời mentor (Q3 đã trả lời 05/10: tỷ lệ %) — M11 đang làm theo mặc định/người dùng chốt.
 
 | Mốc | Trạng thái | Bằng chứng |
 |---|---|---|
@@ -100,7 +122,7 @@ Q1 (App Insights) và Q3 (5xx count/rate) vẫn chưa có trả lời mentor —
 | M10 — mở rộng D17: swap an toàn | **ĐẠT (D17)** | `evidence/M10.md` mục D17 — 4 tình huống có run link |
 | M2 — zero-downtime khi swap | **Chờ mentor (D18)** — 0 response non-200 (đạt theo `topic.md`); 10 timeout, 6 quanh swap (chưa đạt theo guide) | `evidence/M2.md` — 3 lần swap (lần 3 ở D19: 0 non-200, 21 timeout trong swap `fe`) + đo lúc scale, log thô `evidence/raw/m2-*.log` |
 | M7 — autoscale + right sizing + cost report | **ĐẠT (D19 + D20)** — autoscale 1→2→1 + right sizing; cost report số thật từ Cost analysis | `evidence/M7.md`, `cost-report.md` |
-| M11 — monitoring (dashboard · log · tracing · 3 alert · trigger thật) | **ĐẠT (D20–D22)** — chờ xác nhận email + apply PR ghi chép | `evidence/M11.md`, `docs/logging.md`, `runbook.md`, `evidence/tracing.md` |
+| M11 — monitoring (dashboard · log · tracing · 3 alert · trigger thật) | **ĐẠT (D20–D22)** — email đã xác nhận 01/10 (4 ảnh `d24/screenshots/`) | `evidence/M11.md`, `docs/logging.md`, `runbook.md`, `evidence/tracing.md` |
 
 **Còn nợ, không chặn D17:**
 - **D15** — hoãn tới khi có repo của intern kia. `notes/d15-prep.md` giữ nguyên giá trị.
@@ -133,7 +155,7 @@ Q1 (App Insights) và Q3 (5xx count/rate) vẫn chưa có trả lời mentor —
 - **Chưa định nghĩa (phải hỏi mentor, chặn bước liên quan):**
   - Q1. M11 "không enable App Insights" vs `/boom` "Alert + App Insights" vs lịch D20 vs brief mới đòi distributed tracing → được bật App Insights (workspace-based) làm backend trace không? Nếu không: OTel → Jaeger/Tempo (tốn hạ tầng) hoặc chỉ log `trace_id`. **Mặc định làm theo hướng (a) workspace-based App Insights, đánh dấu tạm** đến khi mentor trả lời. (chặn D20)
   - ~~Q2. Repo public hay private? GitHub Free không có branch protection cho private.~~ **Đã trả lời 2026-09-23 bằng quan sát:** repo là `PRIVATE` (`gh repo view`) mà ruleset `protect-main` vẫn `enforcement: active` và D14 đã chứng minh nó **chặn merge thật** (6 PR đỏ đều `mergeable_state = blocked`, `evidence/M9.md`). Tiền đề của câu hỏi sai: **ruleset** khác branch protection cũ và có hiệu lực trên private repo Free.
-  - Q3. "5xx rate" là count hay tỷ lệ %? (chặn D22)
+  - ~~Q3. "5xx rate" là count hay tỷ lệ %?~~ **Đã trả lời 2026-10-05: tỷ lệ phần trăm.** Khớp với `alert-vsf-5xx-rate` (> 5% trong 10 phút, tối thiểu 20 request, `infra/app/alerts.tf`) — không phải đổi code.
   - ~~Q4. Trivy "không còn CVE" có cho `--ignore-unfixed` không?~~ **Đã chốt 2026-09-23 bằng số đo thật (D14): KHÔNG** — cổng `CRITICAL,HIGH` không `--ignore-unfixed`, vì cả hai image đo ra 0 ở mức đó. Chi tiết ở mục Decisions.
   - ~~Q6. App registration cho OIDC?~~ **Đã trả lời 2026-09-15 (az cli):** tenant `allowedToCreateApps=false` → dùng user-assigned MI + federated credential.
   - ~~Q7. ABAC condition trên Owner?~~ **Đã kiểm 2026-09-15 (az cli):** 2 assignment Owner ở scope subscription, `condition = null`. Banner Portal không phản ánh giới hạn trên assignment của mình; nếu gán role vẫn bị chặn thì hỏi mentor về policy cấp trên.
@@ -435,9 +457,9 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
 ~~Q10~~ **đã chốt 2026-09-21: hai service** (`fe` + `be`, hai Web App trên cùng một App Service Plan).
 
 ## Stretch (chỉ làm khi M1–M11 xong)
-- [ ] S1 Trivy fail khi CVE critical (gần như có sẵn từ D14)
-- [ ] S2 MI → MySQL bằng Entra auth (cần quyền Graph tenant; tenant vinuni có thể không cho)
-- [ ] S3 Private Endpoint + jump VM
+- [x] S1 Trivy fail khi CVE critical — đạt, `evidence/S1.md`
+- [ ] S2 MI → MySQL bằng Entra auth — **không đạt, đóng có chủ đích 05/10** (không có quyền Graph tenant, `evidence/S2.md`)
+- [ ] S3 Private Endpoint + jump VM — **không đạt, bỏ có chủ đích 05/10** (`evidence/S3.md`)
 
 ## Thói quen hằng ngày
 - Sáng `make up`, chiều `make down`; không để gì chạy qua đêm (App Service Plan tính tiền kể cả khi app Stop).

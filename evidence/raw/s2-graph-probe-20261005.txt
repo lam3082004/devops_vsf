@@ -1,0 +1,26 @@
+# S2 probe 2026-10-05T06:08:31Z — chỉ đọc, UPN đã che
+## 1. az account (tenant/sub id che)
+{
+  "state": "Enabled",
+  "sub": "Azure subscription 1",
+  "user": "user"
+}
+## 2. directory role của tài khoản đang đăng nhập (rỗng = không có role nào)
+[]
+## 3. authorizationPolicy.defaultUserRolePermissions
+{
+  "allowedToCreateApps": false,
+  "allowedToCreateSecurityGroups": true
+}
+## 4. Thử cấp Graph app role cho 1 identity (cần Privileged Role Admin / Global Admin) — dry: liệt kê service principal Graph
+{
+  "appRoles": 748,
+  "name": "Microsoft Graph"
+}
+## 5. MySQL server hiện tại: Entra admin đã cấu hình chưa
+[]
+## 6. MySQL identity
+{
+  "authConfig": null,
+  "identity": null
+}

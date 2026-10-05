@@ -9,10 +9,10 @@ Ba mục theo yêu cầu đề bài: **cái gì chưa xong** · **cái gì biế
 | 1 | ~~Toàn bộ hạ tầng bằng Terraform (M8)~~ — đạt D10; lần cuối D24 không destroy (#7 dưới) | — | ✅ D10 |
 | 2 | ~~ACR + Managed Identity + Key Vault (M1, M4, M5)~~ — đạt (`evidence/M1.md`, `M4.md`, `M5.md`) | — | ✅ D11–D12 |
 | 3 | ~~CD pipeline và bằng chứng zero-downtime (M2, M10)~~ — **đã đo (D18)**: M10 đạt D16/D17; M2 0 response non-200 trong 2 lần swap thật (đạt theo `topic.md`), nhưng 10 timeout client, 6 quanh swap (chưa đạt theo guide — chờ mentor; `evidence/M2.md`, #21) | — | đo lại sau D19 (2 instance), từ điểm gần region nếu mentor yêu cầu |
-| 4 | ~~Monitoring, alert, runbook (M11)~~ — đạt (`evidence/M11.md`); thiếu ảnh email | — | ✅ D21–D22 |
-| 5 | Câu hỏi Q1, Q3, Q4, Q5, Q8 chưa có trả lời từ mentor. **Q1 (App Insights):** D20 đã dựng **tạm** theo mặc định của plan (workspace-based, chỉ cho trace + exception `/boom`, không dashboard) — mentor nói "không" thì `enable_app_insights = false` (`evidence/tracing.md`) | mentor | xem plan |
+| 4 | ~~Monitoring, alert, runbook (M11)~~ — đạt (`evidence/M11.md`); email tới thật 01/10, đã có 4 ảnh | — | ✅ D21–D22 |
+| 5 | Câu hỏi Q1, Q4, Q5, Q8 chưa có trả lời từ mentor (**Q3 đã trả lời 05/10: 5xx là tỷ lệ %**, khớp alert hiện tại). **Q1 (App Insights):** D20 đã dựng **tạm** theo mặc định của plan (workspace-based, chỉ cho trace + exception `/boom`, không dashboard) — mentor nói "không" thì `enable_app_insights = false` (`evidence/tracing.md`) | mentor | xem plan |
 | 6 | **Cross-review × 2 (deliverable #8 của `topic.md`, `review-<tên>.md`) chưa làm** — người dùng chốt bỏ ngày 30/09: không có repo của intern ghép đôi (D15 lần 1 cũng vậy). Thay thế đã có: review ngoài 26/09 (`notes/review-2026-09-26.md`) (một chiều, không phải cross-review) | không có người ghép đôi | — (không làm) |
-| 7 | **M8 lần cuối không destroy → apply** (D24, người dùng chốt 30/09: giữ PoC trên plan chung, #23). Clone mới → `plan` No changes → `make up` 0 thay đổi (`evidence/M8.md` mục "Lần cuối"). Hạ tầng thêm sau D10 (`fe`, autoscale, App Insights, Workbook, alert, quyền agent) chưa từng dựng từ RG rỗng trong một lần `make up` | PoC còn chạy trong `rg-vsf-dev` | chạy `make down` → `make up` sau khi gỡ PoC |
+| 7 | **(05/10: người dùng chốt làm sau demo — `evidence/M8.md` mục "Hoãn tới sau demo")** **M8 lần cuối không destroy → apply** (D24, người dùng chốt 30/09: giữ PoC trên plan chung, #23). Clone mới → `plan` No changes → `make up` 0 thay đổi (`evidence/M8.md` mục "Lần cuối"). Hạ tầng thêm sau D10 (`fe`, autoscale, App Insights, Workbook, alert, quyền agent) chưa từng dựng từ RG rỗng trong một lần `make up` | PoC còn chạy trong `rg-vsf-dev` | chạy `make down` → `make up` sau khi gỡ PoC |
 
 ## Biết là sai / chấp nhận tạm
 
