@@ -38,16 +38,24 @@ File `MXX.md` trỏ ngược tới ảnh/log trong `dXX/`, không copy trùng.
 | Mã | Yêu cầu | Trạng thái |
 |---|---|---|
 | M1 | Deploy bằng Docker image, ACR admin disabled, pull bằng MI | **`M1.md` — ĐẠT**, gồm cả chứng minh ngược (gỡ AcrPull → `ACRTokenRetrievalFailure`, D12) |
-| M2 | Zero downtime khi deploy | **`M2.md` — chờ mentor** (4 lần swap, 0 response non-200; timeout #21 chưa quy được) |
+| M2 | Zero downtime khi deploy | **`M2.md` — chờ mentor** (4 lần swap, 0 response non-200 theo chữ đề bài; **10 timeout client** ở 2 lần đo đầu, 6 quanh swap — #21 chưa quy được) |
 | M3 | MySQL + firewall theo outbound IP | **`M3.md` — ĐẠT** (31 rule = 31 outbound IP); thiếu ảnh Log stream |
 | M4 | Managed Identity, không secret plaintext | **`M4.md` — ĐẠT**; thiếu ảnh Portal và API configreferences cho slot |
 | M5 | Key Vault + chứng minh ngược | **`M5.md` — ĐẠT** (`AccessToKeyVaultDenied`, container exit 1 sau 0.2s, hồi phục, plan No changes) |
 | M6 | IP whitelist 200/403 | **`M6.md` — ĐẠT** (D13; đo lại 8 bề mặt be+fe ở D16); thiếu 2 ảnh Portal (plan "Còn nợ") |
 | M7 | Chiến lược tiết kiệm chi phí | **`M7.md` — ĐẠT**: autoscale + right sizing (D19), cost report [`../cost-report.md`](../cost-report.md) (D20) |
-| M8 | Terraform toàn bộ hạ tầng | `M8.md` — **ĐẠT** ở D10 (destroy → apply từ rỗng); D24: clone mới theo README → plan/apply 0 thay đổi, **không destroy** (giới hạn ghi trong file) |
-| M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (D14: 8 required check lúc đó — nay **9** sau job `sast + iac` 01/10; 6 PR cố tình sai đều đỏ đúng job) |
+| M8 | Terraform toàn bộ hạ tầng | `M8.md` — **ĐẠT MỘT PHẦN**: đạt ở D10 (destroy → apply từ rỗng); lần 2 trên hạ tầng hiện tại: **hoãn tới sau demo**; D24: clone mới theo README → plan/apply 0 thay đổi, **không destroy** (giới hạn ghi trong file) |
+| M9 | CI chặn được cái sai | **`M9.md` — ĐẠT** (cổng Trivy có 1 ngoại lệ hết hạn 15/10, #31; ảnh merge bị khoá: `d25/screenshots/`, 05/10) (D14: 8 required check lúc đó — nay **9** sau job `sast + iac` 01/10; 6 PR cố tình sai đều đỏ đúng job) |
 | M10 | CD deploy từ main | **`M10.md` — ĐẠT** (D16; swap an toàn D17) |
 | M11 | Monitoring | **`M11.md` — ĐẠT** (D20–D22: Workbook 5 mảng, KQL, tracing be + fe, 3 alert, drill Fired → Resolved, runbook đi thử; **email tới thật 01/10**, 4 ảnh `d24/screenshots/alert-email-*`) — [`tracing.md`](tracing.md), `docs/logging.md`, `runbook.md` |
+
+## Stretch
+
+| Mã | Yêu cầu | Trạng thái |
+|---|---|---|
+| S1 | Trivy fail khi có CVE critical | **[`S1.md`](S1.md) — ĐẠT** (cổng `CRITICAL,HIGH`; PR #38 đỏ thật); có 1 ngoại lệ hết hạn 15/10 (#31) |
+| S2 | MI → MySQL bằng Entra | **[`S2.md`](S2.md) — Không đạt, đóng có chủ đích** (blocker: không có directory role, `allowedToCreateApps=false`) |
+| S3 | Private Endpoint thay IP whitelist | **[`S3.md`](S3.md) — Không đạt, bỏ có chủ đích** (lý do trong file) |
 
 Quy ước đặt tên ảnh: xem `screenshots-convention.md`.
 
