@@ -161,3 +161,15 @@ Prompt `docs/prompts/aks-review-2.md`, phán quyết GO có điều kiện. Ba �
 - `make aks-down`: 27 destroyed (21 phút 57 giây). Không sót: state 0, hai RG không còn, MySQL chỉ còn `appdb`, không còn rule
   `aks-outbound`, không còn secret, 0 workspace xoá mềm, 0/4 vCPU East Asia. `infra/app` No changes, preflight 0 FAIL.
 - Hôm nay App Service swap 5 lần vì phần AKS (#95, #94, #96, #97, #98) — cả 5 run `CD` đều success.
+
+### Ảnh chụp bù (15:25 → 16:05Z)
+
+Người dùng nhắc: làm AKS mà không chụp ảnh nào. Đúng — cả ngày chỉ lưu log thô. Chụp bù bằng Claude in Chrome:
+
+- GitHub (8 ảnh): các run `CD — AKS`, `aks-m6-check`, PR #94 — là ảnh của đúng các lần chạy ban ngày.
+- Portal (8 ảnh): ban đầu extension bị từ chối trên `portal.azure.com`; người dùng bật quyền. Chụp toàn trang làm treo tab
+  (CDP timeout) → chụp theo vùng (`zoom`) thì được. Mỗi tab mới phải chọn lại tài khoản; chọn tài khoản trường (khớp `az account show`),
+  không dùng tài khoản công ty.
+- Ứng dụng (4 ảnh): Chrome không mở `http://<IP>` → `kubectl port-forward` rồi chụp `localhost:3000`.
+- Phải dựng cluster lần ba để có trang Portal; nhân tiện kiểm xong A20 (`apply` một lần, workspace mới thật). Tắt lại sau khi chụp.
+- Không chụp lại được: các khoảnh khắc lỗi/co giãn ban ngày. Lần sau chụp **ngay lúc xảy ra** — nhất là lúc đỏ.

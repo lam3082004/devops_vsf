@@ -98,6 +98,8 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Recovery
 
+- 2026-10-12 16:05Z: người dùng yêu cầu ảnh chụp. Dựng cluster lần ba (15:26Z, `apply` một lần), chụp 20 ảnh (GitHub, Portal sau khi
+  người dùng bật quyền extension, ứng dụng qua port-forward) → `evidence/advanced/screenshots/`; **tắt cluster lại** ngay sau đó.
 - 2026-10-12 14:55Z: **XONG, cluster ĐÃ TẮT.** `main` = `512550a` (#94–#98). `infra/aks` state rỗng, hai RG không còn, 0 vCPU East
   Asia. `infra/app` No changes, preflight 0 FAIL. Dựng lại: `make aks-up` (cần `infra/aks/terraform.tfvars`, ~10 phút + deploy).
   `cd-aks.yml` tự bỏ qua (xanh) khi cluster tắt.
@@ -138,8 +140,8 @@ make aks-verify
 ## Còn mở (không chặn gì)
 
 - **Actual cost** của `rg-vsf-aks` + `rg-vsf-aks-nodes` từ Cost analysis (đọc được từ 13/10) → thay giá niêm yết trong `cost-report.md`.
-- **Ảnh** Workbook *OpsBoard — AKS advanced* và email của 2 alert đã Fired (`evidence/advanced/aks-m11.md`).
-- **A20:** lần `make aks-up` kế tiếp phải `apply` một lần là xong (workspace mới thật).
+- **Ảnh email** của 2 alert đã Fired (hộp thư của người dùng). Ảnh Portal/GitHub/ứng dụng đã có: `evidence/advanced/screenshots/` (20 ảnh, chụp bù tối 12/10).
+- ~~A20~~ — đã kiểm: lần dựng thứ ba `apply` một lần là xong.
 - **A17:** `fe` còn 1 timeout khi node bị gỡ — nghi load balancer, chưa chứng minh, chưa sửa.
 - `alert-vsf-aks-node-cpu-high` chưa từng bắn (A18).
 - Sửa 2 tên bước bắt đầu bằng "Đ" trong `ci.yml`/`cd.yml` để Semgrep đọc được (A12) — đụng file của bài chính, cần người dùng quyết.
