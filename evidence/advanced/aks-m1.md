@@ -48,4 +48,14 @@ Khác App Service: ở đó mất `AcrPull` thì lần khởi động kế tiế
 `maxUnavailable 0` giữ pod cũ chạy tới khi pod mới Ready, nên một bản deploy không pull được **không** làm sập
 bản đang chạy — sự cố lộ ra ở rollout (và ở alert `alert-vsf-aks-pod-not-starting`), không lộ ra với người dùng.
 
-Trả quyền và kết quả sau đó: xem cuối log thô và mục "Trả quyền" bên dưới.
+## Alert bắn thật, rồi trả quyền
+
+| Thời điểm (UTC) | Sự kiện |
+|---|---|
+| **05:10:27** | **`AKS: pod không khởi động được (opsboard)` — `Fired`, Sev2** (Resource Graph `alertsmanagementresources`), 2 phút 25 giây sau `ErrImagePull` đầu tiên; action group `ag-vsf-oncall` gửi email |
+| 05:12:07 | trả quyền: `terraform apply` → `kubelet_acr_pull[0]: Creation complete after 43s`, **1 added** |
+| 05:14:19 | `fe` về image `771d909…`: `deployment "fe" successfully rolled out`, `/api/version` → 200 |
+| 05:14:21 | `terraform plan` → **No changes** |
+
+Đây cũng là lần **trigger thật** đầu tiên của một alert trên AKS (tương đương dòng "trigger thật ít nhất 1 alert"
+của M11) — không phải bấm "Test action group".

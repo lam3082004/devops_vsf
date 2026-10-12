@@ -44,3 +44,31 @@ Chỗ vấp (đã vào `ai-failure-log.md`):
   muốn "none" thì không khai).
 - `authorized_ip_ranges = local.allowed_cidrs` với map rỗng = API server **mở** — `trivy config` bắt
   (`AZU-0041` CRITICAL). Sửa: rỗng thì ép `0.0.0.0/32`, sai theo hướng khoá.
+
+### P2 — app chạy (04:36Z)
+
+- `kubectl describe node` trước khi deploy: allocatable 1900m, pod hệ thống + add-on đã xin **1491m (78%)** →
+  hạ request `be` 250m → 100m, `fe` 100m → 50m. Đo sau deploy: dùng thật `be` 31m / 53Mi, `fe` 9m / 51Mi.
+- `scripts/aks-render.sh | kubectl apply -f -`: 12 object; cả hai pod Ready sau 21 giây, lần đầu, 0 restart —
+  tức pull ACR (kubelet identity), mount Key Vault (workload identity), TLS tới MySQL, tạo schema đều qua.
+- `make aks-verify`: lần đầu 1 FAIL do **script kiểm sai** (`GET /api/tickets` chỉ có POST) → sửa → 0 FAIL.
+- `az aks command invoke` chạy được trên node 2 vCPU (~50 giây mỗi lần).
+
+### Review Sonnet lần 1 → sửa
+
+Prompt `docs/prompts/aks-review-1.md`. Phán quyết NO-GO có điều kiện. Sửa trước khi mở PR:
+IP đầy đủ ở cuối log apply (output `allowed_cidrs`, nay `sensitive`); rollback của `aks-cd.sh` dùng `rollout undo`
+(hạ cấp nhầm) → đặt lại image đã ghi nhớ; `pods/exec` của CD → kiểm bằng curl từ command pod; 3 phép kiểm của
+`aks-verify.sh` có thể xanh oan. Chạy lại `aks-cd.sh` thật trong cluster: lộ thêm command pod **không có `sed`**.
+
+### P3 — chứng minh ngược (05:00–05:15Z)
+
+- **M5:** `-var grant_aks_keyvault_access=false` → 3 destroyed → restart `be` → pod mới `ContainerCreating`,
+  event `FailedMount … 403 … ForbiddenByRbac`; pod cũ vẫn phục vụ. Xoá pod cũ → `/api/health` **503**. Trả quyền →
+  pod tự lên sau ~90 giây, không restart tay → plan No changes.
+- **M1:** `-var grant_aks_acr_pull=false` → đổi `fe` sang tag chưa có trên node → `ErrImagePull`, `401 Unauthorized`
+  ở `/oauth2/token`. Alert `alert-vsf-aks-pod-not-starting` **Fired 05:10:27Z**. Trả quyền → về image cũ → plan No changes.
+- **NetworkPolicy:** pod ở namespace `default` gọi `be:8080` → curl exit 28; gọi `fe` → 200; pod `fe` gọi `be` → 200.
+
+Điều học được: trên Kubernetes, mất quyền **không** làm chết thứ đang chạy — rolling update giữ pod cũ, pod cũ đã có
+secret và image. An toàn hơn cho người dùng, nhưng sự cố nằm im tới lần thay pod kế tiếp (known-issues A6).

@@ -66,10 +66,15 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 - [x] **P0** — baseline 12/10 03:58Z: `infra/app` plan **No changes**, preflight **0 FAIL / 1 WARN**
       (`.trivyignore` còn 2 ngày); cài `kubectl` 1.36.4 + `kubelogin` 0.2.21 vào `~/.local/bin`.
-- [ ] **P1** — Terraform `infra/aks` + `make aks-*` → M8
-- [ ] **P2** — manifest + app chạy → M1, M3, M4
-- [ ] Review Sonnet lần 1 (P0–P2)
-- [ ] **P3** — chứng minh ngược → M1, M5, M6
+- [x] **P1** — `infra/bootstrap` 5 added; `infra/aks` **27 added, 0 changed, 0 destroyed** (10 phút 14 giây), plan lần
+      hai No changes → `evidence/advanced/aks-m8.md` (destroy → apply lại: để P7).
+- [x] **P2** — 12 object, `be`/`fe` Ready sau 21 giây; `make aks-verify` 0 FAIL → `aks-m1.md`, `aks-m3.md`, `aks-m4-m5.md`.
+      Chốt chặn sau P2: `infra/app` No changes, preflight 0 FAIL.
+- [x] Review Sonnet lần 1 (P0–P2) — NO-GO có điều kiện; đã sửa #1 (IP trong log), #2 (rollback CD), #3 (environment
+      `aks-deploy` + biến), #4 (bỏ `pods/exec`), #5–#8; #9–#12 ghi `known-issues.md` A1–A11.
+- [x] **P3** — M5: gỡ 3 role → `FailedMount 403 ForbiddenByRbac` → `/api/health` 503 → trả quyền → tự hồi phục.
+      M1 ngược: gỡ `AcrPull` → `ErrImagePull 401` → alert `pod-not-starting` **Fired 05:10:27Z** → trả quyền.
+      NetworkPolicy: pod lạ → `be` timeout. Còn: M6 từ runner GitHub (cần workflow trên `main`).
 - [ ] **P4** — CI + CD + zero-downtime → M9, M10, M2
 - [ ] **P5** — autoscale + chi phí → M7
 - [ ] Review Sonnet lần 2 (P3–P5)
@@ -78,6 +83,9 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Recovery
 
+- 2026-10-12 05:15Z: PR #94 mở (`feat/aks-infra`), cluster ĐANG BẬT, plan `infra/aks` No changes, mọi role đã trả lại.
+  GitHub: environment `aks-deploy` (chỉ `main`) + biến `AZURE_CLIENT_ID_AKS_DEPLOY` đã tạo.
+  Bước tiếp: CI xanh → bật `scripts/m2-poll.sh` → merge → CD (swap App Service) → `cd-aks.yml` chạy lần đầu.
 - 2026-10-12: nhánh `feat/aks-infra`. Bootstrap apply **5 added, 0 changed, 0 destroyed** (plan sau:
   No changes). `infra/aks` plan **27 to add, 0 to change, 0 to destroy** → apply, log
   `evidence/raw/aks-apply-2026-10-12.log`.
