@@ -12,13 +12,13 @@ Mỗi file lấy **cùng tiêu chí chứng minh** của must-have tương ứng
 
 | File | Tương đương | Trạng thái |
 |---|---|---|
-| [`aks-m8.md`](aks-m8.md) | M8 — Terraform toàn bộ hạ tầng | dựng từ rỗng **đạt**; destroy → apply lại: **đạt một phần** — môi trường chạy lại được (verify 0 FAIL) nhưng `apply` phải chạy 2 lần (workspace bị khôi phục từ xoá mềm); đã sửa, chưa kiểm lại |
+| [`aks-m8.md`](aks-m8.md) | M8 — Terraform toàn bộ hạ tầng | dựng từ rỗng **đạt**; destroy → apply lại: **đạt một phần** — môi trường chạy lại được (verify 0 FAIL) nhưng `apply` phải chạy 2 lần (workspace bị khôi phục từ xoá mềm); đã sửa, lần destroy cuối đã xoá hẳn workspace, lần `apply` kế tiếp chưa chạy. **Cluster đã tắt cuối phiên 12/10** |
 | [`aks-m1.md`](aks-m1.md) | M1 — pull image bằng managed identity | **đạt**, có chứng minh ngược + alert Fired |
 | [`aks-m3.md`](aks-m3.md) | M3 — MySQL + firewall theo outbound IP | **đạt** |
 | [`aks-m4-m5.md`](aks-m4-m5.md) | M4, M5 — managed identity + Key Vault, chứng minh ngược | **đạt** |
 | [`aks-m6.md`](aks-m6.md) | M6 — IP whitelist | **đạt**: trong whitelist → 200; runner GitHub → `fe` và API server đều không kết nối được; `be` bị chặn trong cluster |
 | [`aks-m7.md`](aks-m7.md) | M7 — autoscale + chi phí | autoscale + right sizing **đạt**; chi phí mới là giá niêm yết, **chưa có Actual cost** |
-| [`aks-m9-m10-m2.md`](aks-m9-m10-m2.md) | M9, M10, M2 — CI, CD, zero-downtime | CI, CD end-to-end, zero-downtime **lúc rollout**: **đạt**. Gián đoạn khi gỡ node: `be` hết lỗi sau khi sửa (2 lần đo, gồm ca 2 bản cùng node); `fe` **còn 1 timeout** lúc node bị xoá — chưa sửa. CD-AKS cần bước chờ cluster có chỗ (sửa sau run đỏ `38224419371`) |
+| [`aks-m9-m10-m2.md`](aks-m9-m10-m2.md) | M9, M10, M2 — CI, CD, zero-downtime | CI, CD end-to-end, zero-downtime **lúc rollout**: **đạt**. Gián đoạn khi gỡ node: `be` hết lỗi sau khi sửa (2 lần đo, gồm ca 2 bản cùng node); `fe` **còn 1 timeout** lúc node bị xoá — chưa sửa. CD-AKS với bước chờ cluster có chỗ: run `38262243519` xanh bằng danh tính CD |
 | [`aks-m11.md`](aks-m11.md) | M11 — monitoring | log, alert (2 lần Fired thật), truy vết **đạt**; **chưa có** ảnh Workbook và ảnh email |
 
 Log thô: `evidence/raw/aks-*`. Mọi địa chỉ IPv4 trong log đã che 2 octet cuối.

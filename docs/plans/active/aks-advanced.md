@@ -1,6 +1,6 @@
 # AKS — phần ADVANCED (ngoài phạm vi `topic.md`)
 
-**Status:** active
+**Status:** done 2026-10-12 — cluster đã tắt (`make aks-down`). Việc còn mở: mục "Còn mở" cuối file.
 **Opened:** 2026-10-12
 **Goal:** Cùng app OpsBoard chạy thêm trên AKS, song song với App Service: `make aks-up` dựng từ rỗng,
 merge vào `main` tự deploy, đủ bằng chứng tương đương M1–M11 trong `evidence/advanced/`.
@@ -94,10 +94,13 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
       alert → log → trace bằng `trace_id` → `aks-m11.md`. Còn: ảnh Workbook, ảnh email.
 - [x] **P7** — destroy `27 destroyed` (19 phút 54 giây), cả hai RG không còn; CD-AKS lúc cluster tắt: bỏ qua, xanh; apply lại từ
       rỗng: **lần 1 lỗi 2 resource** (workspace khôi phục từ xoá mềm), lần 2 xong; verify 0 FAIL → `aks-m8.md` (đạt một phần).
-      Còn: `make aks-down` cuối phiên; Actual cost (từ 13/10); ảnh Workbook + email; kiểm lại bản sửa A20.
+      `CD — AKS` có bước chờ có chỗ: run `38262243519` xanh (merge #98). **`make aks-down` cuối phiên: 27 destroyed, không sót gì.**
 
 ## Recovery
 
+- 2026-10-12 14:55Z: **XONG, cluster ĐÃ TẮT.** `main` = `512550a` (#94–#98). `infra/aks` state rỗng, hai RG không còn, 0 vCPU East
+  Asia. `infra/app` No changes, preflight 0 FAIL. Dựng lại: `make aks-up` (cần `infra/aks/terraform.tfvars`, ~10 phút + deploy).
+  `cd-aks.yml` tự bỏ qua (xanh) khi cluster tắt.
 - 2026-10-12 14:00Z: cluster đã **destroy rồi dựng lại** (apply 2 lần), ĐANG BẬT từ 13:43Z: 1 node, `be`/`fe` 2 bản `280d287`,
   verify 0 FAIL, `plan` No changes. Nhánh `fix/aks-cd-capacity`: bước chờ có chỗ của `cd-aks.yml` + bằng chứng P7.
   Bước tiếp: PR → merge → xem run `CD — AKS` đầu tiên có bước chờ → `make aks-down`.
@@ -131,3 +134,13 @@ trivy config --severity HIGH,CRITICAL --exit-code 1 .
 shellcheck scripts/aks-*.sh
 make aks-verify
 ```
+
+## Còn mở (không chặn gì)
+
+- **Actual cost** của `rg-vsf-aks` + `rg-vsf-aks-nodes` từ Cost analysis (đọc được từ 13/10) → thay giá niêm yết trong `cost-report.md`.
+- **Ảnh** Workbook *OpsBoard — AKS advanced* và email của 2 alert đã Fired (`evidence/advanced/aks-m11.md`).
+- **A20:** lần `make aks-up` kế tiếp phải `apply` một lần là xong (workspace mới thật).
+- **A17:** `fe` còn 1 timeout khi node bị gỡ — nghi load balancer, chưa chứng minh, chưa sửa.
+- `alert-vsf-aks-node-cpu-high` chưa từng bắn (A18).
+- Sửa 2 tên bước bắt đầu bằng "Đ" trong `ci.yml`/`cd.yml` để Semgrep đọc được (A12) — đụng file của bài chính, cần người dùng quyết.
+- Tiêu đề commit của #97 trên `main` ghi "gỡ node không còn làm gián đoạn" — nói quá so với phép đo (còn 1 timeout của `fe`); tài liệu đã ghi đúng.

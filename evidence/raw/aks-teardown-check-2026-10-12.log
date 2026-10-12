@@ -1,0 +1,16 @@
+# 2026-10-12T14:51:55Z kiem sau make aks-down cuoi phien
+terraform state list (infra/aks): 0 resource
+>>> resource con lai trong rg-vsf-aks va rg-vsf-aks-nodes (phai rong hoac RG khong ton tai):
+rg-vsf-aks khong ton tai — OK
+rg-vsf-aks-nodes khong ton tai — OK
+resource group con ten rg-vsf-aks*: []
+cluster AKS trong subscription: 0
+workspace log-vsf-aks-* dang xoa mem: 0
+MySQL: database appdb | firewall rule aks-outbound: 0
+Key Vault secret aks-appinsights-connection-string: 0 (dang xoa mem: 0)
+vCPU eastasia dang dung: 0/4
+--- chot chan moi truong cu:
+No changes. Your infrastructure matches the configuration.
+OK    production be = fe = main = 512550a
+OK    không alert nào đang Fired
+# kết quả: 0 FAIL, 1 WARN

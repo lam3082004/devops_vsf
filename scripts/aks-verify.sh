@@ -172,10 +172,14 @@ LB="$($K get svc fe -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/nu
 # 192.0.2.1/32 của k8s/base (không ai vào được) hay 0.0.0.0/0 (ai cũng vào được).
 SRC="$($K get svc fe -o json 2>/dev/null | jq -c '.spec.loadBalancerSourceRanges // [] | sort')"
 WANT="$(jq -c '.allowed_cidrs.value | sort' <<<"$OUTPUTS")"
-if [[ -n "$SRC" && "$SRC" == "$WANT" && "$(jq 'length' <<<"$SRC")" -gt 0 ]]; then
+if [[ -z "$SRC" ]]; then
+	# Không đọc được ≠ không khớp: lần 14:26Z 12/10 một lệnh kubectl hụt in ra "KHÔNG khớp (0 dải)"
+	# trong khi Service vẫn đủ 3 dải. Vẫn là FAIL (không biết thì không được xanh), nhưng nói đúng lý do.
+	fail "không đọc được Service fe (kubectl lỗi) — chạy lại"
+elif [[ "$SRC" == "$WANT" && "$(jq 'length' <<<"$SRC")" -gt 0 ]]; then
 	ok "Service fe giới hạn $(jq 'length' <<<"$SRC") dải IP, khớp allowed_ips của infra/aks"
 else
-	fail "loadBalancerSourceRanges của Service fe KHÔNG khớp allowed_ips của infra/aks ($(jq 'length' <<<"${SRC:-[]}") dải)"
+	fail "loadBalancerSourceRanges của Service fe KHÔNG khớp allowed_ips của infra/aks ($(jq 'length' <<<"$SRC") dải)"
 fi
 if [[ "$($K get svc be -o jsonpath='{.spec.type}' 2>/dev/null)" == "ClusterIP" ]]; then
 	ok "be là ClusterIP (không có IP công khai)"
