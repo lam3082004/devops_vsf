@@ -1,0 +1,34 @@
+# Không bao giờ để thao tác TỰ NGUYỆN (cluster autoscaler gỡ node, drain) lấy mất bản cuối cùng.
+#
+# Đo 12/10 (evidence/advanced/aks-m9-m10-m2.md): mỗi lần cd-aks.yml chạy, pod tạm của
+# `az aks command invoke` (200m CPU) cộng pod surge không vừa node đầu → cluster thêm node thứ
+# hai, pod mới rơi sang đó; ~15 phút sau autoscaler gỡ node và đuổi bản DUY NHẤT của be và fe:
+# be 503 trong 9 giây, fe timeout 3 giây. Rolling update thì zero-downtime, gỡ node thì không.
+#
+# PDB chỉ có nghĩa khi có ≥ 2 bản (hpa.yaml, fe-deployment.yaml): với 1 bản, minAvailable 1 chặn
+# hẳn việc gỡ node — đổi gián đoạn lấy một node chạy thừa mãi mãi.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: be
+  labels:
+    app.kubernetes.io/name: be
+    app.kubernetes.io/part-of: opsboard
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: be
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: fe
+  labels:
+    app.kubernetes.io/name: fe
+    app.kubernetes.io/part-of: opsboard
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fe

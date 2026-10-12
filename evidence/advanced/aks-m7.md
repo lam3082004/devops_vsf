@@ -12,7 +12,7 @@ App Service có **một** tầng autoscale (số instance của Plan). AKS có *
 
 | Tầng | Cấu hình | Nơi khai | Tối đa |
 |---|---|---|---|
-| Pod — HPA `be` | CPU > 70% **của request** (100m) → thêm pod; ổn định 5 phút rồi mới giảm | `k8s/base/hpa.yaml` | **2 pod** |
+| Pod — HPA `be` | CPU > 70% **của request** (100m) → thêm pod; ổn định 5 phút rồi mới giảm. **Lúc đo mục 1: min 1. Từ 07:52Z 12/10: min 2** (mục 5) | `k8s/base/hpa.yaml` | **2 pod** |
 | Node — cluster autoscaler | có pod `Pending` vì thiếu chỗ → thêm node; node thừa ~10 phút → gỡ | `infra/aks/cluster.tf` (`var.node_max_count`, validation `<= 2`) | **2 node** |
 
 `make aks-verify` kiểm cả hai con số trên cluster thật.
@@ -90,3 +90,13 @@ mục "Advanced — AKS".
 
 Ba biện pháp đã áp dụng cho phần AKS: tier Free cho control plane · autoscaler min 1 (node thứ hai chỉ sống khi cần —
 phép thử mục 2 tốn chưa tới $0,05) · `make aks-down` cuối buổi (cluster dựng lại trong ~10 phút).
+
+## 5. Sau phép đo: sàn của HPA nâng lên 2
+
+Phép đo zero-downtime (`aks-m9-m10-m2.md`) lộ ra rằng với 1 bản, lần cluster autoscaler gỡ node là một lần gián đoạn
+(`be` 503 trong 9 giây). Từ 07:52Z `be` và `fe` chạy 2 bản + `PodDisruptionBudget`. Hệ quả cho M7:
+
+- Mục 1 (HPA 1 → 2 → 1) là số đo thật **với cấu hình min 1**, không còn là hành vi của cấu hình hiện tại: `minReplicas = maxReplicas = 2`.
+- Co giãn còn lại ở tầng node (mục 2), và nó **xảy ra thật ở mỗi lần deploy**: `TriggeredScaleUp 1->2` lúc 07:18:58 và
+  07:41:55 (pod tạm của CD + pod surge), node thừa bị gỡ sau ~15 phút.
+- Right sizing sau khi đổi: app xin 2 × 100m + 2 × 50m = 300m, vẫn vừa node đầu (còn ~400m) lúc bình thường.

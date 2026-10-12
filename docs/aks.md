@@ -19,8 +19,8 @@ flowchart LR
         lb[IP công khai :80<br/>loadBalancerSourceRanges]
     end
     subgraph aks [AKS aks-vsf-dev · namespace opsboard]
-        fe[Deployment fe<br/>Next.js :3000]
-        be[Deployment be<br/>.NET :8080<br/>HPA 1–2 pod]
+        fe[Deployment fe<br/>Next.js :3000<br/>2 pod + PDB]
+        be[Deployment be<br/>.NET :8080<br/>2 pod + PDB]
         np{{NetworkPolicy<br/>be chỉ nhận từ fe}}
     end
     mysql[(MySQL Flexible<br/>Southeast Asia<br/>database appdb_aks)]
@@ -78,7 +78,7 @@ Identity, node → ACR bằng managed identity, người → cluster bằng toke
 | M4/M5 secret | app setting `@Microsoft.KeyVault(...)` | Workload Identity + Key Vault CSI, role ở scope từng secret |
 | M5 chứng minh ngược | reference không resolve → app thoát | pod mới kẹt `ContainerCreating` (`FailedMount`) |
 | M6 whitelist | `ip_restriction` 8 bề mặt (site + Kudu × slot × 2 app) → **403** | `loadBalancerSourceRanges` cho `fe` + `authorized_ip_ranges` cho API server → **timeout**; `be` không có IP công khai |
-| M7 autoscale | autoscale trên Plan, 1–2 instance | HPA 1–2 pod + cluster autoscaler 1–2 node |
+| M7 autoscale | autoscale trên Plan, 1–2 instance | cluster autoscaler 1–2 node; HPA `be` trần 2 (đo co giãn 1→2→1 với min 1, rồi nâng min lên 2 — xem mục 6) |
 | M8 Terraform | `make up` 3 pha | `make aks-up` 1 pha (`infra/aks`, state riêng) |
 | M9 CI | 9 required check trong `ci.yml` | các cổng chung tự phủ file mới + `ci-aks.yml` (plan, kubeconform, shellcheck) |
 | M10 CD | build → Trivy → push → slot staging → swap | `cd-aks.yml` chạy sau "CD": đổi tag image, `rollout status`, kiểm SHA, sai thì `rollout undo` |
@@ -122,7 +122,8 @@ Ai sở hữu gì — giống cách chia của bài chính (Terraform sở hữu
 | Cluster, identity, role, firewall, database, monitoring | người vận hành | `make aks-up` (`infra/aks`) |
 | Namespace, Deployment, Service, HPA, NetworkPolicy, SecretProviderClass | người vận hành | `make aks-deploy` (`k8s/base` + `scripts/aks-render.sh`) |
 | **Tag image** của `be`, `fe` | CD | `cd-aks.yml` → `scripts/aks-cd.sh` |
-| Số pod `be`, số node | HPA, cluster autoscaler | — |
+| Số node | cluster autoscaler (1–2) | — |
+| Số pod `be` | HPA (2–2: trần của luật project, sàn vì gỡ node) | — |
 
 ## 4. Deploy và rollback
 
@@ -163,3 +164,21 @@ Truy vết alert → request: lấy `trace_id` trong log `be` (Workbook ô *Requ
 cột `OperationId` của `AppRequests` / `AppDependencies` trong App Insights `appi-vsf-aks-<suffix>`.
 
 Escalate: như `runbook.md` của bài chính.
+
+## 6. Vì sao 2 bản + PodDisruptionBudget
+
+Đo 12/10 (`evidence/advanced/aks-m9-m10-m2.md`): rolling update không rớt request nào, nhưng **15 phút sau mỗi lần deploy**
+có một gián đoạn ~12 giây. Chuỗi nguyên nhân:
+
+1. `cd-aks.yml` chạy `kubectl` qua `az aks command invoke`; AKS dựng một pod tạm xin **200m CPU**.
+2. Node 2 vCPU chỉ còn ~259m sau add-on → pod surge của rollout không vừa → cluster autoscaler thêm node thứ hai, pod mới
+   rơi sang đó.
+3. Node thứ hai thừa → ~15 phút sau bị gỡ → pod trên đó bị đuổi. Với **1 bản**, đó là bản duy nhất.
+
+Sửa ở tầng app chứ không ở tầng nguyên nhân (pod tạm 200m là của AKS, không chỉnh được): mỗi service 2 bản, rải mềm ra 2
+node, và `PodDisruptionBudget minAvailable: 1` để việc gỡ node phải chờ bản thay thế Ready rồi mới đuổi bản kế tiếp.
+
+Cái giá, dưới luật "tối đa 2 instance": sàn 2 = trần 2, số pod `be` không còn co giãn. HPA đã được đo co giãn thật với
+min 1 (`evidence/advanced/aks-m7.md` mục 1); từ nay co giãn nằm ở tầng node. Đường khác đã cân nhắc và bỏ: PDB với 1 bản
+(chặn hẳn việc gỡ node → 2 node mãi mãi), bỏ `command invoke` để CD gọi thẳng API server (phải mở API server cho IP của
+runner), giảm request cho vừa cạnh pod tạm (dư đúng 9m, HPA sẽ dao động quanh ngưỡng).

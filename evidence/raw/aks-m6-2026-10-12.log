@@ -1,3 +1,11 @@
 # 2026-10-12T07:09:03Z M6 tren AKS — ca doi chung tu may trong whitelist, cung luc voi lan do tu runner GitHub (IP da che)
 2026-10-12T07:09:03Z tu may trong whitelist  GET http://<LB>/api/version -> 200
 2026-10-12T07:09:04Z tu may trong whitelist  GET https://<api-fqdn>/version -> 401 (401 = toi duoc API server, chua xac thuc)
+
+# 2026-10-12T07:31:42Z lan do 2 (sau khi sua aks-m6-check.yml) — ca doi chung tu may trong whitelist
+2026-10-12T07:31:42Z tu may trong whitelist  GET http://<LB>/api/version -> 200
+2026-10-12T07:31:43Z tu may trong whitelist  GET https://<api-fqdn>/version -> 401 (401 = toi duoc API server, chua xac thuc)
+# run aks-m6-check 38218242391 (38218242391 completed success 2026-10-12T07:31:42Z)
+runner_ip=48.217.x.x
+2026-10-12T07:32:01+00:00  source_ip=48.217.x.x  GET http://4.192.x.x/api/version  -> 000  (đạt)
+2026-10-12T07:32:16+00:00  source_ip=48.217.x.x  GET https://<api-fqdn>/version  -> 000  (đạt)

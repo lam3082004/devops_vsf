@@ -101,3 +101,21 @@ PR #94 không đụng `app/` — cổng Trivy bắt đúng một advisory mới 
   lại): `be` 0 non-200 / 0 lỗi client, `fe` 0 / 0, `fe-page` 0 / 0. Chậm nhất 2,78 giây (ngưỡng 3 giây).
 - `aks-m6-check.yml` lần đầu: job chết vì `bash -e` + curl timeout (#53) — nhưng chính dòng đó cho thấy runner
   **không** tới được `fe`. Sửa, chờ vào `main` để đo lại cả hai bề mặt.
+
+### P4 tiếp — CD-AKS xanh, và gián đoạn khi gỡ node (07:31–07:55Z)
+
+- Merge #96 07:31:10Z → `CD` `38218203292` success → `CD — AKS` `38219139675` **success**: hội tụ sau 3 giây, 5/5, `RESULT=deployed`.
+- `simulate_verify_failure` (run `38219523331`): không hội tụ sau 90 giây → rollback → cluster về `5b76360`. Đúng.
+- `aks-m6-check.yml` sau khi sửa (run `38218242391`): runner `48.217.x.x` → `fe` 000, API server 000; cùng lúc máy trong
+  whitelist → 200 và 401.
+- **Phát hiện:** `m2-poll` lần 2 có 14 dòng lỗi lúc 07:35:52–07:36:04, không trùng lần deploy nào. Event: `Scale-down:
+  removing node vmss000002` 07:35:47 → `deleting pod for node scale down` cho cả `be` lẫn `fe` (mỗi cái 1 bản, cùng nằm
+  trên node đó). Node đó sinh ra lúc 07:18:58 vì pod surge của `be` không vừa cạnh pod tạm 200m của `command invoke`.
+- Sửa 07:52Z: 2 bản + PDB + rải mềm; HPA min 2. `make aks-deploy` → 2 bản mỗi service, mỗi node một bản, PDB `allowed=1`.
+
+### P6 — monitoring (07:10–07:30Z)
+
+- Workspace riêng có đủ `Perf`, `ContainerLogV2`, `KubePodInventory`, `AppRequests` (`be-aks`/`fe-aks`), `AppExceptions`.
+- `scripts/boom.sh` 480 request/480 giây qua `kubectl proxy` → `alert-vsf-aks-5xx-rate` **Fired 07:28:35Z** (17% lỗi của `be-aks`).
+- Truy vết: `trace_id` của một dòng `/boom` → cùng giá trị ở `ContainerLogV2`, `AppRequests.OperationId`, `AppExceptions`.
+- KQL: `last` là từ khoá — đặt tên cột `latest`.

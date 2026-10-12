@@ -48,6 +48,9 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
   render lúc deploy từ `terraform output` (`scripts/aks-render.sh`), không vào git.
 - **K.** `cd-aks.yml` chạy sau khi "CD" xanh (`workflow_run`), `kubectl` qua `az aks command invoke`.
 - **L.** Danh tính `id-gh-aks-deploy` ở `infra/bootstrap/aks.tf`; quyền trên cluster ở `infra/aks`.
+- **N (12/10, sau phép đo).** `be`/`fe` chạy **2 bản + PodDisruptionBudget** (`minAvailable 1`), HPA `be` min 1 → 2: với 1 bản,
+  node thứ hai (do pod tạm 200m của `command invoke` + pod surge kéo lên ở mỗi lần deploy) bị gỡ là mất bản duy nhất —
+  đo được `be` 503 trong 9 giây. Lý do và các đường đã bỏ: `docs/aks.md` mục 6.
 - **M (12/10, lúc làm).** `prevent_deletion_if_contains_resources = false` cho riêng root này: App
   Insights tự sinh rule Smart Detection ngoài Terraform, để `true` thì `make aks-down` gãy.
 
@@ -75,12 +78,15 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 - [x] **P3** — M5: gỡ 3 role → `FailedMount 403 ForbiddenByRbac` → `/api/health` 503 → trả quyền → tự hồi phục.
       M1 ngược: gỡ `AcrPull` → `ErrImagePull 401` → alert `pod-not-starting` **Fired 05:10:27Z** → trả quyền.
       NetworkPolicy: pod lạ → `be` timeout. Còn: M6 từ runner GitHub (cần workflow trên `main`).
-- [ ] **P4** — CI + CD + zero-downtime → M9, M10, M2
+- [x] **P4** — PR #94 11/11 check; `CD — AKS` tự chạy sau `CD`: lần đầu đỏ + rollback oan (bước kiểm trúng pod cũ, #54) →
+      PR #96 → run `38219139675` **success**; nhánh rollback thử bằng `simulate_verify_failure`. `m2-poll`: 0 non-200 qua mọi
+      lần rollout, nhưng **gián đoạn ~12 giây khi gỡ node** → Decision N. M6 từ runner: 2/2 bề mặt bị chặn → `aks-m9-m10-m2.md`, `aks-m6.md`.
 - [x] **P5** — HPA `be` 1→2 sau 62 giây tải, về 1 sau 6 phút 34 giây; cluster autoscaler 1→2 node (45 giây tới Ready),
       tự gỡ node thừa sau 12 phút; right sizing request 100m/50m; chi phí niêm yết ≈ $3,9/ngày → `aks-m7.md`, `cost-report.md`.
       Còn: Actual cost (Cost analysis trễ 8–24 giờ).
 - [ ] Review Sonnet lần 2 (P3–P5)
-- [ ] **P6** — monitoring + alert + trigger thật → M11
+- [x] **P6** — dữ liệu về workspace riêng; 2 alert **Fired thật** (pod-not-starting 05:10:27Z, 5xx 07:28:35Z); truy vết
+      alert → log → trace bằng `trace_id` → `aks-m11.md`. Còn: ảnh Workbook, ảnh email.
 - [ ] **P7** — evidence, tài liệu, destroy → apply lần cuối, `make aks-down`
 
 ## Recovery

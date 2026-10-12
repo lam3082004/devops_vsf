@@ -1,0 +1,30 @@
+# 2026-10-12T07:29:36Z M11 tren AKS — alert 5xx Fired -> log -> trace. trace_id lay tu dong thu 20 cua log /boom: 07692a4ac2bc24ff0ef43fdbdaf40982
+## 1. Alert (Resource Graph)
+{"fired":"2026-10-12T07:28:35.779646Z","name":"AKS: 5xx rate > 5% (be/fe)","resolved":null,"severity":"Sev1","state":"Fired"}
+{"fired":"2026-10-12T05:10:27.6541445Z","name":"AKS: pod không khởi động được (opsboard)","resolved":"2026-10-12T05:36:36.5704319Z","severity":"Sev2","state":"Resolved"}
+## 2. Query cua chinh alert (10 phut gan nhat)
+fe-aks	0	0	280
+be-aks	229	17	1349
+## 3. Log cua be (ContainerLogV2) cho trace_id tren
+be-db965759-6pfgd	2026-10-12T07:26:03.2206735Z	request	info	request	/boom	500
+## 4. Cung trace trong App Insights (AppRequests / AppExceptions)
+be-aks	1.1	GET boom	07692a4ac2bc24ff0ef43fdbdaf40982	500	2026-10-12T07:26:03.219537Z
+be-aks	OpsBoard.Common.BoomException	loi co y tu /boom de kiem thu alert va logging	2026-10-12T07:26:03.2204422Z
+## 5. Trace fe -> be -> MySQL (mot request GET / gan day)
+fe-aks	GET /		2026-10-12T07:24:18.734Z	AppRequests	124.5
+fe-aks	resolve page components	resolve page components	2026-10-12T07:24:18.734Z	AppDependencies	0.1
+fe-aks	render route (app) /	render route (app) /	2026-10-12T07:24:18.735Z	AppDependencies	122.8
+fe-aks	build component tree	build component tree	2026-10-12T07:24:18.735Z	AppDependencies	0.3
+fe-aks	resolve segment modules	resolve segment modules	2026-10-12T07:24:18.735Z	AppDependencies	0
+fe-aks	resolve segment modules	resolve segment modules	2026-10-12T07:24:18.735Z	AppDependencies	0
+fe-aks	GET /items	http://be:8080/items?status=open&limit=20	2026-10-12T07:24:18.736Z	AppDependencies	115.1
+fe-aks	GET /items	http://be:8080/items?status=in_progress&limit	2026-10-12T07:24:18.737Z	AppDependencies	111.3
+## 6. Luong ingest hom nay (cap 0,2 GB/ngay)
+Perf	3.2
+AppMetrics	1.2
+ContainerLogV2	0.8
+KubePodInventory	0.5
+KubeNodeInventory	0.2
+Heartbeat	0.1
+AppDependencies	0.1
+AppPerformanceCounters	0.1

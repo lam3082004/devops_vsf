@@ -26,6 +26,14 @@ spec:
         app.kubernetes.io/part-of: opsboard
     spec:
       serviceAccountName: be
+      # Có 2 node thì rải 2 bản ra 2 node (mềm: 1 node vẫn chạy được) — node bị gỡ chỉ mang theo một bản.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: be
       automountServiceAccountToken: false
       # App chờ request đang chạy tới LOAD_MAX_SECONDS + 5 = 65 giây khi nhận SIGTERM
       # (app/be/Program.cs, HostOptions.ShutdownTimeout); cộng 10 giây preStop.
