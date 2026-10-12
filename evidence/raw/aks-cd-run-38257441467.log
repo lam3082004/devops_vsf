@@ -1,0 +1,5 @@
+# CD — AKS run 38257441467 (workflow_dispatch tu main, sha=280d287) khi cluster DA make aks-down — nhanh 'cluster tat -> bo qua, xanh'.
+2026-10-12T13:41:33.2932249 [Cluster có đang bật không]   K8S_NAMESPACE: opsboard
+2026-10-12T13:41:35.3600189 [Cluster có đang bật không] provisioningState: khong-co-cluster
+2026-10-12T13:41:35.3628430 [Cluster có đang bật không] ##[notice]Khong co cluster aks-vsf-dev (da make aks-down) — bo qua deploy AKS.
+2026-10-12T13:41:35.3816963 [Ghi job summary]   K8S_NAMESPACE: opsboard

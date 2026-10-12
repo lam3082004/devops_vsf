@@ -141,3 +141,13 @@ Prompt `docs/prompts/aks-review-2.md`, phán quyết GO có điều kiện. Ba �
   4 pod tạm `true` đều Completed.
 - Bài học của cả buổi chiều: mỗi lần "sửa xong" là một lần cấu hình mới chưa ai chạy hết các đường — #54, #55, #56 đều lộ ra
   ở lần chạy thật **kế tiếp**, không phải ở lần thử ngay sau khi sửa.
+
+### P7 — destroy → apply (08:59 → 13:56Z)
+
+- `plan -destroy`: 27 to destroy, không resource nào của `infra/app`. `destroy` 19 phút 54 giây. State 0, hai RG không còn.
+  (Cluster tắt từ 09:19Z tới 13:43Z.)
+- `gh workflow run cd-aks.yml` lúc cluster tắt → run `38257441467`: `khong-co-cluster` → bỏ qua, xanh.
+- `apply` từ rỗng: 24 created rồi 2 lỗi 400 (alert 5xx, data collection rule). Workspace `createdDate` = 04:24Z ⇒ bị **khôi
+  phục từ xoá mềm**. `apply` lần 2: 3 added. Sửa: `permanently_delete_on_destroy = true` — chưa kiểm lại.
+- `make aks-deploy`: 14 object, 2/2 + 2/2 sau 53 giây (cluster mới, IP outbound mới, identity mới — `aks-render.sh` đọc lại
+  hết từ `terraform output`). `make aks-verify`: 0 FAIL.

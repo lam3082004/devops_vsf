@@ -1,0 +1,217 @@
+# 2026-10-12T13:42:35Z terraform -chdir=infra/aks apply TU RONG sau destroy (plan da luu: 27 to add, 0 to change, 0 to destroy) — nhanh fix/aks-cd-capacity, IP da che
+Acquiring state lock. This may take a few moments...
+azurerm_mysql_flexible_database.aks: Creating...
+azurerm_resource_group.aks: Creating...
+azurerm_mysql_flexible_database.aks: Still creating... [00m10s elapsed]
+azurerm_resource_group.aks: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_database.aks: Still creating... [00m20s elapsed]
+azurerm_resource_group.aks: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_database.aks: Creation complete after 21s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-jcip0s-sea/databases/appdb_aks]
+azurerm_resource_group.aks: Creation complete after 28s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks]
+azurerm_user_assigned_identity.fe: Creating...
+azurerm_user_assigned_identity.be: Creating...
+azurerm_log_analytics_workspace.aks: Creating...
+azurerm_user_assigned_identity.fe: Creation complete after 4s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-aks-fe-jcip0s]
+azurerm_user_assigned_identity.be: Creation complete after 4s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-aks-be-jcip0s]
+azurerm_role_assignment.be_mysql_secret[0]: Creating...
+azurerm_log_analytics_workspace.aks: Still creating... [00m10s elapsed]
+azurerm_role_assignment.be_mysql_secret[0]: Still creating... [00m10s elapsed]
+azurerm_log_analytics_workspace.aks: Still creating... [00m20s elapsed]
+azurerm_role_assignment.be_mysql_secret[0]: Still creating... [00m20s elapsed]
+azurerm_log_analytics_workspace.aks: Still creating... [00m30s elapsed]
+azurerm_role_assignment.be_mysql_secret[0]: Still creating... [00m30s elapsed]
+azurerm_role_assignment.be_mysql_secret[0]: Creation complete after 35s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-jcip0s/secrets/mysql-admin-password/providers/Microsoft.Authorization/roleAssignments/ac4e643d-78b5-e8f1-f4b8-8311d34e0e0f]
+azurerm_log_analytics_workspace.aks: Still creating... [00m40s elapsed]
+azurerm_log_analytics_workspace.aks: Creation complete after 48s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.OperationalInsights/workspaces/log-vsf-aks-jcip0s]
+azurerm_application_insights.aks: Creating...
+azurerm_monitor_scheduled_query_rules_alert_v2.pod_not_starting: Creating...
+azurerm_monitor_scheduled_query_rules_alert_v2.http_5xx_rate: Creating...
+azurerm_monitor_data_collection_rule.container_insights: Creating...
+azurerm_application_insights_workbook.aks: Creating...
+azurerm_kubernetes_cluster.aks: Creating...
+azurerm_application_insights_workbook.aks: Creation complete after 3s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.Insights/workbooks/2e14d1fe-68a2-549a-aab4-343f270a93a6]
+azurerm_application_insights.aks: Still creating... [00m10s elapsed]
+azurerm_monitor_scheduled_query_rules_alert_v2.pod_not_starting: Still creating... [00m10s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [00m10s elapsed]
+azurerm_monitor_scheduled_query_rules_alert_v2.pod_not_starting: Creation complete after 10s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.Insights/scheduledQueryRules/alert-vsf-aks-pod-not-starting]
+azurerm_application_insights.aks: Creation complete after 11s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.Insights/components/appi-vsf-aks-jcip0s]
+azurerm_key_vault_secret.appinsights_connection_string: Creating...
+azurerm_key_vault_secret.appinsights_connection_string: Creation complete after 9s [id=https://kv-vsf-jcip0s.vault.azure.net/secrets/aks-appinsights-connection-string/dfcdd3cdb1604a989557774165221834]
+azurerm_kubernetes_cluster.aks: Still creating... [00m20s elapsed]
+azurerm_role_assignment.fe_appinsights_secret[0]: Creating...
+azurerm_role_assignment.be_appinsights_secret[0]: Creating...
+azurerm_kubernetes_cluster.aks: Still creating... [00m30s elapsed]
+azurerm_role_assignment.fe_appinsights_secret[0]: Still creating... [00m10s elapsed]
+azurerm_role_assignment.be_appinsights_secret[0]: Still creating... [00m10s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [00m40s elapsed]
+azurerm_role_assignment.be_appinsights_secret[0]: Still creating... [00m20s elapsed]
+azurerm_role_assignment.fe_appinsights_secret[0]: Still creating... [00m20s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [00m50s elapsed]
+azurerm_role_assignment.be_appinsights_secret[0]: Still creating... [00m30s elapsed]
+azurerm_role_assignment.fe_appinsights_secret[0]: Still creating... [00m30s elapsed]
+azurerm_role_assignment.fe_appinsights_secret[0]: Creation complete after 32s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-jcip0s/secrets/aks-appinsights-connection-string/providers/Microsoft.Authorization/roleAssignments/0b13146b-ae80-9da4-d551-67bf9ae23918]
+azurerm_role_assignment.be_appinsights_secret[0]: Creation complete after 34s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-jcip0s/secrets/aks-appinsights-connection-string/providers/Microsoft.Authorization/roleAssignments/37407f87-ad0c-13ea-146e-c54037e4b059]
+azurerm_kubernetes_cluster.aks: Still creating... [01m00s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [01m10s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [01m20s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [01m30s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [01m40s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [01m50s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [02m00s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [02m10s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [02m20s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [02m30s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [02m40s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [02m50s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [03m00s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [03m10s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [03m20s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [03m30s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [03m40s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [03m50s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [04m00s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [04m10s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [04m20s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [04m30s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [04m40s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [04m50s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [05m00s elapsed]
+azurerm_kubernetes_cluster.aks: Still creating... [05m10s elapsed]
+azurerm_kubernetes_cluster.aks: Creation complete after 5m14s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev]
+azurerm_federated_identity_credential.fe: Creating...
+azurerm_role_assignment.gh_plan_cluster_user: Creating...
+azurerm_federated_identity_credential.be: Creating...
+azurerm_role_assignment.operator_cluster_admin: Creating...
+azurerm_role_assignment.kubelet_acr_pull[0]: Creating...
+azurerm_role_definition.aks_command_runner: Creating...
+azurerm_monitor_metric_alert.node_cpu_high: Creating...
+data.azurerm_public_ip.aks_outbound: Reading...
+azurerm_role_definition.aks_app_deployer: Creating...
+data.azurerm_public_ip.aks_outbound: Read complete after 1s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks-nodes/providers/Microsoft.Network/publicIPAddresses/f5b6655f-10fb-4f72-8d74-d089c65c2f04]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Creating...
+azurerm_federated_identity_credential.be: Creation complete after 4s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-aks-be-jcip0s/federatedIdentityCredentials/aks-opsboard-be]
+azurerm_federated_identity_credential.fe: Creation complete after 4s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-vsf-aks-fe-jcip0s/federatedIdentityCredentials/aks-opsboard-fe]
+azurerm_role_definition.aks_app_deployer: Creation complete after 8s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/providers/Microsoft.Authorization/roleDefinitions/2dc22c4e-0ed9-f1bb-2732-fed47699199c|/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev]
+azurerm_role_definition.aks_command_runner: Creation complete after 8s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/providers/Microsoft.Authorization/roleDefinitions/bb9e7bb9-0f34-2701-d9e2-8f9e0a938647|/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev]
+azurerm_role_assignment.gh_aks_deploy_command_runner: Creating...
+azurerm_role_assignment.gh_aks_deploy_app_deployer: Creating...
+azurerm_role_assignment.gh_plan_cluster_user: Still creating... [00m10s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [00m10s elapsed]
+azurerm_role_assignment.kubelet_acr_pull[0]: Still creating... [00m10s elapsed]
+azurerm_role_assignment.operator_cluster_admin: Still creating... [00m10s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Still creating... [00m10s elapsed]
+azurerm_role_assignment.gh_aks_deploy_command_runner: Still creating... [00m10s elapsed]
+azurerm_role_assignment.gh_aks_deploy_app_deployer: Still creating... [00m10s elapsed]
+azurerm_role_assignment.gh_plan_cluster_user: Still creating... [00m20s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [00m20s elapsed]
+azurerm_role_assignment.operator_cluster_admin: Still creating... [00m20s elapsed]
+azurerm_role_assignment.kubelet_acr_pull[0]: Still creating... [00m20s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Still creating... [00m20s elapsed]
+azurerm_role_assignment.gh_aks_deploy_command_runner: Still creating... [00m20s elapsed]
+azurerm_role_assignment.gh_aks_deploy_app_deployer: Still creating... [00m20s elapsed]
+azurerm_role_assignment.gh_plan_cluster_user: Still creating... [00m30s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [00m30s elapsed]
+azurerm_role_assignment.kubelet_acr_pull[0]: Still creating... [00m30s elapsed]
+azurerm_role_assignment.operator_cluster_admin: Still creating... [00m30s elapsed]
+azurerm_role_assignment.gh_plan_cluster_user: Creation complete after 31s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev/providers/Microsoft.Authorization/roleAssignments/490dbac2-2dce-2ade-fa7a-652a07140146]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Still creating... [00m30s elapsed]
+azurerm_role_assignment.operator_cluster_admin: Creation complete after 32s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev/providers/Microsoft.Authorization/roleAssignments/f57daedd-2303-9c8f-93ea-90286f4b6a83]
+azurerm_role_assignment.kubelet_acr_pull[0]: Creation complete after 35s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.ContainerRegistry/registries/acrvsfjcip0s/providers/Microsoft.Authorization/roleAssignments/0d690dc1-d203-9689-d013-4d0a3fa5d2ed]
+azurerm_role_assignment.gh_aks_deploy_app_deployer: Creation complete after 29s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev/namespaces/opsboard/providers/Microsoft.Authorization/roleAssignments/b30c7a42-7400-8225-6110-3ca5db48a599]
+azurerm_role_assignment.gh_aks_deploy_command_runner: Still creating... [00m30s elapsed]
+azurerm_role_assignment.gh_aks_deploy_command_runner: Creation complete after 30s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev/providers/Microsoft.Authorization/roleAssignments/afb936cc-21af-abe6-cd87-786ebacafaab]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [00m40s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Still creating... [00m40s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [00m50s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Still creating... [00m50s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Still creating... [01m00s elapsed]
+azurerm_mysql_flexible_server_firewall_rule.aks_outbound: Creation complete after 1m5s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-dev/providers/Microsoft.DBforMySQL/flexibleServers/mysql-vsf-jcip0s-sea/firewallRules/aks-outbound]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [01m10s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [01m20s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [01m30s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [01m40s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [01m50s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [02m00s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [02m10s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [02m20s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Still creating... [02m30s elapsed]
+azurerm_monitor_metric_alert.node_cpu_high: Creation complete after 2m32s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.Insights/metricAlerts/alert-vsf-aks-node-cpu-high]
+
+Warning: Argument is deprecated
+
+  with azurerm_federated_identity_credential.be,
+  on identity.tf line 27, in resource "azurerm_federated_identity_credential" "be":
+  27:   resource_group_name = azurerm_resource_group.aks.name
+
+This field is no longer used and will be removed in the next major version of
+the Azure Provider
+
+(and 3 more similar warnings elsewhere)
+
+Error: creating Scheduled Query Rule (Subscription: "9880aa34-1fb4-4402-b692-232a90f1a7bb"
+Resource Group Name: "rg-vsf-aks"
+Scheduled Query Rule Name: "alert-vsf-aks-5xx-rate"): unexpected status 400 (400 Bad Request) with error: BadRequest: The workspace could not be found Activity ID: 0656d0b2-175d-4b21-9c05-fcb0d7a9b169.
+
+  with azurerm_monitor_scheduled_query_rules_alert_v2.http_5xx_rate,
+  on alerts.tf line 22, in resource "azurerm_monitor_scheduled_query_rules_alert_v2" "http_5xx_rate":
+  22: resource "azurerm_monitor_scheduled_query_rules_alert_v2" "http_5xx_rate" {
+
+creating Scheduled Query Rule (Subscription:
+"9880aa34-1fb4-4402-b692-232a90f1a7bb"
+Resource Group Name: "rg-vsf-aks"
+Scheduled Query Rule Name: "alert-vsf-aks-5xx-rate"): unexpected status 400
+(400 Bad Request) with error: BadRequest: The workspace could not be found
+Activity ID: 0656d0b2-175d-4b21-9c05-fcb0d7a9b169.
+
+Error: creating Data Collection Rule (Subscription: "9880aa34-1fb4-4402-b692-232a90f1a7bb"
+Resource Group Name: "rg-vsf-aks"
+Data Collection Rule Name: "dcr-aks-vsf-dev-ci"): unexpected status 400 (400 Bad Request) with error: InvalidPayload: Data collection rule is invalid
+
+  with azurerm_monitor_data_collection_rule.container_insights,
+  on monitoring.tf line 61, in resource "azurerm_monitor_data_collection_rule" "container_insights":
+  61: resource "azurerm_monitor_data_collection_rule" "container_insights" {
+
+creating Data Collection Rule (Subscription:
+"9880aa34-1fb4-4402-b692-232a90f1a7bb"
+Resource Group Name: "rg-vsf-aks"
+Data Collection Rule Name: "dcr-aks-vsf-dev-ci"): unexpected status 400 (400
+Bad Request) with error: InvalidPayload: Data collection rule is invalid
+Releasing state lock. This may take a few moments...
+# rc=1 ket thuc 2026-10-12T13:52:08Z
+
+# 2026-10-12T13:53:21Z apply LAN 2 (thu lai, khong sua code): plan 3 to add, 0 to change, 0 to destroy
+Acquiring state lock. This may take a few moments...
+azurerm_monitor_scheduled_query_rules_alert_v2.http_5xx_rate: Creating...
+azurerm_monitor_data_collection_rule.container_insights: Creating...
+azurerm_monitor_scheduled_query_rules_alert_v2.http_5xx_rate: Creation complete after 7s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.Insights/scheduledQueryRules/alert-vsf-aks-5xx-rate]
+azurerm_monitor_data_collection_rule.container_insights: Creation complete after 8s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.Insights/dataCollectionRules/dcr-aks-vsf-dev-ci]
+azurerm_monitor_data_collection_rule_association.container_insights: Creating...
+azurerm_monitor_data_collection_rule_association.container_insights: Creation complete after 7s [id=/subscriptions/9880aa34-1fb4-4402-b692-232a90f1a7bb/resourceGroups/rg-vsf-aks/providers/Microsoft.ContainerService/managedClusters/aks-vsf-dev/providers/Microsoft.Insights/dataCollectionRuleAssociations/ContainerInsightsExtension]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+acr_login_server = "acrvsfjcip0s.azurecr.io"
+aks_outbound_ip = "20.24.x.x"
+allowed_cidrs = <sensitive>
+app_insights_name = "appi-vsf-aks-jcip0s"
+appinsights_secret_name = "aks-appinsights-connection-string"
+be_identity_client_id = "a086384b-b5c2-473d-8090-99941b722e98"
+cluster_name = "aks-vsf-dev"
+fe_identity_client_id = "e66faae0-85dd-43e6-8eb6-d6d6f0f198ca"
+k8s_namespace = "opsboard"
+key_vault_name = "kv-vsf-jcip0s"
+log_analytics_workspace_customer_id = "83e8db82-80f9-4d8b-8d4f-0784b6206501"
+log_analytics_workspace_name = "log-vsf-aks-jcip0s"
+mysql_admin_login = "vsfadmin"
+mysql_database_name = "appdb_aks"
+mysql_fqdn = "mysql-vsf-jcip0s-sea.mysql.database.azure.com"
+mysql_secret_name = "mysql-admin-password"
+name_suffix = "jcip0s"
+node_resource_group_name = "rg-vsf-aks-nodes"
+resource_group_name = "rg-vsf-aks"
+tenant_id = "58f82789-6695-4f4a-abdb-357668d55cff"
+# rc=0 ket thuc 2026-10-12T13:53:59Z

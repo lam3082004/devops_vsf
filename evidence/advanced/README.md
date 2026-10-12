@@ -12,7 +12,7 @@ Mỗi file lấy **cùng tiêu chí chứng minh** của must-have tương ứng
 
 | File | Tương đương | Trạng thái |
 |---|---|---|
-| [`aks-m8.md`](aks-m8.md) | M8 — Terraform toàn bộ hạ tầng | dựng từ rỗng **đạt**; destroy → apply lại: chưa làm (bước cuối) |
+| [`aks-m8.md`](aks-m8.md) | M8 — Terraform toàn bộ hạ tầng | dựng từ rỗng **đạt**; destroy → apply lại: **đạt một phần** — môi trường chạy lại được (verify 0 FAIL) nhưng `apply` phải chạy 2 lần (workspace bị khôi phục từ xoá mềm); đã sửa, chưa kiểm lại |
 | [`aks-m1.md`](aks-m1.md) | M1 — pull image bằng managed identity | **đạt**, có chứng minh ngược + alert Fired |
 | [`aks-m3.md`](aks-m3.md) | M3 — MySQL + firewall theo outbound IP | **đạt** |
 | [`aks-m4-m5.md`](aks-m4-m5.md) | M4, M5 — managed identity + Key Vault, chứng minh ngược | **đạt** |

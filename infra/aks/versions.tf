@@ -22,6 +22,15 @@ provider "azurerm" {
       purge_soft_deleted_secrets_on_destroy = true
     }
 
+    log_analytics_workspace {
+      # Xoá HẲN workspace khi destroy. Mặc định là xoá mềm 14 ngày, và tạo lại cùng tên trong 14 ngày
+      # đó là KHÔI PHỤC workspace cũ chứ không phải tạo mới: lần destroy → apply 12/10 workspace
+      # "mới" mang ngày tạo của bản cũ, và trong lúc khôi phục thì alert rule lẫn data collection
+      # rule tạo ngay sau nó nhận 400 ("The workspace could not be found") — apply phải chạy hai
+      # lần. Môi trường này destroy mỗi tối nên lần nào cũng rơi vào đường khôi phục.
+      permanently_delete_on_destroy = true
+    }
+
     resource_group {
       # KHÁC infra/app (true): App Insights tự sinh rule Smart Detection "Failure
       # Anomalies" ngoài Terraform (known-issues.md #30). infra/app chưa từng destroy

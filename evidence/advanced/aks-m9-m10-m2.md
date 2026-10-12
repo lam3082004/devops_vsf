@@ -63,8 +63,30 @@ job **failure** (đúng). Sau đó cluster: `be 5b76360`, `fe 5b76360`. Log: `..
 
 ### Khi cluster tắt
 
-`cd-aks.yml` có nhánh "cluster không tồn tại → bỏ qua, xanh". **Chưa chạy thật** (cluster bật suốt phiên) — sẽ có ở lần
-merge sau `make aks-down`.
+Run [`38257441467`](https://github.com/lam3082004/devops_vsf/actions/runs/38257441467) (13:41Z, `workflow_dispatch` từ `main`,
+sau `make aks-down`): đăng nhập OIDC được dù cluster không còn (quyền duy nhất sống ở bootstrap là đọc danh sách cluster),
+`provisioningState: khong-co-cluster` → `Khong co cluster aks-vsf-dev (da make aks-down) — bo qua deploy AKS` → bước rollout
+**skipped**, job **success**. Log: `../raw/aks-cd-run-38257441467.log`.
+
+### Lần chạy sau khi đổi sang 2 bản — đỏ, nhưng pod lệnh vẫn tự deploy
+
+Run [`38224419371`](https://github.com/lam3082004/devops_vsf/actions/runs/38224419371) (08:34Z, sau merge #97):
+`ERROR: Operation returned an invalid status 'OK'` sau ~30 giây, job **failure**. Log + event + log của pod tạm:
+`../raw/aks-cd-run-38224419371.log`.
+
+| Thời điểm (UTC) | Sự kiện |
+|---|---|
+| 08:35:07 | pod tạm `command-08fa…` (đo trực tiếp: `requests = 200m CPU / 500Mi`) `FailedScheduling: 1 Insufficient cpu` — node đầu đã xin 1791m/1900m |
+| 08:35:08 | lệnh `az aks command invoke` bỏ cuộc → job đỏ |
+| 08:35:19 | `TriggeredScaleUp 1->2` |
+| 08:36:42 | pod tạm được xếp lên node mới và **tự chạy `aks-cd.sh`** |
+| ~08:38 | log của pod: `hoi tu sau 3s` → 5/5 → **`RESULT=deployed`**; cluster chạy `280d287` |
+
+Job báo hỏng trong khi deploy đã xảy ra. Sửa ở `cd-aks.yml` (bước *Chờ cluster có chỗ cho pod lệnh*): gọi thử `true` tới khi
+chạy được rồi mới gửi lệnh rollout. Thử tay trên đúng trạng thái đã hỏng (1 node, CPU đã xin 94%), 08:54Z:
+3 lần hụt → lần 4 chạy được sau 1 phút 52 giây, 4 pod tạm đều `Completed` — `../raw/aks-cd-warmup-test-2026-10-12.log`.
+**Chưa có run thật bằng danh tính CD với bước này** lúc viết file: workflow chỉ chạy bản trên `main`, nên run đầu tiên là
+lần `CD — AKS` ngay sau khi PR chứa bản sửa được merge (`gh run list --workflow=cd-aks.yml`).
 
 ## M2 — zero-downtime
 

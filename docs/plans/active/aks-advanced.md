@@ -48,6 +48,8 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
   render lúc deploy từ `terraform output` (`scripts/aks-render.sh`), không vào git.
 - **K.** `cd-aks.yml` chạy sau khi "CD" xanh (`workflow_run`), `kubectl` qua `az aks command invoke`.
 - **L.** Danh tính `id-gh-aks-deploy` ở `infra/bootstrap/aks.tf`; quyền trên cluster ở `infra/aks`.
+- **O (12/10, sau destroy → apply).** `permanently_delete_on_destroy = true` cho workspace Log Analytics của `infra/aks`: môi
+  trường destroy mỗi tối, xoá mềm 14 ngày làm lần apply nào cũng rơi vào đường khôi phục (`known-issues.md` A20).
 - **N (12/10, sau phép đo).** `be`/`fe` chạy **2 bản + PodDisruptionBudget** (`minAvailable 1`), HPA `be` min 1 → 2: với 1 bản,
   node thứ hai (do pod tạm 200m của `command invoke` + pod surge kéo lên ở mỗi lần deploy) bị gỡ là mất bản duy nhất —
   đo được `be` 503 trong 9 giây. Lý do và các đường đã bỏ: `docs/aks.md` mục 6.
@@ -90,10 +92,15 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
       nửa), các mốc thời gian lệch vài giây; thêm `known-issues.md` A15–A18.
 - [x] **P6** — dữ liệu về workspace riêng; 2 alert **Fired thật** (pod-not-starting 05:10:27Z, 5xx 07:28:35Z); truy vết
       alert → log → trace bằng `trace_id` → `aks-m11.md`. Còn: ảnh Workbook, ảnh email.
-- [ ] **P7** — evidence, tài liệu, destroy → apply lần cuối, `make aks-down`
+- [x] **P7** — destroy `27 destroyed` (19 phút 54 giây), cả hai RG không còn; CD-AKS lúc cluster tắt: bỏ qua, xanh; apply lại từ
+      rỗng: **lần 1 lỗi 2 resource** (workspace khôi phục từ xoá mềm), lần 2 xong; verify 0 FAIL → `aks-m8.md` (đạt một phần).
+      Còn: `make aks-down` cuối phiên; Actual cost (từ 13/10); ảnh Workbook + email; kiểm lại bản sửa A20.
 
 ## Recovery
 
+- 2026-10-12 14:00Z: cluster đã **destroy rồi dựng lại** (apply 2 lần), ĐANG BẬT từ 13:43Z: 1 node, `be`/`fe` 2 bản `280d287`,
+  verify 0 FAIL, `plan` No changes. Nhánh `fix/aks-cd-capacity`: bước chờ có chỗ của `cd-aks.yml` + bằng chứng P7.
+  Bước tiếp: PR → merge → xem run `CD — AKS` đầu tiên có bước chờ → `make aks-down`.
 - 2026-10-12 08:58Z: #97 merge 08:24Z → `CD` xanh (production `280d287`) → `CD — AKS` `38224419371` **đỏ**: với 2 bản, pod tạm
   200m của `command invoke` không vừa node đầu; lệnh bỏ cuộc nhưng pod tự chạy 2 phút sau và deploy xong (A19). Sửa trên
   nhánh `fix/aks-cd-capacity` (bước chờ có chỗ, thử tay đạt). Ca PDB thật đã đo (08:52Z): `be` 0 lỗi, `fe` 1 timeout (A17).
