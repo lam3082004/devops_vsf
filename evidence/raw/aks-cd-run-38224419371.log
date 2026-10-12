@@ -1,0 +1,46 @@
+# CD — AKS run 38224419371 (workflow_run sau CD 38223348305, SHA 280d287) — job DO, nhung pod lenh van chay sau do.
+## 1. Buoc 'Rollout + kiem tra' cua run (gh run view --log):
+2026-10-12T08:35:00.4994757 [Cluster có đang bật không]   K8S_NAMESPACE: opsboard
+2026-10-12T08:35:04.3387463 [Cluster có đang bật không] provisioningState: Succeeded
+2026-10-12T08:35:04.3558246 [Rollout + kiểm tra (+ rollback nếu sai)]   K8S_NAMESPACE: opsboard
+2026-10-12T08:35:08.4121594 [Rollout + kiểm tra (+ rollback nếu sai)] ##[error]Process completed with exit code 1.
+2026-10-12T08:35:08.2421930 [Rollout + kiểm tra (+ rollback nếu sai)] ERROR: Operation returned an invalid status 'OK'
+## 2. Event cua pod lenh (kubectl get events -n aks-command):
+2026-10-12T08:35:07Z   FailedScheduling       command-08fa698781984515b95f335a72a0010a   0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found 
+2026-10-12T08:35:19Z   TriggeredScaleUp       command-08fa698781984515b95f335a72a0010a   pod triggered scale-up: [{aks-system-14595169-vmss 1->2 (max: 2)}]
+2026-10-12T08:36:10Z   FailedScheduling       command-08fa698781984515b95f335a72a0010a   0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/2 nodes are avail
+2026-10-12T08:36:42Z   Scheduled              command-08fa698781984515b95f335a72a0010a   Successfully assigned aks-command/command-08fa698781984515b95f335a72a0010a to aks-system-14595169-vmss000004
+2026-10-12T08:36:48Z   Pulling                command-08fa698781984515b95f335a72a0010a   Pulling image "mcr.microsoft.com/aks/command/runtime:master.260914.1"
+2026-10-12T08:37:08Z   Started                command-08fa698781984515b95f335a72a0010a   Container started
+2026-10-12T08:37:08Z   Created                command-08fa698781984515b95f335a72a0010a   Container created
+2026-10-12T08:37:08Z   Pulled                 command-08fa698781984515b95f335a72a0010a   Successfully pulled image "mcr.microsoft.com/aks/command/runtime:master.260914.1" in 19.973s (19.973s including waiting). Image size: 1372664
+2026-10-12T08:37:11Z   Pulled                 command-08fa698781984515b95f335a72a0010a   Container image "mcr.microsoft.com/aks/command/runtime:master.260914.1" already present on machine and can be accessed by the pod
+2026-10-12T08:37:11Z   Created                command-08fa698781984515b95f335a72a0010a   Container created
+2026-10-12T08:37:11Z   Started                command-08fa698781984515b95f335a72a0010a   Container started
+## 3. Pod lenh: trang thai + request
+2026-10-12T08:35:07Z command-08fa698781984515b95f335a72a0010a Succeeded requests={"cpu":"200m","memory":"500Mi"} node=vmss000004
+## 4. Log cua pod lenh (kubectl logs -n aks-command command-08fa…) — no TU CHAY aks-cd.sh sau khi run da bao do:
+>> be: acrvsfjcip0s.azurecr.io/vsf-be:5b7636089b533ed28254c10ccacc1cebe0b97bb1 -> acrvsfjcip0s.azurecr.io/vsf-be:280d28733ee6cd3079375e40f86413b6b1dc135d
+deployment.apps/be image updated
+Waiting for deployment "be" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "be" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "be" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+deployment "be" successfully rolled out
+>> fe: acrvsfjcip0s.azurecr.io/vsf-fe:5b7636089b533ed28254c10ccacc1cebe0b97bb1 -> acrvsfjcip0s.azurecr.io/vsf-fe:280d28733ee6cd3079375e40f86413b6b1dc135d
+deployment.apps/fe image updated
+Waiting for deployment "fe" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "fe" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "fe" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+deployment "fe" successfully rolled out
+cho hoi tu (0s): fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+hoi tu sau 3s: fe [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+lan 1: fe [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+lan 2: fe [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+lan 3: fe [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+lan 4: fe [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+lan 5: fe [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | be [200 280d28733ee6cd3079375e40f86413b6b1dc135d] | fe->be /health 200 | mong doi 280d28733ee6cd3079375e40f86413b6b1dc135d
+RESULT=deployed

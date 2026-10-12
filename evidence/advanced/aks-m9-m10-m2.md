@@ -63,8 +63,30 @@ job **failure** (đúng). Sau đó cluster: `be 5b76360`, `fe 5b76360`. Log: `..
 
 ### Khi cluster tắt
 
-`cd-aks.yml` có nhánh "cluster không tồn tại → bỏ qua, xanh". **Chưa chạy thật** (cluster bật suốt phiên) — sẽ có ở lần
-merge sau `make aks-down`.
+Run [`38257441467`](https://github.com/lam3082004/devops_vsf/actions/runs/38257441467) (13:41Z, `workflow_dispatch` từ `main`,
+sau `make aks-down`): đăng nhập OIDC được dù cluster không còn (quyền duy nhất sống ở bootstrap là đọc danh sách cluster),
+`provisioningState: khong-co-cluster` → `Khong co cluster aks-vsf-dev (da make aks-down) — bo qua deploy AKS` → bước rollout
+**skipped**, job **success**. Log: `../raw/aks-cd-run-38257441467.log`.
+
+### Lần chạy sau khi đổi sang 2 bản — đỏ, nhưng pod lệnh vẫn tự deploy
+
+Run [`38224419371`](https://github.com/lam3082004/devops_vsf/actions/runs/38224419371) (08:34Z, sau merge #97):
+`ERROR: Operation returned an invalid status 'OK'` sau ~30 giây, job **failure**. Log + event + log của pod tạm:
+`../raw/aks-cd-run-38224419371.log`.
+
+| Thời điểm (UTC) | Sự kiện |
+|---|---|
+| 08:35:07 | pod tạm `command-08fa…` (đo trực tiếp: `requests = 200m CPU / 500Mi`) `FailedScheduling: 1 Insufficient cpu` — node đầu đã xin 1791m/1900m |
+| 08:35:08 | lệnh `az aks command invoke` bỏ cuộc → job đỏ |
+| 08:35:19 | `TriggeredScaleUp 1->2` |
+| 08:36:42 | pod tạm được xếp lên node mới và **tự chạy `aks-cd.sh`** |
+| ~08:38 | log của pod: `hoi tu sau 3s` → 5/5 → **`RESULT=deployed`**; cluster chạy `280d287` |
+
+Job báo hỏng trong khi deploy đã xảy ra. Sửa ở `cd-aks.yml` (bước *Chờ cluster có chỗ cho pod lệnh*): gọi thử `true` tới khi
+chạy được rồi mới gửi lệnh rollout. Thử tay trên đúng trạng thái đã hỏng (1 node, CPU đã xin 94%), 08:54Z:
+3 lần hụt → lần 4 chạy được sau 1 phút 52 giây, 4 pod tạm đều `Completed` — `../raw/aks-cd-warmup-test-2026-10-12.log`.
+**Chưa có run thật bằng danh tính CD với bước này** lúc viết file: workflow chỉ chạy bản trên `main`, nên run đầu tiên là
+lần `CD — AKS` ngay sau khi PR chứa bản sửa được merge (`gh run list --workflow=cd-aks.yml`).
 
 ## M2 — zero-downtime
 
@@ -157,11 +179,28 @@ Chậm nhất 2,08 giây (`fe-page`, 08:08:00); `fe`/`fe-page` chậm 1,5–2,1 
 chỗ `fe` timeout ở lần 2, tức cơ chế cũ vẫn còn dấu vết, chỉ là không vượt ngưỡng 3 giây. Cùng sự kiện, trước khi sửa:
 14 dòng lỗi trong 12 giây.
 
-**Phép đo này chứng minh được đến đâu.** Một lần đo, một lần gỡ node, và **mỗi node tình cờ có đúng một bản** của mỗi
-service. Hai lần đuổi xảy ra cùng giây và bản còn lại gánh — `PodDisruptionBudget` **chưa phải chặn gì**. Nên kết luận đúng là
-"2 bản đã qua được một lần gỡ node", chưa phải "gỡ node không còn gây gián đoạn". Chưa đo:
+**Lần 4 — gỡ node khi CẢ HAI bản cùng nằm trên node bị gỡ** (08:39:08 → 08:56:53Z, 1065 tick):
+[`../raw/aks-m2-2026-10-12-run4.log`](../raw/aks-m2-2026-10-12-run4.log) ·
+[`../raw/aks-node-scalein-pdb-2026-10-12.log`](../raw/aks-node-scalein-pdb-2026-10-12.log). Ca này không dàn dựng: sau lần
+deploy 08:37 cả 4 pod rơi sang node mới.
 
-- cả hai bản của một service cùng nằm trên node bị gỡ (khi đó PDB mới thật sự làm việc: đuổi lần lượt);
-- node **đầu** bị gỡ thay vì node mới;
-- sau lần gỡ node này cả 4 pod nằm trên một node, và không có gì tự rải lại (`ScheduleAnyway` chỉ có tác dụng lúc xếp
-  lịch) — lần deploy sau pod mới rơi vào đâu là do scheduler (`known-issues.md` A15).
+| Thời điểm (UTC) | Sự kiện |
+|---|---|
+| 08:51:57 | `Scale-down: removing node …vmss000004` — đang giữ 2/2 bản `be` và 2/2 bản `fe` |
+| 08:52:02 | đuổi **một** bản `be` + **một** bản `fe`; bản thay thế được xếp lên node còn lại |
+| 08:52:08–09 | hai bản thay thế `Started` |
+| 08:52:12 | **sau đó** mới đuổi bản `be` thứ hai · 08:52:22 bản `fe` thứ hai — `PodDisruptionBudget` buộc đuổi lần lượt |
+| 08:52:48 | `node … removed with drain` |
+
+| | request | non-200 | lỗi client / timeout |
+|---|---|---|---|
+| `be` | 1065 | **0** | **0** |
+| `fe` | 1065 | **0** | **1** — 08:52:48.800, đúng giây node bị xoá (kết nối xong sau 0,49 giây, không có byte nào về trong 3 giây) |
+| `fe-page` (tham khảo) | 1065 | 0 | 4 — đều là 200 nhưng quá 3 giây: 08:41:06 (không trùng sự kiện nào), 08:53:20, 08:54:50, 08:54:51 (lúc node mới đang được thêm) |
+
+**Kết luận sau hai lần đo.** `be`: từ 9 giây 503 xuống **0 lỗi** ở cả hai ca — PDB + 2 bản giải quyết được phần "mất bản cuối
+cùng". `fe`: từ 2 timeout + 3 `fe-page` xuống **1 timeout** ở ca khó — **chưa phải 0**. Lần timeout đó trùng đúng lúc node bị
+xoá chứ không trùng lúc pod bị đuổi, nên nhiều khả năng là load balancer còn gửi kết nối tới node đang biến mất
+(`externalTrafficPolicy: Cluster` — node nào cũng là backend); chưa chứng minh trực tiếp và **chưa sửa** (`known-issues.md` A17).
+
+Chưa đo: node **đầu** (đang chạy add-on) bị gỡ thay vì node mới.

@@ -1,0 +1,12 @@
+# 2026-10-12T08:54:38Z Thu buoc 'Cho cluster co cho cho pod lenh' cua cd-aks.yml, chay tay bang danh tinh nguoi van hanh.
+# Trang thai truoc: 1 node; CPU da xin tren node: 1791m (94%)
+08:54:42 lan 1: chua co cho — ERROR: Operation returned an invalid status 'OK'
+08:55:15 lan 2: chua co cho — ERROR: Operation returned an invalid status 'OK'
+08:55:50 lan 3: chua co cho — ERROR: Operation returned an invalid status 'OK'
+08:56:24 lan 4: pod lenh chay duoc (ket thuc 08:56:34)
+# ket qua: ready=true sau 4 lan, 2026-10-12T08:56:34Z; so node: 2
+# pod tam con lai:
+command-7a782ffbe66d4c33b5900b8c0fd50ab2 Completed age=80s
+command-7ad5bc304fd14c5e8c4880b46f255467 Completed age=46s
+command-da9f8cf3e5914587901bee597319ff3f Completed age=12s
+command-fc14d0c76c7b4d0aa59aa149dba1fa26 Completed age=114s

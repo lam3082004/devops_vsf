@@ -121,13 +121,46 @@ jobs:
             exit 1
           fi
 
+      # `az aks command invoke` dựng một pod tạm xin 200m CPU / 500Mi. Node đầu thường KHÔNG còn chỗ
+      # đó (add-on + 2 bản be/fe đã xin ~94%), nên cluster phải lên node thứ hai trước (~1–2 phút).
+      # Lệnh invoke thì không chờ: nó bỏ cuộc sau ~30 giây với "Operation returned an invalid status
+      # 'OK'" — NHƯNG pod tạm vẫn nằm Pending và sẽ tự chạy khi có chỗ. Run 38224419371 (12/10): job
+      # đỏ, 2 phút sau pod đó tự deploy xong — pipeline nói một đằng, cluster làm một nẻo.
+      #
+      # Vì vậy gọi thử một lệnh VÔ HẠI cho tới khi nó chạy được: lần hụt đầu kéo node thứ hai lên,
+      # các pod tạm bị bỏ lại chỉ chạy `true`. Chỉ khi đã chắc có chỗ mới gửi lệnh rollout thật.
+      - name: Chờ cluster có chỗ cho pod lệnh
+        id: warmup
+        if: steps.probe.outputs.up == 'true'
+        run: |
+          set -uo pipefail
+          ready=false
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command "true" -o json > "$RUNNER_TEMP/warmup.json" 2> "$RUNNER_TEMP/warmup.err"; then
+              code=$(jq -r '.exitCode' "$RUNNER_TEMP/warmup.json")
+              if [ "$code" = "0" ]; then
+                ready=true
+                echo "lan $attempt: pod lenh chay duoc"
+                break
+              fi
+            fi
+            echo "lan $attempt: chua co cho cho pod lenh, cho node moi"
+            tail -n 1 "$RUNNER_TEMP/warmup.err" || true
+            sleep 30
+          done
+          echo "attempts=$attempt" >> "$GITHUB_OUTPUT"
+          if [ "$ready" != "true" ]; then
+            echo "::error::Sau 8 lan van khong chay duoc pod lenh — khong gui lenh rollout."
+            exit 1
+          fi
+
       # kubectl chạy TRONG cluster qua ARM: runner không gọi thẳng API server, nên IP của
       # runner không phải nằm trong authorized_ip_ranges (không cần mở/đóng luật tạm như
       # cd.yml phải làm với access restriction). Lệnh chạy bằng token của id-gh-aks-deploy:
       # quyền trong cluster là custom role vsf-aks-app-deployer ở scope namespace.
       - name: Rollout + kiểm tra (+ rollback nếu sai)
         id: rollout
-        if: steps.probe.outputs.up == 'true'
+        if: steps.probe.outputs.up == 'true' && steps.warmup.outcome == 'success'
         env:
           GIT_SHA: ${{ steps.sha.outputs.sha }}
           SIMULATE_VERIFY_FAILURE: ${{ inputs.simulate_verify_failure || false }}
@@ -139,10 +172,16 @@ jobs:
             echo "::warning::simulate_verify_failure: so kiem voi SHA sai de ep rollback."
           fi
           started=$(date +%s)
-          az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" \
+          # Lệnh invoke hỏng mà KHÔNG có exitCode nghĩa là không biết pod lệnh có chạy hay không
+          # (nó có thể vẫn chạy sau) — nói rõ điều đó thay vì chỉ đỏ.
+          if ! az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" \
             --file scripts/aks-cd.sh \
             --command "sh aks-cd.sh $K8S_NAMESPACE $GIT_SHA $expect" \
-            -o json > "$RUNNER_TEMP/invoke.json"
+            -o json > "$RUNNER_TEMP/invoke.json"; then
+            echo "::error::az aks command invoke that bai truoc khi co ket qua. Pod lenh CO THE van chay sau do — kiem cluster bang make aks-verify truoc khi chay lai."
+            echo "result=unknown_invoke_failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
           jq -r '.logs' "$RUNNER_TEMP/invoke.json"
           code=$(jq -r '.exitCode' "$RUNNER_TEMP/invoke.json")
           result=$(jq -r '.logs' "$RUNNER_TEMP/invoke.json" | sed -n 's/^RESULT=//p' | tail -1)
