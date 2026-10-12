@@ -157,11 +157,28 @@ Chậm nhất 2,08 giây (`fe-page`, 08:08:00); `fe`/`fe-page` chậm 1,5–2,1 
 chỗ `fe` timeout ở lần 2, tức cơ chế cũ vẫn còn dấu vết, chỉ là không vượt ngưỡng 3 giây. Cùng sự kiện, trước khi sửa:
 14 dòng lỗi trong 12 giây.
 
-**Phép đo này chứng minh được đến đâu.** Một lần đo, một lần gỡ node, và **mỗi node tình cờ có đúng một bản** của mỗi
-service. Hai lần đuổi xảy ra cùng giây và bản còn lại gánh — `PodDisruptionBudget` **chưa phải chặn gì**. Nên kết luận đúng là
-"2 bản đã qua được một lần gỡ node", chưa phải "gỡ node không còn gây gián đoạn". Chưa đo:
+**Lần 4 — gỡ node khi CẢ HAI bản cùng nằm trên node bị gỡ** (08:39:08 → 08:56:53Z, 1065 tick):
+[`../raw/aks-m2-2026-10-12-run4.log`](../raw/aks-m2-2026-10-12-run4.log) ·
+[`../raw/aks-node-scalein-pdb-2026-10-12.log`](../raw/aks-node-scalein-pdb-2026-10-12.log). Ca này không dàn dựng: sau lần
+deploy 08:37 cả 4 pod rơi sang node mới.
 
-- cả hai bản của một service cùng nằm trên node bị gỡ (khi đó PDB mới thật sự làm việc: đuổi lần lượt);
-- node **đầu** bị gỡ thay vì node mới;
-- sau lần gỡ node này cả 4 pod nằm trên một node, và không có gì tự rải lại (`ScheduleAnyway` chỉ có tác dụng lúc xếp
-  lịch) — lần deploy sau pod mới rơi vào đâu là do scheduler (`known-issues.md` A15).
+| Thời điểm (UTC) | Sự kiện |
+|---|---|
+| 08:51:57 | `Scale-down: removing node …vmss000004` — đang giữ 2/2 bản `be` và 2/2 bản `fe` |
+| 08:52:02 | đuổi **một** bản `be` + **một** bản `fe`; bản thay thế được xếp lên node còn lại |
+| 08:52:08–09 | hai bản thay thế `Started` |
+| 08:52:12 | **sau đó** mới đuổi bản `be` thứ hai · 08:52:22 bản `fe` thứ hai — `PodDisruptionBudget` buộc đuổi lần lượt |
+| 08:52:48 | `node … removed with drain` |
+
+| | request | non-200 | lỗi client / timeout |
+|---|---|---|---|
+| `be` | 1065 | **0** | **0** |
+| `fe` | 1065 | **0** | **1** — 08:52:48.800, đúng giây node bị xoá (kết nối xong sau 0,49 giây, không có byte nào về trong 3 giây) |
+| `fe-page` (tham khảo) | 1065 | 0 | 4 — đều là 200 nhưng quá 3 giây: 08:41:06 (không trùng sự kiện nào), 08:53:20, 08:54:50, 08:54:51 (lúc node mới đang được thêm) |
+
+**Kết luận sau hai lần đo.** `be`: từ 9 giây 503 xuống **0 lỗi** ở cả hai ca — PDB + 2 bản giải quyết được phần "mất bản cuối
+cùng". `fe`: từ 2 timeout + 3 `fe-page` xuống **1 timeout** ở ca khó — **chưa phải 0**. Lần timeout đó trùng đúng lúc node bị
+xoá chứ không trùng lúc pod bị đuổi, nên nhiều khả năng là load balancer còn gửi kết nối tới node đang biến mất
+(`externalTrafficPolicy: Cluster` — node nào cũng là backend); chưa chứng minh trực tiếp và **chưa sửa** (`known-issues.md` A17).
+
+Chưa đo: node **đầu** (đang chạy add-on) bị gỡ thay vì node mới.

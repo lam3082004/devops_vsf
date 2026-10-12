@@ -182,3 +182,12 @@ Cái giá, dưới luật "tối đa 2 instance": sàn 2 = trần 2, số pod `b
 min 1 (`evidence/advanced/aks-m7.md` mục 1); từ nay co giãn nằm ở tầng node. Đường khác đã cân nhắc và bỏ: PDB với 1 bản
 (chặn hẳn việc gỡ node → 2 node mãi mãi), bỏ `command invoke` để CD gọi thẳng API server (phải mở API server cho IP của
 runner), giảm request cho vừa cạnh pod tạm (dư đúng 9m, HPA sẽ dao động quanh ngưỡng).
+
+Đo lại sau khi sửa (hai lần gỡ node, `evidence/advanced/aks-m9-m10-m2.md`): `be` 0 lỗi ở cả hai, kể cả ca hai bản cùng nằm
+trên node bị gỡ (PDB đuổi lần lượt, cách nhau 10 giây). `fe` 0 lỗi ở ca mỗi node một bản, nhưng **còn 1 timeout** ở ca kia,
+đúng giây node bị xoá — chưa sửa (`known-issues.md` A17).
+
+Decision N có một hệ quả mà lần deploy kế tiếp mới lộ: với 2 bản, node đầu không còn chỗ cho chính pod tạm 200m của
+`command invoke`. Lệnh bỏ cuộc sau ~30 giây (job đỏ) **nhưng pod tạm vẫn chờ rồi tự chạy** khi node thứ hai lên. Vì vậy
+`cd-aks.yml` có bước *Chờ cluster có chỗ cho pod lệnh*: gọi thử `true` tới khi chạy được, rồi mới gửi lệnh rollout
+(`known-issues.md` A19).

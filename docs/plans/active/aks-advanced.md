@@ -94,6 +94,10 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Recovery
 
+- 2026-10-12 08:58Z: #97 merge 08:24Z → `CD` xanh (production `280d287`) → `CD — AKS` `38224419371` **đỏ**: với 2 bản, pod tạm
+  200m của `command invoke` không vừa node đầu; lệnh bỏ cuộc nhưng pod tự chạy 2 phút sau và deploy xong (A19). Sửa trên
+  nhánh `fix/aks-cd-capacity` (bước chờ có chỗ, thử tay đạt). Ca PDB thật đã đo (08:52Z): `be` 0 lỗi, `fe` 1 timeout (A17).
+  Cluster ĐANG BẬT, `be`/`fe` = `280d287`. Còn: P7 destroy → apply, PR cuối.
 - 2026-10-12 08:25Z: `main` = `5b76360` (#94, #95, #96 đã merge; CD-AKS run `38219139675` xanh). PR #97 mở (2 bản + PDB + bằng
   chứng M6/M9/M10/M2/M11), 11/11 check. Cluster ĐANG BẬT: 1 node, `be`/`fe` 2 bản, `5b76360`. Còn lại: merge #97 → P7
   (destroy → apply lần cuối, `make aks-down`), Actual cost (từ 13/10), ảnh Workbook + email.

@@ -18,7 +18,7 @@ Mỗi file lấy **cùng tiêu chí chứng minh** của must-have tương ứng
 | [`aks-m4-m5.md`](aks-m4-m5.md) | M4, M5 — managed identity + Key Vault, chứng minh ngược | **đạt** |
 | [`aks-m6.md`](aks-m6.md) | M6 — IP whitelist | **đạt**: trong whitelist → 200; runner GitHub → `fe` và API server đều không kết nối được; `be` bị chặn trong cluster |
 | [`aks-m7.md`](aks-m7.md) | M7 — autoscale + chi phí | autoscale + right sizing **đạt**; chi phí mới là giá niêm yết, **chưa có Actual cost** |
-| [`aks-m9-m10-m2.md`](aks-m9-m10-m2.md) | M9, M10, M2 — CI, CD, zero-downtime | CI, CD end-to-end, zero-downtime **lúc rollout**: **đạt**. Gián đoạn khi gỡ node: đã sửa (2 bản + PDB), **mới đo 1 lần**, mỗi node một bản — chưa phủ ca 2 bản cùng node |
+| [`aks-m9-m10-m2.md`](aks-m9-m10-m2.md) | M9, M10, M2 — CI, CD, zero-downtime | CI, CD end-to-end, zero-downtime **lúc rollout**: **đạt**. Gián đoạn khi gỡ node: `be` hết lỗi sau khi sửa (2 lần đo, gồm ca 2 bản cùng node); `fe` **còn 1 timeout** lúc node bị xoá — chưa sửa. CD-AKS cần bước chờ cluster có chỗ (sửa sau run đỏ `38224419371`) |
 | [`aks-m11.md`](aks-m11.md) | M11 — monitoring | log, alert (2 lần Fired thật), truy vết **đạt**; **chưa có** ảnh Workbook và ảnh email |
 
 Log thô: `evidence/raw/aks-*`. Mọi địa chỉ IPv4 trong log đã che 2 octet cuối.

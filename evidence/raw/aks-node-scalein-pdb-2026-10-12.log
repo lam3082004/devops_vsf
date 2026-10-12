@@ -1,0 +1,35 @@
+# Go node khi CA HAI ban cua be va fe cung nam tren node bi go (sau khi sua: 2 ban + PDB). kubectl get events, 08:51-08:54Z.
+2026-10-12T08:51:57Z   kube-system   ScaleDown                      cluster-autoscaler-status                  Scale-down: removing node aks-system-14595169-vmss000004, utilization: {0.436315789473684
+2026-10-12T08:52:02Z   opsboard      Killing                        be-dd5d6645-tcngl                          Stopping container be
+2026-10-12T08:52:02Z   opsboard      ScaleDown                      fe-8dbffc8f-77wdg                          deleting pod for node scale down
+2026-10-12T08:52:02Z   opsboard      ScaleDown                      fe-8dbffc8f-q7gcj                          deleting pod for node scale down
+2026-10-12T08:52:02Z   opsboard      Killing                        fe-8dbffc8f-77wdg                          Stopping container fe
+2026-10-12T08:52:02Z   opsboard      Scheduled                      fe-8dbffc8f-82xx2                          Successfully assigned opsboard/fe-8dbffc8f-82xx2 to aks-system-14595169-vmss000000
+2026-10-12T08:52:02Z   opsboard      ScaleDown                      be-dd5d6645-tcngl                          deleting pod for node scale down
+2026-10-12T08:52:02Z   opsboard      ScaleDown                      be-dd5d6645-7glcr                          deleting pod for node scale down
+2026-10-12T08:52:02Z   opsboard      Scheduled                      be-dd5d6645-2bv6j                          Successfully assigned opsboard/be-dd5d6645-2bv6j to aks-system-14595169-vmss000000
+2026-10-12T08:52:08Z   opsboard      Started                        be-dd5d6645-2bv6j                          Container started
+2026-10-12T08:52:09Z   opsboard      Started                        fe-8dbffc8f-82xx2                          Container started
+2026-10-12T08:52:12Z   opsboard      Scheduled                      be-dd5d6645-khxkn                          Successfully assigned opsboard/be-dd5d6645-khxkn to aks-system-14595169-vmss000000
+2026-10-12T08:52:12Z   opsboard      Killing                        be-dd5d6645-7glcr                          Stopping container be
+2026-10-12T08:52:14Z   opsboard      Started                        be-dd5d6645-khxkn                          Container started
+2026-10-12T08:52:22Z   opsboard      Scheduled                      fe-8dbffc8f-jwldm                          Successfully assigned opsboard/fe-8dbffc8f-jwldm to aks-system-14595169-vmss000000
+2026-10-12T08:52:22Z   opsboard      Killing                        fe-8dbffc8f-q7gcj                          Stopping container fe
+2026-10-12T08:52:24Z   opsboard      Started                        fe-8dbffc8f-jwldm                          Container started
+2026-10-12T08:52:48Z   kube-system   ScaleDown                      cluster-autoscaler-status                  Scale-down: node aks-system-14595169-vmss000004 removed with drain
+2026-10-12T08:53:56Z   default       RemovingNode                   aks-system-14595169-vmss000004             Node aks-system-14595169-vmss000004 event: Removing Node aks-system-14595169-vmss000004 f
+# aks-watch (chi dong doi trang thai): ts be_ready be_desired hpa_cpu nodes_ready nodes_total pending fe_ready
+2026-10-12T08:39:05Z	2	2	24	2	2	0	2
+2026-10-12T08:52:06Z	1	2	7	1	2	4	1
+2026-10-12T08:52:30Z	2	2	?	1	2	0	2
+2026-10-12T08:53:54Z	2	2	?	1	1	0	2
+2026-10-12T08:54:44Z	2	2	70	1	1	1	2
+2026-10-12T08:55:08Z	2	2	18	1	2	8	2
+2026-10-12T08:55:38Z	2	2	18	2	2	5	2
+2026-10-12T08:56:30Z	2	2	11	2	2	0	2
+# cac dong loi cua m2-poll lan 4 (ts tick svc http sha curl_exit time_total t_connect t_tls t_ttfb):
+2026-10-12T08:41:06.800Z	118	fe-page	200	-	28	3.001032	1.371399	1.371399	1.612678
+2026-10-12T08:52:48.800Z	820	fe	000	-	28	3.001482	0.485164	0.485164	0.000000
+2026-10-12T08:53:20.800Z	852	fe-page	200	-	28	3.000341	0.391840	0.391840	0.971061
+2026-10-12T08:54:50.798Z	942	fe-page	200	-	28	3.001017	0.215803	0.215803	1.346863
+2026-10-12T08:54:51.798Z	943	fe-page	200	-	28	3.000798	2.052865	2.052865	2.342470

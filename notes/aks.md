@@ -129,3 +129,15 @@ Prompt `docs/prompts/aks-review-2.md`, phán quyết GO có điều kiện. Ba �
 - **"Đo được" và "tính ra" phải viết khác nhau.** Request 200m của pod tạm là đo (trên pod của run 07:41), nhưng "nên pod
   surge không vừa" là phép tính; và lý do `fe` timeout muộn hơn `be` 10 giây là suy luận khớp thời điểm, chưa chứng minh.
 - **Một lần đo qua được không phải là "đã sửa".** Lần 3 qua vì mỗi node tình cờ một bản; PDB chưa phải làm gì.
+
+### Sau #97: CD-AKS gãy vì chính bản sửa, và ca PDB thật (08:24–08:58Z)
+
+- Merge #97 08:24Z → `CD` xanh → `CD — AKS` `38224419371` đỏ sau 30 giây: `Operation returned an invalid status 'OK'`.
+  Pod tạm `command-08fa…` (đo trực tiếp: 200m / 500Mi) `FailedScheduling: Insufficient cpu` → `TriggeredScaleUp` →
+  08:36:42 xếp được lên node mới → **tự chạy `aks-cd.sh`** → 08:38 `RESULT=deployed` (`280d287`). Job đỏ, deploy thành công.
+- Cả 4 pod mới rơi sang node thứ hai → 08:51:57 autoscaler gỡ node đó: PDB đuổi lần lượt (08:52:02 rồi 08:52:12 / 08:52:22).
+  `be` 0 lỗi; `fe` 1 timeout lúc 08:52:48 (đúng giây node bị xoá). Không dàn dựng — ca này tự xảy ra.
+- Sửa `cd-aks.yml`: bước chờ có chỗ. Thử tay trên cluster 1 node, CPU đã xin 94%: 3 lần hụt, lần 4 được (1 phút 52 giây);
+  4 pod tạm `true` đều Completed.
+- Bài học của cả buổi chiều: mỗi lần "sửa xong" là một lần cấu hình mới chưa ai chạy hết các đường — #54, #55, #56 đều lộ ra
+  ở lần chạy thật **kế tiếp**, không phải ở lần thử ngay sau khi sửa.
