@@ -12,7 +12,7 @@ App Service có **một** tầng autoscale (số instance của Plan). AKS có *
 
 | Tầng | Cấu hình | Nơi khai | Tối đa |
 |---|---|---|---|
-| Pod — HPA `be` | CPU > 70% **của request** (100m) → thêm pod; ổn định 5 phút rồi mới giảm | `k8s/base/hpa.yaml` | **2 pod** |
+| Pod — HPA `be` | CPU > 70% **của request** (100m) → thêm pod; ổn định 5 phút rồi mới giảm. **Lúc đo mục 1: min 1. Từ 07:52Z 12/10: min 2** (mục 5) | `k8s/base/hpa.yaml` | **2 pod** |
 | Node — cluster autoscaler | có pod `Pending` vì thiếu chỗ → thêm node; node thừa ~10 phút → gỡ | `infra/aks/cluster.tf` (`var.node_max_count`, validation `<= 2`) | **2 node** |
 
 `make aks-verify` kiểm cả hai con số trên cluster thật.
@@ -26,15 +26,17 @@ Một worker là đủ: mỗi request `/load` đốt trọn một nhân, tức 1
 |---|---|---|
 | 05:18:49 | nền: 1 pod, CPU **2%** | watch |
 | 05:18:56 | bắt đầu tải | load |
-| **05:19:58** | **2 pod Ready**, CPU 493% — **62 giây** sau khi tải bắt đầu | watch (mẫu trước đó, 05:19:34, còn 1 pod) |
+| **05:19:58** | **2 pod Ready**, CPU 493% — trong khoảng **38–62 giây** sau khi tải bắt đầu (mẫu 05:19:34 còn 1 pod, mẫu 05:19:58 đã 2; watch lấy mẫu ~23 giây/lần) | watch |
 | 05:21:00 | CPU đỉnh 957% (trung bình hai pod) | watch |
 | 05:23:08 | hết tải: **5/5 request 200**, mỗi request 50,2 giây | load |
-| **05:29:42** | **về 1 pod** — 6 phút 34 giây sau khi hết tải (cửa sổ ổn định 5 phút của HPA) | watch |
+| **05:29:42** | **về 1 pod** — trong khoảng 6 phút 14 giây – 6 phút 34 giây sau khi hết tải (cửa sổ ổn định 5 phút của HPA) | watch |
 
 Suốt phép thử: `fe` 1/1 Ready, 0 pod Pending, **1 node** — pod thứ hai vừa node đầu, không kéo thêm máy.
 
-So với App Service (D19, cùng kiểu tải): 1→2 instance sau **6 phút 35 giây**, 2→1 sau 10 phút 43 giây. Thêm một pod
-trên node sẵn có nhanh hơn thêm một instance của Plan khoảng 6 lần — vì không phải cấp máy mới.
+So với App Service (D19, cùng kiểu tải): 1→2 instance sau **6 phút 35 giây**, 2→1 sau 10 phút 43 giây. Thêm một pod trên
+node sẵn có nhanh hơn thêm một instance của Plan — cỡ 6–10 lần — vì không phải cấp máy mới. So sánh chỉ đúng về **bậc**:
+hai phép đo khác khoảng lấy mẫu (30 giây và ~23 giây) và khác thứ được đếm ("capacity = 2" của Plan và "2 pod Ready");
+phép so đúng loại hơn là với việc thêm **node** ở mục 2 (45 giây tới Ready).
 
 ## 2. Cluster autoscaler: 1 → 2 → 1 node
 
@@ -52,7 +54,8 @@ trên node sẵn có nhanh hơn thêm một instance của Plan khoảng 6 lần
 | **07:00:25** | **`ScaleDownEmpty: removing empty node "…vmss000001"`** — 12 phút 11 giây sau khi node hết việc; 07:00:40 `removed` |
 | 07:01:55 | `kubectl get nodes`: **1 node** |
 
-Node thứ hai sống ~14 phút ≈ $0,03 theo giá niêm yết.
+Node thứ hai sống ~14 phút ≈ $0,03 theo giá niêm yết. Đây là phép thử bằng pod giữ chỗ, **không phải tải thật** — tải
+thật của app ở mức 2 pod không làm đầy node (mục 3).
 
 ## 3. Right sizing — đo rồi mới chốt
 
@@ -90,3 +93,13 @@ mục "Advanced — AKS".
 
 Ba biện pháp đã áp dụng cho phần AKS: tier Free cho control plane · autoscaler min 1 (node thứ hai chỉ sống khi cần —
 phép thử mục 2 tốn chưa tới $0,05) · `make aks-down` cuối buổi (cluster dựng lại trong ~10 phút).
+
+## 5. Sau phép đo: sàn của HPA nâng lên 2
+
+Phép đo zero-downtime (`aks-m9-m10-m2.md`) lộ ra rằng với 1 bản, lần cluster autoscaler gỡ node là một lần gián đoạn
+(`be` 503 trong 9 giây). Từ 07:52Z `be` và `fe` chạy 2 bản + `PodDisruptionBudget`. Hệ quả cho M7:
+
+- Mục 1 (HPA 1 → 2 → 1) là số đo thật **với cấu hình min 1**, không còn là hành vi của cấu hình hiện tại: `minReplicas = maxReplicas = 2`.
+- Co giãn còn lại ở tầng node (mục 2), và nó **xảy ra thật ở mỗi lần deploy**: `TriggeredScaleUp 1->2` lúc 07:18:58 và
+  07:41:55 (pod tạm của CD + pod surge), node thừa bị gỡ sau ~15 phút.
+- Right sizing sau khi đổi: app xin 2 × 100m + 2 × 50m = 300m, vẫn vừa node đầu (còn ~400m) lúc bình thường.

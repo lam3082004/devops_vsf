@@ -1,6 +1,10 @@
-# Autoscale theo CPU (tương đương M7): 1 → 2 pod `be`. maxReplicas 2 là luật project
-# ("autoscale tối đa 2 instance"). 70% tính trên CPU REQUEST của container, cùng ngưỡng
-# scale out với autoscale của App Service Plan (infra/app/autoscale.tf).
+# Số pod của `be`. maxReplicas 2 là luật project ("autoscale tối đa 2 instance"). 70% tính trên CPU
+# REQUEST của container, cùng ngưỡng scale out với autoscale của App Service Plan.
+#
+# minReplicas 2 (từ 12/10, trước đó là 1): với 1 bản, lần cluster autoscaler gỡ node đang giữ bản
+# đó là một lần gián đoạn (đo được: be 503 trong 9 giây — xem pdb.yaml). Dưới trần 2 của luật
+# project, sàn 2 nghĩa là số pod cố định: HPA đã được đo co giãn 1 → 2 → 1 với min 1
+# (evidence/advanced/aks-m7.md mục 1), còn từ nay phần co giãn nằm ở tầng node (1–2).
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -13,7 +17,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: be
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 2
   metrics:
     - type: Resource

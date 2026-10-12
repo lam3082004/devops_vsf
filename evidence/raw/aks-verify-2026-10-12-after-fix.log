@@ -1,0 +1,23 @@
+# 2026-10-12T08:10:50Z aks-verify cluster=aks-vsf-dev suffix=jcip0s
+OK    cluster Succeeded, Kubernetes 1.35.8, tier Free
+OK    tài khoản local đã tắt (chỉ Entra)
+OK    Azure RBAC cho Kubernetes bật
+OK    API server giới hạn 3 dải IP
+OK    cluster autoscaler 1–2 node, đang 1
+OK    network policy engine = cilium
+OK    1 node Ready
+OK    ACR admin user = disabled
+OK    be: image từ ACR (tag 5b7636089b533ed28254c10ccacc1cebe0b97bb1), không imagePullSecrets, ready 2/2
+OK    fe: image từ ACR (tag 5b7636089b533ed28254c10ccacc1cebe0b97bb1), không imagePullSecrets, ready 2/2
+OK    2 Secret trong opsboard, tất cả do driver CSI đồng bộ từ Key Vault
+OK    firewall MySQL aks-outbound = IP outbound của cluster (4.144.x.x)
+OK    Service fe giới hạn 3 dải IP, khớp allowed_ips của infra/aks
+OK    be là ClusterIP (không có IP công khai)
+OK    NetworkPolicy be-ingress tồn tại (phép thử chặn thật: evidence/advanced/aks-m6.md)
+OK    fe /api/version = 200, SHA 5b76360 khớp tag image (LB 4.192.x.x)
+OK    fe /api/health = 200 (fe → be → MySQL thông)
+OK    fe GET / = 200 (trang board, dữ liệu từ appdb_aks)
+OK    HPA be: 2–2 pod, đang 2
+OK    be: 2 bản Ready, PodDisruptionBudget cho phép mất 1 (gỡ node không lấy mất bản cuối)
+OK    fe: 2 bản Ready, PodDisruptionBudget cho phép mất 1 (gỡ node không lấy mất bản cuối)
+# kết quả: 0 FAIL, 0 WARN

@@ -21,3 +21,4 @@ resources:
   - fe-service.yaml
   - networkpolicy.yaml
   - hpa.yaml
+  - pdb.yaml

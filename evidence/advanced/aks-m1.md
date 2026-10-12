@@ -56,6 +56,7 @@ bản đang chạy — sự cố lộ ra ở rollout (và ở alert `alert-vsf-a
 | 05:12:07 | trả quyền: `terraform apply` → `kubelet_acr_pull[0]: Creation complete after 43s`, **1 added** |
 | 05:14:19 | `fe` về image `771d909…`: `deployment "fe" successfully rolled out`, `/api/version` → 200 |
 | 05:14:21 | `terraform plan` → **No changes** |
+| 05:36:36 | alert tự **Resolved** (Resource Graph, đọc lại 08:12Z) |
 
 Đây cũng là lần **trigger thật** đầu tiên của một alert trên AKS (tương đương dòng "trigger thật ít nhất 1 alert"
 của M11) — không phải bấm "Test action group".

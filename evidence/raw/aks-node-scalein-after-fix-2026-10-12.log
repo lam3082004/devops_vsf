@@ -1,0 +1,18 @@
+# aks-watch trong luc go node sau khi sua (2 ban + PDB). Chi dong doi trang thai. Cot: ts be_ready be_desired hpa_cpu nodes_ready nodes_total pending fe_ready
+2026-10-12T07:53:16Z	2	2	?	2	2	0	2
+2026-10-12T08:07:41Z	2	2	9	1	2	0	2
+2026-10-12T08:08:02Z	2	2	11	1	2	2	2
+2026-10-12T08:08:27Z	2	2	11	1	2	0	2
+2026-10-12T08:09:33Z	2	2	11	1	1	0	2
+# su kien cluster (kubectl get events), 08:07-08:10Z
+2026-10-12T08:07:45Z   kube-system   ScaleDown                      cluster-autoscaler-status                  Scale-down: removing node aks-system-14595169-vmss000003, utilization: {0.357368421052631
+2026-10-12T08:07:50Z   opsboard      ScaleDown                      fe-b94688d88-kfn2x                         deleting pod for node scale down
+2026-10-12T08:07:50Z   opsboard      Scheduled                      be-985848dcb-zcctv                         Successfully assigned opsboard/be-985848dcb-zcctv to aks-system-14595169-vmss000000
+2026-10-12T08:07:50Z   opsboard      Killing                        fe-b94688d88-kfn2x                         Stopping container fe
+2026-10-12T08:07:50Z   opsboard      Killing                        be-985848dcb-r2zg9                         Stopping container be
+2026-10-12T08:07:50Z   opsboard      Scheduled                      fe-b94688d88-vxqsz                         Successfully assigned opsboard/fe-b94688d88-vxqsz to aks-system-14595169-vmss000000
+2026-10-12T08:07:50Z   opsboard      ScaleDown                      be-985848dcb-r2zg9                         deleting pod for node scale down
+2026-10-12T08:07:52Z   opsboard      Started                        fe-b94688d88-vxqsz                         Container started
+2026-10-12T08:07:53Z   opsboard      Started                        be-985848dcb-zcctv                         Container started
+2026-10-12T08:08:32Z   kube-system   ScaleDown                      cluster-autoscaler-status                  Scale-down: node aks-system-14595169-vmss000003 removed with drain
+2026-10-12T08:09:40Z   default       RemovingNode                   aks-system-14595169-vmss000003             Node aks-system-14595169-vmss000003 event: Removing Node aks-system-14595169-vmss000003 f

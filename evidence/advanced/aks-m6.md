@@ -44,5 +44,29 @@ OK    fe /api/health = 200 (fe → be → MySQL thông)
 
 ## Từ IP ngoài whitelist → bị chặn
 
-**Chưa đo.** Phép đo dùng `aks-m6-check.yml` (runner GitHub gọi `fe` và API server, mong đợi không kết nối được), mà
-workflow chỉ chạy được sau khi file nằm trên `main`. Kết quả ghi vào mục này bằng PR kế tiếp.
+Workflow [`aks-m6-check.yml`](../../.github/workflows/aks-m6-check.yml) — runner GitHub, không secret, không OIDC — gọi hai bề
+mặt công khai và mong đợi **không kết nối được**. Cùng thời điểm, máy trong whitelist gọi đúng hai địa chỉ đó làm ca đối
+chứng (để "không kết nối được" không thể là do cluster đang tắt). Log thô: [`../raw/aks-m6-2026-10-12.log`](../raw/aks-m6-2026-10-12.log).
+
+Run [`38218242391`](https://github.com/lam3082004/devops_vsf/actions/runs/38218242391) — **success**:
+
+| Thời điểm (UTC) | Gọi từ | Bề mặt | Kết quả |
+|---|---|---|---|
+| 07:31:42 | máy trong whitelist | `http://<LB>/api/version` | **200** |
+| 07:31:43 | máy trong whitelist | `https://<api-fqdn>/version` | **401** — tới được API server, chưa xác thực |
+| 07:32:01 | runner `48.217.x.x` | `http://<LB>/api/version` | **000** — curl hết giờ 15 giây (đạt) |
+| 07:32:16 | runner `48.217.x.x` | `https://<api-fqdn>/version` | **000** — curl hết giờ 15 giây (đạt) |
+
+Khác App Service ở **kiểu** bị chặn: `ip_restriction` trả **403** (có một máy chủ trả lời "không"); ở đây gói bị rớt ở tầng
+mạng nên không có ai trả lời — `000`, không phải 403. Vì thế phép đo phải có ca đối chứng.
+
+Lần chạy đầu của workflow (run `38216155724`, 07:09Z) **đỏ oan**: bước `run` chạy bằng `bash -e`, curl hết giờ (exit 28) làm
+job chết ở đúng kết quả mong đợi (`ai-failure-log.md` #53). Sửa ở PR #96, đo lại ra bảng trên.
+
+## Giới hạn
+
+- Whitelist hiện có **3 dải**, trong đó hai dải là dải tài liệu RFC 5737 không route được (chép nguyên từ
+  `infra/app/terraform.tfvars`, `known-issues.md` #19) — thực tế chỉ một IP vào được.
+- IP đó là IP thoát của mạng đang dùng; đổi mạng là mất quyền vào cả `fe` lẫn API server, phải sửa tfvars rồi
+  `make aks-up` (ARM vẫn vào được nên không tự khoá mình vĩnh viễn).
+- `fe` chạy **HTTP** — `known-issues.md` A1.

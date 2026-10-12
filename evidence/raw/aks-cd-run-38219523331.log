@@ -1,0 +1,61 @@
+# CD — AKS run 38219523331 (workflow_dispatch tu main: sha=75d25f1 + simulate_verify_failure=true) — thu nhanh rollback cua script da sua.
+2026-10-12T07:45:32.0649564 [Xác định SHA cần deploy]   K8S_NAMESPACE: opsboard
+2026-10-12T07:45:35.8329204 [Cluster có đang bật không]   K8S_NAMESPACE: opsboard
+2026-10-12T07:45:40.2941552 [Cluster có đang bật không] provisioningState: Succeeded
+2026-10-12T07:45:40.3125490 [Rollout + kiểm tra (+ rollback nếu sai)]   K8S_NAMESPACE: opsboard
+2026-10-12T07:45:40.3281357 [Rollout + kiểm tra (+ rollback nếu sai)] ##[warning]simulate_verify_failure: so kiem voi SHA sai de ep rollback.
+2026-10-12T07:48:00.0265544 [Rollout + kiểm tra (+ rollback nếu sai)] >> be: acrvsfjcip0s.azurecr.io/vsf-be:5b7636089b533ed28254c10ccacc1cebe0b97bb1 -> acrvsfjcip0s.azurecr.io/vsf-be:75d25f1121740a6892b5194a8f26faa47ba97cce
+2026-10-12T07:48:00.0304166 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/be image updated
+2026-10-12T07:48:00.0344455 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0374268 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0394191 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "be" successfully rolled out
+2026-10-12T07:48:00.0414881 [Rollout + kiểm tra (+ rollback nếu sai)] >> fe: acrvsfjcip0s.azurecr.io/vsf-fe:5b7636089b533ed28254c10ccacc1cebe0b97bb1 -> acrvsfjcip0s.azurecr.io/vsf-fe:75d25f1121740a6892b5194a8f26faa47ba97cce
+2026-10-12T07:48:00.0429810 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/fe image updated
+2026-10-12T07:48:00.0437012 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0438581 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0439693 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "fe" successfully rolled out
+2026-10-12T07:48:00.0441326 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (0s): fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0444442 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (3s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0447043 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (6s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0449592 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (9s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0452436 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (12s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0455226 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (15s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0457770 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (18s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0460296 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (21s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0462860 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (24s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0465757 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (27s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0468271 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (30s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0470777 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (33s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0473235 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (36s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0476000 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (39s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0478504 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (42s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0480967 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (45s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0483995 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (48s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0486601 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (51s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0489096 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (54s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0491589 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (57s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0494413 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (60s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0496968 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (63s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0499433 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (66s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0502248 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (69s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0505080 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (72s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0507555 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (75s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0510016 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (78s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0512466 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (81s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0515305 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (84s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0517798 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (87s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0520269 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (90s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 0000000000000000000000000000000000000000
+2026-10-12T07:48:00.0521877 [Rollout + kiểm tra (+ rollback nếu sai)] !! khong hoi tu ve SHA mong doi sau 90s
+2026-10-12T07:48:00.0522913 [Rollout + kiểm tra (+ rollback nếu sai)] !! rollback fe ve acrvsfjcip0s.azurecr.io/vsf-fe:5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:48:00.0524378 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/fe image updated
+2026-10-12T07:48:00.0525420 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0526751 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0527791 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "fe" successfully rolled out
+2026-10-12T07:48:00.0528821 [Rollout + kiểm tra (+ rollback nếu sai)] !! rollback be ve acrvsfjcip0s.azurecr.io/vsf-be:5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:48:00.0529871 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/be image updated
+2026-10-12T07:48:00.0531112 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0532428 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:48:00.0533772 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "be" successfully rolled out
+2026-10-12T07:48:00.0534523 [Rollout + kiểm tra (+ rollback nếu sai)] RESULT=rolled_back
+2026-10-12T07:48:00.0534963 [Rollout + kiểm tra (+ rollback nếu sai)] 
+2026-10-12T07:48:00.0539294 [Rollout + kiểm tra (+ rollback nếu sai)] ##[error]Process completed with exit code 1.

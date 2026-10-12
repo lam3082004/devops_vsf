@@ -217,13 +217,23 @@ else
 	rm -f "$TMP"
 fi
 
-# ---------- M7 ----------
+# ---------- M7 + sẵn sàng khi gỡ node ----------
 HPA_MAX="$($K get hpa be -o jsonpath='{.spec.maxReplicas}' 2>/dev/null)"
 if [[ "$HPA_MAX" == "2" ]]; then
 	ok "HPA be: $($K get hpa be -o jsonpath='{.spec.minReplicas}')–$HPA_MAX pod, đang $($K get hpa be -o jsonpath='{.status.currentReplicas}')"
 else
 	fail "HPA be maxReplicas = ${HPA_MAX:-không có}"
 fi
+# PDB chỉ bảo vệ khi còn bản để nhường: cần ≥ 2 bản Ready VÀ được phép mất ≥ 1.
+for d in be fe; do
+	READY_N="$($K get deploy "$d" -o jsonpath='{.status.readyReplicas}' 2>/dev/null)"
+	ALLOWED="$($K get pdb "$d" -o jsonpath='{.status.disruptionsAllowed}' 2>/dev/null)"
+	if [[ "${READY_N:-0}" -ge 2 && "${ALLOWED:-0}" -ge 1 ]]; then
+		ok "$d: $READY_N bản Ready, PodDisruptionBudget cho phép mất $ALLOWED (gỡ node không lấy mất bản cuối)"
+	else
+		fail "$d: ${READY_N:-0} bản Ready, PDB disruptionsAllowed = ${ALLOWED:-không có PDB}"
+	fi
+done
 
 echo "# kết quả: $FAILS FAIL, $WARNS WARN"
 [[ "$FAILS" -eq 0 ]]

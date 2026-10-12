@@ -26,6 +26,8 @@ firewall rule, không phải khoá của `for_each` (`infra/aks/db.tf`).
 |---|---|---|
 | Trước khi tạo gì (03:58Z) | No changes | 0 FAIL, 1 WARN (`.trivyignore` còn 2 ngày) |
 | Sau P2 (04:38Z) | **No changes** | **0 FAIL, 1 WARN** (cùng WARN) — [`../raw/aks-guard-after-p2-2026-10-12.log`](../raw/aks-guard-after-p2-2026-10-12.log) |
+| Sau P5 và sau PR #95 (07:03Z) | *không chạy lại ở mốc này* | **0 FAIL, 1 WARN** — [`../raw/aks-guard-after-p5-2026-10-12.log`](../raw/aks-guard-after-p5-2026-10-12.log) |
+| Sau P6 (08:12Z) | **No changes** | **0 FAIL, 1 WARN**, production `5b76360`, không alert nào của bài chính Fired — [`../raw/aks-guard-after-p6-2026-10-12.log`](../raw/aks-guard-after-p6-2026-10-12.log) |
 
 Thứ root này thêm lên resource của `infra/app` (đều là resource con mới, nằm ở `aks.tfstate`): 1 role
 `AcrPull` trên ACR · 1 database `appdb_aks` + 1 firewall rule `aks-outbound` trên MySQL · 1 secret

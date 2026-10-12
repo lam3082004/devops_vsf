@@ -82,12 +82,18 @@ cluster dựng 12/10 04:23Z, Cost analysis trễ 8–24 giờ. Chi tiết đo đ
 | Dùng chung, không tính lại | — | ACR, Key Vault, MySQL của bài chính |
 | Log | workspace `log-vsf-*`, cap 0,2 GB/ngày | workspace riêng `log-vsf-aks-*`, cap 0,2 GB/ngày; chỉ thu namespace của app |
 
-Đọc bảng này thế nào: với **một app nhỏ**, AKS đắt hơn App Service khoảng 1,8 lần và ~78% CPU request của node là cho
-add-on chứ không phải cho app (`evidence/advanced/aks-m7.md` mục 3). AKS chỉ rẻ dần khi nhiều app chia nhau cùng node và
-cùng add-on — không phải trường hợp của bài này. Một nửa chênh lệch giá ở đây là do **region**, không phải do nền tảng.
+Đọc bảng này thế nào: với **một app nhỏ**, AKS đắt hơn App Service khoảng 1,8 lần ($0,16 so với $0,09 mỗi giờ) — nhưng hai
+số **không cùng cơ sở**: $0,09 là Actual cost đo thật, gồm ACR; $0,16 là giá niêm yết, không gồm ACR (dùng chung). Khoảng
+**90% chênh lệch là do region**, không phải do nền tảng: riêng node đã chênh $0,063/giờ giữa East Asia ($0,119) và Central
+India ($0,056), trên tổng chênh ~$0,07. Cùng region thì hai bên gần ngang nhau. Điều thuộc về nền tảng là ~78% CPU request
+của node dành cho add-on chứ không phải cho app (`evidence/advanced/aks-m7.md` mục 3) — AKS chỉ rẻ dần khi nhiều app chia
+nhau cùng node và cùng add-on, không phải trường hợp của bài này.
 
-Biện pháp đã áp dụng: control plane tier Free · cluster autoscaler min 1 / max 2 (node thứ hai chỉ sống trong phép thử,
-< $0,05) · HPA thay vì chạy cố định 2 pod · `make aks-down` cuối buổi · Container Insights chỉ thu một namespace, không
-bật managed Prometheus/Grafana (dịch vụ tính tiền riêng).
+Biện pháp đã áp dụng: control plane tier Free · cluster autoscaler min 1 / max 2 · `make aks-down` cuối buổi · Container
+Insights chỉ thu một namespace, không bật managed Prometheus/Grafana (dịch vụ tính tiền riêng).
+
+Hai chỗ **tốn hơn** so với dự tính ban đầu, đều đo được 12/10: (1) mỗi lần CD-AKS chạy kéo node thứ hai lên ~15–25 phút
+(≈ $0,03–0,05 mỗi lần deploy, `known-issues.md` A13); (2) `be` và `fe` chạy cố định 2 bản thay vì co giãn 1–2 — đổi lấy
+việc gỡ node không lấy mất bản cuối. Hai bản vẫn vừa một node nên (2) không thêm tiền máy.
 
 Chưa có: Actual cost từ Cost analysis cho `rg-vsf-aks` + `rg-vsf-aks-nodes` — đọc được từ 13/10.

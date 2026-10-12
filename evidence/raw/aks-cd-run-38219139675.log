@@ -1,0 +1,26 @@
+# CD — AKS run 38219139675 (workflow_run sau CD 38218203292, SHA 5b76360) — cac buoc chinh. Lay bang gh run view --log, da rut gon.
+2026-10-12T07:41:26.1311576 [Xác định SHA cần deploy]   K8S_NAMESPACE: opsboard
+2026-10-12T07:41:26.1725371 [Run CD đã build + push image chưa]   K8S_NAMESPACE: opsboard
+2026-10-12T07:41:26.7369970 [Run CD đã build + push image chưa] job build cua run CD 38218203292: success
+2026-10-12T07:41:32.9758367 [Cluster có đang bật không]   K8S_NAMESPACE: opsboard
+2026-10-12T07:41:36.6752635 [Cluster có đang bật không] provisioningState: Succeeded
+2026-10-12T07:41:36.6933924 [Rollout + kiểm tra (+ rollback nếu sai)]   K8S_NAMESPACE: opsboard
+2026-10-12T07:44:48.2627599 [Rollout + kiểm tra (+ rollback nếu sai)] >> be: acrvsfjcip0s.azurecr.io/vsf-be:75d25f1121740a6892b5194a8f26faa47ba97cce -> acrvsfjcip0s.azurecr.io/vsf-be:5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2659325 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/be image updated
+2026-10-12T07:44:48.2723495 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:44:48.2767306 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:44:48.2768497 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "be" successfully rolled out
+2026-10-12T07:44:48.2769939 [Rollout + kiểm tra (+ rollback nếu sai)] >> fe: acrvsfjcip0s.azurecr.io/vsf-fe:75d25f1121740a6892b5194a8f26faa47ba97cce -> acrvsfjcip0s.azurecr.io/vsf-fe:5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2771324 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/fe image updated
+2026-10-12T07:44:48.2772335 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:44:48.2773703 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:44:48.2774792 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "fe" successfully rolled out
+2026-10-12T07:44:48.2776751 [Rollout + kiểm tra (+ rollback nếu sai)] cho hoi tu (0s): fe [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2779340 [Rollout + kiểm tra (+ rollback nếu sai)] hoi tu sau 3s: fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2781844 [Rollout + kiểm tra (+ rollback nếu sai)] lan 1: fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2784247 [Rollout + kiểm tra (+ rollback nếu sai)] lan 2: fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2787120 [Rollout + kiểm tra (+ rollback nếu sai)] lan 3: fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2789904 [Rollout + kiểm tra (+ rollback nếu sai)] lan 4: fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2792379 [Rollout + kiểm tra (+ rollback nếu sai)] lan 5: fe [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | be [200 5b7636089b533ed28254c10ccacc1cebe0b97bb1] | fe->be /health 200 | mong doi 5b7636089b533ed28254c10ccacc1cebe0b97bb1
+2026-10-12T07:44:48.2793926 [Rollout + kiểm tra (+ rollback nếu sai)] RESULT=deployed
+2026-10-12T07:44:48.2794347 [Rollout + kiểm tra (+ rollback nếu sai)] 

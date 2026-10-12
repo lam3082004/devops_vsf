@@ -1,0 +1,62 @@
+# Event cua cluster quanh hai lan cluster autoscaler them/go node TRUOC khi sua (kubectl get events -A, lay 2026-10-12T08:19:31Z). IP da che.
+# Loc: aks-command, FailedScheduling, TriggeredScaleUp, ScaleDown, Scale-down, va moi event cua namespace opsboard trong 07:18-07:19 va 07:35-07:37.
+2026-10-12T07:18:43Z   aks-command   Pulled                         command-ad96f45cdd9443b08e98b469df1a4406   Container image "mcr.microsoft.com/aks/command/runtime:master.260914.1" already present on machine and can be accessed by the pod
+2026-10-12T07:18:43Z   aks-command   Started                        command-ad96f45cdd9443b08e98b469df1a4406   Container started
+2026-10-12T07:18:43Z   aks-command   Created                        command-ad96f45cdd9443b08e98b469df1a4406   Container created
+2026-10-12T07:18:43Z   aks-command   Scheduled                      command-ad96f45cdd9443b08e98b469df1a4406   Successfully assigned aks-command/command-ad96f45cdd9443b08e98b469df1a4406 to aks-system-14595169-vmss000000
+2026-10-12T07:18:44Z   aks-command   Started                        command-ad96f45cdd9443b08e98b469df1a4406   Container started
+2026-10-12T07:18:44Z   aks-command   Created                        command-ad96f45cdd9443b08e98b469df1a4406   Container created
+2026-10-12T07:18:44Z   aks-command   Pulled                         command-ad96f45cdd9443b08e98b469df1a4406   Container image "mcr.microsoft.com/aks/command/runtime:master.260914.1" already present on machine and can be accessed by the pod
+2026-10-12T07:18:46Z   opsboard      SuccessfulCreate               be-db965759                                Created pod: be-db965759-gf75l
+2026-10-12T07:18:46Z   opsboard      FailedScheduling               be-db965759-gf75l                          0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found for inco
+2026-10-12T07:18:58Z   opsboard      TriggeredScaleUp               be-db965759-gf75l                          pod triggered scale-up: [{aks-system-14595169-vmss 1->2 (max: 2)}]
+2026-10-12T07:35:47Z   default       ScaleDown                      aks-system-14595169-vmss000002             marked the node as toBeDeleted/unschedulable
+2026-10-12T07:35:47Z   kube-system   ScaleDown                      cluster-autoscaler-status                  Scale-down: removing node aks-system-14595169-vmss000002, utilization: {0.35736842105263156 0.304349204871239 0 0 cpu 0.35736842105263156}, pods to r
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      azure-cns-6nsfr                            deleting pod for node scale down
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      aks-secrets-store-provider-azure-hm4jt     deleting pod for node scale down
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      ama-logs-ckz4s                             deleting pod for node scale down
+2026-10-12T07:35:52Z   opsboard      Scheduled                      be-db965759-l8795                          Successfully assigned opsboard/be-db965759-l8795 to aks-system-14595169-vmss000000
+2026-10-12T07:35:52Z   opsboard      ScaleDown                      be-db965759-wfs2g                          deleting pod for node scale down
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      cilium-bcpf2                               deleting pod for node scale down
+2026-10-12T07:35:52Z   opsboard      ScaleDown                      fe-64b5b978bc-vxrh5                        deleting pod for node scale down
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      csi-azurefile-node-wgq8m                   deleting pod for node scale down
+2026-10-12T07:35:52Z   opsboard      Killing                        fe-64b5b978bc-vxrh5                        Stopping container fe
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      cloud-node-manager-pg7rp                   deleting pod for node scale down
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      azure-ip-masq-agent-9d666                  deleting pod for node scale down
+2026-10-12T07:35:52Z   opsboard      Scheduled                      fe-64b5b978bc-tv9ft                        Successfully assigned opsboard/fe-64b5b978bc-tv9ft to aks-system-14595169-vmss000000
+2026-10-12T07:35:52Z   opsboard      SuccessfulCreate               fe-64b5b978bc                              Created pod: fe-64b5b978bc-tv9ft
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      csi-azuredisk-node-sbw9d                   deleting pod for node scale down
+2026-10-12T07:35:52Z   opsboard      SuccessfulCreate               be-db965759                                Created pod: be-db965759-l8795
+2026-10-12T07:35:52Z   kube-system   ScaleDown                      aks-secrets-store-csi-driver-44tm8         deleting pod for node scale down
+2026-10-12T07:35:52Z   opsboard      Killing                        be-db965759-wfs2g                          Stopping container be
+2026-10-12T07:35:53Z   opsboard      FailedComputeMetricsReplicas   be                                         invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: did not receive metrics
+2026-10-12T07:35:54Z   opsboard      Pulling                        be-db965759-l8795                          Pulling image "acrvsfjcip0s.azurecr.io/vsf-be:75d25f1121740a6892b5194a8f26faa47ba97cce"
+2026-10-12T07:35:54Z   opsboard      Pulling                        fe-64b5b978bc-tv9ft                        Pulling image "acrvsfjcip0s.azurecr.io/vsf-fe:75d25f1121740a6892b5194a8f26faa47ba97cce"
+2026-10-12T07:35:57Z   opsboard      Pulled                         be-db965759-l8795                          Successfully pulled image "acrvsfjcip0s.azurecr.io/vsf-be:75d25f1121740a6892b5194a8f26faa47ba97cce" in 2.973s (2.973s including waiting). Image size:
+2026-10-12T07:35:57Z   opsboard      Created                        be-db965759-l8795                          Container created
+2026-10-12T07:35:57Z   opsboard      Started                        be-db965759-l8795                          Container started
+2026-10-12T07:35:59Z   opsboard      Pulled                         fe-64b5b978bc-tv9ft                        Successfully pulled image "acrvsfjcip0s.azurecr.io/vsf-fe:75d25f1121740a6892b5194a8f26faa47ba97cce" in 4.611s (4.611s including waiting). Image size:
+2026-10-12T07:35:59Z   opsboard      Created                        fe-64b5b978bc-tv9ft                        Container created
+2026-10-12T07:35:59Z   opsboard      Started                        fe-64b5b978bc-tv9ft                        Container started
+2026-10-12T07:35:59Z   opsboard      Unhealthy                      fe-64b5b978bc-tv9ft                        Startup probe failed: Get "http://10.244.x.x:3000/api/version": dial tcp 10.244.x.x:3000: connect: connection refused
+2026-10-12T07:36:06Z   opsboard      Unhealthy                      fe-64b5b978bc-vxrh5                        Readiness probe failed: Get "http://10.244.x.x:3000/api/version": dial tcp 10.244.x.x:3000: connect: connection refused
+2026-10-12T07:36:33Z   kube-system   ScaleDown                      cluster-autoscaler-status                  Scale-down: node aks-system-14595169-vmss000002 removed with drain
+2026-10-12T07:37:44Z   default       RemovingNode                   aks-system-14595169-vmss000002             Node aks-system-14595169-vmss000002 event: Removing Node aks-system-14595169-vmss000002 from Controller
+2026-10-12T07:41:39Z   aks-command   Scheduled                      command-e305f3c0d8fe47bb9e40e5404198182e   Successfully assigned aks-command/command-e305f3c0d8fe47bb9e40e5404198182e to aks-system-14595169-vmss000000
+2026-10-12T07:41:40Z   aks-command   Pulled                         command-e305f3c0d8fe47bb9e40e5404198182e   Container image "mcr.microsoft.com/aks/command/runtime:master.260914.1" already present on machine and can be accessed by the pod
+2026-10-12T07:41:40Z   aks-command   Started                        command-e305f3c0d8fe47bb9e40e5404198182e   Container started
+2026-10-12T07:41:40Z   aks-command   Created                        command-e305f3c0d8fe47bb9e40e5404198182e   Container created
+2026-10-12T07:41:41Z   aks-command   Created                        command-e305f3c0d8fe47bb9e40e5404198182e   Container created
+2026-10-12T07:41:41Z   aks-command   Started                        command-e305f3c0d8fe47bb9e40e5404198182e   Container started
+2026-10-12T07:41:41Z   aks-command   Pulled                         command-e305f3c0d8fe47bb9e40e5404198182e   Container image "mcr.microsoft.com/aks/command/runtime:master.260914.1" already present on machine and can be accessed by the pod
+2026-10-12T07:41:43Z   opsboard      FailedScheduling               be-9bbcc499d-c5bp6                         0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found for inco
+2026-10-12T07:41:43Z   opsboard      SuccessfulCreate               be-9bbcc499d                               Created pod: be-9bbcc499d-c5bp6
+2026-10-12T07:41:55Z   opsboard      TriggeredScaleUp               be-9bbcc499d-c5bp6                         pod triggered scale-up: [{aks-system-14595169-vmss 1->2 (max: 2)}]
+
+# Request cua pod tam 'az aks command invoke' (kubectl get pods -n aks-command -o json | jq …)
+# Luc lay file nay (08:19Z) AKS da don het pod tam. So do duoi day lay luc 07:49:38Z trong cung phien, khi hai pod con ton tai
+# (lenh: kubectl get pods -n aks-command -o json | jq -r '.items[] | "\(.metadata.name) \(.status.phase) req=\(.spec.containers[0].resources.requests)"'):
+command-73a7c8da0b7c41eea37aa688a494edcf Failed req={"cpu":"200m","memory":"500Mi"}
+command-e305f3c0d8fe47bb9e40e5404198182e Succeeded req={"cpu":"200m","memory":"500Mi"}
+# command-e305… la pod cua run CD-AKS 38219139675 (event 07:41:41Z o tren). Pod command-ad96… cua run 38216996926 (07:18:43Z) da mat truoc
+# khi do: request cua RIENG pod do khong duoc do, chi suy ra tu cung image va cung co che.

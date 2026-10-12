@@ -6,7 +6,8 @@ metadata:
     app.kubernetes.io/name: fe
     app.kubernetes.io/part-of: opsboard
 spec:
-  replicas: 1
+  # 2 bản + PodDisruptionBudget (pdb.yaml): gỡ node không được làm mất cửa vào duy nhất.
+  replicas: 2
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
@@ -23,6 +24,14 @@ spec:
         app.kubernetes.io/part-of: opsboard
     spec:
       serviceAccountName: fe
+      # Có 2 node thì rải 2 bản ra 2 node (mềm: 1 node vẫn chạy được) — node bị gỡ chỉ mang theo một bản.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: fe
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 30
       securityContext:
