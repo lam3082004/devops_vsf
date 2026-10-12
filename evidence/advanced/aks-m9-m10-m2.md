@@ -33,13 +33,13 @@ custom role chỉ có `deployments/read|write` + `replicasets/read` ở namespac
 
 | Thời điểm (UTC) | Sự kiện | Nguồn |
 |---|---|---|
-| 07:31:10 | merge PR #96 → `main` = `5b76360` | |
+| 07:31:14 | merge PR #96 → `main` = `5b76360` | `gh pr view 96` (`mergedAt`) |
 | 07:31 → 07:41 | `CD` run `38218203292` **success** (build, Trivy, push ACR, swap App Service) | `gh run view` |
 | 07:41:18 | **`CD — AKS` run [`38219139675`](https://github.com/lam3082004/devops_vsf/actions/runs/38219139675) tự kích** (`workflow_run`) | |
 | | `job build cua run CD 38218203292: success` · `provisioningState: Succeeded` | `../raw/aks-cd-run-38219139675.log` |
 | | `be: …:75d25f1… -> …:5b76360…` → `successfully rolled out` → `fe` tương tự | |
 | | `cho hoi tu (0s): fe [200 75d25f1…]` → **`hoi tu sau 3s`** → `lan 1…5` đều `fe [200 5b76360…] \| be [200 5b76360…] \| fe->be /health 200` | |
-| 07:44:54 | **`RESULT=deployed`**, run **success** | |
+| 07:44:48 | **`RESULT=deployed`**, run **success** | dấu thời gian của dòng log |
 
 Không thao tác tay nào giữa merge và lúc cluster chạy bản mới.
 
@@ -97,25 +97,44 @@ mentor. Ở đây 0 timeout — nhưng **đường đo khác** (`be` đi qua API
 
 | Thời điểm (UTC) | | |
 |---|---|---|
-| 07:35:52 → 07:36:00 | `be` **503** × 9 | body: `no endpoints available for service "be"` |
+| 07:35:52 → 07:36:00 | `be` **503** × 9 | body: `no endpoints available for service "be"` ([`.bodies`](../raw/aks-m2-2026-10-12-run2.log.bodies)) |
 | 07:36:02 → 07:36:04 | `fe` timeout × 2, `fe-page` timeout × 3 | curl exit 28 |
 
-Nguyên nhân (đọc từ event của cluster, không đoán):
+Event của cluster đã lưu lại (chúng tự hết hạn sau ~1 giờ):
+[`../raw/aks-node-scalein-before-fix-2026-10-12.log`](../raw/aks-node-scalein-before-fix-2026-10-12.log).
 
-1. Pod tạm của `az aks command invoke` xin **200m CPU**; node đầu chỉ còn 259m. Lần CD-AKS 07:18, pod surge của `be` (100m)
-   không còn chỗ → `TriggeredScaleUp … 1->2` (07:18:58) → pod mới của `be` và `fe` rơi sang node thứ hai.
-2. 07:35:47 cluster autoscaler thấy node thứ hai thừa → `Scale-down: removing node …vmss000002` → **đuổi bản duy nhất của `be`
-   và của `fe`** (`deleting pod for node scale down`).
-3. Pod thay thế cần ~9 giây mới Ready: trong lúc đó Service `be` không có endpoint nào.
+**Phần có bằng chứng trực tiếp:**
 
-Tức là rolling update zero-downtime, nhưng **mỗi lần deploy lại gieo một gián đoạn ~12 giây vào 15 phút sau**. Phép đo M2
-"chỉ poll lúc deploy" sẽ không bao giờ thấy nó — thấy được vì poll còn chạy.
+| Thời điểm (UTC) | Event |
+|---|---|
+| 07:18:43 | pod tạm `aks-command/command-ad96…` của `az aks command invoke` được xếp lịch và chạy |
+| 07:18:46 | `FailedScheduling` pod surge `be-db965759-gf75l`: `0/1 nodes are available: 1 Insufficient cpu` |
+| 07:18:58 | `TriggeredScaleUp … vmss 1->2 (max: 2)` |
+| 07:35:47 | `Scale-down: removing node …vmss000002` |
+| 07:35:52 | `deleting pod for node scale down`: `be-db965759-wfs2g` **và** `fe-64b5b978bc-vxrh5` — lúc đó mỗi service 1 bản |
+| 07:35:54 | pod thay thế của cả hai `Pulling image` (node còn lại chưa có image của SHA đó) |
+
+Cùng mẫu lặp lại ở lần deploy sau: 07:41:41 pod tạm → 07:41:43 `FailedScheduling` → 07:41:55 `TriggeredScaleUp`.
+
+**Phần là suy luận, chưa đo trực tiếp:**
+
+- *Vì sao pod surge không vừa.* Pod tạm xin **200m CPU / 500Mi** — đo được trên hai pod tạm còn tồn tại lúc 07:49Z (một
+  của run 07:41), **không** đo được trên pod của run 07:18 (đã bị dọn). Node đầu khi đó còn ~259m: surge 100m một mình thì
+  vừa, cộng 200m thì không. Phép tính khớp với `Insufficient cpu`, nhưng là phép tính.
+- *Vì sao `be` lỗi ngay còn `fe` lỗi muộn 10 giây.* `be` được đo qua API server, vốn chỉ chuyển tới endpoint Ready → báo
+  "no endpoints" ngay khi pod bị đuổi, kéo dài 9 giây gồm cả thời gian kéo image. `fe` được đo qua load balancer và vẫn
+  trả 200 tới 07:36:01; timeout rơi vào 07:36:02–04, khớp với lúc pod cũ hết `preStop sleep` 10 giây mà pod mới chưa Ready
+  (event `Readiness probe failed` 07:36:06 trên pod cũ). **Chưa chứng minh trực tiếp** — có thể còn phần của việc load
+  balancer cập nhật khi node bị gỡ.
+
+Tức là rolling update zero-downtime, nhưng **mỗi lần deploy lại gieo một gián đoạn vào ~15 phút sau** (`be` 9 giây, `fe` 3
+giây). Phép đo M2 "chỉ poll lúc deploy" sẽ không bao giờ thấy nó — thấy được vì poll còn chạy.
 
 ### Sửa và đo lại
 
 `k8s/base`: `be` và `fe` chạy **2 bản** (HPA `minReplicas` 1 → 2, `fe` `replicas` 1 → 2), thêm `PodDisruptionBudget`
 `minAvailable: 1` cho cả hai, và rải mềm theo node. Áp lúc 07:52Z (`make aks-deploy`), lúc đó cluster
-đang có 2 node (do lần thử rollback 07:45 kéo lên) — tức đúng tình huống đã gây lỗi, lặp lại sau ~15 phút.
+đang có 2 node (`TriggeredScaleUp` 07:41:55, do lần deploy sạch kéo lên) — tức đúng tình huống đã gây lỗi.
 
 **Lần 3 — gỡ node sau khi sửa** (07:53:18 → 08:10:30Z, 1032 tick): [`../raw/aks-m2-2026-10-12-run3.log`](../raw/aks-m2-2026-10-12-run3.log) ·
 [`../raw/aks-node-scalein-after-fix-2026-10-12.log`](../raw/aks-node-scalein-after-fix-2026-10-12.log)
@@ -134,7 +153,15 @@ Tức là rolling update zero-downtime, nhưng **mỗi lần deploy lại gieo m
 | `fe` | 1031 | **0** | **0** |
 | `fe-page` | 1031 | 0 | 0 |
 
-Chậm nhất 2,08 giây (`fe-page`, 08:08:00). Cùng sự kiện, trước khi sửa: 14 dòng lỗi trong 12 giây.
+Chậm nhất 2,08 giây (`fe-page`, 08:08:00); `fe`/`fe-page` chậm 1,5–2,1 giây trong 08:07:59–08:08:04 — cùng pha với
+chỗ `fe` timeout ở lần 2, tức cơ chế cũ vẫn còn dấu vết, chỉ là không vượt ngưỡng 3 giây. Cùng sự kiện, trước khi sửa:
+14 dòng lỗi trong 12 giây.
 
-Điều phép đo này **chưa** phủ: cả hai bản của một service cùng nằm trên node bị gỡ (PDB khi đó buộc autoscaler đuổi lần
-lượt — chưa quan sát được), và node **đầu** bị gỡ thay vì node mới.
+**Phép đo này chứng minh được đến đâu.** Một lần đo, một lần gỡ node, và **mỗi node tình cờ có đúng một bản** của mỗi
+service. Hai lần đuổi xảy ra cùng giây và bản còn lại gánh — `PodDisruptionBudget` **chưa phải chặn gì**. Nên kết luận đúng là
+"2 bản đã qua được một lần gỡ node", chưa phải "gỡ node không còn gây gián đoạn". Chưa đo:
+
+- cả hai bản của một service cùng nằm trên node bị gỡ (khi đó PDB mới thật sự làm việc: đuổi lần lượt);
+- node **đầu** bị gỡ thay vì node mới;
+- sau lần gỡ node này cả 4 pod nằm trên một node, và không có gì tự rải lại (`ScheduleAnyway` chỉ có tác dụng lúc xếp
+  lịch) — lần deploy sau pod mới rơi vào đâu là do scheduler (`known-issues.md` A15).

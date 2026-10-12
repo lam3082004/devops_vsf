@@ -119,3 +119,13 @@ PR #94 không đụng `app/` — cổng Trivy bắt đúng một advisory mới 
 - `scripts/boom.sh` 480 request/480 giây qua `kubectl proxy` → `alert-vsf-aks-5xx-rate` **Fired 07:28:35Z** (17% lỗi của `be-aks`).
 - Truy vết: `trace_id` của một dòng `/boom` → cùng giá trị ở `ContainerLogV2`, `AppRequests.OperationId`, `AppExceptions`.
 - KQL: `last` là từ khoá — đặt tên cột `latest`.
+
+### Review Sonnet lần 2 → sửa (08:12–08:25Z)
+
+Prompt `docs/prompts/aks-review-2.md`, phán quyết GO có điều kiện. Ba điều học được:
+
+- **Event của cluster là bằng chứng có hạn dùng (~1 giờ).** Lúc reviewer nhắc thì event cũ nhất còn lại là 07:18:43 — đúng
+  dòng đầu của chuỗi nguyên nhân. Chậm vài phút nữa là mất. Lưu ngay khi thấy, đừng để tới lúc viết tài liệu.
+- **"Đo được" và "tính ra" phải viết khác nhau.** Request 200m của pod tạm là đo (trên pod của run 07:41), nhưng "nên pod
+  surge không vừa" là phép tính; và lý do `fe` timeout muộn hơn `be` 10 giây là suy luận khớp thời điểm, chưa chứng minh.
+- **Một lần đo qua được không phải là "đã sửa".** Lần 3 qua vì mỗi node tình cờ một bản; PDB chưa phải làm gì.

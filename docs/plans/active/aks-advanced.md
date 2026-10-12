@@ -84,13 +84,19 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 - [x] **P5** — HPA `be` 1→2 sau 62 giây tải, về 1 sau 6 phút 34 giây; cluster autoscaler 1→2 node (45 giây tới Ready),
       tự gỡ node thừa sau 12 phút; right sizing request 100m/50m; chi phí niêm yết ≈ $3,9/ngày → `aks-m7.md`, `cost-report.md`.
       Còn: Actual cost (Cost analysis trễ 8–24 giờ).
-- [ ] Review Sonnet lần 2 (P3–P5)
+- [x] Review Sonnet lần 2 (P3–P6, `docs/prompts/aks-review-2.md`) — GO có điều kiện, không P0. Đã sửa: lưu event trước-sửa vào
+      `evidence/raw/` (chúng hết hạn sau ~1 giờ), tách "có bằng chứng" khỏi "suy luận" trong chuỗi nguyên nhân, bỏ câu
+      "không gián đoạn" (mới đo 1 lần, mỗi node một bản), sửa lập luận chi phí (90% chênh lệch là do region, không phải một
+      nửa), các mốc thời gian lệch vài giây; thêm `known-issues.md` A15–A18.
 - [x] **P6** — dữ liệu về workspace riêng; 2 alert **Fired thật** (pod-not-starting 05:10:27Z, 5xx 07:28:35Z); truy vết
       alert → log → trace bằng `trace_id` → `aks-m11.md`. Còn: ảnh Workbook, ảnh email.
 - [ ] **P7** — evidence, tài liệu, destroy → apply lần cuối, `make aks-down`
 
 ## Recovery
 
+- 2026-10-12 08:25Z: `main` = `5b76360` (#94, #95, #96 đã merge; CD-AKS run `38219139675` xanh). PR #97 mở (2 bản + PDB + bằng
+  chứng M6/M9/M10/M2/M11), 11/11 check. Cluster ĐANG BẬT: 1 node, `be`/`fe` 2 bản, `5b76360`. Còn lại: merge #97 → P7
+  (destroy → apply lần cuối, `make aks-down`), Actual cost (từ 13/10), ảnh Workbook + email.
 - 2026-10-12 07:02Z: CI của #94 lộ CVE HIGH mới ở `sharp` (image `fe`, không liên quan AKS) → người dùng chọn PR riêng:
   **#95 merge 06:48Z**, CD `38214392331` success, production = `ec8fde8`. `feat/aks-infra` đã merge `main` vào.
   Cluster 1 node, không còn namespace thử. Bước tiếp: CI #94 xanh → bật `m2-poll.sh` → merge #94.

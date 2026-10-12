@@ -42,11 +42,11 @@ ContainerLogV2 | where PodNamespace == "opsboard" and ContainerName == "be"
 | Alert | Gây ra bằng | Fired (UTC) | Sau bao lâu | Resolved |
 |---|---|---|---|---|
 | `AKS: pod không khởi động được (opsboard)` — Sev2 | gỡ `AcrPull` của kubelet → `ImagePullBackOff` (`aks-m1.md`) | **05:10:27** | 2 phút 25 giây | **05:36:36** (tự đóng) |
-| `AKS: 5xx rate > 5% (be/fe)` — Sev1 | `scripts/boom.sh` (script của D22, không sửa) vào `be` qua `kubectl proxy`, 1 request/giây, từ 07:25:44 | **07:28:35** | 2 phút 51 giây | xem cuối log thô |
+| `AKS: 5xx rate > 5% (be/fe)` — Sev1 | `scripts/boom.sh` (script của D22, không sửa) vào `be` qua `kubectl proxy`, 1 request/giây, 07:25:44 → 07:33:44 (480 request, 480 × 500) | **07:28:35** | 2 phút 51 giây | **07:54:37** (tự đóng, 21 phút sau khi hết lỗi) |
 | `alert-vsf-aks-node-cpu-high` | — | chưa bắn | cần CPU node > 80% trong 15 phút; không cố ý gây ra | — |
 
-Lúc alert 5xx bắn, chính query của nó trả: `be-aks` **229 lỗi / 1349 request = 17%** trong 10 phút (ngưỡng 5%, tối thiểu
-20 request); `fe-aks` 0 / 280. Nguồn trạng thái: Resource Graph `alertsmanagementresources`. Email đi qua `ag-vsf-oncall`
+Một phút sau khi alert bắn (07:29:36), chính query của nó trả: `be-aks` **229 lỗi / 1349 request = 17%** trong 10 phút (ngưỡng 5%, tối thiểu
+20 request); `fe-aks` 0 / 280. Nguồn trạng thái Fired/Resolved của cả hai alert: Resource Graph `alertsmanagementresources` (đọc lại 08:12Z). Email đi qua `ag-vsf-oncall`
 (action group của bài chính, chỉ tham chiếu) — **chưa có ảnh email** trong repo.
 
 Alert của bài chính không bị kéo theo: `/boom` trên AKS ghi vào workspace riêng, `alert-vsf-5xx-rate` đọc

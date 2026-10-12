@@ -26,15 +26,17 @@ Một worker là đủ: mỗi request `/load` đốt trọn một nhân, tức 1
 |---|---|---|
 | 05:18:49 | nền: 1 pod, CPU **2%** | watch |
 | 05:18:56 | bắt đầu tải | load |
-| **05:19:58** | **2 pod Ready**, CPU 493% — **62 giây** sau khi tải bắt đầu | watch (mẫu trước đó, 05:19:34, còn 1 pod) |
+| **05:19:58** | **2 pod Ready**, CPU 493% — trong khoảng **38–62 giây** sau khi tải bắt đầu (mẫu 05:19:34 còn 1 pod, mẫu 05:19:58 đã 2; watch lấy mẫu ~23 giây/lần) | watch |
 | 05:21:00 | CPU đỉnh 957% (trung bình hai pod) | watch |
 | 05:23:08 | hết tải: **5/5 request 200**, mỗi request 50,2 giây | load |
-| **05:29:42** | **về 1 pod** — 6 phút 34 giây sau khi hết tải (cửa sổ ổn định 5 phút của HPA) | watch |
+| **05:29:42** | **về 1 pod** — trong khoảng 6 phút 14 giây – 6 phút 34 giây sau khi hết tải (cửa sổ ổn định 5 phút của HPA) | watch |
 
 Suốt phép thử: `fe` 1/1 Ready, 0 pod Pending, **1 node** — pod thứ hai vừa node đầu, không kéo thêm máy.
 
-So với App Service (D19, cùng kiểu tải): 1→2 instance sau **6 phút 35 giây**, 2→1 sau 10 phút 43 giây. Thêm một pod
-trên node sẵn có nhanh hơn thêm một instance của Plan khoảng 6 lần — vì không phải cấp máy mới.
+So với App Service (D19, cùng kiểu tải): 1→2 instance sau **6 phút 35 giây**, 2→1 sau 10 phút 43 giây. Thêm một pod trên
+node sẵn có nhanh hơn thêm một instance của Plan — cỡ 6–10 lần — vì không phải cấp máy mới. So sánh chỉ đúng về **bậc**:
+hai phép đo khác khoảng lấy mẫu (30 giây và ~23 giây) và khác thứ được đếm ("capacity = 2" của Plan và "2 pod Ready");
+phép so đúng loại hơn là với việc thêm **node** ở mục 2 (45 giây tới Ready).
 
 ## 2. Cluster autoscaler: 1 → 2 → 1 node
 
@@ -52,7 +54,8 @@ trên node sẵn có nhanh hơn thêm một instance của Plan khoảng 6 lần
 | **07:00:25** | **`ScaleDownEmpty: removing empty node "…vmss000001"`** — 12 phút 11 giây sau khi node hết việc; 07:00:40 `removed` |
 | 07:01:55 | `kubectl get nodes`: **1 node** |
 
-Node thứ hai sống ~14 phút ≈ $0,03 theo giá niêm yết.
+Node thứ hai sống ~14 phút ≈ $0,03 theo giá niêm yết. Đây là phép thử bằng pod giữ chỗ, **không phải tải thật** — tải
+thật của app ở mức 2 pod không làm đầy node (mục 3).
 
 ## 3. Right sizing — đo rồi mới chốt
 

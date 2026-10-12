@@ -1,0 +1,29 @@
+# 2026-10-12T08:12:22Z chot chan sau P4–P6: infra/app phai No changes, preflight phai 0 FAIL
+No changes. Your infrastructure matches the configuration.
+# 2026-10-12T08:14:19Z demo-preflight suffix=jcip0s
+OK    subscription state = Enabled
+OK    be /health = ok, db = ok
+OK    fe /api/health = 200
+OK    production be = fe = main = 5b76360
+OK    staging be=75d25f1 fe=75d25f1 (bản swap ngược sẽ đưa lên production)
+OK    app-vsf-jcip0s: Unmatched = Deny, scm dùng luật chính, 0 luật cd-*
+OK    app-vsf-jcip0s/staging: Unmatched = Deny, scm dùng luật chính, 0 luật cd-*
+OK    fe-vsf-jcip0s: Unmatched = Deny, scm dùng luật chính, 0 luật cd-*
+OK    fe-vsf-jcip0s/staging: Unmatched = Deny, scm dùng luật chính, 0 luật cd-*
+OK    IP egress 104.30.x.x nằm trong whitelist be
+OK    KV reference app-vsf-jcip0s DB_PASSWORD = Resolved
+OK    KV reference app-vsf-jcip0s/slots/staging DB_PASSWORD = Resolved
+OK    KV reference fe-vsf-jcip0s APPLICATIONINSIGHTS_CONNECTION_STRING = Resolved
+OK    ACR admin user = disabled
+OK    alert alert-vsf-5xx-rate bật
+OK    alert alert-vsf-cpu-high bật
+OK    alert alert-vsf-mysql-connections bật
+OK    action group ag-vsf-oncall có 1 email receiver
+OK    không alert nào đang Fired
+OK    autoscale bật, max 2, plan đang 1 instance
+OK    workspace có 72 dòng AppServiceHTTPLogs trong 30 phút
+OK    CD cuối trên main: success (5b76360, run 38218203292)
+WARN  .trivyignore còn 2 ngày (hết hạn 2026-10-15)
+INFO  PR đang mở: #97
+INFO  web app khác trên rg-vsf-dev: app-obs-demo-jcip0s (PoC → make down sẽ gãy, #23)
+# kết quả: 0 FAIL, 1 WARN
