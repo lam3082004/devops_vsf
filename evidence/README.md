@@ -62,3 +62,8 @@ Quy ước đặt tên ảnh: xem `screenshots-convention.md`.
 | Khác | Yêu cầu | Trạng thái |
 |---|---|---|
 | Agent | Agent giới hạn quyền (`topic.md`) | **`agent.md` — ĐẠT** (D23: 9/9 phép bị cấm bị chặn đúng loại lỗi) |
+
+## Advanced — AKS (ngoài phạm vi `topic.md`)
+
+Phần **làm thêm** từ 2026-10-12, không thay cho bằng chứng nào ở trên: cùng app chạy trên AKS, mỗi must-have làm lại
+bằng cơ chế của Kubernetes. Mục lục và trạng thái: [`advanced/README.md`](advanced/README.md) · log thô `raw/aks-*`.

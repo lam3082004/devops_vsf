@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: be
+  labels:
+    app.kubernetes.io/name: be
+    app.kubernetes.io/part-of: opsboard
+spec:
+  # Không khai replicas: HPA (hpa.yaml) sở hữu con số này. Khai ở đây thì mỗi lần
+  # `kubectl apply` kéo về 1 giữa lúc tải cao — cùng bẫy với worker_count của App Service
+  # Plan (infra/app/app.tf, ignore_changes).
+  revisionHistoryLimit: 5
+  # Zero-downtime (tương đương M2): tạo pod mới TRƯỚC, chỉ gỡ pod cũ khi pod mới Ready.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: be
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: be
+        app.kubernetes.io/part-of: opsboard
+    spec:
+      serviceAccountName: be
+      automountServiceAccountToken: false
+      # App chờ request đang chạy tới LOAD_MAX_SECONDS + 5 = 65 giây khi nhận SIGTERM
+      # (app/be/Program.cs, HostOptions.ShutdownTimeout); cộng 10 giây preStop.
+      terminationGracePeriodSeconds: 80
+      securityContext:
+        runAsNonRoot: true
+        # uid của user "app" trong image aspnet chiseled (app/be/Dockerfile).
+        runAsUser: 1654
+        runAsGroup: 1654
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: be
+          # Chỗ giữ chỗ — scripts/aks-render.sh đặt registry + tag; sau đó CHỈ cd-aks.yml
+          # đổi tag (kubectl set image).
+          image: vsf-be
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: be-config
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: be-secrets
+                  key: DB_PASSWORD
+            - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: be-secrets
+                  key: APPLICATIONINSIGHTS_CONNECTION_STRING
+          # startup: chờ process lên (tối đa 60 giây) rồi hai probe kia mới chạy.
+          startupProbe:
+            httpGet:
+              path: /version
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          # readiness = /health (ping DB + schema, 503 khi DB hỏng): pod không nói chuyện
+          # được với DB thì bị rút khỏi Service — vai trò của warm-up ping lúc swap slot.
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          # liveness = /version, KHÔNG phải /health: DB chết thì restart pod không chữa
+          # được gì, chỉ thêm một vòng CrashLoop chồng lên sự cố.
+          livenessProbe:
+            httpGet:
+              path: /version
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            # Pod bị gỡ khỏi Service và nhận SIGTERM GẦN NHƯ cùng lúc; ngủ 10 giây để
+            # các node kịp ngừng gửi request mới rồi app mới bắt đầu tắt. Dùng hành động
+            # `sleep` của kubelet vì image chiseled không có shell để chạy `sleep`.
+            preStop:
+              sleep:
+                seconds: 10
+          # Đo 12/10 trên node D2as_v5: allocatable 1900m, pod hệ thống + add-on đã xin
+          # 1491m (78%) — app chỉ còn ~400m. 100m để lúc rollout (thêm 1 pod surge) và lúc
+          # HPA lên 2 pod vẫn vừa MỘT node; xin 250m thì mỗi lần deploy phải chờ node thứ hai.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: secrets
+              mountPath: /mnt/secrets
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: be-secrets
+        # Root filesystem chỉ đọc; .NET cần /tmp ghi được.
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi

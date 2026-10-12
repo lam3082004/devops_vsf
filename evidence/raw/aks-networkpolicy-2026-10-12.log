@@ -1,0 +1,6 @@
+# 2026-10-12T04:40:35Z NetworkPolicy be-ingress — pod la o namespace default goi be va fe
+be  (ClusterIP :8080) tu pod la: HTTP 000 curl_exit=28
+fe  (Service :80)      tu pod la: HTTP 200 curl_exit=0
+--- tu pod fe (duoc phep):
+be tu pod fe: HTTP 200 {"sha":"771d90998820c62e5fd0250da2719f5c0d82f7b6"}
+--- pod tam con sot: 0

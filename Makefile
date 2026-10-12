@@ -120,3 +120,61 @@ fe-build:
 ## D17: test thuần Node (node:test), không dependency mới — xem app/fe/src/lib/health.test.mjs
 fe-test:
 	npm --prefix app/fe run test
+
+# ---------- AKS: phần ADVANCED, ngoài topic.md (docs/aks.md) ----------
+# Đích deploy thứ hai, song song với App Service. Root module riêng infra/aks, state riêng
+# (aks.tfstate) — các target dưới KHÔNG chạm infra/app. Cần môi trường nền đang bật
+# (`make up`) vì AKS dùng lại ACR, Key Vault, MySQL của nó.
+# Thứ tự tắt: `make aks-down` TRƯỚC `make down`.
+.PHONY: aks-init aks-plan aks-up aks-credentials aks-deploy aks-verify aks-down aks-outputs aks-check-empty
+
+TF_AKS := terraform -chdir=infra/aks
+AKS_RG := rg-vsf-aks
+AKS_CLUSTER := aks-vsf-dev
+
+aks-init:
+	$(TF_AKS) init -backend-config=backend.hcl
+
+## Xem trước thay đổi (không tốn tiền)
+aks-plan: aks-init
+	$(TF_AKS) plan
+
+## Dựng cluster + deploy app — TỐN TIỀN (node tính theo giờ), terraform hỏi xác nhận.
+## Một pha là đủ: không có for_each nào trên giá trị "known after apply" như infra/app.
+## Từ chối chạy khi chưa có terraform.tfvars: thiếu allowed_ips thì API server khoá hết
+## và Service fe không render được (infra/aks/variables.tf).
+aks-up: aks-init
+	@test -f infra/aks/terraform.tfvars || { echo "thieu infra/aks/terraform.tfvars — chep tu terraform.tfvars.example va dien IP"; exit 1; }
+	$(TF_AKS) apply
+	$(MAKE) aks-deploy
+	$(MAKE) aks-verify
+
+## Lấy kubeconfig. Tài khoản local đã tắt nên kubeconfig không chứa bí mật; kubelogin
+## đổi nó sang dùng token của `az login`.
+aks-credentials:
+	az aks get-credentials -g $(AKS_RG) -n $(AKS_CLUSTER) --overwrite-existing
+	kubelogin convert-kubeconfig -l azurecli
+
+## Áp manifest (k8s/base + giá trị từ terraform output). Giữ nguyên tag image đang chạy.
+aks-deploy: aks-credentials
+	bash -o pipefail -c 'scripts/aks-render.sh | kubectl apply -f -'
+	kubectl -n opsboard rollout status deployment/be --timeout=300s
+	kubectl -n opsboard rollout status deployment/fe --timeout=300s
+
+## Bảng kiểm chỉ đọc (OK/WARN/FAIL)
+aks-verify:
+	scripts/aks-verify.sh
+
+## Xoá cluster và mọi thứ root này tạo (kể cả database appdb_aks, firewall rule, secret
+## và role trên resource của infra/app). KHÔNG chạm infra/app.
+aks-down: aks-init
+	$(TF_AKS) destroy
+
+aks-outputs: aks-init
+	$(TF_AKS) output
+
+## Sau `aks-down`: cả hai RG phải không còn. Kiểm NGOÀI state, như check-empty.
+aks-check-empty:
+	@echo ">>> resource con lai trong $(AKS_RG) va rg-vsf-aks-nodes (phai rong hoac RG khong ton tai):"
+	@az resource list -g $(AKS_RG) -o table 2>/dev/null || echo "$(AKS_RG) khong ton tai — OK"
+	@az resource list -g rg-vsf-aks-nodes -o table 2>/dev/null || echo "rg-vsf-aks-nodes khong ton tai — OK"

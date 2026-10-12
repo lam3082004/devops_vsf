@@ -1,0 +1,20 @@
+# Cấu hình KHÔNG bí mật của `be`. DB_HOST / DB_NAME / DB_USER là chỗ giữ chỗ —
+# scripts/aks-render.sh thay bằng output của infra/aks.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: be-config
+  labels:
+    app.kubernetes.io/name: be
+    app.kubernetes.io/part-of: opsboard
+data:
+  PORT: "8080"
+  DB_HOST: "placeholder"
+  DB_PORT: "3306"
+  DB_NAME: "placeholder"
+  DB_USER: "placeholder"
+  # MySQL Flexible bắt buộc TLS.
+  DB_TLS: "true"
+  LOAD_MAX_SECONDS: "60"
+  # Tên hiện ở cột AppRoleName của App Insights — phân biệt với bản chạy trên App Service.
+  OTEL_SERVICE_NAME: "be-aks"

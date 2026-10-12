@@ -1,0 +1,29 @@
+# Cửa vào duy nhất từ Internet (tương đương M6).
+#
+# loadBalancerSourceRanges: Azure dựng thành luật NSG — IP ngoài danh sách bị rớt ở tầng
+# mạng (curl TIMEOUT, không phải 403 như ip_restriction của App Service).
+# Giá trị dưới là dải tài liệu RFC 5737 (không route được) = không ai vào được;
+# scripts/aks-render.sh thay bằng var.allowed_ips của infra/aks.
+#
+# HTTP, không TLS: không có domain để xin chứng chỉ (known-issues.md).
+apiVersion: v1
+kind: Service
+metadata:
+  name: fe
+  labels:
+    app.kubernetes.io/name: fe
+    app.kubernetes.io/part-of: opsboard
+spec:
+  type: LoadBalancer
+  # Cluster (mặc định): node nào cũng nhận traffic rồi chuyển tới pod `fe`. Chọn thay vì
+  # Local để lúc rollout pod mới rơi sang node khác thì load balancer không phải chờ
+  # health probe đổi node.
+  externalTrafficPolicy: Cluster
+  loadBalancerSourceRanges:
+    - 192.0.2.1/32
+  selector:
+    app.kubernetes.io/name: fe
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

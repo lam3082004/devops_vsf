@@ -23,3 +23,9 @@ Hướng dẫn từng bài: `docs/guides/` (mục lục `docs/guides/README.md`)
 Code: `app/be` (.NET, `make test` · `make lint`) và `app/fe` (Next.js, `make fe-lint` · `make fe-test` · `make fe-build`).
 Contract chính là những gì
 `.github/workflows/ci.yml` chạy; cập nhật mục này và `~/.claude/harness/STACKS.md` theo đó.
+
+## Phần advanced: AKS (ngoài `topic.md`, thêm 2026-10-12)
+
+Plan: `docs/plans/active/aks-advanced.md` · tài liệu: `docs/aks.md` · bằng chứng: `evidence/advanced/`.
+Code riêng: `infra/aks`, `k8s/`, `scripts/aks-*.sh`, `ci-aks.yml`, `cd-aks.yml`. **Chỉ thêm** — không sửa `infra/app`, `cd.yml`, `ci.yml`, `app/`.
+`make aks-down` trước `make down`. Validation thêm: `make aks-plan` · `kubectl kustomize k8s/base` · `shellcheck scripts/aks-*.sh` · `make aks-verify`.

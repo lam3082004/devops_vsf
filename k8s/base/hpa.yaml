@@ -1,0 +1,24 @@
+# Autoscale theo CPU (tương đương M7): 1 → 2 pod `be`. maxReplicas 2 là luật project
+# ("autoscale tối đa 2 instance"). 70% tính trên CPU REQUEST của container, cùng ngưỡng
+# scale out với autoscale của App Service Plan (infra/app/autoscale.tf).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: be
+  labels:
+    app.kubernetes.io/name: be
+    app.kubernetes.io/part-of: opsboard
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: be
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

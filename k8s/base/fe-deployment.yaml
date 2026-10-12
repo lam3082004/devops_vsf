@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe
+  labels:
+    app.kubernetes.io/name: fe
+    app.kubernetes.io/part-of: opsboard
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fe
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fe
+        app.kubernetes.io/part-of: opsboard
+    spec:
+      serviceAccountName: fe
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        # uid của user "node" trong image node:alpine (app/fe/Dockerfile).
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: fe
+          image: vsf-fe
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            # Tên Service trong cùng namespace — không qua Internet, không cần whitelist
+            # outbound IP như trên App Service.
+            - name: API_BASE_URL
+              value: http://be:8080
+            - name: PORT
+              value: "3000"
+            # Kubernetes đặt HOSTNAME = tên pod, ĐÈ lên `ENV HOSTNAME=0.0.0.0` của image;
+            # server.js của Next sẽ chỉ nghe trên địa chỉ của tên đó. Khai lại tường minh.
+            - name: HOSTNAME
+              value: 0.0.0.0
+            # app/fe/src/instrumentation.node.ts lấy service.name từ biến này.
+            - name: WEBSITE_SITE_NAME
+              value: fe-aks
+            - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: fe-secrets
+                  key: APPLICATIONINSIGHTS_CONNECTION_STRING
+          startupProbe:
+            httpGet:
+              path: /api/version
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          # /api/version, KHÔNG phải /api/health (route đó gọi sang `be`): `be` chậm thì
+          # rút `fe` khỏi Service không chữa được gì — quyết định A của D17.
+          readinessProbe:
+            httpGet:
+              path: /api/version
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /api/version
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 10
+          # Xem ghi chú đo đạc ở be-deployment.yaml: node chỉ còn ~400m cho app.
+          resources:
+            requests:
+              cpu: 50m
+              memory: 192Mi
+            limits:
+              cpu: 500m
+              memory: 384Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: secrets
+              mountPath: /mnt/secrets
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: next-cache
+              mountPath: /app/.next/cache
+      volumes:
+        - name: secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: fe-secrets
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+        # Next ghi cache vào đây lúc chạy; root filesystem chỉ đọc.
+        - name: next-cache
+          emptyDir:
+            sizeLimit: 128Mi

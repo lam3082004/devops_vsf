@@ -1,0 +1,23 @@
+# Phần ADVANCED (AKS) — manifest của OpsBoard trên Kubernetes.
+#
+# Thư mục này KHÔNG chứa giá trị riêng môi trường: client id, tenant, tên Key Vault, host
+# MySQL, IP whitelist và tag image đều là chỗ giữ chỗ, được scripts/aks-render.sh thay bằng
+# `terraform -chdir=infra/aks output` lúc deploy (IP cá nhân không vào git — quyết định D13).
+# Áp thẳng thư mục này lên cluster thì pod không chạy được và Service `fe` không ai vào
+# được: sai theo hướng ĐÓNG.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: opsboard
+
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - secretproviderclass.yaml
+  - be-config.yaml
+  - be-deployment.yaml
+  - be-service.yaml
+  - fe-deployment.yaml
+  - fe-service.yaml
+  - networkpolicy.yaml
+  - hpa.yaml

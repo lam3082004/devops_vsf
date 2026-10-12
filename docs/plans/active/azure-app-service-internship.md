@@ -572,3 +572,7 @@ Tài liệu: `docs/docs_app/` (brief, prd, wire-frame, api-spec, architecture, d
   - Công cụ máy: terraform 1.15.8 ✅, docker 29.2.1 ✅, jq ✅, gh ✅ · **chưa có gitleaks, trivy**
   - Không kiểm được bằng CLI: quota vCPU App Service (API usages trả MethodNotAllowed), `max_connections` B1ms (cần server), gói GitHub (API không trả plan) → Q2 còn mở
 - 2026-09-15 — `bash ~/.claude/harness/doctor.sh` → harness healthy (guard 55, format 12).
+
+## Phần advanced: AKS (thêm 2026-10-12, ngoài `topic.md`)
+
+Kế hoạch và tiến độ riêng: `docs/plans/active/aks-advanced.md`. Chạy song song, chỉ thêm — không đổi gì ở các mục trên.

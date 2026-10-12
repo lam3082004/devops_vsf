@@ -1,0 +1,47 @@
+# 2026-10-12T05:00:39Z M5 tren AKS — go quyen Key Vault cua identity be/fe, pod moi phai khong khoi dong duoc
+## 2026-10-12T05:00:39Z terraform apply -var grant_aks_keyvault_access=false
+  # azurerm_role_assignment.be_appinsights_secret[0] will be destroyed
+  # (because index [0] is out of range for count)
+  # azurerm_role_assignment.be_mysql_secret[0] will be destroyed
+  # (because index [0] is out of range for count)
+  # azurerm_role_assignment.fe_appinsights_secret[0] will be destroyed
+  # (because index [0] is out of range for count)
+Plan: 0 to add, 0 to change, 3 to destroy.
+azurerm_role_assignment.be_appinsights_secret[0]: Destruction complete after 4s
+azurerm_role_assignment.fe_appinsights_secret[0]: Destruction complete after 4s
+azurerm_role_assignment.be_mysql_secret[0]: Destruction complete after 4s
+Apply complete! Resources: 0 added, 0 changed, 3 destroyed.
+## 2026-10-12T05:02:12Z lan 1: kubectl rollout restart deployment/be
+## 2026-10-12T05:02:27Z trang thai pod (found=1)
+be-79d57cd6b6-6wxs9 1/1 Running restarts=0 age=26m
+be-b44f88794-pc6cz 0/1 ContainerCreating restarts=0 age=14s
+--- su kien FailedMount cua pod moi:
+--------------------------------------------------------------------------------
+
+--- trong luc do pod CU van phuc vu (maxUnavailable 0):
+{"status":"ok","be_host":"be:8080","be_status":200} [HTTP 200]
+--- noi dung su kien FailedMount (gop thanh mot dong, da rut gon GUID):
+2026-10-12T05:02:36Z be-b44f88794-pc6cz count=6 :: MountVolume.SetUp failed for volume "secrets" : rpc error: code = Unknown desc = failed to mount secrets store objects for pod opsboard/be-b44f88794-pc6cz, err: rpc error: code = Unknown desc = failed to mount objects, error: failed to get objectType:secret, objectName:mysql-admin-password, objectVersion:: GET https://kv-vsf-jcip0s.vault.azure.net/secrets/mysql-admin-password/ - RESPONSE 403: 403 Forbidden ERROR CODE: Forbidden - { "error": { "code": "Forbidden", "message": "Caller is not authorized to perform action on resource.\r\nIf role assignments, deny assignments or role definitions were changed recently, please observe propagation time.\r\nCaller: appid=30f7fd82-…;oid=a72eb18f-…;iss=https://sts.windows.net/58f82789-…/\r\nAction: 'Microsoft.KeyVault/vaults/secrets/getSecret/action'\r\nResource: '/subscriptions/<sub>/resourcegroups/rg-vsf-dev/providers/microsoft.keyvault/vaults/kv-vsf-jcip0s/secrets/mysql-admin-password'\r\nAssignment: (not found)\r\nDenyAssignmentId: null\r\nDecisionReason: null \r\nVault: kv-vsf-jcip0s;location=centralindia\r\n", "innererror": { "code": "ForbiddenByRbac" } } } - 
+
+## 2026-10-12T05:02:49Z xoa pod be CU (mo phong node restart / pod chet khi da mat quyen)
+pod "be-79d57cd6b6-6wxs9" deleted from opsboard namespace
+be-79d57cd6b6-xf72v 0/1 ContainerCreating age=26s
+be-b44f88794-pc6cz 0/1 ContainerCreating age=62s
+--- app GAY (khong con pod be nao Ready):
+GET /api/health -> HTTP 503
+{"status":"fail","be_host":"be:8080","be_status":null}
+GET / -> HTTP 200
+<!DOCTYPE html><html lang="vi" class="geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable h-full antialiased"><head><meta charS
+## 2026-10-12T05:03:18Z tra quyen: terraform apply (khong -var)
+Plan: 3 to add, 0 to change, 0 to destroy.
+azurerm_role_assignment.fe_appinsights_secret[0]: Creation complete after 29s 
+azurerm_role_assignment.be_appinsights_secret[0]: Creation complete after 35s 
+azurerm_role_assignment.be_mysql_secret[0]: Creation complete after 35s 
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+## 2026-10-12T05:04:46Z cho pod tu hoi phuc (kubelet tu thu mount lai, khong ai restart tay)
+deployment "be" successfully rolled out
+## 2026-10-12T05:04:48Z
+be-b44f88794-pc6cz 1/1 Running restarts=0 age=2m34s
+{"status":"ok","be_host":"be:8080","be_status":200} [HTTP 200]
+## 2026-10-12T05:04:49Z terraform plan sau khi tra quyen
+No changes. Your infrastructure matches the configuration.
