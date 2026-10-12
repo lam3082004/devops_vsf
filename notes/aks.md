@@ -72,3 +72,18 @@ IP đầy đủ ở cuối log apply (output `allowed_cidrs`, nay `sensitive`); 
 
 Điều học được: trên Kubernetes, mất quyền **không** làm chết thứ đang chạy — rolling update giữ pod cũ, pod cũ đã có
 secret và image. An toàn hơn cho người dùng, nhưng sự cố nằm im tới lần thay pod kế tiếp (known-issues A6).
+
+### P5 — autoscale (05:18–05:30Z, 06:46–07:02Z)
+
+- HPA: `scripts/load.sh --workers 1 --seconds 50 --duration 300` qua `kubectl proxy` → 2 pod sau 62 giây, CPU đỉnh 957%
+  của request; hết tải 05:23:08, về 1 pod 05:29:42. 5/5 request 200. Node vẫn 1.
+- Cluster autoscaler: pod `pause` xin 500m ở namespace tạm → `TriggeredScaleUp 1->2 (max: 2)` 06:46:59, node Ready
+  06:47:44; xoá namespace 06:48:14 → `ScaleDownEmpty` 07:00:25, còn 1 node 07:01:55.
+- `kubectl proxy` tới `be` đi được nhờ luật NetworkPolicy cho `konnectivity-agent` — đo được, không phải đoán.
+
+### CVE `sharp` giữa chừng (không thuộc AKS)
+
+CI của PR #94 đỏ ở `docker build + trivy (fe)`: GHSA-wq5f-xc86-pv6w, `sharp` 0.35.4 (optionalDependency của `next`).
+PR #94 không đụng `app/` — cổng Trivy bắt đúng một advisory mới công bố. Người dùng chọn PR riêng #95 (chỉ lockfile:
+`sharp` + 26 gói `@img/*`), 9/9 check xanh, merge 06:48Z, CD success. Không có cổng này thì lỗi sẽ lộ ra ở lần CD
+đầu tiên của buổi demo.

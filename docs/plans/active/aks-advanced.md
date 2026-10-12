@@ -76,13 +76,18 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
       M1 ngược: gỡ `AcrPull` → `ErrImagePull 401` → alert `pod-not-starting` **Fired 05:10:27Z** → trả quyền.
       NetworkPolicy: pod lạ → `be` timeout. Còn: M6 từ runner GitHub (cần workflow trên `main`).
 - [ ] **P4** — CI + CD + zero-downtime → M9, M10, M2
-- [ ] **P5** — autoscale + chi phí → M7
+- [x] **P5** — HPA `be` 1→2 sau 62 giây tải, về 1 sau 6 phút 34 giây; cluster autoscaler 1→2 node (45 giây tới Ready),
+      tự gỡ node thừa sau 12 phút; right sizing request 100m/50m; chi phí niêm yết ≈ $3,9/ngày → `aks-m7.md`, `cost-report.md`.
+      Còn: Actual cost (Cost analysis trễ 8–24 giờ).
 - [ ] Review Sonnet lần 2 (P3–P5)
 - [ ] **P6** — monitoring + alert + trigger thật → M11
 - [ ] **P7** — evidence, tài liệu, destroy → apply lần cuối, `make aks-down`
 
 ## Recovery
 
+- 2026-10-12 07:02Z: CI của #94 lộ CVE HIGH mới ở `sharp` (image `fe`, không liên quan AKS) → người dùng chọn PR riêng:
+  **#95 merge 06:48Z**, CD `38214392331` success, production = `ec8fde8`. `feat/aks-infra` đã merge `main` vào.
+  Cluster 1 node, không còn namespace thử. Bước tiếp: CI #94 xanh → bật `m2-poll.sh` → merge #94.
 - 2026-10-12 05:15Z: PR #94 mở (`feat/aks-infra`), cluster ĐANG BẬT, plan `infra/aks` No changes, mọi role đã trả lại.
   GitHub: environment `aks-deploy` (chỉ `main`) + biến `AZURE_CLIENT_ID_AKS_DEPLOY` đã tạo.
   Bước tiếp: CI xanh → bật `scripts/m2-poll.sh` → merge → CD (swap App Service) → `cd-aks.yml` chạy lần đầu.

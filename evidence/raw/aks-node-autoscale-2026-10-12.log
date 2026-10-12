@@ -1,0 +1,27 @@
+# 2026-10-12T06:46:42Z Phep thu cluster autoscaler 1 -> 2 node (AKS advanced). Mot pod giu cho 500m CPU o namespace rieng; node 1 chi con 259m trong
+## 2026-10-12T06:46:42Z tao namespace aks-autoscale-test + Deployment balloon (1 pod, request 500m CPU, image pause)
+namespace/aks-autoscale-test created
+deployment.apps/balloon created
+## 2026-10-12T06:47:06Z
+balloon-585c8b6d6c-qktln 0/1 Pending 21s
+2026-10-12T06:46:46Z   FailedScheduling    0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+2026-10-12T06:46:59Z   TriggeredScaleUp    pod triggered scale-up: [{aks-system-14595169-vmss 1->2 (max: 2)}]
+## 2026-10-12T06:48:12Z pod balloon: Running
+aks-system-14595169-vmss000000 Ready age=139m
+aks-system-14595169-vmss000001 Ready age=53s
+balloon-585c8b6d6c-qktln Running node=aks-system-14595169-vmss000001
+## 2026-10-12T06:48:14Z xoa namespace aks-autoscale-test — node thu hai tro thanh thua, cho autoscaler tu go
+namespace "aks-autoscale-test" deleted
+## su kien cua cluster autoscaler
+2026-10-12T07:00:25Z   ScaleDown                 marked the node as toBeDeleted/unschedulable
+2026-10-12T07:00:25Z   ScaleDownEmpty            Scale-down: removing empty node "aks-system-14595169-vmss000001"
+2026-10-12T07:00:40Z   ScaleDownEmpty            Scale-down: empty node aks-system-14595169-vmss000001 removed
+2026-10-12T07:01:49Z   RemovingNode              Node aks-system-14595169-vmss000001 event: Removing Node aks-system-14595169-vmss000001 from Controller
+## 2026-10-12T07:01:55Z so node: 1
+aks-system-14595169-vmss000000 Ready age=152m
+## timeline node (aks-watch, chi dong doi trang thai): ts be_ready be_desired hpa_cpu nodes_ready nodes_total pending fe_ready
+2026-10-12T06:46:41Z	1	1	2	1	1	1	1
+2026-10-12T06:47:23Z	1	1	3	1	2	7	1
+2026-10-12T06:47:44Z	1	1	2	2	2	4	1
+2026-10-12T06:48:05Z	1	1	2	2	2	2	1
+2026-10-12T06:48:26Z	1	1	2	2	2	0	1
