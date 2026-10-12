@@ -66,3 +66,28 @@ theo giá niêm yết đủ MySQL (B1ms + 20 GB storage), chưa kể Log Analyti
   thường trực; MySQL bật HA + backup dài hơn (đổi tiền lấy độ bền); App Insights sampling < 100%.
 - Budget $50/tháng đang có (D1), alert 50/80/100% — chưa gắn action group.
 - Chưa tách được chi phí mạng liên vùng (app Central India ↔ MySQL Southeast Asia) — số rất nhỏ ở quy mô này.
+
+## Advanced — AKS (ngoài `topic.md`, thêm 2026-10-12)
+
+Phần làm thêm, **không** thuộc 1 trang của M7 ở trên. Số ở đây là **giá niêm yết × số giờ**, chưa phải Actual cost:
+cluster dựng 12/10 04:23Z, Cost analysis trễ 8–24 giờ. Chi tiết đo đạc: `evidence/advanced/aks-m7.md`.
+
+| | App Service (bài chính) | AKS (advanced) |
+|---|---|---|
+| Region | Central India | East Asia (Free Trial: hết quota ở Central India, D-series bị chặn ở Southeast Asia) |
+| Đơn vị tính tiền | Plan P0v3 1 vCPU / 4 GB — $0,082/giờ | Node D2as_v5 2 vCPU / 8 GB — $0,119/giờ (cùng size ở Central India: $0,056) |
+| Phí nền tảng | gồm trong Plan | control plane tier Free $0 · Load Balancer ~$0,025/giờ · 2 public IP $0,010/giờ · đĩa OS $0,008/giờ |
+| Tổng khi rỗi | **≈ $0,09/giờ ≈ $2,15/ngày** (đo thật, kèm ACR) | **≈ $0,16/giờ ≈ $3,9/ngày** (niêm yết) |
+| Ở mức tối đa 2 | ≈ $0,17/giờ (2 instance) | ≈ $0,29/giờ (2 node); 2 **pod** trên 1 node thì không tốn thêm |
+| Dùng chung, không tính lại | — | ACR, Key Vault, MySQL của bài chính |
+| Log | workspace `log-vsf-*`, cap 0,2 GB/ngày | workspace riêng `log-vsf-aks-*`, cap 0,2 GB/ngày; chỉ thu namespace của app |
+
+Đọc bảng này thế nào: với **một app nhỏ**, AKS đắt hơn App Service khoảng 1,8 lần và ~78% CPU request của node là cho
+add-on chứ không phải cho app (`evidence/advanced/aks-m7.md` mục 3). AKS chỉ rẻ dần khi nhiều app chia nhau cùng node và
+cùng add-on — không phải trường hợp của bài này. Một nửa chênh lệch giá ở đây là do **region**, không phải do nền tảng.
+
+Biện pháp đã áp dụng: control plane tier Free · cluster autoscaler min 1 / max 2 (node thứ hai chỉ sống trong phép thử,
+< $0,05) · HPA thay vì chạy cố định 2 pod · `make aks-down` cuối buổi · Container Insights chỉ thu một namespace, không
+bật managed Prometheus/Grafana (dịch vụ tính tiền riêng).
+
+Chưa có: Actual cost từ Cost analysis cho `rg-vsf-aks` + `rg-vsf-aks-nodes` — đọc được từ 13/10.

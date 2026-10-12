@@ -1,0 +1,17 @@
+# Mẫu cho infra/aks/terraform.tfvars — CHÉP thành terraform.tfvars rồi điền IP thật.
+# Bản thật KHÔNG commit (.gitignore chặn *.tfvars, chỉ chừa *.tfvars.example).
+#
+# Dùng ĐÚNG danh sách IP của infra/app/terraform.tfvars: cùng một người, cùng một máy.
+# Lấy IP công khai, luôn ép IPv4, tắt VPN/WARP trước khi đo (xem ghi chú ở
+# infra/app/terraform.tfvars.example):
+#   curl -4 -s https://ifconfig.me
+#
+# Rỗng = KHÔNG GIỚI HẠN (ngược với App Service) — đọc CẢNH BÁO ở variables.tf.
+allowed_ips = {
+  "nha-lam" = "203.0.113.10/32"  # máy làm việc
+  "mentor"  = "198.51.100.25/32" # mở khi cần demo, xoá sau
+}
+
+# Người dựng KHÁC chủ repo: đặt object id của chính mình để có quyền kubectl.
+# Lấy bằng: az ad signed-in-user show --query id -o tsv
+# operator_object_id = "00000000-0000-0000-0000-000000000000"

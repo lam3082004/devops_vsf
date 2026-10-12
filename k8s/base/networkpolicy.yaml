@@ -1,0 +1,54 @@
+# `be` chỉ nhận kết nối từ `fe`, từ API server (người vận hành đo/kiểm) và từ command pod
+# của CD (kiểm sau deploy).
+#
+# Có hiệu lực thật vì cluster dùng dataplane Cilium (infra/aks/cluster.tf); cluster không
+# có policy engine vẫn NHẬN object này nhưng không chặn gì. Probe của kubelet đi từ chính
+# node nên luôn được phép.
+#
+# Không đặt policy cho `fe`: cửa vào của nó đã bị chặn theo IP ở load balancer, và traffic
+# từ load balancer tới pod đi qua node (SNAT) — luật ipBlock không khớp được địa chỉ node.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: be-ingress
+  labels:
+    app.kubernetes.io/name: be
+    app.kubernetes.io/part-of: opsboard
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: be
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: fe
+      ports:
+        - protocol: TCP
+          port: 8080
+    # API server → pod đi qua konnectivity-agent (kube-system). Cần cho `kubectl proxy`
+    # khi đo zero-downtime và test tải thẳng vào `be` (scripts/m2-poll.sh, load.sh) — chỉ
+    # người có quyền services/proxy trên cluster mới đi được đường này.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              app: konnectivity-agent
+      ports:
+        - protocol: TCP
+          port: 8080
+    # `az aks command invoke` chạy lệnh trong một pod tạm ở namespace `aks-command`.
+    # cd-aks.yml dùng nó để curl `be /version` sau rollout (scripts/aks-cd.sh) — đổi lại CD
+    # không cần quyền exec vào pod. Ai tạo được pod ở namespace đó: người có quyền
+    # runcommand trên cluster (custom role vsf-aks-command-runner) và cluster admin.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: aks-command
+      ports:
+        - protocol: TCP
+          port: 8080

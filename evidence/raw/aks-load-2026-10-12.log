@@ -1,0 +1,11 @@
+ts_start_utc	worker	http_code	curl_exit	time_total_s	body
+# load start 2026-10-12T05:18:56Z deadline 2026-10-12T05:23:56Z
+# url=http://127.0.0.1:8001/api/v1/namespaces/opsboard/services/be:8080/proxy/load?seconds=50 workers=1 duration=300s max_time=75s
+2026-10-12T05:18:56.843Z	1	200	0	50.238503	{"burned_seconds":50,"iterations":1306328648}
+2026-10-12T05:19:47.096Z	1	200	0	50.235107	{"burned_seconds":50,"iterations":1266084832}
+2026-10-12T05:20:37.344Z	1	200	0	50.258258	{"burned_seconds":50,"iterations":1312356197}
+2026-10-12T05:21:27.613Z	1	200	0	50.155549	{"burned_seconds":50,"iterations":1314535541}
+2026-10-12T05:22:17.777Z	1	200	0	50.154089	{"burned_seconds":50,"iterations":1314634220}
+# load stop 2026-10-12T05:23:08Z lý do: hết hạn
+# requests=5
+#   200 exit=0: 5

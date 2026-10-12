@@ -1,0 +1,305 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# OpsBoard — AKS advanced (`${env}`)\nPhần **advanced**, ngoài phạm vi `topic.md`. Cluster `${cluster_name}`, namespace `${namespace}`, workspace `${workspace_name}` (tách khỏi workspace của App Service). Code: `infra/aks/workbooks/aks.workbook.json.tftpl`."
+      },
+      "name": "header"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "b1a1f1a0-0d21-4c11-9a11-0000000000a1",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Khoảng thời gian",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 3600000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## 1 · App performance — request rate · failure rate · response time\nNguồn: `AppRequests` do OpenTelemetry của `be`/`fe` gửi (AKS không có `AppServiceHTTPLogs`)."
+      },
+      "name": "h-app"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AppRequests\n| summarize requests = count() by bin(TimeGenerated, 5m), AppRoleName\n| render timechart",
+        "size": 0,
+        "title": "Request rate (mỗi 5 phút, theo app)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "app-rate"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AppRequests\n| summarize fail_pct = round(100.0 * countif(toint(ResultCode) >= 500) / count(), 2) by bin(TimeGenerated, 5m), AppRoleName\n| render timechart",
+        "size": 0,
+        "title": "Failure rate % (5xx, theo 5 phút)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "app-fail-pct"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AppRequests\n| summarize requests = count(), p50_ms = round(percentile(DurationMs, 50), 1), p95_ms = round(percentile(DurationMs, 95), 1) by AppRoleName, Name\n| order by requests desc",
+        "size": 0,
+        "title": "Thời gian xử lý p50/p95 theo route (ms)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "table"
+      },
+      "customWidth": "100",
+      "name": "app-duration"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## 2 · Infra — node và pod\nNguồn: Container Insights (`Perf`, `KubePodInventory`, `KubeNodeInventory`)."
+      },
+      "name": "h-infra"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let cap = Perf\n| where ObjectName == \"K8SNode\" and CounterName == \"cpuCapacityNanoCores\"\n| summarize cap = max(CounterValue) by Computer;\nPerf\n| where ObjectName == \"K8SNode\" and CounterName == \"cpuUsageNanoCores\"\n| summarize used = avg(CounterValue) by bin(TimeGenerated, 1m), Computer\n| join kind=inner cap on Computer\n| project TimeGenerated, Computer, cpu_pct = round(100.0 * used / cap, 1)\n| render timechart",
+        "size": 0,
+        "title": "CPU node %",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "node-cpu"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let cap = Perf\n| where ObjectName == \"K8SNode\" and CounterName == \"memoryCapacityBytes\"\n| summarize cap = max(CounterValue) by Computer;\nPerf\n| where ObjectName == \"K8SNode\" and CounterName == \"memoryWorkingSetBytes\"\n| summarize used = avg(CounterValue) by bin(TimeGenerated, 1m), Computer\n| join kind=inner cap on Computer\n| project TimeGenerated, Computer, mem_pct = round(100.0 * used / cap, 1)\n| render timechart",
+        "size": 0,
+        "title": "Memory node % (working set)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "node-mem"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubePodInventory\n| where Namespace == \"${namespace}\" and PodStatus == \"Running\"\n| extend app = tostring(split(ControllerName, \"-\")[0])\n| summarize pods = dcount(Name) by bin(TimeGenerated, 1m), app\n| render timechart",
+        "size": 0,
+        "title": "Số pod theo app (HPA 1 → 2 → 1)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "pod-count"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubeNodeInventory\n| summarize nodes = dcount(Computer) by bin(TimeGenerated, 1m)\n| render timechart",
+        "size": 0,
+        "title": "Số node (cluster autoscaler 1 → 2 → 1)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "timechart",
+        "chartSettings": {
+          "showMetrics": false,
+          "showLegend": true
+        }
+      },
+      "customWidth": "50",
+      "name": "node-count"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubePodInventory\n| where Namespace == \"${namespace}\"\n| summarize restarts = max(ContainerRestartCount), last_seen = max(TimeGenerated) by Name, ContainerStatusReason\n| where restarts > 0 or ContainerStatusReason in (\"ImagePullBackOff\", \"ErrImagePull\", \"CrashLoopBackOff\", \"CreateContainerConfigError\")\n| order by last_seen desc",
+        "size": 0,
+        "title": "Pod không khởi động được / restart",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "table"
+      },
+      "customWidth": "100",
+      "name": "pod-problems"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## 3 · Log\nLog JSON của app trên stdout → `ContainerLogV2` (`LogMessage` đã là object). Truy vết: lấy `trace_id` ở đây rồi tìm `OperationId` trong `AppRequests`/`AppDependencies`."
+      },
+      "name": "h-log"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ContainerLogV2\n| where PodNamespace == \"${namespace}\" and ContainerName == \"be\"\n| extend m = todynamic(LogMessage)\n| where isnotempty(m.path)\n| project TimeGenerated, PodName, level = tostring(m.level), method = tostring(m.method), path = tostring(m.path), status = toint(m.status), duration_ms = todouble(m.duration_ms), trace_id = tostring(m.trace_id)\n| order by TimeGenerated desc\n| take 200",
+        "size": 0,
+        "title": "Request gần nhất (log của be)",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "table"
+      },
+      "customWidth": "100",
+      "name": "log-http"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ContainerLogV2\n| where PodNamespace == \"${namespace}\"\n| extend m = todynamic(LogMessage)\n| where tostring(m.level) in (\"error\", \"warn\", \"ERROR\", \"WARN\") or LogSource == \"stderr\"\n| project TimeGenerated, PodName, ContainerName, level = tostring(m.level), message = tostring(coalesce(m.message, LogMessage)), trace_id = tostring(m.trace_id)\n| order by TimeGenerated desc\n| take 200",
+        "size": 0,
+        "title": "Log mức error/warn",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "table"
+      },
+      "customWidth": "100",
+      "name": "log-errors"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubeEvents\n| where Namespace == \"${namespace}\" and KubeEventType != \"Normal\"\n| project TimeGenerated, Name, Reason, Message\n| order by TimeGenerated desc\n| take 100",
+        "size": 0,
+        "title": "Sự kiện Kubernetes bất thường",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "${workspace_id}"
+        ],
+        "visualization": "table"
+      },
+      "customWidth": "100",
+      "name": "k8s-events"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

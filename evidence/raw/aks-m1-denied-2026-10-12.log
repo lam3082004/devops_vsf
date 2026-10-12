@@ -1,0 +1,35 @@
+# 2026-10-12T05:05:55Z Chung minh nguoc M1 tren AKS — go AcrPull cua kubelet identity, pod can pull image phai that bai
+image fe dang chay: acrvsfjcip0s.azurecr.io/vsf-fe:771d90998820c62e5fd0250da2719f5c0d82f7b6
+tag khac chua co tren node (de bat buoc phai pull): 769e4c92d8c1caa49819626463fa3653f8f436e2
+## 2026-10-12T05:05:55Z terraform apply -var grant_aks_acr_pull=false
+  # azurerm_role_assignment.kubelet_acr_pull[0] will be destroyed
+Plan: 0 to add, 0 to change, 1 to destroy.
+azurerm_role_assignment.kubelet_acr_pull[0]: Destruction complete after 7s
+Apply complete! Resources: 0 added, 0 changed, 1 destroyed.
+## 2026-10-12T05:07:58Z kubectl set image deployment/fe fe=<acr>/vsf-fe:769e4c92d8c1caa49819626463fa3653f8f436e2
+deployment.apps/fe image updated
+## 2026-10-12T05:08:13Z trang thai pod fe
+fe-6778c8bb74-4btt4 1/1 Running restarts=0 age=32m
+fe-cb796cfc9-swtkt 0/1 ErrImagePull restarts=0 age=14s
+--- su kien pull that bai:
+2026-10-12T05:08:02Z fe-cb796cfc9-swtkt :: Error: ErrImagePull
+2026-10-12T05:08:03Z fe-cb796cfc9-swtkt :: Error: ImagePullBackOff
+--- pod CU van phuc vu ban dang chay:
+{"sha":"771d90998820c62e5fd0250da2719f5c0d82f7b6"} [HTTP 200]
+--- thong diep pull day du:
+2026-10-12T05:08:16Z fe-cb796cfc9-swtkt :: Failed to pull image "acrvsfjcip0s.azurecr.io/vsf-fe:769e4c92d8c1caa49819626463fa3653f8f436e2": failed to pull and unpack image "acrvsfjcip0s.azurecr.io/vsf-fe:769e4c92d8c1caa49819626463fa3653f8f436e2": failed to resolve image: failed to authorize: failed to fetch anonymous token: unexpected status from GET request to https://acrvsfjcip0s.azurecr.io/oauth2/token?scope=repository%3Avsf-fe%3Apull&service=acrvsfjcip0s.azurecr.io: 401 Unauthorized
+## giu trang thai loi toi ~05:20Z de alert-vsf-aks-pod-not-starting ban that (cua so 10 phut, danh gia 5 phut/lan)
+## 2026-10-12T05:12:06Z alert (Resource Graph alertsmanagementresources, rg-vsf-aks)
+{"fired":"2026-10-12T05:10:27.6541445Z","name":"AKS: pod không khởi động được (opsboard)","severity":"Sev2","state":"Fired"}
+## 2026-10-12T05:12:07Z tra quyen: terraform apply (khong -var) + dua fe ve image cu
+Plan: 1 to add, 0 to change, 0 to destroy.
+azurerm_role_assignment.kubelet_acr_pull[0]: Creation complete after 43s 
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+deployment.apps/fe image updated
+deployment "fe" successfully rolled out
+## 2026-10-12T05:14:19Z
+fe-6778c8bb74-cgzs7 1/1 Running restarts=0 age=6s
+fe-cb796cfc9-swtkt 1/1 Terminating restarts=0 age=6m21s
+{"sha":"771d90998820c62e5fd0250da2719f5c0d82f7b6"} [HTTP 200]
+## 2026-10-12T05:14:21Z terraform plan
+No changes. Your infrastructure matches the configuration.

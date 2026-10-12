@@ -232,3 +232,25 @@ Theo thứ tự. Bước 3 trở đi **không đảo ngược được**.
 | `scripts/` | Đo/kiểm: `m2-poll.sh` (M2), `load.sh` + `d19-watch.sh` (M7), `boom.sh` (alert), `agent-*.sh`, `install-hooks.sh` |
 | `evidence/` | Bằng chứng M1–M11 + agent; `raw/` log thô; quy ước ảnh: `evidence/screenshots-convention.md` |
 | `docs/plans/active/` | Plan đang chạy: checklist, quyết định, câu hỏi cho mentor |
+
+## Phần advanced: AKS (ngoài `topic.md`)
+
+Làm thêm từ 2026-10-12: cùng app chạy trên AKS, song song với App Service, **chỉ thêm** — không bước nào ở các mục
+trên thay đổi. Tài liệu đầy đủ (kiến trúc, vận hành, rollback, runbook): [`docs/aks.md`](docs/aks.md) ·
+bằng chứng: [`evidence/advanced/`](evidence/advanced/README.md).
+
+| Đường dẫn | Là gì |
+|---|---|
+| `infra/aks/` · `infra/bootstrap/aks.tf` | Terraform: cluster, identity, quyền, monitoring (state riêng `aks.tfstate`) · danh tính của CD-AKS |
+| `k8s/base/` | Manifest (kustomize); giá trị riêng môi trường do `scripts/aks-render.sh` điền lúc deploy |
+| `scripts/aks-*.sh` | `aks-render.sh` · `aks-verify.sh` (bảng kiểm) · `aks-cd.sh` (chạy trong cluster) |
+| `.github/workflows/` | `ci-aks.yml` · `cd-aks.yml` · `aks-m6-check.yml` |
+
+```bash
+make aks-up          # cần `make up` đang bật; TỐN TIỀN
+make aks-verify
+make aks-down        # TRƯỚC `make down`
+```
+
+Teardown hoàn toàn: thêm vào mục 6 — `make aks-down` trước `make down`; xoá environment `aks-deploy` và biến
+`AZURE_CLIENT_ID_AKS_DEPLOY`.

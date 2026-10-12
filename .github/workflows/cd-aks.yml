@@ -1,0 +1,181 @@
+name: CD — AKS (advanced)
+
+# Phần ADVANCED, ngoài topic.md: đích deploy THỨ HAI. File riêng, không sửa cd.yml.
+#
+# Chạy SAU KHI workflow "CD" (App Service) kết thúc xanh trên main: lúc đó image
+# vsf-be/vsf-fe:<sha> đã qua cổng Trivy và nằm trong ACR — workflow này không build lại,
+# chỉ bảo cluster chạy đúng image đó. workflow_run luôn dùng bản file trên nhánh mặc định,
+# nên PR không tự sửa được pipeline deploy của chính nó.
+#
+# workflow_dispatch: deploy lại một SHA đã có trong ACR, hoặc thử nhánh rollback (như
+# simulate_verify_failure của cd.yml, D17).
+on:
+  workflow_run:
+    workflows: ["CD"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "SHA day du (40 ky tu) cua image da co trong ACR"
+        required: true
+      simulate_verify_failure:
+        description: "Co y lam buoc kiem that bai de thu rollback"
+        type: boolean
+        default: false
+
+# actions: read để đọc kết quả các job của run CD đã kích workflow này.
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+
+# Một hàng đợi duy nhất, không huỷ run đang chạy — cùng lý do với cd-deploy ở cd.yml:
+# huỷ ngang giữa rollout/rollback để lại trạng thái không ai biết.
+concurrency:
+  group: cd-aks-deploy
+  cancel-in-progress: false
+
+env:
+  AKS_RG: rg-vsf-aks
+  AKS_CLUSTER: aks-vsf-dev
+  K8S_NAMESPACE: opsboard
+
+jobs:
+  deploy:
+    name: deploy AKS (set image, rollout, kiem tra)
+    runs-on: ubuntu-24.04
+    # CD đỏ hoặc bị huỷ thì không có gì để deploy.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    # Environment chỉ nhận `main`; federated credential của id-gh-aks-deploy chỉ tin
+    # subject `environment:aks-deploy` (infra/bootstrap/aks.tf).
+    environment: aks-deploy
+    timeout-minutes: 30
+    steps:
+      # Checkout để lấy scripts/aks-cd.sh — bản trên main, không phải bản của PR.
+      - uses: actions/checkout@v7
+
+      - name: Xác định SHA cần deploy
+        id: sha
+        env:
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          INPUT_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          sha="${RUN_SHA:-$INPUT_SHA}"
+          if ! [[ "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::SHA khong hop le: '$sha' (can 40 ky tu hex)"
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # cd.yml tự bỏ qua build khi môi trường App Service đang tắt mà vẫn kết thúc xanh
+      # (job preflight, should_deploy=false). Khi đó KHÔNG có image cho SHA này.
+      - name: Run CD đã build + push image chưa
+        id: built
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          conclusion=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" \
+            --jq '[.jobs[] | select(.name | startswith("build + push ACR"))][0].conclusion // "missing"')
+          echo "job build cua run CD $RUN_ID: $conclusion"
+          if [ "$conclusion" = "success" ]; then
+            echo "built=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "built=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Run CD $RUN_ID khong build image (job build: $conclusion) — bo qua deploy AKS."
+          fi
+
+      # Tên bước không bắt đầu bằng chữ "Đ": parser YAML của Semgrep gãy ở đúng kiểu tên đó
+      # (cd.yml:101, ci.yml:424 — known-issues.md #32), mà lỗi quét MỚI làm đỏ cổng sast của ci.yml.
+      - name: Azure login (OIDC, id-gh-aks-deploy)
+        if: github.event_name == 'workflow_dispatch' || steps.built.outputs.built == 'true'
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_AKS_DEPLOY }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      # Cluster THƯỜNG không tồn tại (`make aks-down` cuối buổi). id-gh-aks-deploy có
+      # đúng một quyền sống ngoài cluster: đọc danh sách managedClusters (infra/bootstrap/
+      # aks.tf) — nên "danh sách rỗng" là cluster tắt thật, còn MỌI lỗi az khác làm bước
+      # này đỏ. Không `|| true`, không nuốt lỗi (review 30/09 #4).
+      - name: Cluster có đang bật không
+        id: probe
+        if: github.event_name == 'workflow_dispatch' || steps.built.outputs.built == 'true'
+        run: |
+          set -euo pipefail
+          state=$(az aks list \
+            --query "[?name=='$AKS_CLUSTER' && resourceGroup=='$AKS_RG'] | [0].provisioningState" -o tsv)
+          echo "provisioningState: ${state:-khong-co-cluster}"
+          if [ "$state" = "Succeeded" ]; then
+            echo "up=true" >> "$GITHUB_OUTPUT"
+          elif [ -z "$state" ]; then
+            echo "up=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Khong co cluster $AKS_CLUSTER (da make aks-down) — bo qua deploy AKS."
+          else
+            echo "::error::Cluster dang o trang thai $state — khong deploy len cluster chua on dinh."
+            exit 1
+          fi
+
+      # kubectl chạy TRONG cluster qua ARM: runner không gọi thẳng API server, nên IP của
+      # runner không phải nằm trong authorized_ip_ranges (không cần mở/đóng luật tạm như
+      # cd.yml phải làm với access restriction). Lệnh chạy bằng token của id-gh-aks-deploy:
+      # quyền trong cluster là custom role vsf-aks-app-deployer ở scope namespace.
+      - name: Rollout + kiểm tra (+ rollback nếu sai)
+        id: rollout
+        if: steps.probe.outputs.up == 'true'
+        env:
+          GIT_SHA: ${{ steps.sha.outputs.sha }}
+          SIMULATE_VERIFY_FAILURE: ${{ inputs.simulate_verify_failure || false }}
+        run: |
+          set -euo pipefail
+          expect="$GIT_SHA"
+          if [ "$SIMULATE_VERIFY_FAILURE" = "true" ]; then
+            expect="0000000000000000000000000000000000000000"
+            echo "::warning::simulate_verify_failure: so kiem voi SHA sai de ep rollback."
+          fi
+          started=$(date +%s)
+          az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" \
+            --file scripts/aks-cd.sh \
+            --command "sh aks-cd.sh $K8S_NAMESPACE $GIT_SHA $expect" \
+            -o json > "$RUNNER_TEMP/invoke.json"
+          jq -r '.logs' "$RUNNER_TEMP/invoke.json"
+          code=$(jq -r '.exitCode' "$RUNNER_TEMP/invoke.json")
+          result=$(jq -r '.logs' "$RUNNER_TEMP/invoke.json" | sed -n 's/^RESULT=//p' | tail -1)
+          {
+            echo "seconds=$(( $(date +%s) - started ))"
+            echo "result=${result:-unknown}"
+            echo "exit_code=$code"
+          } >> "$GITHUB_OUTPUT"
+          [ "$code" = "0" ]
+
+      - name: Ghi job summary
+        if: always()
+        env:
+          GIT_SHA: ${{ steps.sha.outputs.sha }}
+          BUILT: ${{ steps.built.outputs.built }}
+          UP: ${{ steps.probe.outputs.up }}
+          RESULT: ${{ steps.rollout.outputs.result }}
+          SECONDS_TAKEN: ${{ steps.rollout.outputs.seconds }}
+        # Shell ở bước này cố ý tối giản: parser Bash của Semgrep không đọc được dấu ` thoát trong
+        # nháy kép, cũng không đọc được ${VAR:-mặc định có dấu cách}; đoạn nào nó không parse được
+        # là một "lỗi quét mới" làm đỏ cổng sast của ci.yml.
+        run: |
+          result="$RESULT"
+          if [ -z "$result" ]; then result="khong toi buoc rollout"; fi
+          {
+            echo "### CD — AKS (advanced)"
+            echo "- SHA: $GIT_SHA"
+            if [ "$BUILT" = "false" ]; then
+              echo "- Bỏ qua: run CD của App Service không build image."
+            elif [ "$UP" = "false" ]; then
+              echo "- Bỏ qua: cluster $AKS_CLUSTER không tồn tại (đã make aks-down)."
+            else
+              echo "- Kết quả: $result (rollout + kiểm: $SECONDS_TAKEN giây)"
+              echo "- Thứ tự: be rồi fe; kiểm 5 lần cách 5 giây bằng curl từ command pod (SHA của fe, SHA của be, fe gọi be /health)."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

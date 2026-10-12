@@ -1,0 +1,67 @@
+name: AKS M6 check — 2 bề mặt nhìn từ IP ngoài (advanced)
+
+# Phần ADVANCED, ngoài topic.md. Cùng ý với m6-check.yml: gọi từ một IP KHÔNG có trong
+# whitelist (runner GitHub) và chứng minh bị chặn. Hai bề mặt của AKS:
+#   - `fe` qua load balancer (loadBalancerSourceRanges)
+#   - API server (authorized_ip_ranges) — vai trò của Kudu/SCM ở App Service
+#
+# Khác App Service ở KIỂU bị chặn: load balancer rớt gói ở tầng mạng nên curl hết giờ
+# (mã 000), không có ai trả 403. API server cũng không trả lời IP ngoài danh sách.
+#
+# Chỉ gọi HTTP từ ngoài vào: không secret, không OIDC, không đụng Azure. Chạy tay.
+on:
+  workflow_dispatch:
+    inputs:
+      fe_ip:
+        description: IP cong khai cua Service fe (kubectl -n opsboard get svc fe)
+        required: true
+      api_fqdn:
+        description: FQDN cua API server (az aks show --query fqdn)
+        required: true
+      expect:
+        description: "blocked = khong ket noi duoc (ma 000) · open = co tra loi HTTP"
+        required: true
+        default: blocked
+        type: choice
+        options: [blocked, open]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: 2 bề mặt
+    runs-on: ubuntu-24.04
+    steps:
+      - name: IP công khai của runner
+        run: |
+          echo "runner_ip=$(curl -4 -s --max-time 15 https://ifconfig.me)" | tee -a "$GITHUB_ENV"
+
+      - name: Gọi 2 bề mặt và đối chiếu
+        env:
+          FE_IP: ${{ inputs.fe_ip }}
+          API_FQDN: ${{ inputs.api_fqdn }}
+          EXPECT: ${{ inputs.expect }}
+        run: |
+          set -u
+          if ! [[ "$FE_IP" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ && "$API_FQDN" =~ ^[a-z0-9.-]+$ ]]; then
+            echo "::error::fe_ip hoac api_fqdn khong dung dang"
+            exit 1
+          fi
+          fail=0
+          {
+            echo "### AKS M6 — nhìn từ runner \`$runner_ip\` (mong đợi \`$EXPECT\`)"
+            echo
+            echo "| thời gian | bề mặt | mã | kết quả |"
+            echo "|---|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for u in "http://$FE_IP/api/version" "https://$API_FQDN/version"; do
+            # -k: chỉ đo có KẾT NỐI được hay không, chứng chỉ của API server không phải thứ cần kiểm.
+            code=$(curl -4 -k -s -o /dev/null -w '%{http_code}' --max-time 15 "$u")
+            ts=$(date -Is)
+            if [ "$code" = "000" ]; then seen="blocked"; else seen="open"; fi
+            if [ "$seen" = "$EXPECT" ]; then verdict="đạt"; else verdict="LỆCH"; fail=1; fi
+            echo "$ts  source_ip=$runner_ip  GET $u  -> $code  ($verdict)"
+            echo "| $ts | $u | $code | $verdict |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          exit "$fail"

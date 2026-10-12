@@ -180,3 +180,5 @@ Rollback tay: swap ngược staging ↔ production (slot giữ bản trước) �
 | MySQL Southeast Asia, App Central India | Subscription không tạo được MySQL ở Central India | ~50 ms mỗi lệnh SQL (#27) |
 | MI + federated credential cho GitHub | Tenant cấm app registration | Mỗi environment mới cần thêm credential |
 | State bootstrap để local | Bootstrap tạo ra chính storage chứa state | Mất thư mục là mất state (#17, đã dựng lại D23) |
+
+> Phần advanced (ngoài `topic.md`, thêm 12/10): cùng app chạy thêm trên AKS — sơ đồ traffic/auth riêng ở [`docs/aks.md`](docs/aks.md).

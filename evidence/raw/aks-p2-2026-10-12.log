@@ -1,0 +1,42 @@
+# 2026-10-12T04:37:57Z P2 — app chay tren AKS (IP da che 2 octet cuoi)
+
+## M1 — pull image bang kubelet identity, khong imagePullSecrets
+2026-10-12T04:36:07Z   be-79d57cd6b6-6wxs9   Successfully pulled image "acrvsfjcip0s.azurecr.io/vsf-be:771d90998820c62e5fd0250da2719f5c0d82f7b6" in 6.085s (6.085s including waiting). Image size: 58124
+2026-10-12T04:36:12Z   fe-6778c8bb74-4btt4   Successfully pulled image "acrvsfjcip0s.azurecr.io/vsf-fe:771d90998820c62e5fd0250da2719f5c0d82f7b6" in 11.262s (11.262s including waiting). Image size: 742
+imagePullSecrets be=[] fe=[]
+ACR adminUserEnabled = false
+AcrPull	/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.ContainerRegistry/registries/acrvsfjcip0s
+
+## M4 — secret tu Key Vault qua Workload Identity + CSI
+be-secrets   Opaque   true   APPLICATIONINSIGHTS_CONNECTION_STRING:<gia tri da an> DB_PASSWORD:<gia tri da an>
+fe-secrets   Opaque   true   APPLICATIONINSIGHTS_CONNECTION_STRING:<gia tri da an>
+--- env cua container be (ten bien + nguon, KHONG co gia tri)
+DB_PASSWORD <- secretKeyRef be-secrets/DB_PASSWORD
+APPLICATIONINSIGHTS_CONNECTION_STRING <- secretKeyRef be-secrets/APPLICATIONINSIGHTS_CONNECTION_STRING
+envFrom configMap be-config
+--- ConfigMap be-config (khong bi mat)
+{"DB_HOST":"mysql-vsf-jcip0s-sea.mysql.database.azure.com","DB_NAME":"appdb_aks","DB_PORT":"3306","DB_TLS":"true","DB_USER":"vsfadmin","LOAD_MAX_SECONDS":"60","OTEL_SERVICE_NAME":"be-aks","PORT":"8080"}
+--- role cua id-vsf-aks-be-jcip0s
+Key Vault Secrets User	/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-jcip0s/secrets/mysql-admin-password
+Key Vault Secrets User	/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-jcip0s/secrets/aks-appinsights-connection-string
+--- role cua id-vsf-aks-fe-jcip0s
+Key Vault Secrets User	/subscriptions/<sub>/resourceGroups/rg-vsf-dev/providers/Microsoft.KeyVault/vaults/kv-vsf-jcip0s/secrets/aks-appinsights-connection-string
+
+## M3 — ghi/doc MySQL (database appdb_aks) qua fe -> be
+{"id":1,"title":"AKS advanced: ghi thu tu P2","description":"tao qua fe tren AKS, luu o database appdb_aks","severity":"low","category":"other","status":"open","reporter":"aks-verify","assignee":null,"created_at":"2026-10-12T04:38:18Z","updated_at":"2026-10-12T04:38:18Z","resolved_at":null}
+HTTP 201
+--- log cua be cho request tren
+{"time":"2026-10-12T04:37:24.3234768\u002B00:00","level":"info","event":"request","method":"GET","path":"/items","status":200,"duration_ms":282,"request_id":"aaddc2cb-24cc-42e7-a6e6-ab858df22f11","trace_id":"6a5dd37834278f3a609a067dc175352b","span_id":"981630edaec4b798","message":"request"}
+{"time":"2026-10-12T04:37:24.3519385\u002B00:00","level":"info","event":"request","method":"GET","path":"/items","status":200,"duration_ms":313,"request_id":"76f3f2cc-cee5-4b77-8396-caaa1589d00b","trace_id":"6a5dd37834278f3a609a067dc175352b","span_id":"35b9835fdd3e4a2e","message":"request"}
+{"time":"2026-10-12T04:38:19.0411360\u002B00:00","level":"info","event":"request","method":"POST","path":"/items","status":201,"duration_ms":296,"request_id":"e90f0c19-2f8f-4488-9c1a-f74ed2abd1e4","trace_id":"38fccf9e1ffcb80f47f592c105b15abb","span_id":"1a0731580929c0d8","message":"request"}
+--- firewall MySQL
+{"end":"4.144.x.x","name":"aks-outbound","start":"4.144.x.x"}
+--- database tren server
+appdb appdb_aks 
+
+## Tai nguyen pod thuc dung
+NAME                  CPU(cores)   MEMORY(bytes)   
+be-79d57cd6b6-6wxs9   31m          53Mi            
+fe-6778c8bb74-4btt4   9m           51Mi            
+NAME                             CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+aks-system-14595169-vmss000000   253m         13%      1823Mi          31%         

@@ -1,0 +1,18 @@
+# ClusterIP: `be` KHÔNG có địa chỉ công khai. Trên App Service `be` là một site công khai
+# và `fe` gọi nó vòng qua Internet (infra/app/locals.tf, be_fe_outbound_ip_rules); ở đây
+# `fe` gọi http://be:8080 trong mạng cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: be
+  labels:
+    app.kubernetes.io/name: be
+    app.kubernetes.io/part-of: opsboard
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: be
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

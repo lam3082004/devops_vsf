@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opsboard
+  labels:
+    app.kubernetes.io/part-of: opsboard
+    # Pod Security Admission mức "restricted": API server TỪ CHỐI pod chạy root, pod xin
+    # thêm capability hay không khai seccomp — không dựa vào việc người viết manifest nhớ.
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
