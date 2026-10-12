@@ -44,4 +44,5 @@ OK    fe /api/health = 200 (fe → be → MySQL thông)
 
 ## Từ IP ngoài whitelist → bị chặn
 
-RUNNER_CHECK
+**Chưa đo.** Phép đo dùng `aks-m6-check.yml` (runner GitHub gọi `fe` và API server, mong đợi không kết nối được), mà
+workflow chỉ chạy được sau khi file nằm trên `main`. Kết quả ghi vào mục này bằng PR kế tiếp.

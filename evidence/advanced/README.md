@@ -12,14 +12,14 @@ Mỗi file lấy **cùng tiêu chí chứng minh** của must-have tương ứng
 
 | File | Tương đương | Trạng thái |
 |---|---|---|
-| [`aks-m8.md`](aks-m8.md) | M8 — Terraform toàn bộ hạ tầng | xem file |
-| [`aks-m1.md`](aks-m1.md) | M1 — pull image bằng managed identity | xem file |
-| [`aks-m3.md`](aks-m3.md) | M3 — MySQL + firewall theo outbound IP | xem file |
-| [`aks-m4-m5.md`](aks-m4-m5.md) | M4, M5 — managed identity + Key Vault, chứng minh ngược | xem file |
-| [`aks-m6.md`](aks-m6.md) | M6 — IP whitelist | xem file |
-| [`aks-m9-m10-m2.md`](aks-m9-m10-m2.md) | M9, M10, M2 — CI, CD, zero-downtime | xem file |
-| [`aks-m7.md`](aks-m7.md) | M7 — autoscale + chi phí | xem file |
-| [`aks-m11.md`](aks-m11.md) | M11 — monitoring | xem file |
+| [`aks-m8.md`](aks-m8.md) | M8 — Terraform toàn bộ hạ tầng | dựng từ rỗng **đạt**; destroy → apply lại: chưa làm (bước cuối) |
+| [`aks-m1.md`](aks-m1.md) | M1 — pull image bằng managed identity | **đạt**, có chứng minh ngược + alert Fired |
+| [`aks-m3.md`](aks-m3.md) | M3 — MySQL + firewall theo outbound IP | **đạt** |
+| [`aks-m4-m5.md`](aks-m4-m5.md) | M4, M5 — managed identity + Key Vault, chứng minh ngược | **đạt** |
+| [`aks-m6.md`](aks-m6.md) | M6 — IP whitelist | trong whitelist → 200 và `be` bị chặn trong cluster: **đạt**; từ IP ngoài: **chưa đo** |
+| [`aks-m7.md`](aks-m7.md) | M7 — autoscale + chi phí | autoscale + right sizing **đạt**; chi phí mới là giá niêm yết, chưa có Actual cost |
+| `aks-m9-m10-m2.md` | M9, M10, M2 — CI, CD, zero-downtime | **chưa có** — cần workflow trên `main` |
+| `aks-m11.md` | M11 — monitoring | **chưa có** (đã có 1 alert Fired thật, xem `aks-m1.md`) |
 
 Log thô: `evidence/raw/aks-*`. Mọi địa chỉ IPv4 trong log đã che 2 octet cuối.
 
