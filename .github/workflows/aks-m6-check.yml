@@ -57,7 +57,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           for u in "http://$FE_IP/api/version" "https://$API_FQDN/version"; do
             # -k: chỉ đo có KẾT NỐI được hay không, chứng chỉ của API server không phải thứ cần kiểm.
-            code=$(curl -4 -k -s -o /dev/null -w '%{http_code}' --max-time 15 "$u")
+            # `|| true` là BẮT BUỘC: GitHub chạy bước bằng `bash -e`, mà "bị chặn" chính là curl hết
+            # giờ (exit 28) — thiếu nó thì job chết ở đúng kết quả mong đợi (run 38216155724, 12/10).
+            code=$(curl -4 -k -s -o /dev/null -w '%{http_code}' --max-time 15 "$u" || true)
+            code="${code:-000}"
             ts=$(date -Is)
             if [ "$code" = "000" ]; then seen="blocked"; else seen="open"; fi
             if [ "$seen" = "$EXPECT" ]; then verdict="đạt"; else verdict="LỆCH"; fail=1; fi

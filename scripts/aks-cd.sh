@@ -89,17 +89,41 @@ probe() {
 	printf '%s %s' "$code" "$sha"
 }
 
-# N=5 lần cách nhau 5 giây, như bước "Kiểm tra production" của cd.yml.
-i=1
-while [ "$i" -le 5 ]; do
+# Một lượt kiểm: đặt OBSERVED (để in) và trả 0 nếu fe + be đúng SHA mong đợi và fe gọi be /health = 200.
+check_once() {
 	fe="$(probe "http://fe.$NS.svc/api/version")"
 	be="$(probe "http://be.$NS.svc:8080/version")"
 	# /api/health của fe gọi be /health và trả 200 chỉ khi be trả 200 — đúng đường request thật đi.
 	health="$(curl -s -m 8 -o /dev/null -w '%{http_code}' "http://fe.$NS.svc/api/health" || true)"
-	echo "lan $i: fe [$fe] | be [$be] | fe->be /health $health | mong doi $EXPECT"
-	if [ "$fe" != "200 $EXPECT" ] || [ "$be" != "200 $EXPECT" ] || [ "$health" != "200" ]; then
+	OBSERVED="fe [$fe] | be [$be] | fe->be /health $health | mong doi $EXPECT"
+	[ "$fe" = "200 $EXPECT" ] && [ "$be" = "200 $EXPECT" ] && [ "$health" = "200" ]
+}
+
+# Chờ HỘI TỤ trước khi kiểm chặt. `rollout status` báo xong khi pod mới Ready và pod cũ đã bị đánh
+# dấu xoá — nhưng pod cũ còn sống thêm `preStop sleep` 10 giây và vẫn trả lời request tới khi mọi
+# node cập nhật xong bảng định tuyến. Kiểm ngay lúc đó là trúng pod CŨ: lần chạy thật đầu tiên
+# (run 38216996926, 12/10) thấy fe trả SHA cũ ở giây đầu, kết luận sai là deploy hỏng và rollback
+# một bản deploy lành (ai-failure-log.md #54). Cho tối đa 90 giây, 3 giây một lần.
+waited=0
+until check_once; do
+	echo "cho hoi tu (${waited}s): $OBSERVED"
+	if [ "$waited" -ge 90 ]; then
+		rollback "khong hoi tu ve SHA mong doi sau 90s"
+	fi
+	sleep 3
+	waited=$((waited + 3))
+done
+echo "hoi tu sau ${waited}s: $OBSERVED"
+
+# Sau khi đã hội tụ: N=5 lần cách nhau 5 giây PHẢI đúng cả 5, như bước "Kiểm tra production" của
+# cd.yml — bản mới lên rồi mới chết (crash sau vài giây) thì bị bắt ở đây.
+i=1
+while [ "$i" -le 5 ]; do
+	if ! check_once; then
+		echo "lan $i: $OBSERVED"
 		rollback "kiem tra lan $i that bai"
 	fi
+	echo "lan $i: $OBSERVED"
 	i=$((i + 1))
 	sleep 5
 done

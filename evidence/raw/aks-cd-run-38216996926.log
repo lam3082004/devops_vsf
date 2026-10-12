@@ -1,0 +1,32 @@
+# CD — AKS run 38216996926 (workflow_run sau CD 38216113229, SHA 75d25f1) — buoc 'Rollout + kiem tra'. Lay bang gh run view --log, da rut gon.
+2026-10-12T07:18:31.8180303 [Xác định SHA cần deploy]   K8S_NAMESPACE: opsboard
+2026-10-12T07:18:31.8578298 [Run CD đã build + push image chưa]   K8S_NAMESPACE: opsboard
+2026-10-12T07:18:32.4309585 [Run CD đã build + push image chưa] job build cua run CD 38216113229: success
+2026-10-12T07:18:36.5968160 [Cluster có đang bật không]   K8S_NAMESPACE: opsboard
+2026-10-12T07:18:40.2754036 [Cluster có đang bật không] provisioningState: Succeeded
+2026-10-12T07:18:40.2929155 [Rollout + kiểm tra (+ rollback nếu sai)]   K8S_NAMESPACE: opsboard
+2026-10-12T07:21:29.2255158 [Rollout + kiểm tra (+ rollback nếu sai)] >> be: acrvsfjcip0s.azurecr.io/vsf-be:771d90998820c62e5fd0250da2719f5c0d82f7b6 -> acrvsfjcip0s.azurecr.io/vsf-be:75d25f1121740a6892b5194a8f26faa47ba97cce
+2026-10-12T07:21:29.2278004 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/be image updated
+2026-10-12T07:21:29.2280487 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2332325 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2364869 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "be" successfully rolled out
+2026-10-12T07:21:29.2379063 [Rollout + kiểm tra (+ rollback nếu sai)] >> fe: acrvsfjcip0s.azurecr.io/vsf-fe:771d90998820c62e5fd0250da2719f5c0d82f7b6 -> acrvsfjcip0s.azurecr.io/vsf-fe:75d25f1121740a6892b5194a8f26faa47ba97cce
+2026-10-12T07:21:29.2380682 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/fe image updated
+2026-10-12T07:21:29.2381749 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2383068 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2384100 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "fe" successfully rolled out
+2026-10-12T07:21:29.2385708 [Rollout + kiểm tra (+ rollback nếu sai)] lan 1: fe [200 771d90998820c62e5fd0250da2719f5c0d82f7b6] | be [200 75d25f1121740a6892b5194a8f26faa47ba97cce] | fe->be /health 200 | mong doi 75d25f1121740a6892b5194a8f26faa47ba97cce
+2026-10-12T07:21:29.2387774 [Rollout + kiểm tra (+ rollback nếu sai)] !! kiem tra lan 1 that bai
+2026-10-12T07:21:29.2413837 [Rollout + kiểm tra (+ rollback nếu sai)] !! rollback fe ve acrvsfjcip0s.azurecr.io/vsf-fe:771d90998820c62e5fd0250da2719f5c0d82f7b6
+2026-10-12T07:21:29.2448043 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/fe image updated
+2026-10-12T07:21:29.2454953 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2492166 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2508460 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "fe" successfully rolled out
+2026-10-12T07:21:29.2528399 [Rollout + kiểm tra (+ rollback nếu sai)] !! rollback be ve acrvsfjcip0s.azurecr.io/vsf-be:771d90998820c62e5fd0250da2719f5c0d82f7b6
+2026-10-12T07:21:29.2548014 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/be image updated
+2026-10-12T07:21:29.2549124 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2568477 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T07:21:29.2587978 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "be" successfully rolled out
+2026-10-12T07:21:29.2607886 [Rollout + kiểm tra (+ rollback nếu sai)] RESULT=rolled_back
+2026-10-12T07:21:29.2608235 [Rollout + kiểm tra (+ rollback nếu sai)] 
+2026-10-12T07:21:29.2622828 [Rollout + kiểm tra (+ rollback nếu sai)] ##[error]Process completed with exit code 1.
