@@ -89,7 +89,9 @@ jobs:
             echo "::notice::Run CD $RUN_ID khong build image (job build: $conclusion) — bo qua deploy AKS."
           fi
 
-      - name: Đăng nhập Azure OIDC (id-gh-aks-deploy)
+      # Tên bước không bắt đầu bằng chữ "Đ": parser YAML của Semgrep gãy ở đúng kiểu tên đó
+      # (cd.yml:101, ci.yml:424 — known-issues.md #32), mà lỗi quét MỚI làm đỏ cổng sast của ci.yml.
+      - name: Azure login (OIDC, id-gh-aks-deploy)
         if: github.event_name == 'workflow_dispatch' || steps.built.outputs.built == 'true'
         uses: azure/login@v3
         with:
@@ -108,7 +110,7 @@ jobs:
           set -euo pipefail
           state=$(az aks list \
             --query "[?name=='$AKS_CLUSTER' && resourceGroup=='$AKS_RG'] | [0].provisioningState" -o tsv)
-          echo "provisioningState: ${state:-<khong co cluster>}"
+          echo "provisioningState: ${state:-khong-co-cluster}"
           if [ "$state" = "Succeeded" ]; then
             echo "up=true" >> "$GITHUB_OUTPUT"
           elif [ -z "$state" ]; then
@@ -159,16 +161,21 @@ jobs:
           UP: ${{ steps.probe.outputs.up }}
           RESULT: ${{ steps.rollout.outputs.result }}
           SECONDS_TAKEN: ${{ steps.rollout.outputs.seconds }}
+        # Shell ở bước này cố ý tối giản: parser Bash của Semgrep không đọc được dấu ` thoát trong
+        # nháy kép, cũng không đọc được ${VAR:-mặc định có dấu cách}; đoạn nào nó không parse được
+        # là một "lỗi quét mới" làm đỏ cổng sast của ci.yml.
         run: |
+          result="$RESULT"
+          if [ -z "$result" ]; then result="khong toi buoc rollout"; fi
           {
             echo "### CD — AKS (advanced)"
-            echo "- SHA: \`${GIT_SHA:-?}\`"
+            echo "- SHA: $GIT_SHA"
             if [ "$BUILT" = "false" ]; then
               echo "- Bỏ qua: run CD của App Service không build image."
             elif [ "$UP" = "false" ]; then
-              echo "- Bỏ qua: cluster \`$AKS_CLUSTER\` không tồn tại (đã \`make aks-down\`)."
+              echo "- Bỏ qua: cluster $AKS_CLUSTER không tồn tại (đã make aks-down)."
             else
-              echo "- Kết quả: \`${RESULT:-không tới bước rollout}\` sau ${SECONDS_TAKEN:-?} giây"
-              echo "- Thứ tự: \`be\` → \`fe\`; kiểm 5 lần cách 5 giây bằng curl từ command pod (SHA của \`fe\`, SHA của \`be\`, \`fe\` → \`be\` /health)."
+              echo "- Kết quả: $result (rollout + kiểm: $SECONDS_TAKEN giây)"
+              echo "- Thứ tự: be rồi fe; kiểm 5 lần cách 5 giây bằng curl từ command pod (SHA của fe, SHA của be, fe gọi be /health)."
             fi
           } >> "$GITHUB_STEP_SUMMARY"

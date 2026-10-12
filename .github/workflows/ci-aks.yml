@@ -118,7 +118,7 @@ jobs:
             echo '```'
             grep -E '^(Plan:|No changes|Bo qua)' infra/aks/plan.txt || echo "(không thấy dòng tóm tắt, xem plan.txt trong artifact)"
             echo '```'
-            echo "CI không có \`terraform.tfvars\`: thay đổi ở \`authorized_ip_ranges\` là diff giả đã biết (infra/aks/variables.tf)."
+            echo 'CI không có terraform.tfvars: thay đổi ở authorized_ip_ranges là diff giả đã biết (infra/aks/variables.tf).'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload plan.txt làm artifact
