@@ -102,6 +102,8 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Recovery
 
+- 2026-10-12 16:50Z: lần dựng thứ tư xong 16:40Z (24 phút) nhưng node đầu `NotReady` (`cni plugin not initialized`); gỡ máy đó bằng
+  `az aks nodepool delete-machines` → 1 node Ready, `be`/`fe` 2/2, verify 0 FAIL, `plan` No changes (`known-issues.md` A21).
 - 2026-10-12 16:30Z: **cluster ĐANG BẬT và sẽ để bật** (Decision P). Lệnh tắt sau khi chụp ảnh đã chạy xong 16:15Z trước khi người
   dùng nhắn; dựng lại lần bốn ngay sau đó. Tắt khi cần: `make aks-down` (trước `make down`).
 - 2026-10-12 16:05Z: người dùng yêu cầu ảnh chụp. Dựng cluster lần ba (15:26Z, `apply` một lần), chụp 20 ảnh (GitHub, Portal sau khi

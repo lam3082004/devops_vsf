@@ -1,0 +1,13 @@
+# 2026-10-12T16:44:22Z Lan dung thu tu (16:16Z): node dau NotReady tu luc tao — go dung may do
+aks-system-26943182-vmss000000 NotReady age=22m
+aks-system-26943182-vmss000001 Ready age=7m4s
+Ready=False tu 2026-10-12T16:21:49Z: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: cni plugin not initialized
+pod cua app tren node hong: 0
+## 2026-10-12T16:44:26Z az aks nodepool delete-machines --machine-names aks-system-26943182-vmss000000
+## 2026-10-12T16:45:30Z sau khi go
+aks-system-26943182-vmss000001 Ready age=8m13s
+{"count":1,"max":2,"min":1,"state":"Succeeded"}
+be-549544d86d-fkm2h 1/1 Running
+be-549544d86d-rgsmx 1/1 Running
+fe-7499d855fb-9s7s6 1/1 Running
+fe-7499d855fb-cbbfl 1/1 Running
