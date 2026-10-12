@@ -151,3 +151,13 @@ Prompt `docs/prompts/aks-review-2.md`, phán quyết GO có điều kiện. Ba �
   phục từ xoá mềm**. `apply` lần 2: 3 added. Sửa: `permanently_delete_on_destroy = true` — chưa kiểm lại.
 - `make aks-deploy`: 14 object, 2/2 + 2/2 sau 53 giây (cluster mới, IP outbound mới, identity mới — `aks-render.sh` đọc lại
   hết từ `terraform output`). `make aks-verify`: 0 FAIL.
+
+### Kết thúc (14:10 → 14:55Z)
+
+- Merge #98 14:10:34Z → `CD` `38260996070` success (production `512550a`) → `CD — AKS` `38262243519` **success**: bước chờ có chỗ
+  hụt 3 lần, lần 4 được (14:23:58), rollout `be` → `fe`, hội tụ 0 giây, 5/5, `RESULT=deployed`.
+- `make aks-verify` cuối: một lần FAIL thoáng qua (kubectl đọc Service hụt, script in "KHÔNG khớp (0 dải)") → chạy lại 0 FAIL;
+  sửa script để phân biệt "không đọc được" với "không khớp".
+- `make aks-down`: 27 destroyed (21 phút 57 giây). Không sót: state 0, hai RG không còn, MySQL chỉ còn `appdb`, không còn rule
+  `aks-outbound`, không còn secret, 0 workspace xoá mềm, 0/4 vCPU East Asia. `infra/app` No changes, preflight 0 FAIL.
+- Hôm nay App Service swap 5 lần vì phần AKS (#95, #94, #96, #97, #98) — cả 5 run `CD` đều success.

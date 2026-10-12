@@ -85,8 +85,18 @@ Run [`38224419371`](https://github.com/lam3082004/devops_vsf/actions/runs/382244
 Job báo hỏng trong khi deploy đã xảy ra. Sửa ở `cd-aks.yml` (bước *Chờ cluster có chỗ cho pod lệnh*): gọi thử `true` tới khi
 chạy được rồi mới gửi lệnh rollout. Thử tay trên đúng trạng thái đã hỏng (1 node, CPU đã xin 94%), 08:54Z:
 3 lần hụt → lần 4 chạy được sau 1 phút 52 giây, 4 pod tạm đều `Completed` — `../raw/aks-cd-warmup-test-2026-10-12.log`.
-**Chưa có run thật bằng danh tính CD với bước này** lúc viết file: workflow chỉ chạy bản trên `main`, nên run đầu tiên là
-lần `CD — AKS` ngay sau khi PR chứa bản sửa được merge (`gh run list --workflow=cd-aks.yml`).
+**Run thật bằng danh tính CD với bước này** — [`38262243519`](https://github.com/lam3082004/devops_vsf/actions/runs/38262243519),
+tự kích sau `CD` `38260996070` (merge #98, `512550a`), trên cluster vừa destroy → apply lại: **success**.
+Log: `../raw/aks-cd-run-38262243519.log`.
+
+| Thời điểm (UTC) | |
+|---|---|
+| 14:21:48 · 14:22:21 · 14:22:54 | `lan 1/2/3: chua co cho cho pod lenh, cho node moi` (`Operation returned an invalid status 'OK'`) |
+| 14:23:58 | `lan 4: pod lenh chay duoc` — 2 phút 10 giây sau lần thử đầu |
+| → 14:25:10 | `be: …280d287… -> …512550a…`, `fe` tương tự → `hoi tu sau 0s` → `lan 1…5` đạt → **`RESULT=deployed`** |
+
+Đây là lần end-to-end đầy đủ nhất của phần AKS: merge → CD App Service → CD-AKS tự chạy bằng danh tính giới hạn → chờ
+có chỗ → rollout 2 bản mỗi service → kiểm → xanh, không thao tác tay.
 
 ## M2 — zero-downtime
 

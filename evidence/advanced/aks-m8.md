@@ -67,3 +67,16 @@ Sửa: `infra/aks/versions.tf` — `log_analytics_workspace { permanently_delete
 **Bản sửa chưa được kiểm bằng một vòng destroy → apply nữa**; có hiệu lực từ lần `make aks-down` kế tiếp.
 
 Đây chính là giá trị của M8: `plan` No changes và một lần apply sạch **không** chứng minh được rằng dựng lại được.
+
+## Tắt cuối phiên (14:29 → 14:52Z)
+
+| Bước | Kết quả | Nguồn |
+|---|---|---|
+| `plan -destroy` | **27 to destroy** | chạy trong phiên |
+| `destroy` | **`27 destroyed`** — 14:29:42 → 14:51:39Z (21 phút 57 giây) | [`../raw/aks-destroy-final-2026-10-12.log`](../raw/aks-destroy-final-2026-10-12.log) |
+| Còn sót gì | state 0 · `rg-vsf-aks`, `rg-vsf-aks-nodes` không tồn tại · 0 cluster · MySQL chỉ còn database `appdb`, 0 rule `aks-outbound` · 0 secret `aks-appinsights-…` (kể cả xoá mềm) · vCPU East Asia 0/4 | [`../raw/aks-teardown-check-2026-10-12.log`](../raw/aks-teardown-check-2026-10-12.log) |
+| Workspace | **0** workspace `log-vsf-aks-*` trong danh sách xoá mềm — `permanently_delete_on_destroy` có hiệu lực ở lần destroy này | cùng file |
+| Môi trường cũ | `infra/app` plan **No changes** · preflight **0 FAIL** · production `512550a` | cùng file |
+
+Nửa còn lại của bản sửa A20 (lần `apply` kế tiếp tạo workspace **mới** và chạy một lần là xong) chỉ kiểm được ở lần
+`make aks-up` tới.

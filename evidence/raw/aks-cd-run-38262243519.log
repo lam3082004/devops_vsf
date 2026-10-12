@@ -1,0 +1,38 @@
+# CD — AKS run 38262243519 (workflow_run sau CD 38260996070, SHA 512550a) — lan chay dau tien co buoc 'Cho cluster co cho cho pod lenh', bang danh tinh id-gh-aks-deploy, tren cluster vua dung lai.
+2026-10-12T14:21:07.4745400 [Run CD đã build + push image chưa]   K8S_NAMESPACE: opsboard
+2026-10-12T14:21:11.2656871 [Run CD đã build + push image chưa] job build cua run CD 38260996070: success
+2026-10-12T14:21:37.6269386 [Cluster có đang bật không]   K8S_NAMESPACE: opsboard
+2026-10-12T14:21:43.6872099 [Cluster có đang bật không] provisioningState: Succeeded
+2026-10-12T14:21:43.6994679 [Chờ cluster có chỗ cho pod lệnh]   K8S_NAMESPACE: opsboard
+2026-10-12T14:21:48.7914134 [Chờ cluster có chỗ cho pod lệnh] lan 1: chua co cho cho pod lenh, cho node moi
+2026-10-12T14:22:21.9046989 [Chờ cluster có chỗ cho pod lệnh] lan 2: chua co cho cho pod lenh, cho node moi
+2026-10-12T14:22:54.5357487 [Chờ cluster có chỗ cho pod lệnh] lan 3: chua co cho cho pod lenh, cho node moi
+2026-10-12T14:23:58.6247441 [Chờ cluster có chỗ cho pod lệnh] lan 4: pod lenh chay duoc
+2026-10-12T14:23:58.6374710 [Rollout + kiểm tra (+ rollback nếu sai)]   K8S_NAMESPACE: opsboard
+2026-10-12T14:25:10.2912315 [Rollout + kiểm tra (+ rollback nếu sai)] >> be: acrvsfjcip0s.azurecr.io/vsf-be:280d28733ee6cd3079375e40f86413b6b1dc135d -> acrvsfjcip0s.azurecr.io/vsf-be:512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2913297 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/be image updated
+2026-10-12T14:25:10.2919255 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 out of 2 new replicas have been updated...
+2026-10-12T14:25:10.2920720 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 out of 2 new replicas have been updated...
+2026-10-12T14:25:10.2921643 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 out of 2 new replicas have been updated...
+2026-10-12T14:25:10.2922662 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T14:25:10.2923530 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "be" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T14:25:10.2924238 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "be" successfully rolled out
+2026-10-12T14:25:10.2925625 [Rollout + kiểm tra (+ rollback nếu sai)] >> fe: acrvsfjcip0s.azurecr.io/vsf-fe:280d28733ee6cd3079375e40f86413b6b1dc135d -> acrvsfjcip0s.azurecr.io/vsf-fe:512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2926562 [Rollout + kiểm tra (+ rollback nếu sai)] deployment.apps/fe image updated
+2026-10-12T14:25:10.2927221 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 out of 2 new replicas have been updated...
+2026-10-12T14:25:10.2928106 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 out of 2 new replicas have been updated...
+2026-10-12T14:25:10.2929010 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 out of 2 new replicas have been updated...
+2026-10-12T14:25:10.2930188 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T14:25:10.2931061 [Rollout + kiểm tra (+ rollback nếu sai)] Waiting for deployment "fe" rollout to finish: 1 old replicas are pending termination...
+2026-10-12T14:25:10.2931836 [Rollout + kiểm tra (+ rollback nếu sai)] deployment "fe" successfully rolled out
+2026-10-12T14:25:10.2932951 [Rollout + kiểm tra (+ rollback nếu sai)] hoi tu sau 0s: fe [200 512550acf80b4ccb7bc362acc1626244757ea81a] | be [200 512550acf80b4ccb7bc362acc1626244757ea81a] | fe->be /health 200 | mong doi 512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2934614 [Rollout + kiểm tra (+ rollback nếu sai)] lan 1: fe [200 512550acf80b4ccb7bc362acc1626244757ea81a] | be [200 512550acf80b4ccb7bc362acc1626244757ea81a] | fe->be /health 200 | mong doi 512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2936462 [Rollout + kiểm tra (+ rollback nếu sai)] lan 2: fe [200 512550acf80b4ccb7bc362acc1626244757ea81a] | be [200 512550acf80b4ccb7bc362acc1626244757ea81a] | fe->be /health 200 | mong doi 512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2938095 [Rollout + kiểm tra (+ rollback nếu sai)] lan 3: fe [200 512550acf80b4ccb7bc362acc1626244757ea81a] | be [200 512550acf80b4ccb7bc362acc1626244757ea81a] | fe->be /health 200 | mong doi 512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2939717 [Rollout + kiểm tra (+ rollback nếu sai)] lan 4: fe [200 512550acf80b4ccb7bc362acc1626244757ea81a] | be [200 512550acf80b4ccb7bc362acc1626244757ea81a] | fe->be /health 200 | mong doi 512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2941340 [Rollout + kiểm tra (+ rollback nếu sai)] lan 5: fe [200 512550acf80b4ccb7bc362acc1626244757ea81a] | be [200 512550acf80b4ccb7bc362acc1626244757ea81a] | fe->be /health 200 | mong doi 512550acf80b4ccb7bc362acc1626244757ea81a
+2026-10-12T14:25:10.2942415 [Rollout + kiểm tra (+ rollback nếu sai)] RESULT=deployed
+2026-10-12T14:25:10.2942751 [Rollout + kiểm tra (+ rollback nếu sai)] 
+2026-10-12T14:21:48.7929892 [Chờ cluster có chỗ cho pod lệnh] ERROR: Operation returned an invalid status 'OK'
+2026-10-12T14:22:21.9056703 [Chờ cluster có chỗ cho pod lệnh] ERROR: Operation returned an invalid status 'OK'
+2026-10-12T14:22:54.5367791 [Chờ cluster có chỗ cho pod lệnh] ERROR: Operation returned an invalid status 'OK'
