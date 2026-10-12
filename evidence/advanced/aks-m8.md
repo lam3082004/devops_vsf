@@ -94,4 +94,5 @@ Dựng lại để chụp ảnh, đồng thời là phép kiểm nửa sau của
 | Ảnh Portal của cluster này | [`../advanced/screenshots/`](screenshots/README.md) | |
 
 Vậy với `permanently_delete_on_destroy = true`, vòng destroy → apply của `infra/aks` chạy **không thao tác tay và không
-phải chạy lại** — tiêu chí M8 đạt ở lần này. Cluster được tắt lại ngay sau khi chụp.
+phải chạy lại** — tiêu chí M8 đạt ở lần này. Cluster được tắt sau khi chụp (15:55 → 16:15Z, `27 destroyed`), rồi dựng
+lại lần bốn và **để bật** theo quyết định của người dùng (`docs/plans/active/aks-advanced.md`, Decision P).

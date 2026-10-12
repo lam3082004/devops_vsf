@@ -1,6 +1,6 @@
 # AKS — phần ADVANCED (ngoài phạm vi `topic.md`)
 
-**Status:** done 2026-10-12 — cluster đã tắt (`make aks-down`). Việc còn mở: mục "Còn mở" cuối file.
+**Status:** done 2026-10-12 — **cluster ĐANG BẬT theo quyết định của người dùng** (Decision P). Việc còn mở: mục "Còn mở" cuối file.
 **Opened:** 2026-10-12
 **Goal:** Cùng app OpsBoard chạy thêm trên AKS, song song với App Service: `make aks-up` dựng từ rỗng,
 merge vào `main` tự deploy, đủ bằng chứng tương đương M1–M11 trong `evidence/advanced/`.
@@ -48,6 +48,10 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
   render lúc deploy từ `terraform output` (`scripts/aks-render.sh`), không vào git.
 - **K.** `cd-aks.yml` chạy sau khi "CD" xanh (`workflow_run`), `kubectl` qua `az aks command invoke`.
 - **L.** Danh tính `id-gh-aks-deploy` ở `infra/bootstrap/aks.tf`; quyền trên cluster ở `infra/aks`.
+- **P (12/10 ~23:10 giờ VN, người dùng chốt):** *"vẫn giữ chiến lược CI/CD cũ nhưng cứ bật các thứ liên quan đến AKS, tôi chịu hoàn toàn
+  tiền"*. → Cluster AKS **để bật**, không `make aks-down` cuối phiên (ngoại lệ có chủ ý với luật "không để gì chạy qua đêm", như
+  quyết định 26/09 cho môi trường App Service). CI/CD không đổi: `cd.yml` rồi `cd-aks.yml` chạy sau mỗi merge. Chi phí ≈ $3,9/ngày
+  (1 node), mỗi lần deploy thêm ~15–25 phút node thứ hai. Free Trial hết hạn 15/10 — sau đó mọi thứ dừng.
 - **O (12/10, sau destroy → apply).** `permanently_delete_on_destroy = true` cho workspace Log Analytics của `infra/aks`: môi
   trường destroy mỗi tối, xoá mềm 14 ngày làm lần apply nào cũng rơi vào đường khôi phục (`known-issues.md` A20).
 - **N (12/10, sau phép đo).** `be`/`fe` chạy **2 bản + PodDisruptionBudget** (`minAvailable 1`), HPA `be` min 1 → 2: với 1 bản,
@@ -98,6 +102,8 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Recovery
 
+- 2026-10-12 16:30Z: **cluster ĐANG BẬT và sẽ để bật** (Decision P). Lệnh tắt sau khi chụp ảnh đã chạy xong 16:15Z trước khi người
+  dùng nhắn; dựng lại lần bốn ngay sau đó. Tắt khi cần: `make aks-down` (trước `make down`).
 - 2026-10-12 16:05Z: người dùng yêu cầu ảnh chụp. Dựng cluster lần ba (15:26Z, `apply` một lần), chụp 20 ảnh (GitHub, Portal sau khi
   người dùng bật quyền extension, ứng dụng qua port-forward) → `evidence/advanced/screenshots/`; **tắt cluster lại** ngay sau đó.
 - 2026-10-12 14:55Z: **XONG, cluster ĐÃ TẮT.** `main` = `512550a` (#94–#98). `infra/aks` state rỗng, hai RG không còn, 0 vCPU East
