@@ -87,3 +87,17 @@ CI của PR #94 đỏ ở `docker build + trivy (fe)`: GHSA-wq5f-xc86-pv6w, `sha
 PR #94 không đụng `app/` — cổng Trivy bắt đúng một advisory mới công bố. Người dùng chọn PR riêng #95 (chỉ lockfile:
 `sharp` + 26 gói `@img/*`), 9/9 check xanh, merge 06:48Z, CD success. Không có cổng này thì lỗi sẽ lộ ra ở lần CD
 đầu tiên của buổi demo.
+
+### P4 — CI/CD (07:08–07:24Z)
+
+- PR #94: 11/11 check xanh (9 required + 2 của `ci-aks.yml`) sau hai vòng sửa: Semgrep không parse được workflow mới
+  (#52), rồi cổng Trivy bắt CVE `sharp` (PR #95).
+- Merge #94 lúc 07:08:28Z → `CD` `38216113229` success (swap App Service, production `75d25f1`) → **`CD — AKS` tự chạy**
+  (`workflow_run`, run `38216996926`): job build của CD = success, cluster `Succeeded`, đăng nhập OIDC bằng
+  `id-gh-aks-deploy`, `set image` + `rollout status` chạy được với custom role (không `pods/exec`, không `secrets`).
+- Run đó **đỏ và tự rollback**: bước kiểm của tôi trúng pod `fe` cũ đang tắt dần (#54). Rollback đặt lại đúng image cũ,
+  `fe` trước `be`. Sửa `aks-cd.sh` (chờ hội tụ) → chạy tay bằng rollout thật: hội tụ sau 3 giây, `RESULT=deployed`.
+- `scripts/m2-poll.sh` (không sửa) chạy 07:07:14 → 07:24:19Z, 1025 tick, qua **6 lần thay pod** (deploy, rollback, deploy
+  lại): `be` 0 non-200 / 0 lỗi client, `fe` 0 / 0, `fe-page` 0 / 0. Chậm nhất 2,78 giây (ngưỡng 3 giây).
+- `aks-m6-check.yml` lần đầu: job chết vì `bash -e` + curl timeout (#53) — nhưng chính dòng đó cho thấy runner
+  **không** tới được `fe`. Sửa, chờ vào `main` để đo lại cả hai bề mặt.
