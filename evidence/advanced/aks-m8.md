@@ -80,3 +80,19 @@ Sửa: `infra/aks/versions.tf` — `log_analytics_workspace { permanently_delete
 
 Nửa còn lại của bản sửa A20 (lần `apply` kế tiếp tạo workspace **mới** và chạy một lần là xong) chỉ kiểm được ở lần
 `make aks-up` tới.
+
+## Lần dựng thứ ba — `apply` một lần là xong (15:26 → 15:36Z)
+
+Dựng lại để chụp ảnh, đồng thời là phép kiểm nửa sau của bản sửa A20.
+
+| Bước | Kết quả | Nguồn |
+|---|---|---|
+| `plan` | 27 to add, 0 to change, 0 to destroy | chạy trong phiên |
+| `apply` | **`27 added, 0 changed, 0 destroyed` — một lần**, 15:26:51 → 15:36:16Z (9 phút 25 giây) | [`../raw/aks-reapply-once-2026-10-12.log`](../raw/aks-reapply-once-2026-10-12.log) |
+| Workspace | `createdDate = 2026-10-12T15:27:37Z` — **mới thật**, không phải bản khôi phục (lần trước: 04:24Z) | `az monitor log-analytics workspace show` |
+| `make aks-deploy` + `make aks-verify` | `be` 2/2, `fe` 2/2 · **0 FAIL** | chạy trong phiên |
+| Ảnh Portal của cluster này | [`../advanced/screenshots/`](screenshots/README.md) | |
+
+Vậy với `permanently_delete_on_destroy = true`, vòng destroy → apply của `infra/aks` chạy **không thao tác tay và không
+phải chạy lại** — tiêu chí M8 đạt ở lần này. Cluster được tắt sau khi chụp (15:55 → 16:15Z, `27 destroyed`), rồi dựng
+lại lần bốn và **để bật** theo quyết định của người dùng (`docs/plans/active/aks-advanced.md`, Decision P).

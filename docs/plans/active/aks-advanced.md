@@ -1,6 +1,6 @@
 # AKS — phần ADVANCED (ngoài phạm vi `topic.md`)
 
-**Status:** done 2026-10-12 — cluster đã tắt (`make aks-down`). Việc còn mở: mục "Còn mở" cuối file.
+**Status:** done 2026-10-12 — **cluster ĐANG BẬT theo quyết định của người dùng** (Decision P). Việc còn mở: mục "Còn mở" cuối file.
 **Opened:** 2026-10-12
 **Goal:** Cùng app OpsBoard chạy thêm trên AKS, song song với App Service: `make aks-up` dựng từ rỗng,
 merge vào `main` tự deploy, đủ bằng chứng tương đương M1–M11 trong `evidence/advanced/`.
@@ -48,6 +48,10 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
   render lúc deploy từ `terraform output` (`scripts/aks-render.sh`), không vào git.
 - **K.** `cd-aks.yml` chạy sau khi "CD" xanh (`workflow_run`), `kubectl` qua `az aks command invoke`.
 - **L.** Danh tính `id-gh-aks-deploy` ở `infra/bootstrap/aks.tf`; quyền trên cluster ở `infra/aks`.
+- **P (12/10 ~23:10 giờ VN, người dùng chốt):** *"vẫn giữ chiến lược CI/CD cũ nhưng cứ bật các thứ liên quan đến AKS, tôi chịu hoàn toàn
+  tiền"*. → Cluster AKS **để bật**, không `make aks-down` cuối phiên (ngoại lệ có chủ ý với luật "không để gì chạy qua đêm", như
+  quyết định 26/09 cho môi trường App Service). CI/CD không đổi: `cd.yml` rồi `cd-aks.yml` chạy sau mỗi merge. Chi phí ≈ $3,9/ngày
+  (1 node), mỗi lần deploy thêm ~15–25 phút node thứ hai. Free Trial hết hạn 15/10 — sau đó mọi thứ dừng.
 - **O (12/10, sau destroy → apply).** `permanently_delete_on_destroy = true` cho workspace Log Analytics của `infra/aks`: môi
   trường destroy mỗi tối, xoá mềm 14 ngày làm lần apply nào cũng rơi vào đường khôi phục (`known-issues.md` A20).
 - **N (12/10, sau phép đo).** `be`/`fe` chạy **2 bản + PodDisruptionBudget** (`minAvailable 1`), HPA `be` min 1 → 2: với 1 bản,
@@ -98,6 +102,12 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Recovery
 
+- 2026-10-12 16:50Z: lần dựng thứ tư xong 16:40Z (24 phút) nhưng node đầu `NotReady` (`cni plugin not initialized`); gỡ máy đó bằng
+  `az aks nodepool delete-machines` → 1 node Ready, `be`/`fe` 2/2, verify 0 FAIL, `plan` No changes (`known-issues.md` A21).
+- 2026-10-12 16:30Z: **cluster ĐANG BẬT và sẽ để bật** (Decision P). Lệnh tắt sau khi chụp ảnh đã chạy xong 16:15Z trước khi người
+  dùng nhắn; dựng lại lần bốn ngay sau đó. Tắt khi cần: `make aks-down` (trước `make down`).
+- 2026-10-12 16:05Z: người dùng yêu cầu ảnh chụp. Dựng cluster lần ba (15:26Z, `apply` một lần), chụp 20 ảnh (GitHub, Portal sau khi
+  người dùng bật quyền extension, ứng dụng qua port-forward) → `evidence/advanced/screenshots/`; **tắt cluster lại** ngay sau đó.
 - 2026-10-12 14:55Z: **XONG, cluster ĐÃ TẮT.** `main` = `512550a` (#94–#98). `infra/aks` state rỗng, hai RG không còn, 0 vCPU East
   Asia. `infra/app` No changes, preflight 0 FAIL. Dựng lại: `make aks-up` (cần `infra/aks/terraform.tfvars`, ~10 phút + deploy).
   `cd-aks.yml` tự bỏ qua (xanh) khi cluster tắt.
@@ -138,8 +148,8 @@ make aks-verify
 ## Còn mở (không chặn gì)
 
 - **Actual cost** của `rg-vsf-aks` + `rg-vsf-aks-nodes` từ Cost analysis (đọc được từ 13/10) → thay giá niêm yết trong `cost-report.md`.
-- **Ảnh** Workbook *OpsBoard — AKS advanced* và email của 2 alert đã Fired (`evidence/advanced/aks-m11.md`).
-- **A20:** lần `make aks-up` kế tiếp phải `apply` một lần là xong (workspace mới thật).
+- **Ảnh email** của 2 alert đã Fired (hộp thư của người dùng). Ảnh Portal/GitHub/ứng dụng đã có: `evidence/advanced/screenshots/` (20 ảnh, chụp bù tối 12/10).
+- ~~A20~~ — đã kiểm: lần dựng thứ ba `apply` một lần là xong.
 - **A17:** `fe` còn 1 timeout khi node bị gỡ — nghi load balancer, chưa chứng minh, chưa sửa.
 - `alert-vsf-aks-node-cpu-high` chưa từng bắn (A18).
 - Sửa 2 tên bước bắt đầu bằng "Đ" trong `ci.yml`/`cd.yml` để Semgrep đọc được (A12) — đụng file của bài chính, cần người dùng quyết.

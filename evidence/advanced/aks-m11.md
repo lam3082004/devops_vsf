@@ -8,8 +8,8 @@ Log thô: [`../raw/aks-m11-2026-10-12.log`](../raw/aks-m11-2026-10-12.log) · [`
 
 | Mục tiêu của đề | Trên AKS | Trạng thái |
 |---|---|---|
-| App performance: response time · request rate · failure rate | Workbook *OpsBoard — AKS advanced*, 3 ô đầu, nguồn `AppRequests` | code + dữ liệu có; **chưa có ảnh Workbook** |
-| Infra: CPU, memory… | Workbook: CPU/memory node (`Perf`), số pod, số node, pod lỗi | như trên |
+| App performance: response time · request rate · failure rate | Workbook *OpsBoard — AKS advanced*, 3 ô đầu, nguồn `AppRequests` | **đạt** — [ảnh](screenshots/portal-workbook-aks-app-performance-20261012-2300.png) |
+| Infra: CPU, memory… | Workbook: CPU/memory node (`Perf`), số pod, số node, pod lỗi | **đạt** — [ảnh CPU/memory](screenshots/portal-workbook-aks-infra-node-cpu-memory-20261012-2300.png), [ảnh số pod/node](screenshots/portal-workbook-aks-so-pod-so-node-20261012-2300.png) |
 | View log | `ContainerLogV2` — log JSON của app trên stdout; `KubeEvents` | **đạt** (mục 2) |
 | 3 alert + action group + **trigger thật ít nhất 1** | 3 alert trong `infra/aks/alerts.tf`, action group `ag-vsf-oncall` của bài chính | **2 alert đã Fired thật** (mục 3) |
 | Truy vết alert → log/request (brief 21/09) | `trace_id` trong log = `OperationId` trong App Insights | **đạt** (mục 4) |
@@ -46,7 +46,8 @@ ContainerLogV2 | where PodNamespace == "opsboard" and ContainerName == "be"
 | `alert-vsf-aks-node-cpu-high` | — | chưa bắn | cần CPU node > 80% trong 15 phút; không cố ý gây ra | — |
 
 Một phút sau khi alert bắn (07:29:36), chính query của nó trả: `be-aks` **229 lỗi / 1349 request = 17%** trong 10 phút (ngưỡng 5%, tối thiểu
-20 request); `fe-aks` 0 / 280. Nguồn trạng thái Fired/Resolved của cả hai alert: Resource Graph `alertsmanagementresources` (đọc lại 08:12Z). Email đi qua `ag-vsf-oncall`
+20 request); `fe-aks` 0 / 280. Nguồn trạng thái Fired/Resolved của cả hai alert: Resource Graph `alertsmanagementresources` (đọc lại 08:12Z) và
+[ảnh Monitor → Alerts trên Portal](screenshots/portal-monitor-alerts-2-alert-aks-resolved-20261012-2257.png). Email đi qua `ag-vsf-oncall`
 (action group của bài chính, chỉ tham chiếu) — **chưa có ảnh email** trong repo.
 
 Alert của bài chính không bị kéo theo: `/boom` trên AKS ghi vào workspace riêng, `alert-vsf-5xx-rate` đọc
@@ -68,7 +69,7 @@ tới `http://be:8080/items?status=open&limit=20` 115,1 ms — tức `fe` gọi 
 
 ## Giới hạn
 
-- Chưa có ảnh chụp Workbook và ảnh email alert; Workbook mới được kiểm ở mức "Terraform tạo thành công" + từng query chạy
-  được qua API, chưa mở trên Portal.
+- Ảnh Workbook và ảnh lịch sử alert trên Portal: [`screenshots/README.md`](screenshots/README.md) — Workbook là của cluster dựng lại
+  tối 12/10 (dữ liệu ~25 phút), không phải của cluster ban ngày. **Chưa có ảnh email alert.**
 - `alert-vsf-aks-pod-not-starting` không bắt pod kẹt `ContainerCreating` do `FailedMount` (ca M5) — `known-issues.md` A6.
 - Không có managed Prometheus/Grafana: CPU/memory lấy từ bảng `Perf` (độ trễ ~1 phút), không có metric tuỳ biến của app.
