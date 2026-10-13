@@ -9,6 +9,7 @@
 - Người dùng yêu cầu bật Swagger trên backend production để demo. Thêm `SWAGGER_ENABLED`, mặc định false trong ứng dụng; Terraform bật true cho backend App Service production + staging, giữ môi trường Production và luật IP. AKS không đặt cờ nên Swagger vẫn tắt.
 - Triển khai qua PR → CI → squash merge → CD hiện có. URL sau triển khai: `https://app-vsf-jcip0s.azurewebsites.net/swagger/index.html`.
 - Kiểm local: `make test` 146 pass / 13 test MySQL skip; `make lint`, Terraform fmt/validate đạt. Chạy app thật: Production + cờ true → UI/JSON 200, đủ 9 path và header ghi bắt buộc; Production cờ vắng/false → 404; Development → 200.
+- Triển khai xong: PR [#101](https://github.com/lam3082004/devops_vsf/pull/101), `main=e3afb54`; 9/9 CI xanh, CD App Service [38343697097](https://github.com/lam3082004/devops_vsf/actions/runs/38343697097) success. Apply 0/2/0, plan sau No changes. Production Swagger UI/JSON 200, đủ 9 path; thử `GET /health` qua Chrome trả 200 và `db: ok`. CD-AKS tự chạy tiếp [38344548826](https://github.com/lam3082004/devops_vsf/actions/runs/38344548826), chưa kết luận trong lượt kiểm Swagger.
 - Tắt sau demo: đổi `SWAGGER_ENABLED` trong `infra/app/app.tf` thành `"false"` rồi apply.
 
 ## Tiến độ — cập nhật 2026-10-05 (đối chiếu topic.md ngay dưới; phần còn lại là trạng thái 2026-10-01: hết D24 + DevSecOps · email alert tới thật · review Sonnet D1–D24)
@@ -95,6 +96,12 @@ guide** ("timeout = lỗi"; `known-issues.md` #21). Review sub-agent đã tính 
   (đọc `serializedData` qua API `canFetchContent=true`: `showMetrics:false`, join `$left.Id == $right.span_id`).
 - ✅ PR #67 (người dùng soạn slide, yêu cầu đẩy production): deck toàn dự án `docs/guides/slides-project.html` (23 slide) — `fe` phục vụ ở
   `/a.html`; CD `36587663868` success, `curl -4 …/a.html` = 200, `cmp` giống hệt file nguồn, `/api/version` = `3ab953a`.
+- 13/10 (người dùng yêu cầu): dựng lại deck đó theo thứ tự `topic.md` — 26 slide: đề bài → mục 2 → mục 3 → mục 4 → mục 5 (chỉ S1) → sơ đồ luồng
+- 13/10 chiều: người dùng chuyển deck sang `docs/slides-op_intern.html` (file cũ `docs/guides/slides-project.html` đang ở trạng thái xoá, chưa commit). Slide M2 vẽ lại thành dòng thời gian từ log thật lần swap 1 (`evidence/raw/m2-20260927-run1.log`); slide M6 thêm ô giải thích Kudu/SCM. Vẫn 26 slide. Nhánh `feat/slides-production`: chép deck sang `app/fe/public/slide-op_intern.html` để `fe` phục vụ ở `/slide-op_intern.html`; `/a.html` giữ bản 29/09. Cùng nhánh: deck PoC monitoring ở `/slide-monitor.html`, 7 ảnh do người dùng tự chép vào `app/fe/public/images/` và `poc-images/`.
+  CI/CD → kiến trúc → lộ trình (D15 đánh dấu bỏ qua) → AKS → demo. Người dùng chốt cùng ngày: bỏ slide GATE D10, cost D20, alert D22, tuần 1, D23–D24,
+  bài học; **demo D25 = một luồng CI/CD từ PR tới production** (hẹp hơn kịch bản `notes/d25-prep.md`). **Chưa commit**; `app/fe/public/a.html` vẫn là bản 29/09.
+  Trên slide M2 ghi ĐẠT theo cách chứng minh của `topic.md` (0 non-200 / 5 442 request, 4 lần swap) — người dùng yêu cầu bỏ dòng
+  "chờ mentor chốt"; `evidence/M2.md` và `evidence/README.md` **vẫn** ghi "chờ mentor", chưa đồng bộ.
 
 **Bàn giao 2026-09-29 tối (phiên D21–D22 + slide):**
 - `main` = `3ab953a`. Không nhánh/PR nào đang mở của phiên (trừ PR bàn giao này). Không tiến trình nền nào còn chạy.
