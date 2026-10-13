@@ -133,6 +133,8 @@ Sau P0–P2 và sau P3–P5: viết prompt + chạy sub-agent Sonnet review (`do
 
 ## Validation
 
+- 2026-10-13: sau merge #100, CD — AKS [run 38281414551](https://github.com/lam3082004/devops_vsf/actions/runs/38281414551) success, cùng SHA `c37b96a` với CD App Service; bổ sung ở PR demo Swagger kế tiếp.
+
 ```
 make lint test fe-lint fe-test fe-build
 terraform -chdir=infra fmt -check -recursive

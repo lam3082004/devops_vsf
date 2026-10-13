@@ -4,6 +4,13 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
+## Demo Swagger — 2026-10-13
+
+- Người dùng yêu cầu bật Swagger trên backend production để demo. Thêm `SWAGGER_ENABLED`, mặc định false trong ứng dụng; Terraform bật true cho backend App Service production + staging, giữ môi trường Production và luật IP. AKS không đặt cờ nên Swagger vẫn tắt.
+- Triển khai qua PR → CI → squash merge → CD hiện có. URL sau triển khai: `https://app-vsf-jcip0s.azurewebsites.net/swagger/index.html`.
+- Kiểm local: `make test` 146 pass / 13 test MySQL skip; `make lint`, Terraform fmt/validate đạt. Chạy app thật: Production + cờ true → UI/JSON 200, đủ 9 path và header ghi bắt buộc; Production cờ vắng/false → 404; Development → 200.
+- Tắt sau demo: đổi `SWAGGER_ENABLED` trong `infra/app/app.tf` thành `"false"` rồi apply.
+
 ## Tiến độ — cập nhật 2026-10-05 (đối chiếu topic.md ngay dưới; phần còn lại là trạng thái 2026-10-01: hết D24 + DevSecOps · email alert tới thật · review Sonnet D1–D24)
 
 ### Đối chiếu topic.md — 05/10 (kiểm trực tiếp; `make fe-test`/`lint`/`test` chạy lại xanh: be 146 pass + 13 skip cần MySQL, fe 14 pass; preflight 05/10 toàn OK)

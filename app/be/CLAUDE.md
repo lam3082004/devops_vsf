@@ -29,7 +29,7 @@ SQL chỉ ở Repository. Bỏ lớp Service khi không có nghiệp vụ (xem `
 ## Việc không tự làm
 - Không thêm NuGet package mới nếu chưa được duyệt; nêu lý do và giá trị trong PR.
 - Không đưa secret/connection string vào code, `appsettings`, log. Không đọc `.env.local` (chứa mật khẩu dev).
-- Không bật Swagger ngoài Development.
+- Ngoài Development, Swagger mặc định tắt; chỉ bật bằng `SWAGGER_ENABLED=true` khi người dùng yêu cầu demo (đã duyệt cho App Service ngày 13/10/2026). Giữ môi trường Production và giới hạn IP hiện có.
 - Không gọi dịch vụ ngoài (Jev...) trong đường xử lý request chính khi chưa có timeout + fallback.
 
 ## Kiểm chứng (chạy trước khi nói "xong")
