@@ -397,64 +397,51 @@ svg.dia .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", M
   <div class="note ok" style="font-size:15px"><b>ADR-0003 đã được PoC kiểm chứng:</b> 2 node nhận cùng số log (113.630 = 113.630 trong test tải), không trùng. Còn lại là quyết định cho triển khai thật.</div>
 </section>
 
+<!-- ========== THIẾT KẾ · LUỒNG LOG ========== -->
+<section class="slide">
+  <div class="kicker">Thiết kế v1.2 · luồng log đầy đủ · docs/kien-truc-monitoring-azure.md</div>
+  <h2 style="margin-bottom:14px">Luồng log đầy đủ: log Azure ghi cục bộ, log ứng dụng ghi đôi</h2>
+  <div class="g2" style="grid-template-columns:2.3fr 1fr;gap:20px">
+    <figure class="shot"><img src="images/log-flow-full.png" alt="Sơ đồ luồng log theo thiết kế đầy đủ: log tài nguyên Azure và Activity Log đi qua Diagnostic Settings tới Event Hubs và Storage archive, mỗi Collector đọc bằng consumer group riêng rồi ghi VictoriaLogs của node mình; log ứng dụng đi OTLP qua Internal Load Balancer tới một Collector, vlagent ghi vào cả 2 VictoriaLogs; truy vấn qua ILB, nginx, Grafana, vmauth; cảnh báo qua vmalert, Alertmanager tới Teams, email"></figure>
+    <div class="col" style="gap:10px">
+      <div class="nc"><div class="n">A</div><div><b>Log Azure, Activity Log</b><span>Azure Policy tự bật Diagnostic Settings → Event Hubs giữ 3 ngày, kèm bản gốc ở Storage 1 năm.</span></div></div>
+      <div class="nc"><div class="n">→</div><div><b>Mỗi VM tự đọc đủ</b><span>Consumer group riêng trên mỗi hub, checkpoint và hàng đợi trên data disk, ghi VictoriaLogs cục bộ.</span></div></div>
+      <div class="nc"><div class="n">B</div><div><b>Log ứng dụng qua OTLP</b><span>Internal LB → một Collector kiểm bearer token → vlagent ghi vào cả 2 kho.</span></div></div>
+      <div class="nc"><div class="n">→</div><div><b>Lưu và truy vấn</b><span>Giữ 30 ngày, backup mỗi đêm giữ 7 ngày. Grafana → vmauth, kho node mình lỗi thì hỏi node kia.</span></div></div>
+      <div class="note warn" style="font-size:14px;padding:9px 14px"><b>Khác PoC:</b> PoC chưa có ILB, OTLP từ app, Azure Policy, archive, backup.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== THIẾT KẾ · LUỒNG METRIC ========== -->
+<section class="slide">
+  <div class="kicker">Thiết kế v1.2 · luồng metric đầy đủ · docs/kien-truc-monitoring-azure.md</div>
+  <h2 style="margin-bottom:14px">Luồng metric đầy đủ: qua vmagent, ghi đôi vào 2 kho</h2>
+  <div class="g2" style="grid-template-columns:2.3fr 1fr;gap:20px">
+    <figure class="shot"><img src="images/metric-flow-full.png" alt="Sơ đồ luồng metric theo thiết kế đầy đủ: platform metrics lấy qua Azure Monitor Batch API bằng Collector trên mỗi VM; metric ứng dụng đi OTLP qua Internal Load Balancer tới một Collector; vmagent mỗi node tự scrape các thành phần của cả 2 VM; mỗi vmagent ghi vào cả 2 VictoriaMetrics; truy vấn qua ILB, nginx, Grafana, vmauth; cảnh báo qua vmalert, Alertmanager; backup lên Storage"></figure>
+    <div class="col" style="gap:10px">
+      <div class="nc"><div class="n">1</div><div><b>Platform metrics</b><span>Collector trên mỗi VM gọi Azure Monitor Batch API mỗi 60 giây bằng Managed Identity.</span></div></div>
+      <div class="nc"><div class="n">2</div><div><b>Metric ứng dụng</b><span>OTLP qua Internal LB tới một Collector. Cumulative, histogram explicit bucket.</span></div></div>
+      <div class="nc"><div class="n">3</div><div><b>Tự giám sát</b><span>vmagent mỗi node scrape thành phần của cả 2 VM, không qua Collector.</span></div></div>
+      <div class="nc"><div class="n">4</div><div><b>Buffer, ghi đôi</b><span>Mỗi vmagent ghi cả 2 VictoriaMetrics. Dedup 60 giây, giữ 15 tháng, nhãn 2 node phải giống nhau.</span></div></div>
+      <div class="note warn" style="font-size:14px;padding:9px 14px"><b>Khác PoC:</b> PoC không có vmagent, Collector ghi thẳng kho của node mình.</div>
+    </div>
+  </div>
+</section>
+
 <!-- ========== KIẾN TRÚC ĐÍCH ========== -->
 <section class="slide">
   <div class="kicker">Thiết kế v1.2 · kiến trúc đích cho triển khai thật</div>
-  <h2 style="margin-bottom:18px">Ba nguồn dữ liệu đi qua một Collector trên mỗi VM</h2>
-  <div class="arch">
-    <div class="t">
-      <div class="lane">Metrics Azure</div>
-      <div class="flow">
-        <div class="box"><b>Azure Monitor</b><small>platform metrics của mọi subscription</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>Collector · <code>azuremonitor</code></b><small>Batch API mỗi 60 giây, Managed Identity</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>vmagent</b><small>buffer trên disk, ghi đôi về 2 node</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>VictoriaMetrics ×2</b><small>dedup 60 giây · giữ 15 tháng</small></div>
-      </div>
+  <h2 style="margin-bottom:14px">Kiến trúc đích: 2 VM, 2 zone, một ILB cho OTLP và Grafana</h2>
+  <div class="g2" style="grid-template-columns:2.3fr 1fr;gap:20px">
+    <figure class="shot"><img src="images/azure-monitoring-full.png" alt="Sơ đồ kiến trúc đầy đủ theo thiết kế v1.2: ba đường thu thập (log Azure qua Diagnostic Settings và Event Hubs, metric qua Azure Monitor Batch API, ứng dụng qua OTLP và Internal Load Balancer); hai VM obs-01, obs-02 ở 2 zone, mỗi VM chạy OTel Collector, vmagent, vlagent, VictoriaMetrics, VictoriaLogs, nginx, Grafana, vmauth, vmalert, Alertmanager, node_exporter; truy cập qua ILB HTTPS 443; cảnh báo tới Teams, email"></figure>
+    <div class="col" style="gap:10px">
+      <div class="card" style="padding:10px 14px"><div class="lbl">Ba đường thu thập</div><p style="font-size:14px">Log Azure qua Event Hubs · metric qua Batch API · ứng dụng qua OTLP + ILB. Chỉ đường thứ ba đi qua ILB.</p></div>
+      <div class="card" style="padding:10px 14px"><div class="lbl">Hạ tầng</div><p style="font-size:14px">2 VM D4as_v5 ở 2 Availability Zone, không public IP. Private Endpoint cho Event Hub, Storage. Managed Identity.</p></div>
+      <div class="card" style="padding:10px 14px"><div class="lbl">Truy cập</div><p style="font-size:14px">VPN → ILB :443 → nginx + Grafana (SSO Entra ID) → vmauth. Grafana obs-01 active, obs-02 standby, chuyển thủ công.</p></div>
+      <div class="card" style="padding:10px 14px"><div class="lbl">Cảnh báo</div><p style="font-size:14px">vmalert ×2 → Alertmanager ×2 → Teams, email. Mỗi alert gửi 1 lần.</p></div>
+      <div class="note warn" style="font-size:14px;padding:9px 14px"><b>Đây là thiết kế.</b> PoC dựng phần lõi: log và metric Azure, truy vấn, cảnh báo. Ba slide sau là phần PoC đã dựng.</div>
     </div>
-    <div class="a">
-      <div class="lane">Log Azure</div>
-      <div class="flow">
-        <div class="box"><b>Azure Policy</b><small>tự bật Diagnostic Settings, kèm archive Storage 1 năm</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>Event Hub</b><small>mỗi VM một consumer group · giữ 3 ngày</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>Collector · <code>azureeventhub</code></b><small>checkpoint + hàng đợi bền trên data disk</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>VictoriaLogs cục bộ</b><small>không ghi đôi · giữ 30 ngày</small></div>
-      </div>
-    </div>
-    <div class="d">
-      <div class="lane">Log, metric của app</div>
-      <div class="flow">
-        <div class="box"><b>Ứng dụng</b><small>OpenTelemetry SDK</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>Internal LB</b><small><code>otlp.obs.internal:4318</code> + bearer token</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>Collector · <code>otlp</code></b><small>kiểm token, sai trả 401</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>vlagent · vmagent</b><small>ghi đôi về 2 node</small></div>
-      </div>
-    </div>
-    <div class="o">
-      <div class="lane">Dùng dữ liệu</div>
-      <div class="flow">
-        <div class="box"><b>Grafana</b><small>HTTPS, SSO Entra ID</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>vmauth</b><small><code>first_available</code>: node 1, hỏng thì node 2</small></div>
-        <div class="ar" style="flex-basis:50px"></div>
-        <div class="box"><b>vmalert ×2</b><small>cùng rule, rule nằm trong Git</small></div>
-        <div class="ar">→</div>
-        <div class="box"><b>Alertmanager cluster</b><small>gửi 1 lần → Teams, email</small></div>
-      </div>
-    </div>
-  </div>
-  <div class="fill"></div>
-  <div class="g2" style="gap:14px">
-    <div class="note info" style="font-size:15px"><b>Hạ tầng:</b> 2 VM D4as_v5 ở 2 Availability Zone, không public IP; Private Endpoint cho Event Hub và Storage; mọi truy cập Azure bằng Managed Identity.</div>
-    <div class="note warn" style="font-size:15px"><b>Đây là thiết kế.</b> PoC dựng phần lõi: hai làn đầu, truy vấn và cảnh báo. Ba slide sau là phần PoC đã dựng.</div>
   </div>
 </section>
 
