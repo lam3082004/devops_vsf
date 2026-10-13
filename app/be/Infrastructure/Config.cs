@@ -37,7 +37,8 @@ public sealed record Config(
     // D19 dùng 3 luồng và đã đẩy CPU 1 vCPU lên ~100%.
     int LoadMaxConcurrent = 4,
     // Tuỳ chọn: vắng → không bật telemetry (test, CI, chạy local). Xem Infrastructure/Telemetry.cs.
-    string? AppInsightsConnectionString = null)
+    string? AppInsightsConnectionString = null,
+    bool SwaggerEnabled = false)
 {
     /// Tiền tố mà App Service để nguyên trong biến môi trường khi nó KHÔNG
     /// resolve được tham chiếu Key Vault (mất quyền, sai URI, secret bị xoá...).
@@ -73,7 +74,8 @@ public sealed record Config(
             DbTls: Boolean("DB_TLS", true),
             LoadMaxSeconds: loadMaxSeconds,
             LoadMaxConcurrent: (int)loadMaxConcurrent,
-            AppInsightsConnectionString: Optional("APPLICATIONINSIGHTS_CONNECTION_STRING"));
+            AppInsightsConnectionString: Optional("APPLICATIONINSIGHTS_CONNECTION_STRING"),
+            SwaggerEnabled: Boolean("SWAGGER_ENABLED", false));
     }
 
     /// Tiền tố tham chiếu Key Vault chưa resolve — Telemetry dùng để phân biệt

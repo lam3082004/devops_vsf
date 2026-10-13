@@ -92,11 +92,9 @@ var app = builder.Build();
 await app.Services.GetRequiredService<SchemaInitializer>()
     .TryEnsureAsync(new DatabaseRepository(dataSource), CancellationToken.None);
 
-// Chỉ bật ở Development (ASPNETCORE_ENVIRONMENT=Development, đặt trong
-// app/.env.example và docker-compose.yml). Terraform (D8/D9) không set biến
-// này cho Web App → mặc định .NET là Production → Swagger tự tắt trên Azure
-// thật, không cần nhớ gỡ thủ công.
-if (app.Environment.IsDevelopment())
+// Development luôn có Swagger. Ngoài Development chỉ bật khi chủ động đặt
+// SWAGGER_ENABLED=true (demo App Service); không đổi môi trường Production.
+if (app.Environment.IsDevelopment() || config.SwaggerEnabled)
 {
     app.UseSwagger();
     app.UseSwaggerUI();

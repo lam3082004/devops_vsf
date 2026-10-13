@@ -26,6 +26,9 @@ locals {
   app_settings = merge({
     # App Service chuyển traffic vào cổng này của container.
     WEBSITES_PORT = tostring(var.container_port)
+    # Người dùng bật Swagger cho demo 13/10/2026, giữ môi trường Production.
+    # Đổi thành "false" và apply để tắt sau demo; cả hai slot giữ cùng cấu hình.
+    SWAGGER_ENABLED = "true"
     # Không mount /home dùng chung vào container: app không ghi file, tắt đi
     # để container khởi động nhanh và không phụ thuộc storage của stamp.
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
