@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoring tập trung trên Azure · PoC</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --page: #f4f5f7;
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --gray-bg: #f3f4f6;
+  --green: #15803d;
+  --green-bg: #f0fdf4;
+  --amber: #b45309;
+  --amber-bg: #fffbeb;
+  --red: #b91c1c;
+  --red-bg: #fef2f2;
+  --violet: #7c3aed;
+  --violet-bg: #f5f3ff;
+  --mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--page); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+#deck { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.slide { position: absolute; width: 1280px; height: 720px; background: var(--bg); border-radius: 6px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.06); padding: 40px 60px 44px; display: none; flex-direction: column; }
+.slide.active { display: flex; }
+
+.kicker { font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+.future .kicker { color: var(--violet); }
+h1 { font-size: 50px; line-height: 1.15; margin: 0; font-weight: 800; }
+h2 { font-size: 32px; line-height: 1.2; margin: 0 0 22px; font-weight: 750; }
+h3 { font-size: 19px; margin: 0 0 8px; font-weight: 700; }
+p { font-size: 17px; line-height: 1.5; margin: 0; }
+code { font-family: var(--mono); font-size: .88em; background: var(--gray-bg); padding: 1px 6px; border-radius: 4px; }
+.muted { color: var(--muted); }
+.fill { flex: 1; }
+.col { display: flex; flex-direction: column; gap: 14px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+ul.tight { margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.5; }
+ul.tight li { margin-bottom: 3px; }
+
+/* ghi chú */
+.note { border-radius: 10px; padding: 12px 16px; font-size: 16.5px; line-height: 1.5; }
+.note.warn { background: var(--amber-bg); border-left: 5px solid #f59e0b; }
+.note.bad { background: var(--red-bg); border-left: 5px solid #ef4444; }
+.note.ok { background: var(--green-bg); border-left: 5px solid #22c55e; }
+.note.info { background: var(--blue-bg); border-left: 5px solid #3b82f6; }
+.note.fu { background: var(--violet-bg); border-left: 5px solid #8b5cf6; }
+
+/* thẻ */
+.card { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fff; }
+.card p { font-size: 15.5px; }
+.card .lbl { font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+.card.blue { border-color: #93c5fd; background: var(--blue-bg); }
+.card.green { border-color: #86efac; background: var(--green-bg); }
+.card.red { border-color: #fca5a5; background: var(--red-bg); }
+.card.amber { border-color: #fcd34d; background: var(--amber-bg); }
+.card.violet { border-color: #c4b5fd; background: var(--violet-bg); }
+.card.gray { background: var(--gray-bg); }
+.big { font-size: 44px; font-weight: 800; line-height: 1; }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12.5px; font-weight: 800; }
+.pill.red { background: #fee2e2; color: var(--red); }
+.pill.green { background: #dcfce7; color: var(--green); }
+.pill.amber { background: #fef3c7; color: var(--amber); }
+.pill.violet { background: #ede9fe; color: var(--violet); }
+.pill.gray { background: #e5e7eb; color: #4b5563; }
+.pill.blue { background: #dbeafe; color: #1e40af; }
+.term { background: #111827; color: #e5e7eb; font-family: var(--mono); font-size: 14.5px; border-radius: 10px; padding: 14px 18px; line-height: 1.6; }
+.term .p { color: #93c5fd; } .term .e { color: #fca5a5; } .term .g { color: #86efac; } .term .cm { color: #9ca3af; }
+.term { white-space: pre-wrap; }
+
+/* bìa */
+.cover-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px; }
+.cover-stats .card { padding: 20px; }
+.cover-stats p { margin-top: 10px; font-size: 16px; }
+
+/* các chặng / lộ trình */
+.weeks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; flex: 1; }
+.week { border-radius: 12px; border: 1.5px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
+.week .wh { padding: 10px 14px; font-weight: 800; font-size: 15px; background: var(--gray-bg); }
+.week .wh small { display: block; font-weight: 600; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.week .wh .pill { float: right; }
+.week .d { padding: 7px 14px; font-size: 14.5px; line-height: 1.35; border-top: 1px solid var(--line); display: grid; grid-template-columns: 50px 1fr; }
+.week .d b { font-family: var(--mono); font-size: 13px; color: var(--blue); }
+.week .d.one { display: block; }
+.week .d.todo { background: var(--violet-bg); color: #5b21b6; } .week .d.todo b { color: var(--violet); }
+.week .res { margin-top: auto; padding: 10px 14px; font-size: 13.5px; line-height: 1.4; border-top: 1.5px dashed var(--line); color: #374151; }
+.week .res b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 2px; }
+
+/* kiến trúc theo làn */
+.arch { display: grid; grid-template-columns: 150px 1fr; row-gap: 14px; column-gap: 16px; }
+.arch .lane { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; border-right: 4px solid; padding-right: 10px; }
+.arch .flow { display: flex; align-items: stretch; gap: 0; }
+.arch .box { flex: 1; border-radius: 10px; border: 1.5px solid; padding: 10px 12px; font-size: 14.5px; line-height: 1.35; background: #fff; }
+.arch .box > b:first-child { display: block; font-size: 15.5px; }
+.arch .box small { color: var(--muted); font-size: 13px; }
+.arch .ar { flex: 0 0 30px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 20px; }
+.arch .t .lane { color: var(--blue); border-color: #93c5fd; } .arch .t .box { border-color: #bfdbfe; background: var(--blue-bg); }
+.arch .a .lane { color: var(--amber); border-color: #fcd34d; } .arch .a .box { border-color: #fde68a; background: var(--amber-bg); }
+.arch .o .lane { color: var(--green); border-color: #86efac; } .arch .o .box { border-color: #bbf7d0; background: var(--green-bg); }
+.arch .d .lane { color: var(--violet); border-color: #c4b5fd; } .arch .d .box { border-color: #ddd6fe; background: var(--violet-bg); }
+.arch > div { display: contents; }
+
+/* bảng so sánh */
+table.cmp { border-collapse: collapse; width: 100%; font-size: 15px; }
+table.cmp th { text-align: left; font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 6px 10px; border-bottom: 2px solid var(--line); }
+table.cmp td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
+table.cmp td.num, table.cmp th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.cmp td.nw { white-space: nowrap; }
+
+/* chuỗi bước ngang */
+.chain { display: flex; align-items: stretch; }
+.chain .st { flex: 1; border-radius: 12px; border: 1.5px solid var(--line); padding: 10px 13px; font-size: 14.5px; line-height: 1.4; }
+.chain .st > b:first-child { display: block; font-size: 15.5px; margin-bottom: 3px; }
+.chain .ar { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 20px; }
+.chain .tag { flex: 0 0 132px; display: flex; flex-direction: column; justify-content: center; font-size: 13px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .05em; border-right: 4px solid; padding-right: 10px; margin-right: 14px; }
+.chain .tag small { font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.chain.mt .tag { color: var(--blue); border-color: #93c5fd; } .chain.mt .st { border-color: #bfdbfe; background: var(--blue-bg); }
+.chain.lg .tag { color: var(--violet); border-color: #c4b5fd; } .chain.lg .st { border-color: #ddd6fe; background: var(--violet-bg); }
+
+/* thẻ số lớn */
+.stat .big { font-size: 40px; }
+.stat p { margin-top: 8px; font-size: 15px; }
+
+/* bảng câu hỏi – kết quả */
+.mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.m { border-radius: 12px; border: 1.5px solid #86efac; background: var(--green-bg); padding: 14px 16px; }
+.m .id { font-family: var(--mono); font-weight: 800; font-size: 15px; color: var(--green); }
+.m .id .pill { float: right; font-family: system-ui, sans-serif; }
+.m .req { font-size: 17px; font-weight: 700; line-height: 1.3; margin-top: 8px; }
+.m .ev { font-size: 14.5px; line-height: 1.4; color: #374151; margin-top: 5px; }
+.m.part { border-color: #fcd34d; background: var(--amber-bg); }
+.m.part .id { color: var(--amber); }
+.mgrid.big-m { flex: 1; grid-auto-rows: 1fr; }
+.big-m .m { padding: 18px 20px; }
+.big-m .m .id { font-size: 17px; }
+.big-m .m .req { font-size: 20px; margin-top: 12px; }
+.big-m .m .ev { font-size: 16px; line-height: 1.45; margin-top: 8px; }
+
+/* tình huống / phát hiện */
+.case { border-radius: 12px; border: 1.5px solid var(--line); padding: 13px 15px; display: flex; flex-direction: column; gap: 5px; }
+.case .n { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.case h3 { font-size: 16.5px; margin: 0; line-height: 1.3; }
+.case p { font-size: 14.5px; line-height: 1.4; }
+.big-c { flex: 1; grid-auto-rows: 1fr; }
+.big-c .case { padding: 16px 18px; gap: 8px; }
+.big-c .case .n { font-size: 15px; font-weight: 800; }
+.big-c .case h3 { font-size: 19px; }
+.big-c .case p { font-size: 16px; line-height: 1.45; }
+
+/* kết */
+.endwrap { flex: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+.thanks { font-size: 72px; font-weight: 800; line-height: 1.05; margin: 0; }
+.stat4 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.stat4 .card { padding: 18px; }
+.stat4 .big { font-size: 40px; }
+.stat4 p { margin-top: 8px; }
+
+/* đề bài: các mảnh ghép */
+.brief { display: flex; align-items: stretch; }
+.brief .pc { flex: 1; border-radius: 12px; border: 1.5px solid; padding: 12px 14px 13px; font-size: 14.5px; line-height: 1.35; background: #fff; }
+.brief .pc .n { display: inline-flex; width: 24px; height: 24px; border-radius: 50%; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 7px; }
+.brief .pc b { display: block; font-size: 17px; margin-bottom: 2px; }
+.brief .ar { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 20px; }
+.brief .c1 { border-color: #93c5fd; background: var(--blue-bg); } .brief .c1 .n { background: var(--blue); }
+.brief .c2 { border-color: #a5b4fc; background: #eef2ff; } .brief .c2 .n { background: #4f46e5; }
+.brief .c3 { border-color: #86efac; background: var(--green-bg); } .brief .c3 .n { background: var(--green); }
+.brief .c4 { border-color: #fcd34d; background: var(--amber-bg); } .brief .c4 .n { background: var(--amber); }
+.brief .c5 { border-color: #fca5a5; background: var(--red-bg); } .brief .c5 .n { background: var(--red); }
+.tfband { margin-top: 8px; border-radius: 10px; background: var(--violet-bg); border: 1.5px dashed #a78bfa; color: #5b21b6;
+  text-align: center; font-size: 15.5px; font-weight: 700; padding: 8px 12px; }
+.quote { border-left: 5px solid var(--blue); background: var(--blue-bg); border-radius: 10px; padding: 14px 18px; font-size: 17px; line-height: 1.5; }
+.quote small { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); }
+.toc { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.toc .t { border-radius: 12px; border: 1.5px solid var(--line); padding: 11px 14px; background: #fff; }
+.toc .t .k { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--blue); }
+.toc .t .v { font-size: 30px; font-weight: 800; line-height: 1.1; margin: 2px 0; }
+.toc .t p { font-size: 14px; line-height: 1.35; color: #374151; }
+
+/* danh sách đánh số */
+table.rules { border-collapse: collapse; width: 100%; font-size: 15px; }
+table.rules td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
+table.rules td:first-child { width: 34px; padding-right: 0; }
+table.rules .no { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center;
+  font-size: 12.5px; font-weight: 800; color: #fff; background: var(--blue); }
+
+/* sơ đồ SVG dùng chung */
+svg.dia { width: 100%; display: block; }
+svg.dia text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+svg.dia .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+
+/* các bước có trạng thái */
+.steps4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.steps4 .s4 { border-radius: 12px; border: 1.5px solid; padding: 12px 14px; font-size: 14.5px; line-height: 1.4; position: relative; }
+.steps4 .s4 .no { font-family: var(--mono); font-size: 12.5px; font-weight: 800; }
+.steps4 .s4 h3 { font-size: 16.5px; margin: 2px 0 5px; }
+.steps4 .s4.g { border-color: #86efac; background: var(--green-bg); } .steps4 .s4.g .no { color: var(--green); }
+.steps4 .s4.a { border-color: #fcd34d; background: var(--amber-bg); } .steps4 .s4.a .no { color: var(--amber); }
+.steps4 .s4.r { border-color: #fca5a5; background: var(--red-bg); } .steps4 .s4.r .no { color: var(--red); }
+.steps4 .s4.b { border-color: #93c5fd; background: var(--blue-bg); } .steps4 .s4.b .no { color: var(--blue); }
+
+/* luồng demo */
+.dflow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; align-items: stretch; }
+.dflow .df { border-radius: 12px; border: 1.5px solid #c4b5fd; background: var(--violet-bg); padding: 10px 11px 11px; font-size: 13.5px; line-height: 1.4; margin-right: 18px; position: relative; }
+.dflow .df:last-child { margin-right: 0; }
+.dflow .df:not(:last-child)::after { content: "→"; position: absolute; right: -17px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 16px; }
+.dflow .df b { display: block; font-size: 15px; margin: 2px 0 4px; }
+.dflow .df .no { font-family: var(--mono); font-size: 12px; font-weight: 800; color: var(--violet); }
+.dflow .df.ci { border-color: #93c5fd; background: var(--blue-bg); } .dflow .df.ci .no { color: var(--blue); }
+.dflow .df.cd { border-color: #86efac; background: var(--green-bg); } .dflow .df.cd .no { color: var(--green); }
+.dflow .df.rd { border-color: #fca5a5; background: var(--red-bg); } .dflow .df.rd .no { color: var(--red); }
+.dflow .df small { display: block; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #d1d5db; font-size: 12.5px; color: #374151; }
+
+/* ảnh chụp màn hình */
+.shot { margin: 0; }
+.shot img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1.5px solid var(--line); }
+.shot figcaption { font-size: 13.5px; line-height: 1.4; color: var(--muted); margin-top: 6px; }
+
+/* thẻ đánh số (mô hình HA) */
+.nc { display: grid; grid-template-columns: 30px 1fr; column-gap: 10px; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.nc .n { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.nc b { display: block; font-size: 15.5px; }
+.nc span { font-size: 14px; line-height: 1.4; color: #374151; }
+
+/* cột ngang so sánh chi phí: một thước đo, một trục */
+.hbar { display: grid; grid-template-columns: 196px 1fr; row-gap: 12px; column-gap: 12px; align-items: center; }
+.hbar .nm { font-size: 14.5px; line-height: 1.3; }
+.hbar .nm small { display: block; color: var(--muted); font-size: 12.5px; }
+.hbar .tr { display: flex; align-items: center; gap: 10px; }
+.hbar .br { height: 26px; border-radius: 0 4px 4px 0; background: var(--blue); }
+.hbar .br.base { background: #9ca3af; }
+.hbar .vl { font-size: 15.5px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* số trang: luôn hiện trên từng slide, kể cả khi in/xuất PDF */
+.pagenum { position: absolute; right: 24px; bottom: 10px; font-family: var(--mono); font-size: 13px;
+  font-weight: 600; color: var(--muted); letter-spacing: .02em; pointer-events: none; }
+
+/* nav ẩn */
+#nav { position: fixed; right: 16px; bottom: 12px; display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted);
+  opacity: 0; transition: opacity .3s; }
+#nav.show { opacity: 1; }
+#nav button { border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 5px 11px; cursor: pointer; font-size: 14px; }
+@media print {
+  @page { size: 1280px 720px; margin: 0; }
+  html, body { background: #fff; height: auto; }
+  #deck { position: static; display: block; }
+  .slide { display: flex !important; position: relative; transform: none !important; box-shadow: none; border-radius: 0; page-break-after: always; }
+  #deck > .slide:last-of-type { page-break-after: auto; }
+  #nav { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ========== BÌA ========== -->
+<section class="slide">
+  <div class="fill"></div>
+  <div class="kicker">PoC · Azure App Service · 2 VM tự host · Terraform</div>
+  <h1>Monitoring tập trung trên Azure:<br>metrics, log và cảnh báo về một nơi</h1>
+  <p class="muted" style="font-size:22px;margin-top:18px">Bùi Tùng Lâm · số đo PoC ngày 26–27/09/2026</p>
+  <div class="cover-stats">
+    <div class="card blue"><div class="big" style="color:var(--blue)">0</div><p>log bị mất khi tải tới 200 request/giây</p></div>
+    <div class="card green"><div class="big" style="color:var(--green)">≈ 7′</div><p>từ lúc lỗi 5xx vượt 5% tới lúc alert firing trên cả 2 node</p></div>
+    <div class="card amber"><div class="big" style="color:var(--amber)">≈ 2′</div><p>phát hiện mất nguyên 1 VM, VM còn lại vẫn phục vụ</p></div>
+    <div class="card gray"><div class="big">$541</div><p>mỗi tháng theo thiết kế, so với ≈ $1.800 của Log Analytics</p></div>
+  </div>
+  <div class="fill"></div>
+</section>
+
+<!-- ========== BÀI TOÁN ========== -->
+<section class="slide">
+  <div class="kicker">Bài toán · vì sao làm</div>
+  <h2 style="margin-bottom:16px">Gom metrics và log của Azure về một nơi, không trả tiền theo GB</h2>
+  <div class="brief">
+    <div class="pc c1"><span class="n">1</span><b>Nguồn</b>App Service, APIM, SQL, Storage trên nhiều subscription</div>
+    <div class="ar">→</div>
+    <div class="pc c2"><span class="n">2</span><b>Thu thập</b>OpenTelemetry Collector, một agent cho mọi nguồn</div>
+    <div class="ar">→</div>
+    <div class="pc c4"><span class="n">3</span><b>Lưu</b>VictoriaMetrics cho metrics, VictoriaLogs cho log</div>
+    <div class="ar">→</div>
+    <div class="pc c3"><span class="n">4</span><b>Xem</b>Grafana: dashboard và tìm log</div>
+    <div class="ar">→</div>
+    <div class="pc c5"><span class="n">5</span><b>Cảnh báo</b>vmalert + Alertmanager, gửi Teams và email</div>
+  </div>
+  <div class="tfband">Tự host trên 2 VM bằng Docker Compose, hạ tầng bằng Terraform, thay cho Log Analytics / Application Insights</div>
+  <div class="g2" style="grid-template-columns:1.5fr 1fr;gap:20px;margin-top:16px">
+    <div class="quote">“Chứng minh được luồng App Service → (metrics Azure Monitor + log qua Event Hub) → OTel Collector → VictoriaMetrics/VictoriaLogs → Grafana, và alert; có số đo thật để quyết định có triển khai thật không.”<small>Mục tiêu PoC, nguyên văn <code>docs/plans/active/poc.md</code></small></div>
+    <div class="card blue">
+      <div class="lbl">Vì sao không dùng Log Analytics · ADR-0004</div>
+      <h3 style="font-size:20px">Tính tiền theo GB ingest</h3>
+      <p>20 GB log/ngày ≈ $1.800/tháng. Tự host: một nơi xem cả metrics, log, alert; không khoá vào KQL.</p>
+    </div>
+  </div>
+  <div class="fill"></div>
+  <p class="muted" style="font-size:15px;margin-bottom:10px">Các slide sau đi theo thứ tự: thiết kế, PoC đã dựng, kết quả đo, chi phí, đề xuất.</p>
+  <div class="toc">
+    <div class="t"><div class="k">Thiết kế</div><div class="v">v1.2</div><p>5 ADR, 11 luồng dữ liệu, 22 sự cố</p></div>
+    <div class="t"><div class="k">Lab local</div><div class="v">9/9</div><p>smoke test trên laptop, 2 node mô phỏng</p></div>
+    <div class="t"><div class="k">PoC</div><div class="v">2 VM</div><p>trên Azure, Central India, theo dõi 3 app</p></div>
+    <div class="t"><div class="k">Kết quả</div><div class="v">5</div><p>nhóm kiểm thử, có số đo và ảnh</p></div>
+    <div class="t" style="border-color:#fcd34d;background:var(--amber-bg)"><div class="k" style="color:var(--amber)">Đề xuất</div><div class="v">7</div><p>điều kiện để triển khai thật</p></div>
+  </div>
+</section>
+
+<!-- ========== BỐN CHẶNG ========== -->
+<section class="slide">
+  <div class="kicker">Tổng quan dự án · repo <span style="text-transform:none">monitor</span></div>
+  <h2 style="margin-bottom:16px">Bốn chặng: thiết kế, lab, PoC trên Azure, rồi mới triển khai thật</h2>
+  <div class="weeks">
+    <div class="week">
+      <div class="wh">1 · Thiết kế <span class="pill green">XONG</span><small><code>docs/</code> · 10–26/09</small></div>
+      <div class="d one">Kiến trúc v1.0 → v1.2 sau hai vòng rà edge case</div>
+      <div class="d one">5 ADR: mỗi quyết định có lý do và hệ quả</div>
+      <div class="d one">11 luồng dữ liệu F1–F11, ma trận 22 sự cố</div>
+      <div class="d one">7 runbook, hướng dẫn vận hành, onboarding app</div>
+      <div class="res"><b>Bằng chứng</b>Mọi khối YAML trong thiết kế qua <code>validate</code> / <code>-dryRun</code> trên đúng version đã ghim</div>
+    </div>
+    <div class="week">
+      <div class="wh">2 · Lab local <span class="pill green">XONG</span><small><code>local/</code> · 25/09</small></div>
+      <div class="d one">2 node mô phỏng bằng Docker Compose, không cần Azure</div>
+      <div class="d one"><code>telemetrygen</code> đóng vai app, gửi log và metric qua OTLP</div>
+      <div class="d one">vmagent, vlagent ghi đôi về 2 node</div>
+      <div class="d one">Thử failover: tắt node 1 vẫn query được</div>
+      <div class="res"><b>Bằng chứng</b><code>scripts/smoke-test.sh</code>: 9/9 PASS</div>
+    </div>
+    <div class="week" style="border-color:#93c5fd">
+      <div class="wh" style="background:var(--blue-bg)">3 · PoC Azure <span class="pill amber">CÒN MỞ</span><small><code>poc/</code> · 26–27/09</small></div>
+      <div class="d one">Terraform: 2 VM, Event Hub, Diagnostic Settings, quyền</div>
+      <div class="d one">Stack: Collector, VictoriaMetrics, VictoriaLogs, Grafana, alert</div>
+      <div class="d one">App demo Flask, <code>traffic.sh</code>, test tải k6</div>
+      <div class="d one">Bước 0–3 xong · bước 4 (cảnh báo), 5 (báo cáo) còn việc</div>
+      <div class="res"><b>Bằng chứng</b><code>docs/poc-ket-qua.md</code> + 8 ảnh, số đo gốc trong plan</div>
+    </div>
+    <div class="week">
+      <div class="wh">4 · Triển khai thật <span class="pill violet">BACKLOG</span><small><code>docs/plans/backlog/</code></small></div>
+      <div class="d one todo">8 giai đoạn GĐ 0–7, khoảng 6 tuần</div>
+      <div class="d one todo">Subscription công ty, nhiều subscription, Policy</div>
+      <div class="d one todo">Thêm Ansible, Private Endpoint, SSO, backup</div>
+      <div class="d one todo">Chờ 16 điều kiện tiên quyết về quyền và mạng</div>
+      <div class="res"><b>Trạng thái</b>Chưa làm. Chỉ dùng nếu sau PoC quyết định triển khai</div>
+    </div>
+  </div>
+  <div class="note info" style="font-size:15px;margin-top:14px">Quy tắc xuyên suốt: chỉ đánh dấu xong khi có bằng chứng (lệnh + kết quả, hoặc ảnh chụp). Chỗ chưa đo được để trống <code>____</code>, không đoán.</div>
+</section>
+
+<!-- ========== TECH STACK ========== -->
+<section class="slide">
+  <div class="kicker">Thiết kế · mục 2 · tech stack</div>
+  <h2 style="margin-bottom:14px">Mỗi lớp một thành phần mã nguồn mở, phiên bản đã ghim</h2>
+  <div class="g2" style="grid-template-columns:2.1fr 1fr;gap:24px">
+    <table class="cmp" style="font-size:14.5px">
+      <tr><th>Lớp</th><th>Thành phần</th><th>Phiên bản</th><th>Vai trò</th></tr>
+      <tr><td><b>Thu thập</b></td><td>OpenTelemetry Collector contrib</td><td><code>0.161.0</code></td><td>Đọc metrics Azure Monitor, đọc log từ Event Hub, nhận OTLP từ app</td></tr>
+      <tr><td><b>Metrics</b></td><td>VictoriaMetrics single-node ×2</td><td><code>v1.152.0</code></td><td>Lưu metrics, Prometheus API, MetricsQL</td></tr>
+      <tr><td><b>Log</b></td><td>VictoriaLogs single-node ×2</td><td><code>v1.51.1</code></td><td>Lưu log 30 ngày, index mọi field, LogsQL</td></tr>
+      <tr><td><b>Cảnh báo</b></td><td>vmalert + Alertmanager</td><td><code>v1.152.0</code> / <code>v0.34.1</code></td><td>Đánh giá rule trên metrics và log; gom nhóm, dedup, gửi Teams/email</td></tr>
+      <tr><td><b>Dashboard</b></td><td>Grafana OSS + plugin VictoriaLogs</td><td><code>13.0.9</code></td><td>Dashboard, Explore. Grafana Alerting tắt</td></tr>
+      <tr><td><b>Proxy</b></td><td>vmauth</td><td><code>v1.152.0</code></td><td>Chuyển truy vấn sang node kia khi node mình hỏng</td></tr>
+      <tr><td><b>Hạ tầng</b></td><td>Terraform (azurerm), Ubuntu 24.04, Docker Compose</td><td>azurerm 4.x</td><td>VNet, VM, Event Hub, Diagnostic Settings, RBAC; mỗi VM một compose file</td></tr>
+    </table>
+    <div class="col" style="gap:12px">
+      <div class="card blue"><div class="lbl">Một agent duy nhất</div><p>Collector lo cả 3 nguồn: metrics Azure, log Azure, OTLP từ ứng dụng.</p></div>
+      <div class="card green"><div class="lbl">Không secret để đọc Azure</div><p>VM dùng Managed Identity. Không App Registration, không connection string.</p></div>
+      <div class="card gray"><div class="lbl">Không dùng</div><p>Log Analytics, Application Insights, Prometheus/Thanos/Mimir, Loki, Kubernetes, Grafana Alerting.</p></div>
+    </div>
+  </div>
+  <div class="fill"></div>
+  <div class="note info" style="font-size:15px">Nâng version: sửa lab <code>local/</code> → smoke test pass → sửa stack → deploy lần lượt từng node, không bao giờ hai node cùng lúc.</div>
+</section>
+
+<!-- ========== 5 ADR ========== -->
+<section class="slide">
+  <div class="kicker">Thiết kế · docs/adr · 5 quyết định kiến trúc</div>
+  <h2 style="margin-bottom:14px">Năm quyết định, mỗi cái ghi rõ lý do và cái giá phải trả</h2>
+  <table class="cmp" style="font-size:14.5px">
+    <tr><th style="width:60px">ADR</th><th style="width:24%">Quyết định</th><th>Vì sao</th><th style="width:29%">Cái giá</th></tr>
+    <tr><td><code>0001</code></td><td><b>2 VM + Docker Compose</b>, không dùng AKS</td><td>Single-node đủ cho 20 GB log/ngày trên 4 vCPU / 16 GB; ít thành phần, rẻ hơn, dễ debug</td><td>Scale theo chiều dọc; không tự phục hồi như Kubernetes → cần runbook <code>mat-1-vm</code></td></tr>
+    <tr><td><code>0002</code></td><td><b>VictoriaMetrics + VictoriaLogs</b>, không Prometheus/Loki</td><td>Giữ metrics dài hạn không cần Thanos/Mimir; index mọi field log, Loki chỉ index label</td><td>Phụ thuộc một vendor (Apache 2.0); team phải học LogsQL</td></tr>
+    <tr><td><code>0003</code></td><td><b>Mỗi VM một consumer group</b> Event Hub, log Azure ghi kho cục bộ</td><td>Checkpoint cục bộ không chia partition được; chung group thì cả 2 VM đọc mọi partition → log trùng</td><td>Egress Event Hub gấp đôi; cần gói Standard</td></tr>
+    <tr><td><code>0004</code></td><td><b>Không dùng Log Analytics</b> làm kho chính</td><td>≈ $1.800/tháng so với ≈ $541 tự host; một nơi xem; không khoá vào KQL</td><td>Mất Workbooks, Insights, Sentinel; tự vận hành, tự vá, tự backup (0,3–0,5 FTE)</td></tr>
+    <tr><td><code>0005</code></td><td><b>OTLP bằng HTTP + bearer token</b> trong VNet, TLS để sau</td><td>Onboarding chỉ cần đặt biến môi trường, không đụng CA trên từng App Service</td><td>Token và log đi dạng rõ trong mạng nội bộ; một token dùng chung</td></tr>
+  </table>
+  <div class="fill"></div>
+  <div class="note ok" style="font-size:15px"><b>ADR-0003 đã được PoC kiểm chứng:</b> 2 node nhận cùng số log (113.630 = 113.630 trong test tải), không trùng. Còn lại là quyết định cho triển khai thật.</div>
+</section>
+
+<!-- ========== KIẾN TRÚC ĐÍCH ========== -->
+<section class="slide">
+  <div class="kicker">Thiết kế v1.2 · kiến trúc đích cho triển khai thật</div>
+  <h2 style="margin-bottom:18px">Ba nguồn dữ liệu đi qua một Collector trên mỗi VM</h2>
+  <div class="arch">
+    <div class="t">
+      <div class="lane">Metrics Azure</div>
+      <div class="flow">
+        <div class="box"><b>Azure Monitor</b><small>platform metrics của mọi subscription</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Collector · <code>azuremonitor</code></b><small>Batch API mỗi 60 giây, Managed Identity</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>vmagent</b><small>buffer trên disk, ghi đôi về 2 node</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>VictoriaMetrics ×2</b><small>dedup 60 giây · giữ 15 tháng</small></div>
+      </div>
+    </div>
+    <div class="a">
+      <div class="lane">Log Azure</div>
+      <div class="flow">
+        <div class="box"><b>Azure Policy</b><small>tự bật Diagnostic Settings, kèm archive Storage 1 năm</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Event Hub</b><small>mỗi VM một consumer group · giữ 3 ngày</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Collector · <code>azureeventhub</code></b><small>checkpoint + hàng đợi bền trên data disk</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>VictoriaLogs cục bộ</b><small>không ghi đôi · giữ 30 ngày</small></div>
+      </div>
+    </div>
+    <div class="d">
+      <div class="lane">Log, metric của app</div>
+      <div class="flow">
+        <div class="box"><b>Ứng dụng</b><small>OpenTelemetry SDK</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Internal LB</b><small><code>otlp.obs.internal:4318</code> + bearer token</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Collector · <code>otlp</code></b><small>kiểm token, sai trả 401</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>vlagent · vmagent</b><small>ghi đôi về 2 node</small></div>
+      </div>
+    </div>
+    <div class="o">
+      <div class="lane">Dùng dữ liệu</div>
+      <div class="flow">
+        <div class="box"><b>Grafana</b><small>HTTPS, SSO Entra ID</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>vmauth</b><small><code>first_available</code>: node 1, hỏng thì node 2</small></div>
+        <div class="ar" style="flex-basis:50px"></div>
+        <div class="box"><b>vmalert ×2</b><small>cùng rule, rule nằm trong Git</small></div>
+        <div class="ar">→</div>
+        <div class="box"><b>Alertmanager cluster</b><small>gửi 1 lần → Teams, email</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="fill"></div>
+  <div class="g2" style="gap:14px">
+    <div class="note info" style="font-size:15px"><b>Hạ tầng:</b> 2 VM D4as_v5 ở 2 Availability Zone, không public IP; Private Endpoint cho Event Hub và Storage; mọi truy cập Azure bằng Managed Identity.</div>
+    <div class="note warn" style="font-size:15px"><b>Đây là thiết kế.</b> PoC dựng phần lõi: hai làn đầu, truy vấn và cảnh báo. Ba slide sau là phần PoC đã dựng.</div>
+  </div>
+</section>
+
+<!-- ========== POC · LUỒNG LOG ========== -->
+<section class="slide">
+  <div class="kicker">PoC · luồng log · poc/otelcol/config.yaml</div>
+  <h2 style="margin-bottom:14px">Luồng log: thu thập, che dữ liệu, lưu VictoriaLogs, truy vấn</h2>
+  <div class="g2" style="grid-template-columns:2.3fr 1fr;gap:20px">
+    <figure class="shot"><img src="images/log-flow.png" alt="Sơ đồ luồng log của PoC: 3 App Service gửi log qua Diagnostic Settings tới Event Hub; trên mỗi VM, OTel Collector nhận, xử lý và che dữ liệu rồi gửi vào VictoriaLogs cục bộ; người dùng truy vấn từ Grafana Explore qua vmauth; mỗi node có consumer group riêng"></figure>
+    <div class="col" style="gap:10px">
+      <div class="nc"><div class="n">1</div><div><b>Thu thập</b><span>3 App Service → Diagnostic Settings → Event Hub <code>appservice-logs</code>. Mỗi VM đọc bằng consumer group riêng, checkpoint trên disk.</span></div></div>
+      <div class="nc"><div class="n">2</div><div><b>Xử lý, che dữ liệu</b><span>Tách JSON vào <code>props.*</code>, bỏ Cookie, che token / query / Referer, băm username, HTTP 5xx → ERROR.</span></div></div>
+      <div class="nc"><div class="n">3</div><div><b>Lưu VictoriaLogs</b><span>Kho cục bộ trên từng VM, giữ 30 ngày, tối đa 20 GiB. Hàng đợi gửi nằm trên disk.</span></div></div>
+      <div class="nc"><div class="n">4</div><div><b>Truy vấn</b><span>Grafana Explore → vmauth → LogsQL. Kho node mình lỗi thì hỏi node kia.</span></div></div>
+      <div class="note info" style="font-size:14px;padding:9px 14px"><b>Đo được:</b> log tới kho sau 80–130 giây lúc bình thường; 2 node nhận cùng số log.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== POC · LUỒNG METRIC ========== -->
+<section class="slide">
+  <div class="kicker">PoC · luồng metric · poc/otelcol/config.yaml</div>
+  <h2 style="margin-bottom:14px">Luồng metric: thu thập, chuẩn hoá, lưu VictoriaMetrics, cảnh báo</h2>
+  <div class="g2" style="grid-template-columns:2.3fr 1fr;gap:20px">
+    <figure class="shot"><img src="images/metric-flow.png" alt="Sơ đồ luồng metric của PoC: metric của App Service, VM, Event Hub lấy qua Azure Monitor; trên mỗi VM, OTel Collector nhận, chuẩn hoá và ghi vào VictoriaMetrics cục bộ; VictoriaMetrics tự scrape các thành phần của stack; Grafana và vmalert truy vấn qua vmauth, vmalert gửi alert tới 2 Alertmanager"></figure>
+    <div class="col" style="gap:10px">
+      <div class="nc"><div class="n">1</div><div><b>Thu thập</b><span>Collector <code>azuremonitor</code> gọi Metrics Batch API mỗi 60 giây, xác thực bằng Managed Identity.</span></div></div>
+      <div class="nc"><div class="n">2</div><div><b>Chuẩn hoá</b><span><code>resource_id</code> về chữ thường; gắn nhãn subscription, resource group, resource.</span></div></div>
+      <div class="nc"><div class="n">3</div><div><b>Lưu VictoriaMetrics</b><span>Remote write vào kho cục bộ, giữ 30 ngày, dedup 60 giây.</span></div></div>
+      <div class="nc"><div class="n">4</div><div><b>Dashboard, cảnh báo</b><span>Grafana và vmalert truy vấn qua vmauth. vmalert gửi alert cho cả 2 Alertmanager.</span></div></div>
+      <div class="note info" style="font-size:14px;padding:9px 14px"><b>Tự giám sát stack</b> không qua Collector: VictoriaMetrics scrape thẳng cả 2 VM mỗi 30 giây.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== KIẾN TRÚC POC ========== -->
+<section class="slide">
+  <div class="kicker">PoC · kiến trúc đã dựng · Azure Central India</div>
+  <h2 style="margin-bottom:14px">PoC: 2 VM độc lập theo dõi 3 App Service</h2>
+  <div class="g2" style="grid-template-columns:1.72fr 1fr;gap:22px">
+    <figure class="shot"><img src="images/azure-monitoring-current-v2.png" alt="Sơ đồ kiến trúc PoC: App Service gửi metrics qua Azure Monitor và log qua Diagnostic Settings tới Event Hub; hai VM obs-01, obs-02 mỗi VM chạy OTel Collector, VictoriaMetrics, VictoriaLogs, Grafana, vmauth, vmalert, Alertmanager"></figure>
+    <div class="col" style="gap:11px">
+      <div class="card green" style="padding:11px 14px"><div class="lbl">Có trong PoC</div><p style="font-size:14.5px">2 VM monitoring (HA) · metrics + log App Service · dashboard 17 panel · tìm log · cảnh báo · Terraform · che dữ liệu nhạy cảm</p></div>
+      <div class="card gray" style="padding:11px 14px"><div class="lbl">Bỏ, theo phạm vi</div><p style="font-size:14.5px">Private Endpoint · Azure Policy · SSO, TLS · backup, archive · Activity Log · OTLP từ app · ghi đôi qua vmagent/vlagent · Teams (chờ channel)</p></div>
+      <div class="card" style="padding:11px 14px"><div class="lbl">Nguồn dữ liệu</div><p style="font-size:14.5px">2 app có sẵn (backend, frontend) + 1 app demo Flask chạy chung plan P0v3: <code>/</code> 200 · <code>/error</code> 500 · <code>/cpu</code> đốt CPU</p></div>
+      <div class="card" style="padding:11px 14px"><div class="lbl">VM</div><p style="font-size:14.5px">2 × D2as_v5 (2 vCPU, 8 GB), IP tĩnh <code>10.50.1.4</code> / <code>.5</code>, dùng hết quota 4 vCPU của Free Trial</p></div>
+      <div class="note warn" style="font-size:14px;padding:9px 14px">Central India vì Diagnostic Settings bắt buộc Event Hub cùng region với App Service.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MÔ HÌNH HA ========== -->
+<section class="slide">
+  <div class="kicker">PoC · mô hình HA · poc/compose.yaml</div>
+  <h2 style="margin-bottom:14px">Mất một VM: không mất dữ liệu, vẫn xem được, vẫn báo được</h2>
+  <div class="g2" style="grid-template-columns:1.15fr 1fr;gap:24px">
+    <svg class="dia" viewBox="0 0 660 400" role="img" aria-label="Sơ đồ HA: Azure Monitor và Event Hub đều cấp dữ liệu cho cả obs-01 và obs-02; hai node scrape chéo, vmauth chuyển truy vấn sang node kia, Alertmanager chạy cluster">
+      <defs>
+        <marker id="hb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+        <marker id="hv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+        <marker id="hg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+      </defs>
+      <!-- nguồn -->
+      <rect x="40" y="6" width="250" height="46" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+      <text x="165" y="35" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1f2937">Azure Monitor · metrics API</text>
+      <rect x="370" y="6" width="250" height="46" rx="10" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5"/>
+      <text x="495" y="35" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1f2937">Event Hub · appservice-logs</text>
+      <!-- node -->
+      <rect x="10" y="104" width="270" height="290" rx="12" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>
+      <text x="26" y="129" font-size="15" font-weight="800" fill="#1f2937">obs-01 · 10.50.1.4</text>
+      <rect x="380" y="104" width="270" height="290" rx="12" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>
+      <text x="634" y="129" text-anchor="end" font-size="15" font-weight="800" fill="#1f2937">obs-02 · 10.50.1.5</text>
+      <!-- mũi tên nguồn → collector -->
+      <path d="M190 52 V 140" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#hb)"/>
+      <path d="M230 52 L 428 140" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#hb)"/>
+      <path d="M470 52 V 140" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#hv)"/>
+      <path d="M430 52 L 232 140" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#hv)"/>
+      <circle cx="330" cy="96" r="13" fill="#1f2937" stroke="#fff" stroke-width="2"/><text x="330" y="101" text-anchor="middle" font-size="13.5" font-weight="800" fill="#fff">1</text>
+      <!-- các hàng trong node -->
+      <g font-size="13.5" fill="#1f2937">
+        <rect x="26" y="142" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="38" y="161" font-weight="700">OTel Collector</text><text x="38" y="179" font-size="12" fill="#6b7280">consumer group otel-obs-01</text>
+        <rect x="396" y="142" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="408" y="161" font-weight="700">OTel Collector</text><text x="408" y="179" font-size="12" fill="#6b7280">consumer group otel-obs-02</text>
+        <rect x="26" y="204" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="38" y="223" font-weight="700">VictoriaMetrics · VictoriaLogs</text><text x="38" y="241" font-size="12" fill="#6b7280">kho cục bộ, giữ 30 ngày</text>
+        <rect x="396" y="204" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="408" y="223" font-weight="700">VictoriaMetrics · VictoriaLogs</text><text x="408" y="241" font-size="12" fill="#6b7280">kho cục bộ, giữ 30 ngày</text>
+        <rect x="26" y="266" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="38" y="285" font-weight="700">vmauth :8427</text><text x="38" y="303" font-size="12" fill="#6b7280">Grafana, vmalert truy vấn qua đây</text>
+        <rect x="396" y="266" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="408" y="285" font-weight="700">vmauth :8427</text><text x="408" y="303" font-size="12" fill="#6b7280">Grafana, vmalert truy vấn qua đây</text>
+        <rect x="26" y="328" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="38" y="347" font-weight="700">vmalert → Alertmanager</text><text x="38" y="365" font-size="12" fill="#6b7280">cùng rule, cùng nhãn</text>
+        <rect x="396" y="328" width="238" height="46" rx="8" fill="#f3f4f6"/><text x="408" y="347" font-weight="700">vmalert → Alertmanager</text><text x="408" y="365" font-size="12" fill="#6b7280">cùng rule, cùng nhãn</text>
+      </g>
+      <!-- liên kết giữa 2 node -->
+      <g fill="none" stroke="#6b7280" stroke-width="1.8">
+        <path d="M270 222 H 390" marker-start="url(#hg)" marker-end="url(#hg)"/>
+        <path d="M270 284 H 390" stroke-dasharray="5 4" marker-start="url(#hg)" marker-end="url(#hg)"/>
+        <path d="M270 346 H 390" marker-start="url(#hg)" marker-end="url(#hg)"/>
+      </g>
+      <g font-size="13.5" font-weight="800" fill="#fff" text-anchor="middle">
+        <circle cx="330" cy="222" r="13" fill="#1f2937" stroke="#fff" stroke-width="2"/><text x="330" y="227">2</text>
+        <circle cx="330" cy="284" r="13" fill="#1f2937" stroke="#fff" stroke-width="2"/><text x="330" y="289">3</text>
+        <circle cx="330" cy="346" r="13" fill="#1f2937" stroke="#fff" stroke-width="2"/><text x="330" y="351">4</text>
+      </g>
+      <g font-size="11.5" fill="#6b7280" text-anchor="middle">
+        <text x="330" y="250">scrape chéo</text>
+        <text x="330" y="312">khi node hỏng</text>
+        <text x="330" y="374">gossip :9094</text>
+      </g>
+    </svg>
+    <div class="col" style="gap:10px">
+      <div class="nc"><div class="n">1</div><div><b>Mỗi node tự thu đủ</b><span>Tự gọi Azure Monitor, tự đọc Event Hub bằng consumer group riêng, ghi vào kho của mình. Không ghi chéo.</span></div></div>
+      <div class="nc"><div class="n">2</div><div><b>Tự giám sát chéo</b><span>Mỗi node scrape 7 thành phần của cả 2 node (14 target). Mất nguyên một VM, node kia vẫn thấy <code>up == 0</code>.</span></div></div>
+      <div class="nc"><div class="n">3</div><div><b>Truy vấn qua vmauth</b><span><code>first_available</code>: hỏi kho của node mình trước, không kết nối được thì sang node kia.</span></div></div>
+      <div class="nc"><div class="n">4</div><div><b>Alertmanager cluster</b><span>vmalert mỗi node gửi cho cả 2 Alertmanager. Nhãn alert giống hệt nhau nên mỗi alert chỉ gửi đi 1 lần.</span></div></div>
+      <div class="note info" style="font-size:14px;padding:9px 14px">Khác thiết kế đầy đủ: PoC không có vmagent/vlagent ghi đôi. Dữ liệu 2 node giống nhau vì đọc cùng nguồn.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HAI PIPELINE ========== -->
+<section class="slide">
+  <div class="kicker">PoC · poc/otelcol/config.yaml</div>
+  <h2 style="margin-bottom:14px">Collector: hai pipeline, dữ liệu được làm sạch trước khi lưu</h2>
+  <div class="chain mt">
+    <div class="tag">Metrics<small>trễ 1–3 phút</small></div>
+    <div class="st"><b>Azure Monitor</b>4 loại resource: App Service, plan, VM, Event Hub</div>
+    <div class="ar">→</div>
+    <div class="st"><b><code>azuremonitor</code></b>mỗi 60 giây, Batch API, Managed Identity</div>
+    <div class="ar">→</div>
+    <div class="st"><b><code>transform</code></b>gắn nhãn <code>subscription</code>, <code>rg</code>, <code>resource</code></div>
+    <div class="ar">→</div>
+    <div class="st"><b>VictoriaMetrics</b>dedup 60 giây, giữ 1 mẫu/phút</div>
+  </div>
+  <div class="chain lg" style="margin-top:10px">
+    <div class="tag">Log<small>trễ 80–130 giây</small></div>
+    <div class="st"><b>Diagnostic Settings</b>HTTP, Console, App, Platform log của 3 app → Event Hub</div>
+    <div class="ar">→</div>
+    <div class="st"><b><code>azureeventhub</code></b>consumer group riêng, checkpoint trên disk</div>
+    <div class="ar">→</div>
+    <div class="st"><b><code>transform</code></b>tách <code>props.*</code>, che dữ liệu nhạy cảm, HTTP 5xx → ERROR</div>
+    <div class="ar">→</div>
+    <div class="st"><b>VictoriaLogs</b>qua hàng đợi bền, không mất khi restart</div>
+  </div>
+  <div class="g2" style="grid-template-columns:1.2fr 1fr;gap:22px;margin-top:16px">
+    <div class="col" style="gap:8px">
+      <h3 style="margin:0">Làm sạch log trong <code>transform/azure_logs</code> <span class="muted" style="font-weight:500;font-size:14px">(rút gọn)</span></h3>
+      <div class="term" style="font-size:13px;padding:12px 16px"><span class="cm"># fail-closed: không bao giờ lưu "properties" thô</span>
+- set(attributes["props"], <span class="p">ParseJSON</span>(attributes["properties"]))
+- <span class="e">delete_key</span>(attributes, "properties")
+- <span class="e">delete_key</span>(attributes["props"], "Cookie")
+- <span class="p">replace_pattern</span>(props["CsUriQuery"], "=[^&amp;]*", <span class="g">"=***"</span>)
+- set(props["CsUsername"], <span class="p">SHA256</span>(props["CsUsername"]))
+- <span class="p">replace_pattern</span>(body, "eyJ…", <span class="g">"***JWT***"</span>)  <span class="cm"># + Bearer, password…</span></div>
+    </div>
+    <div class="col" style="gap:8px">
+      <h3 style="margin:0">Tên thật khác thiết kế</h3>
+      <table class="cmp" style="font-size:13.5px">
+        <tr><th>Thiết kế ghi (tạm)</th><th>Chạy thật</th></tr>
+        <tr><td><code>azure_requests_total</code></td><td><code>azure_requests_total_Count</code></td></tr>
+        <tr><td>resource id ở <code>azure.resource.id</code></td><td><code>cloud.resource_id</code>, viết HOA</td></tr>
+        <tr><td>field log nằm ở attribute</td><td>nằm trong body dạng map; chi tiết HTTP là chuỗi JSON</td></tr>
+      </table>
+      <div class="note warn" style="font-size:14px;padding:9px 14px">Phải bật debug exporter xem dữ liệu thật rồi viết lại transform. Tài liệu không đủ.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== KẾT QUẢ · TÓM TẮT ========== -->
+<section class="slide">
+  <div class="kicker">Kết quả PoC · tóm tắt · docs/poc-ket-qua.md</div>
+  <h2 style="margin-bottom:16px">Sáu câu hỏi của PoC và câu trả lời có số đo</h2>
+  <div class="mgrid big-m">
+    <div class="m"><div class="id">Q1 <span class="pill green">ĐƯỢC</span></div><div class="req">Thu metrics + log về một nơi, xem và tìm được?</div><div class="ev">Metrics và log của 3 app về 2 VM; dashboard 17 panel; tìm log theo status, URL, thời gian xử lý</div></div>
+    <div class="m"><div class="id">Q2 <span class="pill green">KHÔNG MẤT</span></div><div class="req">Có mất log không?</div><div class="ev">Tới 200 request/giây: 113.630 log HTTP khớp số request, 11.103 lỗi 500 khớp số lỗi tạo ra, 2 node bằng nhau</div></div>
+    <div class="m part"><div class="id">Q3 <span class="pill amber">ĐÚNG · CÒN MỞ</span></div><div class="req">Cảnh báo có đúng và kịp không?</div><div class="ev">5xx &gt; 5%: alert sau ≈ 7–8,5 phút; mất 1 VM: ≈ 2 phút. Chưa test ít traffic, CPU; chưa nối Teams</div></div>
+    <div class="m"><div class="id">Q4 <span class="pill green">VẪN CHẠY</span></div><div class="req">Mất 1 VM thì sao?</div><div class="ev">VM còn lại vẫn xem dashboard, tìm log, bắn alert; VM bật lại tự đọc bù: 2.886 = 2.886 log</div></div>
+    <div class="m"><div class="id">Q5 <span class="pill green">DƯ NHIỀU</span></div><div class="req">Hệ thống monitoring có đủ sức?</div><div class="ev">Ở 200 request/giây, VM D2as_v5 dùng CPU ≤ 10,4%, RAM còn trống ≥ 6,8 GB trên 8 GB</div></div>
+    <div class="m"><div class="id">Q6 <span class="pill green">ĐƯỢC</span></div><div class="req">Hạ tầng có dựng lại được không?</div><div class="ev">Toàn bộ bằng Terraform, dựng từ số 0; <code>plan</code> sau đó = No changes; một lệnh <code>destroy</code> để dọn</div></div>
+  </div>
+  <div class="note bad" style="font-size:15.5px;margin-top:14px"><b>Điểm yếu chính:</b> log từ Azure trễ 1,5–2 phút lúc bình thường, tới 13–15 phút khi tải đột biến (phía Azure). Alert dựa trên <b>metric</b> không bị ảnh hưởng, alert dựa trên <b>log</b> thì có.</div>
+</section>
+
+<!-- ========== KẾT QUẢ · LUỒNG DỮ LIỆU ========== -->
+<section class="slide">
+  <div class="kicker">Kết quả · luồng dữ liệu</div>
+  <h2 style="margin-bottom:14px">Metrics và log của 3 app về một nơi, tìm được theo từng field</h2>
+  <div class="g2" style="gap:20px">
+    <figure class="shot"><img src="poc-images/a5-dashboard-loi-20pct.jpg" alt="Dashboard App Service PoC trên Grafana: request mỗi phút, HTTP 5xx mỗi phút, tỷ lệ 5xx khoảng 20%, CPU và RAM của plan, log theo status"><figcaption>Dashboard <b>App Service PoC</b> lúc bắn 20% lỗi: tỷ lệ 5xx quanh 20%, ngưỡng alert là 5%.</figcaption></figure>
+    <figure class="shot"><img src="poc-images/a6-tim-log-500.jpg" alt="Grafana Explore với datasource VictoriaLogs: truy vấn log HTTP status 500, một dòng GET /error 500 mở chi tiết thấy các field props"><figcaption>Explore: <code>{category="AppServiceHTTPLogs"} props.ScStatus:500</code>, các field <code>props.*</code> đã tách sẵn.</figcaption></figure>
+  </div>
+  <div class="fill"></div>
+  <div class="g4">
+    <div class="card blue stat" style="padding:12px 14px"><div class="big" style="color:var(--blue);font-size:34px">17/17</div><p style="margin-top:5px;font-size:14.5px">panel có dữ liệu, trên cả 2 node</p></div>
+    <div class="card stat" style="padding:12px 14px"><div class="big" style="font-size:34px">80–130 s</div><p style="margin-top:5px;font-size:14.5px">độ trễ log lúc bình thường, không tăng theo tải tới 100 rps</p></div>
+    <div class="card green stat" style="padding:12px 14px"><div class="big" style="color:var(--green);font-size:34px">3–5′</div><p style="margin-top:5px;font-size:14.5px">có log đầu tiên sau khi bật Diagnostic Settings (tài liệu Microsoft: tới 90′)</p></div>
+    <div class="card stat" style="padding:12px 14px"><div class="big" style="font-size:34px">4</div><p style="margin-top:5px;font-size:14.5px">loại resource có metrics: App Service, plan, VM, Event Hub</p></div>
+  </div>
+</section>
+
+<!-- ========== KẾT QUẢ · CẢNH BÁO ========== -->
+<section class="slide">
+  <div class="kicker">Kết quả · cảnh báo · poc/vmalert/rules</div>
+  <h2 style="margin-bottom:14px">20% request lỗi 500: alert firing trên cả hai node sau khoảng 7 phút</h2>
+  <div class="steps4">
+    <div class="s4 r"><div class="no">09:45:54 UTC · BẮT ĐẦU LỖI</div><h3>20% request vào <code>/error</code></h3><code>traffic.sh</code> bắn 2 request/giây vào app demo, lỗi rải đều.</div>
+    <div class="s4 a"><div class="no">09:48:40 · PENDING</div><h3>Rule thấy tỷ lệ &gt; 5%</h3>obs-02 lúc 09:48:40, obs-01 lúc 09:49:18. Metric Azure trễ 1–3 phút.</div>
+    <div class="s4 g"><div class="no">09:53:00 · FIRING</div><h3>Cả 2 Alertmanager</h3>Giá trị 19,78%. Nhãn hai bên giống hệt nhau nên cluster gộp được.</div>
+    <div class="s4 b"><div class="no">TỔNG</div><h3>≈ 7 phút</h3>Dự tính 8–10: trễ nguồn + cửa sổ 5 phút + <code>for: 5m</code>.</div>
+  </div>
+  <div class="g2" style="grid-template-columns:1fr 1.12fr;gap:22px;margin-top:14px">
+    <div class="col" style="gap:10px">
+      <div class="term" style="font-size:13px;padding:12px 16px">alert: <span class="g">AppService5xxHigh</span>          <span class="cm"># rút gọn</span>
+expr: |
+  ( <span class="p">sum_over_time</span>(azure_http5xx_total_Count[5m])
+    / <span class="p">sum_over_time</span>(azure_requests_total_Count[5m])
+  ) &gt; <span class="e">0.05</span>
+  and <span class="p">sum_over_time</span>(azure_requests_total_Count[5m]) &gt;= <span class="e">50</span>
+for: 5m</div>
+      <div class="note info" style="font-size:14px;padding:9px 14px">Metric Azure là giá trị của từng phút, nên cộng bằng <code>sum_over_time</code>, không dùng <code>rate()</code>. Vế <code>&gt;= 50</code> request để ít traffic không báo giả.</div>
+    </div>
+    <table class="cmp" style="font-size:14px">
+      <tr><th>Kịch bản</th><th>Kết quả</th><th></th></tr>
+      <tr><td>20% lỗi, lúc còn 1 VM</td><td>8,5 phút · giá trị 19,92%</td><td><span class="pill green">ĐẠT</span></td></tr>
+      <tr><td>20% lỗi, 2 VM</td><td>7 phút · 1 alert, nhãn trùng khớp</td><td><span class="pill green">ĐẠT</span></td></tr>
+      <tr><td>10% lỗi trong test tải</td><td>firing 13:26 → 13:43, hết lỗi tự hết</td><td><span class="pill green">ĐẠT</span></td></tr>
+      <tr><td>Tắt hẳn 1 VM</td><td><code>ObsComponentDown</code> sau ≈ 2 phút</td><td><span class="pill green">ĐẠT</span></td></tr>
+      <tr><td>Ít traffic: 3 request đều lỗi</td><td>kỳ vọng không có alert</td><td><span class="pill gray">CHƯA TEST</span></td></tr>
+      <tr><td>CPU plan &gt; 85%</td><td>plan dùng chung với app thật</td><td><span class="pill gray">CHƯA TEST</span></td></tr>
+      <tr><td>Gửi Teams</td><td>chờ channel; receiver đang là <code>null</code></td><td><span class="pill amber">CHƯA NỐI</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ========== KẾT QUẢ · MẤT 1 VM ========== -->
+<section class="slide">
+  <div class="kicker">Kết quả · chịu lỗi · 26/09, giờ UTC</div>
+  <h2 style="margin-bottom:14px">Tắt hẳn obs-01: obs-02 vẫn chạy và báo sau 2 phút</h2>
+  <div class="steps4">
+    <div class="s4 r"><div class="no">09:54:13 · TẮT obs-01</div><h3><code>az vm deallocate</code></h3>Xong lúc 09:54:46. Grafana trên obs-02 vẫn trả metric và log.</div>
+    <div class="s4 a"><div class="no">09:56:30 · ALERT</div><h3><code>ObsComponentDown</code></h3>obs-02 thấy 7 thành phần <code>10.50.1.4:*</code> có <code>up</code> = 0. Firing sau ≈ 2 phút, đúng <code>for: 2m</code>.</div>
+    <div class="s4 b"><div class="no">09:57:52 · BẬT LẠI</div><h3>Stack tự chạy lại</h3>Container lên lúc 09:58:28 nhờ <code>restart: unless-stopped</code>. Cluster Alertmanager tự nối lại.</div>
+    <div class="s4 g"><div class="no">10:06 · SO SỐ LIỆU</div><h3>2.886 = 2.886 log</h3>obs-01 đọc bù từ checkpoint Event Hub. Khung 09:45–10:00, hai node bằng nhau.</div>
+  </div>
+  <div class="g2" style="grid-template-columns:1.08fr 1fr;gap:22px;margin-top:14px">
+    <figure class="shot"><img src="poc-images/a10-dashboard-ha-log.jpg" alt="Dashboard phần HA: 14 ô xanh cho 7 thành phần trên mỗi node, CPU hai VM, message Event Hub vào mỗi phút, dung lượng log theo node"><figcaption>Panel <b>Thành phần monitoring (up)</b>: 14/14 ô xanh, 7 thành phần × 2 node, mỗi node scrape cả hai.</figcaption></figure>
+    <div class="col" style="gap:10px">
+      <div class="card blue" style="padding:11px 14px"><div class="lbl">Vì sao vẫn báo được</div><p style="font-size:14.5px">Scrape chéo. Nếu mỗi node chỉ scrape chính nó thì VM chết kéo theo luôn scraper, series <code>up</code> biến mất và không alert nào bắn.</p></div>
+      <div class="card" style="padding:11px 14px"><div class="lbl">Vì sao không trùng, không thiếu</div><p style="font-size:14.5px">Checkpoint Event Hub nằm trên disk của VM; Event Hub giữ log 1 ngày, đủ để đọc bù.</p></div>
+      <div class="note warn" style="font-size:14px;padding:9px 14px"><b>Không có checkpoint</b> (dựng lại node từ đầu) thì receiver chỉ đọc message mới: node mới thiếu log cũ, phải chép partition từ node còn sống (runbook <code>mat-1-vm</code>).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== KẾT QUẢ · TEST TẢI ========== -->
+<section class="slide">
+  <div class="kicker">Kết quả · test tải · k6, 4 bậc × 5 phút, 10% lỗi</div>
+  <h2 style="margin-bottom:14px">Tới 200 request/giây: không mất log, VM monitoring còn dư sức</h2>
+  <div class="g2" style="grid-template-columns:1.12fr 1fr;gap:22px">
+    <div class="col" style="gap:12px">
+      <table class="cmp" style="font-size:14.5px">
+        <tr><th>Bậc</th><th class="num">Request gửi</th><th class="num">Log HTTP/phút nhận</th><th class="num">CPU plan</th><th class="num">CPU VM monitoring</th></tr>
+        <tr><td class="nw"><b>20 rps</b></td><td class="num">6.001</td><td class="num">1.320 · đủ</td><td class="num">≤ 15%</td><td class="num">≤ 10%</td></tr>
+        <tr><td class="nw"><b>50 rps</b></td><td class="num">15.001</td><td class="num">3.120 · đủ</td><td class="num">≤ 21%</td><td class="num">≤ 10%</td></tr>
+        <tr><td class="nw"><b>100 rps</b></td><td class="num">30.000</td><td class="num">6.120 · đủ</td><td class="num">≤ 41%</td><td class="num">≤ 10%</td></tr>
+        <tr><td class="nw"><b>200 rps</b></td><td class="num">60.001</td><td class="num">≈ 12.120 · đủ</td><td class="num">≤ 66%</td><td class="num">≤ 10,4%</td></tr>
+      </table>
+      <div class="g3" style="gap:10px">
+        <div class="card blue stat" style="padding:11px 13px"><div class="big" style="color:var(--blue);font-size:30px">113.630</div><p style="margin-top:5px;font-size:14px">log HTTP trên mỗi node, khớp số request</p></div>
+        <div class="card green stat" style="padding:11px 13px"><div class="big" style="color:var(--green);font-size:30px">11.103</div><p style="margin-top:5px;font-size:14px">lỗi 500, đúng bằng số k6 tạo ra</p></div>
+        <div class="card stat" style="padding:11px 13px"><div class="big" style="font-size:30px">≥ 6,8 GB</div><p style="margin-top:5px;font-size:14px">RAM còn trống trên VM 8 GB</p></div>
+      </div>
+      <div class="note bad" style="font-size:14.5px;padding:10px 14px"><b>Ở 200 rps</b> Azure ngừng đẩy log khoảng 9 phút rồi đẩy dồn: log cao điểm trễ 13–15 phút. Event Hub 1 TU bị throttle 8 lần, Azure tự gửi lại, không mất.</div>
+    </div>
+    <div class="col" style="gap:12px">
+      <figure class="shot"><img src="poc-images/a5-dashboard-test-tai.jpg" alt="Dashboard trong khung test tải 13:10 đến 14:00 UTC: request mỗi phút tăng theo bậc 20, 50, 100, 200 rps, tỷ lệ 5xx khoảng 10%, CPU plan lên khoảng 66%"><figcaption>Khung test 13:10–14:00 UTC: bốn bậc tải hiện rõ trên panel Request / phút, tỷ lệ 5xx ≈ 10%.</figcaption></figure>
+      <div class="note info" style="font-size:14.5px;padding:10px 14px">Phía monitoring không nghẽn: hàng đợi collector 0, gửi lỗi 0. Log giả lập nén khoảng 150× nên <b>không dùng để sizing</b>; log thật thường nén 10–20×.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PHÁT HIỆN ========== -->
+<section class="slide">
+  <div class="kicker">Kết quả · phát hiện khác với giả định ban đầu</div>
+  <h2 style="margin-bottom:16px">Tám điều chỉ biết khi chạy thật</h2>
+  <div class="g4 big-c" style="gap:12px">
+    <div class="case"><div class="n">01</div><h3>Tên field log khác tài liệu</h3><p>Mọi field nằm trong body, resource id viết HOA, chi tiết HTTP là chuỗi JSON. Phải viết lại transform.</p></div>
+    <div class="case"><div class="n">02</div><h3>Metric Azure trễ 1–3 phút</h3><p>Phút mới nhất có thể chưa đủ và bị gửi lại nhiều lần. Cần dedup 60 giây.</p></div>
+    <div class="case"><div class="n">03</div><h3>Log không về theo thứ tự</h3><p>Diagnostic Settings có thể dừng nhiều phút khi tải đột biến rồi đẩy dồn.</p></div>
+    <div class="case" style="border-color:#fca5a5;background:var(--red-bg)"><div class="n">04</div><h3>Log App Service có dữ liệu nhạy cảm</h3><p>Cookie, query string, client IP, username. Bắt buộc lọc trước khi lưu.</p></div>
+    <div class="case"><div class="n">05</div><h3>2 VM cần Event Hub Standard</h3><p>Basic đủ cho 1 VM. Nâng tại chỗ mất 25 giây, không đổi tên, không mất setting.</p></div>
+    <div class="case"><div class="n">06</div><h3>Không checkpoint thì chỉ đọc message mới</h3><p>Có checkpoint: restart collector hay tắt VM đều không trùng, không thiếu.</p></div>
+    <div class="case"><div class="n">07</div><h3>Free Trial: 4 vCPU mỗi region</h3><p>Một số VM size bị chặn theo zone. 2 VM D2as_v5 dùng hết quota.</p></div>
+    <div class="case" style="border-color:#86efac;background:var(--green-bg)"><div class="n">08</div><h3>Log về nhanh hơn tài liệu</h3><p>Microsoft ghi tới 90 phút sau khi tạo Diagnostic Settings. Thực tế 3–5 phút.</p></div>
+  </div>
+  <div class="note info" style="font-size:15px;margin-top:14px">Các phát hiện đã được ghi ngược vào thiết kế: ADR-0003, ma trận sự cố dòng 7 và 11, runbook <code>mat-1-vm</code>, bảng tên metric/field thật trong plan PoC.</div>
+</section>
+
+<!-- ========== MA TRẬN SỰ CỐ ========== -->
+<section class="slide">
+  <div class="kicker">Thiết kế · mục 10 · ma trận sự cố · trích 6 trên 22 dòng</div>
+  <h2 style="margin-bottom:14px">Khi hỏng: hệ thống tự làm gì, mất gì, ai báo</h2>
+  <table class="cmp" style="font-size:14.5px">
+    <tr><th style="width:20%">Sự cố</th><th style="width:28%">Hệ thống tự xử lý</th><th style="width:27%">Mất dữ liệu?</th><th>Phát hiện bằng</th></tr>
+    <tr><td><b>Một VM chết</b>, sống lại sớm</td><td>Truy vấn và OTLP chuyển sang node kia; log Azure đọc tiếp từ checkpoint</td><td>Không</td><td><code>ObsComponentDown</code>, email VM Availability</td></tr>
+    <tr><td><b>Cả 2 VM chết</b></td><td>—</td><td>Metric Azure: có khoảng trống. Log Azure: không, Event Hub giữ 3 ngày + archive</td><td>Email VM Availability; mất tin Watchdog</td></tr>
+    <tr><td><b>Collector crash</b></td><td>Docker restart; hàng đợi bền gửi lại</td><td>Không</td><td><code>ObsComponentDown</code> nếu kéo dài</td></tr>
+    <tr><td><b>Mất checkpoint</b></td><td>Đọc từ message mới nhất <span class="pill blue">PoC đã kiểm</span></td><td>Thiếu log tới lúc chạy lại, không trùng</td><td>2 node lệch số log</td></tr>
+    <tr><td><b>Event Hub throttle</b></td><td>Auto-inflate, tối đa 4 TU</td><td>PoC 1 TU: 8 lần throttle, không mất, log trễ 13–15 phút</td><td><code>EventHubThrottled</code></td></tr>
+    <tr><td><b>Webhook Teams hỏng</b></td><td>—</td><td>Không, còn đường email</td><td><code>AlertmanagerNotificationsFailing</code></td></tr>
+  </table>
+  <div class="fill"></div>
+  <h3 style="margin-bottom:8px">Ai giám sát hệ thống giám sát</h3>
+  <div class="g3" style="gap:12px">
+    <div class="card" style="padding:10px 14px"><div class="lbl">Watchdog</div><p style="font-size:14.5px">Alert luôn firing, mỗi ngày một tin. Không thấy tin là đường cảnh báo đã chết.</p></div>
+    <div class="card" style="padding:10px 14px"><div class="lbl">“Chết im lặng”</div><p style="font-size:14.5px">Thành phần vẫn <code>up</code> nhưng dữ liệu ngừng: <code>AzureMetricsMissing</code>, <code>AzureLogsNotIngested</code>.</p></div>
+    <div class="card" style="padding:10px 14px"><div class="lbl">Từ bên ngoài</div><p style="font-size:14.5px">Azure Monitor “VM Availability” gửi email, độc lập với stack. Vẫn báo khi cả 2 VM chết.</p></div>
+  </div>
+</section>
+
+<!-- ========== CHI PHÍ ========== -->
+<section class="slide">
+  <div class="kicker">Chi phí · giá niêm yết Azure Retail Prices API · USD/tháng, chưa VAT</div>
+  <h2 style="margin-bottom:16px">Ở 20 GB log/ngày, Log Analytics đắt hơn tự host khoảng 3,3 lần</h2>
+  <div class="g2" style="grid-template-columns:1.25fr 1fr;gap:28px">
+    <div class="col" style="gap:14px">
+      <h3 style="margin:0">Triển khai thật, 20 GB log/ngày <span class="muted" style="font-weight:500;font-size:14px">· ước tính theo thiết kế mục 6</span></h3>
+      <div class="hbar" role="img" aria-label="Chi phí mỗi tháng: Log Analytics 1.800 đô; tự host PAYG 541 đô; tự host RI 1 năm 420 đô; tự host RI 3 năm 350 đô">
+        <div class="nm">Log Analytics<small>tính theo GB ingest</small></div>
+        <div class="tr" title="Log Analytics: ≈ $1.800/tháng"><div class="br base" style="width:78%"></div><span class="vl">≈ $1.800</span></div>
+        <div class="nm">Tự host · PAYG<small>2 × D4as_v5, trả theo giờ</small></div>
+        <div class="tr" title="Tự host PAYG: $541/tháng"><div class="br" style="width:23.4%"></div><span class="vl">$541</span></div>
+        <div class="nm">Tự host · RI 1 năm<small>Reserved Instance cho VM</small></div>
+        <div class="tr" title="Tự host RI 1 năm: $420/tháng"><div class="br" style="width:18.2%"></div><span class="vl">$420</span></div>
+        <div class="nm">Tự host · RI 3 năm</div>
+        <div class="tr" title="Tự host RI 3 năm: $350/tháng"><div class="br" style="width:15.2%"></div><span class="vl">$350</span></div>
+      </div>
+      <div class="card gray" style="padding:11px 14px"><div class="lbl">Trong $541</div><p style="font-size:14.5px">VM chiếm $315. Còn lại $226: disk, Event Hubs, Storage archive + backup, Internal LB, Private Endpoint, NAT Gateway.</p></div>
+      <div class="note warn" style="font-size:14.5px;padding:10px 14px"><b>Chưa tính:</b> VPN/ExpressRoute, nhân sự vận hành 0,3–0,5 FTE. <b>Phải kiểm trước khi xin ngân sách:</b> phí export platform log sang Event Hub, Bastion (≈ $140), Event Hubs auto-inflate.</div>
+    </div>
+    <div class="col" style="gap:14px">
+      <h3 style="margin:0">PoC <span class="muted" style="font-weight:500;font-size:14px">· 2 VM, Central India</span></h3>
+      <table class="cmp" style="font-size:14.5px">
+        <tr><th>Hạng mục</th><th class="num">Tháng</th></tr>
+        <tr><td>2 VM D2as_v5 (Linux)</td><td class="num">$81,2</td></tr>
+        <tr><td>2 disk Standard SSD 64 GiB</td><td class="num">$10,6</td></tr>
+        <tr><td>2 Public IP Standard</td><td class="num">$7,3</td></tr>
+        <tr><td>Event Hubs Standard 1 TU</td><td class="num">$21,9</td></tr>
+        <tr><td>App demo, chạy chung plan có sẵn</td><td class="num">$0</td></tr>
+        <tr><td><b>Tổng</b></td><td class="num"><b>≈ $121</b></td></tr>
+      </table>
+      <div class="g2" style="gap:12px">
+        <div class="card blue stat" style="padding:11px 14px"><div class="big" style="color:var(--blue);font-size:27px;white-space:nowrap">≈ $4/ngày</div><p style="margin-top:6px;font-size:14px">cho phần PoC, theo giá niêm yết</p></div>
+        <div class="card stat" style="padding:11px 14px"><div class="big" style="font-size:27px;white-space:nowrap">2 request/giây</div><p style="margin-top:6px;font-size:14px">traffic mock nền vào app demo, 0% lỗi, 24/7 ≈ <b>172.800 request/ngày</b></p></div>
+      </div>
+      <p class="muted" style="font-size:13.5px;margin-top:-4px">Test tải k6 mock thêm 111.003 request, đỉnh 200 request/giây.</p>
+      <div class="note bad" style="font-size:14.5px;padding:10px 14px">Số thực tế từ Cost Management <b>chưa có</b> trong báo cáo, còn để trống.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CÒN MỞ ========== -->
+<section class="slide">
+  <div class="kicker">PoC · tiến độ và việc còn mở · docs/plans/active/poc.md</div>
+  <h2 style="margin-bottom:14px">Bốn bước đã xong, hai bước còn việc</h2>
+  <div class="toc" style="grid-template-columns:repeat(6,1fr);gap:10px">
+    <div class="t"><div class="k">Bước 0 <span class="pill green" style="float:right">XONG</span></div><p style="margin-top:6px"><b>Tài khoản</b><br>Free Trial, quota 4 vCPU</p></div>
+    <div class="t"><div class="k">Bước 1 <span class="pill green" style="float:right">XONG</span></div><p style="margin-top:6px"><b>Nguồn dữ liệu</b><br>app demo, <code>traffic.sh</code></p></div>
+    <div class="t"><div class="k">Bước 2 <span class="pill green" style="float:right">XONG</span></div><p style="margin-top:6px"><b>Hạ tầng</b><br>Terraform, 2 VM</p></div>
+    <div class="t"><div class="k">Bước 3 <span class="pill green" style="float:right">XONG</span></div><p style="margin-top:6px"><b>Stack trên 2 VM</b><br>14/14 target <code>up</code></p></div>
+    <div class="t" style="border-color:#fcd34d;background:var(--amber-bg)"><div class="k" style="color:var(--amber)">Bước 4 <span class="pill amber" style="float:right">CÒN MỞ</span></div><p style="margin-top:6px"><b>Cảnh báo</b><br>thiếu Teams, 2 test</p></div>
+    <div class="t" style="border-color:#fcd34d;background:var(--amber-bg)"><div class="k" style="color:var(--amber)">Bước 5 <span class="pill amber" style="float:right">CÒN MỞ</span></div><p style="margin-top:6px"><b>Báo cáo</b><br>thiếu 2 nhóm số đo</p></div>
+  </div>
+  <div class="g3" style="margin-top:16px;gap:14px">
+    <div class="card amber">
+      <div class="lbl">Việc còn mở</div>
+      <ul class="tight" style="font-size:15px">
+        <li>Nối Teams khi có channel, chạy lại test 5xx</li>
+        <li>Test ít traffic: 3 request đều lỗi thì không được báo</li>
+        <li>Test alert CPU plan, làm ngắn vì chung plan với app thật</li>
+        <li>Số đo 24 giờ: log/ngày, tỷ lệ nén</li>
+        <li>Chi phí thực tế từ Cost Management</li>
+        <li>Dọn: <code>terraform destroy</code></li>
+      </ul>
+    </div>
+    <div class="card gray">
+      <div class="lbl">PoC chưa chứng minh được</div>
+      <ul class="tight" style="font-size:15px">
+        <li>Quyền và mạng trong môi trường công ty: Policy, Management Group, VNet hub, firewall</li>
+        <li>Nhiều subscription</li>
+        <li>Khối lượng log thật</li>
+        <li>SSO, TLS, Private Endpoint</li>
+        <li>OTLP từ ứng dụng, backup và restore</li>
+      </ul>
+    </div>
+    <div class="card red">
+      <div class="lbl">Rủi ro đang mở</div>
+      <ul class="tight" style="font-size:15px">
+        <li>Hết credit Free Trial thì resource bị dừng</li>
+        <li>Quota 4 vCPU đã dùng hết, không đổi size VM được</li>
+        <li>State Terraform chỉ có trên một máy</li>
+        <li>VM tắt quá 20 giờ là mất log, Event Hub chỉ giữ 24 giờ</li>
+        <li>IT có thể chặn Teams Workflows</li>
+      </ul>
+    </div>
+  </div>
+  <div class="fill"></div>
+  <div class="note info" style="font-size:15px">Tiến độ và số đo trong deck lấy từ plan PoC, lần cập nhật cuối 27/09/2026.</div>
+</section>
+
+<!-- ========== ĐỀ XUẤT ========== -->
+<section class="slide">
+  <div class="kicker">Đề xuất · docs/poc-ket-qua.md mục 7</div>
+  <h2 style="margin-bottom:16px">Nên triển khai thật, với bảy điều kiện</h2>
+  <div class="g2" style="grid-template-columns:1fr 1.55fr;gap:26px">
+    <div class="col" style="gap:12px">
+      <div class="card green">
+        <div class="lbl">Vì PoC đã chứng minh</div>
+        <ul class="tight" style="font-size:15.5px">
+          <li>Không mất dữ liệu tới 200 request/giây</li>
+          <li>Cảnh báo đúng, thời gian khớp dự tính</li>
+          <li>Chịu được mất một VM</li>
+          <li>Tài nguyên dư nhiều</li>
+          <li>Hạ tầng tái lập bằng code</li>
+          <li>Chi phí thấp hơn Log Analytics</li>
+        </ul>
+      </div>
+      <div class="card blue stat" style="padding:14px 16px"><div class="big" style="color:var(--blue);font-size:36px">$541 <span style="font-size:19px;font-weight:700;color:var(--muted)">so với ≈ $1.800</span></div><p style="margin-top:6px">mỗi tháng ở 20 GB log/ngày, theo ước tính thiết kế</p></div>
+      <div class="note warn" style="font-size:14.5px;padding:10px 14px">Số đo PoC lấy trên subscription cá nhân với log giả lập. Sizing phải đo lại bằng log thật.</div>
+    </div>
+    <table class="rules">
+      <tr><td><span class="no">1</span></td><td><b>Cảnh báo quan trọng dựa trên metric</b>, không dựa trên log. Log có thể trễ tới khoảng 15 phút khi tải đột biến; alert theo log chỉ để điều tra và xem xu hướng.</td></tr>
+      <tr><td><span class="no">2</span></td><td><b>Event Hub bật auto-inflate</b> (tối đa 2–4 TU) để không bị throttle khi burst.</td></tr>
+      <tr><td><span class="no">3</span></td><td><b>Quyết định về dữ liệu cá nhân</b>: client IP, username trong log. Băm có salt hoặc cắt, lưu bao lâu, ai được xem.</td></tr>
+      <tr><td><span class="no">4</span></td><td><b>Bảo mật đủ theo thiết kế</b>: VM không public IP, Private Endpoint, TLS + SSO cho Grafana, xác thực giữa các node, state trên Storage.</td></tr>
+      <tr><td><span class="no">5</span></td><td><b>Azure Policy</b> tự bật Diagnostic Settings cho resource mới; mở rộng nhiều subscription; backup; runbook vận hành.</td></tr>
+      <tr><td><span class="no">6</span></td><td><b>Đo lại dung lượng với log thật</b>. Log giả lập nén quá tốt, không dùng để sizing.</td></tr>
+      <tr><td><span class="no">7</span></td><td><b>Nối Teams</b> và test lại đường gửi, gồm cả trường hợp webhook hỏng.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ========== LỘ TRÌNH TRIỂN KHAI THẬT ========== -->
+<section class="slide future">
+  <div class="kicker">Backlog · docs/plans/backlog/trien-khai-that.md · chưa làm</div>
+  <h2 style="margin-bottom:14px">Nếu được duyệt: 8 giai đoạn, khoảng 6 tuần, phụ thuộc lúc có quyền</h2>
+  <div class="weeks">
+    <div class="week">
+      <div class="wh">Tuần 1<small>chuẩn bị, lab</small></div>
+      <div class="d"><b>GĐ 0</b>Duyệt thiết kế v1.2, gửi điều kiện tiên quyết</div>
+      <div class="d"><b>GĐ 1</b>Lab local 2 node: thêm rule, dashboard, diễn tập khôi phục</div>
+      <div class="res"><b>Hiện tại</b>GĐ 0 đã viết xong, chờ duyệt · GĐ 1 đạt 9/9, còn 7 việc</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 2–3<small>một node, dữ liệu thật</small></div>
+      <div class="d todo"><b>GĐ 2</b>Terraform: mạng, Key Vault, Event Hub, Storage, obs-01</div>
+      <div class="d todo"><b>GĐ 3</b>Ansible + stack lên obs-01, metrics Azure</div>
+      <div class="d todo"><b>GĐ 4</b>Policy Diagnostic Settings, Event Hub → VictoriaLogs</div>
+      <div class="res"><b>Bằng chứng xong</b>Bảng tên metric/field thật; số log = blob archive</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 4<small>cảnh báo, HA</small></div>
+      <div class="d todo"><b>GĐ 5</b>Alert + Teams/email, đo khối lượng và sizing</div>
+      <div class="d todo"><b>GĐ 6</b>obs-02, HA, backup, dựng lại node theo runbook</div>
+      <div class="res"><b>Bằng chứng xong</b>Tắt obs-01 dịch vụ vẫn chạy; restore thử từ backup</div>
+    </div>
+    <div class="week">
+      <div class="wh">Tuần 5–6<small>go-live</small></div>
+      <div class="d todo"><b>GĐ 7</b>Policy ở Management Group, SSO, TLS, onboarding app</div>
+      <div class="res"><b>Bằng chứng xong</b>Checklist go-live 8 dòng, mỗi dòng có bằng chứng</div>
+    </div>
+  </div>
+  <h3 style="margin:14px 0 8px">Bốn điều kiện tiên quyết chặn cả giai đoạn <span class="muted" style="font-weight:500;font-size:14px">· trên tổng 16, <code>docs/dieu-kien-tien-quyet.md</code></span></h3>
+  <div class="g4" style="gap:12px">
+    <div class="card violet" style="padding:10px 14px"><div class="lbl">#1 · chặn GĐ 2</div><p style="font-size:14.5px">Subscription Observability và quyền Owner</p></div>
+    <div class="card violet" style="padding:10px 14px"><div class="lbl">#3 · chặn GĐ 3</div><p style="font-size:14.5px">Monitoring Reader + Reader cho Managed Identity trên các subscription mục tiêu</p></div>
+    <div class="card violet" style="padding:10px 14px"><div class="lbl">#4 · chặn GĐ 4, 7</div><p style="font-size:14.5px">Quyền tạo Policy DeployIfNotExists và gán role cho identity của nó</p></div>
+    <div class="card violet" style="padding:10px 14px"><div class="lbl">#10 · chặn GĐ 7</div><p style="font-size:14.5px">Quyết định PII: có được lưu client IP, URL 30 ngày + 1 năm không</p></div>
+  </div>
+</section>
+
+<!-- ========== KẾT ========== -->
+<section class="slide">
+  <div class="endwrap">
+    <div>
+      <div class="kicker">Tổng kết PoC</div>
+      <p class="thanks">Cảm ơn<br>mọi người!</p>
+      <p style="font-size:21px;margin-top:22px">Từ bản thiết kế tới 2 VM chạy thật trên Azure: thu đủ, không mất log, mất một VM vẫn báo, dựng lại bằng một lệnh.</p>
+      <p class="muted" style="font-size:20px;margin-top:24px">Hỏi đáp · Q&amp;A</p>
+    </div>
+    <div class="col">
+      <div class="stat4">
+        <div class="card blue"><div class="big" style="color:var(--blue)">0</div><p>log mất tới 200 request/giây</p></div>
+        <div class="card green"><div class="big" style="color:var(--green)">≈ 7′</div><p>lỗi 5xx tới alert firing trên 2 node</p></div>
+        <div class="card amber"><div class="big" style="color:var(--amber)">≈ 2′</div><p>phát hiện mất nguyên một VM</p></div>
+        <div class="card gray"><div class="big">&gt; 3×</div><p>rẻ hơn Log Analytics theo ước tính</p></div>
+      </div>
+      <div class="note fu" style="font-size:16px"><b>Tiếp theo:</b> nối Teams, test ít traffic và CPU, điền chi phí thật; rồi quyết định triển khai thật theo GĐ 0–7.</div>
+    </div>
+  </div>
+</section>
+
+</div>
+<div id="nav"><span id="count"></span><button id="prev" aria-label="Slide trước">←</button><button id="next" aria-label="Slide sau">→</button></div>
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var nav = document.getElementById('nav');
+  var i = 0, hideTimer;
+  // Số trang in thẳng lên từng slide — cùng cách đếm với #count.
+  slides.forEach(function (el, k) {
+    var num = document.createElement('div');
+    num.className = 'pagenum';
+    num.textContent = (k + 1) + ' / ' + slides.length;
+    el.appendChild(num);
+  });
+  function fit() {
+    var s = Math.min(window.innerWidth / 1300, window.innerHeight / 740);
+    slides.forEach(function (el) { el.style.transform = 'scale(' + s + ')'; });
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (el, k) { el.classList.toggle('active', k === i); });
+    document.getElementById('count').textContent = (i + 1) + ' / ' + slides.length;
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  document.addEventListener('keydown', function (e) {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].indexOf(e.key) >= 0) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].indexOf(e.key) >= 0) { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'p' || e.key === 'P') window.print();
+  });
+  document.addEventListener('mousemove', function () {
+    nav.classList.add('show');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function () { nav.classList.remove('show'); }, 1800);
+  });
+  document.getElementById('prev').onclick = function () { show(i - 1); };
+  document.getElementById('next').onclick = function () { show(i + 1); };
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', function () { show((parseInt(location.hash.slice(1), 10) || 1) - 1); });
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+})();
+</script>
+</body>
+</html>
