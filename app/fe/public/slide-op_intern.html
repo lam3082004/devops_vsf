@@ -307,6 +307,44 @@ svg.dia .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", M
 .dflow .df.cd { border-color: #86efac; background: var(--green-bg); } .dflow .df.cd .no { color: var(--green); }
 .dflow .df small { display: block; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #d1d5db; font-size: 12.5px; color: #374151; }
 
+/* bảng cấu hình (AKS) */
+.cfgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 12px; }
+.cfg { border: 1.5px solid var(--line); border-radius: 12px; padding: 9px 13px 10px; background: #fff; }
+.cfg h3 { font-size: 15px; margin: 0 0 5px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.cfg h3 small { font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.cfg dl { margin: 0; display: grid; grid-template-columns: 88px 1fr; column-gap: 8px; row-gap: 2px; font-size: 12.5px; line-height: 1.35; }
+.cfg dt { color: var(--muted); font-weight: 700; }
+.cfg dd { margin: 0; }
+.cfg code { font-size: .9em; padding: 0 4px; }
+.cfg.b { border-color: #93c5fd; background: var(--blue-bg); } .cfg.b h3 { color: var(--blue); }
+.cfg.g { border-color: #86efac; background: var(--green-bg); } .cfg.g h3 { color: var(--green); }
+.cfg.a { border-color: #fcd34d; background: var(--amber-bg); } .cfg.a h3 { color: var(--amber); }
+.cfg.v { border-color: #c4b5fd; background: var(--violet-bg); } .cfg.v h3 { color: var(--violet); }
+.cfg.b code, .cfg.g code, .cfg.a code, .cfg.v code { background: rgba(255,255,255,.75); }
+
+/* dùng chung: App Service ← thứ dùng chung → AKS */
+.share { display: grid; grid-template-columns: 1fr 1.12fr 1fr; column-gap: 30px; row-gap: 6px; }
+.share .hd { font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; text-align: center; padding-bottom: 1px; }
+.share .hd.hl { color: var(--blue); } .share .hd.hm { color: var(--amber); } .share .hd.hr { color: var(--green); }
+.share .sl, .share .sr, .share .sm { border-radius: 10px; padding: 5px 12px; font-size: 13.5px; line-height: 1.35; display: flex; flex-direction: column; justify-content: center; }
+.share .sl, .share .sr { flex-direction: row; justify-content: flex-start; align-items: center; }
+.share .sl { background: var(--blue-bg); border: 1.5px solid #bfdbfe; }
+.share .sr { background: var(--green-bg); border: 1.5px solid #bbf7d0; }
+.share .sm { background: #fff; border: 2px solid #f59e0b; position: relative; text-align: center; }
+.share .sm > b { font-size: 14.5px; }
+.share .sm span { font-size: 12.5px; color: #374151; }
+.share .sm::before, .share .sm::after { position: absolute; top: 50%; transform: translateY(-50%); color: #f59e0b; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.share .sm::before { content: "◂─"; left: -27px; }
+.share .sm::after { content: "─▸"; right: -27px; }
+
+/* bảng so sánh nhiều dòng */
+table.cmp.tightrow td { padding: 5px 10px; }
+table.cmp.tightrow th { padding: 4px 10px; }
+
+/* link production */
+.plink { font-size: 17px; }
+.plink a { font-family: var(--mono); font-size: .95em; font-weight: 700; color: var(--blue); text-decoration: underline; text-underline-offset: 3px; margin-left: 6px; }
+
 /* số trang: luôn hiện trên từng slide, kể cả khi in/xuất PDF */
 .pagenum { position: absolute; right: 24px; bottom: 10px; font-family: var(--mono); font-size: 13px;
   font-weight: 600; color: var(--muted); letter-spacing: .02em; pointer-events: none; }
@@ -1309,6 +1347,7 @@ scm_ip_restriction_default_action = <span class="g">"Deny"</span>  <span class="
     </div>
   </div>
   <div class="fill"></div>
+  <div class="note ok plink" style="margin-bottom:12px"><b>Production App Service đang chạy:</b> <a href="https://fe-vsf-jcip0s.azurewebsites.net/" target="_blank" rel="noopener">https://fe-vsf-jcip0s.azurewebsites.net/</a></div>
   <div class="g2" style="gap:14px">
     <div class="note info" style="font-size:15px"><b>Terraform 2 tầng:</b> <code>infra/bootstrap</code> giữ state (không bao giờ destroy) · <code>infra/app</code> dựng/xoá bằng <code>make up</code> / <code>make down</code>.</div>
     <div class="note warn" style="font-size:15px"><b>Hai region:</b> app ở <b>Central India</b>, MySQL ở <b>Southeast Asia</b>, vì subscription bị giới hạn ở mỗi nơi một kiểu (D9).</div>
@@ -1484,33 +1523,156 @@ scm_ip_restriction_default_action = <span class="g">"Deny"</span>  <span class="
     </g>
   </svg>
   <div class="fill"></div>
-  <div class="note info" style="font-size:15px">AKS dùng lại ACR, Key Vault và MySQL của bài chính; hạ tầng riêng nằm ở <code>infra/aks</code> (27 resource, <code>make aks-up</code> một pha, khoảng 10 phút).</div>
+  <div class="note ok plink"><b>Production AKS đang chạy:</b> <a href="http://20.239.224.186/" target="_blank" rel="noopener">http://20.239.224.186/</a></div>
 </section>
 
-<!-- ========== NGOÀI ĐỀ BÀI · AKS ========== -->
+<!-- ========== NGOÀI ĐỀ BÀI · AKS · CẤU HÌNH ========== -->
 <section class="slide">
-  <div class="kicker">Làm thêm 12/10 · ngoài topic.md</div>
-  <h2 style="margin-bottom:14px">Cùng app chạy thêm trên AKS, song song với App Service</h2>
-  <div class="g2" style="grid-template-columns:1.5fr 1fr;gap:24px">
-    <table class="cmp" style="font-size:15.5px">
-      <tr><th>Yêu cầu</th><th>App Service (bài chính)</th><th>AKS (làm thêm)</th></tr>
-      <tr><td><b>M1</b> pull image</td><td>MI có <code>AcrPull</code></td><td>Gỡ <code>AcrPull</code> → <code>ErrImagePull 401</code>, alert bắn</td></tr>
-      <tr><td><b>M4 M5</b> secret</td><td>Key Vault reference</td><td>Secret mount từ Key Vault; gỡ quyền → <code>FailedMount 403</code> → tự hồi phục khi trả</td></tr>
-      <tr><td><b>M6</b> whitelist</td><td>Access restriction, 8 bề mặt</td><td>Trong whitelist 200; runner GitHub không nối được; <code>be</code> khoá bằng NetworkPolicy</td></tr>
-      <tr><td><b>M2 M10</b> deploy</td><td>Slot staging → swap</td><td>Rolling update <code>be</code> rồi <code>fe</code>; 0 non-200 lúc rollout</td></tr>
-      <tr><td><b>M7</b> autoscale</td><td>Plan 1→2 instance</td><td>HPA 1→2 pod sau 62 giây; node 1→2 khi hết chỗ</td></tr>
-      <tr><td><b>M8</b> Terraform</td><td><code>infra/app</code></td><td><code>infra/aks</code>: 27 resource, apply 10′14″, destroy 19′54″</td></tr>
-      <tr><td><b>M11</b> monitoring</td><td>Workbook + 3 alert</td><td>Workspace riêng; 2 alert bắn thật; truy vết bằng <code>trace_id</code></td></tr>
-    </table>
-    <div class="col" style="gap:12px">
-      <div class="card blue"><div class="lbl">Nguyên tắc: chỉ thêm</div><p>Không sửa <code>infra/app</code>, <code>ci.yml</code>, <code>cd.yml</code>, <code>app/</code>. Sau mỗi pha kiểm lại: <code>plan</code> của bài chính vẫn No changes.</p></div>
-      <div class="card"><div class="lbl">CD — AKS</div><p>Tự chạy sau CD chính, dùng <b>cùng image</b> trong ACR. Lỗi thì đặt lại đúng image cũ.</p></div>
-      <div class="card gray"><div class="lbl">Chi phí khi rỗi (giá niêm yết)</div><p><b>≈ $3,9/ngày</b>, so với ≈ $2,15/ngày của App Service (số đo thật).</p></div>
-      <div class="note warn" style="font-size:14.5px"><b>Còn mở:</b> <code>fe</code> còn 1 timeout khi một node bị gỡ · chưa có Actual cost · cluster đang bật.</div>
+  <div class="kicker">Làm thêm 12/10 · ngoài topic.md · AKS · cấu hình hiện tại</div>
+  <h2 style="margin-bottom:12px">Toàn bộ cấu hình AKS đang chạy</h2>
+  <div class="cfgrid">
+    <div class="cfg b">
+      <h3>Cluster <small>infra/aks/cluster.tf</small></h3>
+      <dl>
+        <dt>Tên</dt><dd><code>aks-vsf-dev</code> · East Asia · RG <code>rg-vsf-aks</code></dd>
+        <dt>Phiên bản</dt><dd>Kubernetes 1.35 (v1.35.8) · tier Free</dd>
+        <dt>Node pool</dt><dd>1 pool <code>system</code> · D2as_v5 (2 vCPU, 8 GB) · disk 32 GB · Ubuntu 24.04</dd>
+        <dt>Số node</dt><dd>autoscaler <b>1–2</b> node (trần của luật project)</dd>
+        <dt>Đăng nhập</dt><dd>tài khoản local tắt · Entra ID + Azure RBAC</dd>
+        <dt>API server</dt><dd>chỉ nhận IP trong whitelist</dd>
+        <dt>Add-on</dt><dd>OIDC issuer · Workload Identity · Key Vault CSI · Container Insights</dd>
+      </dl>
+    </div>
+    <div class="cfg b">
+      <h3>Mạng <small>cluster.tf · k8s/base</small></h3>
+      <dl>
+        <dt>CNI</dt><dd>Azure CNI overlay · data plane Cilium</dd>
+        <dt>Ra ngoài</dt><dd>Load Balancer Standard · <b>1 IP outbound</b></dd>
+        <dt><code>fe</code></dt><dd>Service LoadBalancer :80 → :3000 · <code>loadBalancerSourceRanges</code> = whitelist</dd>
+        <dt><code>be</code></dt><dd>ClusterIP :8080 · không có IP công khai</dd>
+        <dt>Policy</dt><dd><code>be-ingress</code>: <code>be</code> chỉ nhận từ pod <code>fe</code> (và 2 nguồn hệ thống của AKS)</dd>
+        <dt><code>fe</code> → <code>be</code></dt><dd><code>http://be:8080</code>, đi trong cluster</dd>
+        <dt>TLS</dt><dd>chưa có · HTTP sau whitelist</dd>
+      </dl>
+    </div>
+    <div class="cfg g">
+      <h3>Workload <small>k8s/base · namespace opsboard</small></h3>
+      <dl>
+        <dt>Số pod</dt><dd><code>be</code> <b>2</b> (HPA 2–2, CPU 70%) · <code>fe</code> <b>2</b></dd>
+        <dt>Request</dt><dd><code>be</code> 100m · 256Mi &nbsp;|&nbsp; <code>fe</code> 50m · 192Mi</dd>
+        <dt>Limit</dt><dd><code>be</code> 1 CPU · 512Mi &nbsp;|&nbsp; <code>fe</code> 500m · 384Mi</dd>
+        <dt>Readiness</dt><dd><code>be</code> <code>/health</code> &nbsp;|&nbsp; <code>fe</code> <code>/api/version</code></dd>
+        <dt>Rollout</dt><dd>RollingUpdate · maxSurge 1 · maxUnavailable 0</dd>
+        <dt>Giữ sống</dt><dd>PDB <code>minAvailable: 1</code> · rải pod ra 2 node · <code>preStop</code> 10 giây</dd>
+        <dt>Bảo mật pod</dt><dd>Pod Security <code>restricted</code> · non-root · root FS chỉ đọc · bỏ hết capability</dd>
+      </dl>
+    </div>
+    <div class="cfg a">
+      <h3>Danh tính và secret <small>identity.tf · keyvault.tf</small></h3>
+      <dl>
+        <dt>Node → ACR</dt><dd>kubelet identity + <code>AcrPull</code> · không <code>imagePullSecrets</code></dd>
+        <dt>Pod → Vault</dt><dd><code>id-vsf-aks-be</code>, <code>id-vsf-aks-fe</code> nối với ServiceAccount bằng federated credential</dd>
+        <dt>Quyền secret</dt><dd>Key Vault Secrets User cấp theo <b>từng secret</b>: <code>be</code> 2, <code>fe</code> 1</dd>
+        <dt>Mount</dt><dd>CSI: <code>be-secrets</code>, <code>fe-secrets</code></dd>
+        <dt>GitHub</dt><dd><code>id-gh-aks-deploy</code> (OIDC) · 2 custom role: chạy lệnh, đổi image trong <code>opsboard</code></dd>
+        <dt>Người</dt><dd>token Entra · role RBAC Cluster Admin</dd>
+      </dl>
+    </div>
+    <div class="cfg v">
+      <h3>Dữ liệu, monitoring <small>db.tf · monitoring.tf</small></h3>
+      <dl>
+        <dt>Database</dt><dd><code>appdb_aks</code> trên MySQL của bài chính · TLS</dd>
+        <dt>Firewall</dt><dd><code>aks-outbound</code>: đúng 1 IP outbound</dd>
+        <dt>Log</dt><dd>workspace riêng · 30 ngày · trần 0,2 GB/ngày</dd>
+        <dt>Thu thập</dt><dd>Container Insights chỉ lấy namespace <code>opsboard</code> · App Insights riêng</dd>
+        <dt>Alert</dt><dd>5xx &gt; 5% · CPU node &gt; 80% trong 15 phút · pod không khởi động → <code>ag-vsf-oncall</code></dd>
+        <dt>Workbook</dt><dd>OpsBoard — AKS advanced</dd>
+      </dl>
+    </div>
+    <div class="cfg">
+      <h3>IaC và deploy <small>infra/aks · cd-aks.yml</small></h3>
+      <dl>
+        <dt>Terraform</dt><dd><code>infra/aks</code> · 27 resource · state riêng <code>aks.tfstate</code></dd>
+        <dt>Dựng, dọn</dt><dd><code>make aks-up</code> một pha, khoảng 10 phút · <code>make aks-down</code></dd>
+        <dt>Manifest</dt><dd><code>k8s/base</code>: 11 manifest + kustomize</dd>
+        <dt>CI</dt><dd><code>ci-aks.yml</code>: plan, kubeconform, shellcheck</dd>
+        <dt>CD</dt><dd><code>cd-aks.yml</code> sau CD chính: đổi tag <code>be</code> rồi <code>fe</code>, kiểm 5 lần, sai thì đặt lại image cũ</dd>
+        <dt>Chi phí</dt><dd>≈ $3,9/ngày khi rỗi (giá niêm yết)</dd>
+      </dl>
     </div>
   </div>
   <div class="fill"></div>
-  <div class="note info" style="font-size:15px">Bài nộp vẫn là App Service với <code>evidence/M1.md</code> … <code>M11.md</code>. Phần này để riêng ở <code>evidence/advanced/</code>, không thay cho bằng chứng nào của đề bài.</div>
+  <div class="note info" style="font-size:14.5px;padding:9px 14px;margin-top:10px">Kiểm trên cluster thật ngày 13/10: <code>be</code> 2/2, <code>fe</code> 2/2 pod Ready, image cùng SHA với <code>main</code>; HPA, 2 PDB, NetworkPolicy và 2 SecretProviderClass đều có mặt đúng như code.</div>
+</section>
+
+<!-- ========== NGOÀI ĐỀ BÀI · AKS · DÙNG CHUNG ========== -->
+<section class="slide">
+  <div class="kicker">Làm thêm 12/10 · ngoài topic.md · App Service và AKS</div>
+  <h2 style="margin-bottom:12px">Một app, hai nơi chạy: những thứ dùng chung</h2>
+  <div class="share">
+    <div class="hd hl">App Service · bài chính</div><div class="hd hm">Dùng chung</div><div class="hd hr">AKS · làm thêm</div>
+
+    <div class="sl"><span>Chạy image bằng 2 Web App, mỗi cái có slot staging</span></div>
+    <div class="sm"><b>Mã nguồn và Dockerfile</b><span><code>app/be</code>, <code>app/fe</code> · một repo, một nhánh <code>main</code></span></div>
+    <div class="sr"><span>Chạy cùng image bằng 2 Deployment, mỗi cái 2 pod</span></div>
+
+    <div class="sl"><span><code>ci.yml</code> kiểm cả code AKS mới thêm</span></div>
+    <div class="sm"><b>CI: 9 required check</b><span>test, lint, gitleaks, Trivy, Terraform plan</span></div>
+    <div class="sr"><span>Thêm <code>ci-aks.yml</code>: plan <code>infra/aks</code>, kubeconform</span></div>
+
+    <div class="sl"><span><code>cd.yml</code> build, quét, push rồi swap slot</span></div>
+    <div class="sm"><b>Image trong ACR</b><span><code>vsf-be:&lt;sha&gt;</code>, <code>vsf-fe:&lt;sha&gt;</code> · build <b>một lần</b></span></div>
+    <div class="sr"><span><code>cd-aks.yml</code> không build lại, chỉ đổi tag sang SHA đó</span></div>
+
+    <div class="sl"><span>Key Vault reference trong app setting</span></div>
+    <div class="sm"><b>Key Vault</b><span>secret <code>mysql-admin-password</code> · không secret trong code</span></div>
+    <div class="sr"><span>CSI driver mount vào pod, qua Workload Identity</span></div>
+
+    <div class="sl"><span>Database <code>appdb</code> · firewall theo khoảng 20 IP outbound</span></div>
+    <div class="sm"><b>MySQL Flexible Server</b><span>một server ở Southeast Asia, mỗi bên một database</span></div>
+    <div class="sr"><span>Database <code>appdb_aks</code> · firewall theo 1 IP outbound</span></div>
+
+    <div class="sl"><span>Access restriction: IP ngoài nhận 403</span></div>
+    <div class="sm"><b>Danh sách IP whitelist</b><span>cùng một bộ IP, khai ở <code>terraform.tfvars</code> mỗi bên</span></div>
+    <div class="sr"><span>Load Balancer source ranges: IP ngoài bị timeout</span></div>
+
+    <div class="sl"><span>3 alert: 5xx, CPU plan, kết nối MySQL</span></div>
+    <div class="sm"><b>Cảnh báo về một chỗ</b><span>action group <code>ag-vsf-oncall</code>, gửi email</span></div>
+    <div class="sr"><span>3 alert: 5xx, CPU node, pod không khởi động</span></div>
+
+    <div class="sl"><span>State <code>app.tfstate</code> · identity cho CI, CD</span></div>
+    <div class="sm"><b>Bootstrap</b><span><code>rg-vsf-bootstrap</code>: state Terraform, identity OIDC</span></div>
+    <div class="sr"><span>State <code>aks.tfstate</code> · identity <code>id-gh-aks-deploy</code></span></div>
+  </div>
+  <div class="fill"></div>
+  <div class="note info" style="font-size:14.5px;padding:9px 14px;margin-top:10px"><b>Nguyên tắc: chỉ thêm.</b> AKS đọc ACR, Key Vault, MySQL của bài chính rồi thêm resource con; không sửa <code>infra/app</code>, <code>ci.yml</code>, <code>cd.yml</code>, <code>app/</code>. Sau mỗi pha, <code>plan</code> của bài chính vẫn No changes.</div>
+</section>
+
+<!-- ========== NGOÀI ĐỀ BÀI · AKS · KHÁC NHAU ========== -->
+<section class="slide">
+  <div class="kicker">Làm thêm 12/10 · ngoài topic.md · App Service và AKS</div>
+  <h2 style="margin-bottom:10px">Cùng yêu cầu, khác cơ chế: điểm khác nhau</h2>
+  <table class="cmp tightrow" style="font-size:13.5px">
+    <tr><th style="width:168px">Việc</th><th style="width:40%">App Service (bài chính)</th><th>AKS (làm thêm)</th></tr>
+    <tr><td><b>Pull image</b> · M1</td><td>Web App dùng managed identity có <code>AcrPull</code></td><td>kubelet identity có <code>AcrPull</code>; gỡ quyền → <code>ErrImagePull 401</code></td></tr>
+    <tr><td><b>Deploy</b> · M2 M10</td><td>đưa bản mới lên slot staging rồi swap</td><td>rolling update <code>be</code> rồi <code>fe</code>, luôn giữ đủ pod cũ tới khi pod mới Ready</td></tr>
+    <tr><td><b>Rollback</b></td><td>swap ngược; bản cũ còn chạy sẵn ở staging</td><td>đặt lại image cũ, tức là thêm một lần rollout</td></tr>
+    <tr><td><b>Secret</b> · M4 M5</td><td>Key Vault reference; mất quyền → app thoát</td><td>CSI mount; mất quyền → pod mới kẹt <code>FailedMount 403</code></td></tr>
+    <tr><td><b>Whitelist</b> · M6</td><td>access restriction trên 8 bề mặt → <b>403</b></td><td>LB source ranges + authorized IP → <b>timeout</b>; <code>be</code> không có IP công khai</td></tr>
+    <tr><td><b><code>fe</code> → <code>be</code></b></td><td>vòng ra Internet; <code>be</code> whitelist IP outbound của <code>fe</code></td><td><code>http://be:8080</code> trong cluster, khoá bằng NetworkPolicy</td></tr>
+    <tr><td><b>Firewall MySQL</b> · M3</td><td>khoảng 20 IP outbound dùng chung, apply nhiều pha</td><td>1 IP outbound của riêng cluster, apply một pha</td></tr>
+    <tr><td><b>Autoscale</b> · M7</td><td>Plan 1–2 instance</td><td>node 1–2; pod <code>be</code> cố định 2 (đã đo HPA 1→2 sau 62 giây)</td></tr>
+    <tr><td><b>Terraform</b> · M8</td><td><code>make up</code>, 3 pha</td><td><code>make aks-up</code>, 1 pha, 27 resource</td></tr>
+    <tr><td><b>TLS</b></td><td><code>https_only</code>, chứng chỉ của nền tảng</td><td>chưa có: HTTP sau whitelist</td></tr>
+    <tr><td><b>Monitoring</b> · M11</td><td>log HTTP của App Service + metric của Plan</td><td>Container Insights + App Insights, workspace riêng</td></tr>
+    <tr><td><b>Chi phí khi rỗi</b></td><td>≈ $2,15/ngày (đo thật)</td><td>≈ $3,9/ngày (giá niêm yết, chưa có Actual cost)</td></tr>
+  </table>
+  <div class="g2" style="gap:14px;margin-top:10px">
+    <div class="card blue" style="padding:9px 14px"><div class="lbl">App Service: nền tảng lo sẵn</div><p style="font-size:14.5px">TLS, slot giữ bản cũ để lùi ngay, không phải tự viết probe hay PDB.</p></div>
+    <div class="card green" style="padding:9px 14px"><div class="lbl">AKS: tự kiểm soát nhiều hơn, tự lo nhiều hơn</div><p style="font-size:14.5px">Mạng nội bộ, 1 IP outbound, quyền theo từng secret. Đổi lại phải tự lo probe, PDB, TLS.</p></div>
+  </div>
+  <div class="fill"></div>
+  <div class="note warn" style="font-size:14px;padding:8px 14px">Bài nộp vẫn là App Service (<code>evidence/M1.md</code> … <code>M11.md</code>); phần AKS để riêng ở <code>evidence/advanced/</code>. <b>Còn mở:</b> <code>fe</code> còn 1 timeout khi một node bị gỡ.</div>
 </section>
 
 <!-- ========== CÒN LẠI ========== -->
