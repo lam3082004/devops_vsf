@@ -4,6 +4,14 @@
 **Opened:** 2026-09-15
 **Goal:** Một repo mà người thứ ba `terraform apply` + merge vào `main` là ra app chạy trên App Service, đủ bằng chứng M1–M11 trong `evidence/`, demo live D25.
 
+## Demo header — PR #109, 2026-10-14
+
+- Người dùng yêu cầu review, sửa conflict và theo dõi CI/CD tới production. Merge `main` vào nhánh PR, giữ header `OpsBoard112312321` theo commit mới nhất của PR; giữ các cập nhật dependency trên `main`.
+- Thay đổi ứng dụng chỉ là text hiển thị trong `AppHeader`; không đổi routing, thao tác ticket hay cấu hình triển khai. Kiểm frontend local, sau đó bắt buộc đủ 9 check CI trước squash merge; xác minh SHA của cả BE/FE và header trên production sau CD.
+- Review dependency phát hiện `source-map-js@1.2.1` trong cây production có GHSA-68fv-2mgg-jv7q; cập nhật lock lên bản vá `1.2.2`. Cảnh báo `braces` (GHSA-vfj7-8cjw-p6xm) còn ở cây ESLint dành cho development, chưa có bản vá upstream; không hạ Next/ESLint major để né cảnh báo.
+- Local đạt: `npm ci`, lint, 14/14 test, production build/TypeScript, cổng prerender và `npm audit --omit=dev` (0 vulnerabilities).
+- Theo dõi kết quả CI/CD tại [PR #109](https://github.com/lam3082004/devops_vsf/pull/109). Thực hiện trong worktree riêng để giữ nguyên các file người dùng đang sửa dở.
+
 ## Demo Swagger — 2026-10-13
 
 - Người dùng yêu cầu bật Swagger trên backend production để demo. Thêm `SWAGGER_ENABLED`, mặc định false trong ứng dụng; Terraform bật true cho backend App Service production + staging, giữ môi trường Production và luật IP. AKS không đặt cờ nên Swagger vẫn tắt.
